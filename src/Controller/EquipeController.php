@@ -10,6 +10,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\File\Exception\FileException; 
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/equipe')]
 final class EquipeController extends AbstractController{
@@ -29,6 +31,23 @@ final class EquipeController extends AbstractController{
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $imageFile = $form->get('imageEquipe')->getData();
+        
+            if ($imageFile) {
+                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+                
+                // Répertoire de stockage des images dans le répertoire public
+                $destination = $this->getParameter('image_directory');  // public/img
+                
+                // Déplacer l'image dans le répertoire public
+                $imageFile->move($destination, $newFilename);
+                
+                // Enregistrer le chemin relatif de l'image (cela sera utilisé dans le front-end de Symfony)
+                $equipe->setImageEquipe('img/' . $newFilename);  
+            }
+
+            
             $entityManager->persist($equipe);
             $entityManager->flush();
 
@@ -41,6 +60,8 @@ final class EquipeController extends AbstractController{
         ]);
     }
 
+
+   
     #[Route('/{id}', name: 'app_equipe_show', methods: ['GET'])]
     public function show(Equipe $equipe): Response
     {
@@ -54,8 +75,24 @@ final class EquipeController extends AbstractController{
     {
         $form = $this->createForm(EquipeType::class, $equipe);
         $form->handleRequest($request);
+      
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Check if a new image has been uploaded
+        $imageFile = $form->get('imageEquipe')->getData(); // Assuming the field name is 'imageProjet'
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($imageFile) {
+            // Generate a unique filename
+            $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+
+            // Move the file to the appropriate directory
+            $imageFile->move(
+                $this->getParameter('image_directory'),
+                $newFilename
+            );
+
+            // Update the image in the project entity (save only the relative path)
+            $equipe->setImageEquipe('img/' . $newFilename);
+        }
             $entityManager->flush();
 
             return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
@@ -67,6 +104,8 @@ final class EquipeController extends AbstractController{
         ]);
     }
 
+   
+
     #[Route('/{id}', name: 'app_equipe_delete', methods: ['POST'])]
     public function delete(Request $request, Equipe $equipe, EntityManagerInterface $entityManager): Response
     {
@@ -77,4 +116,8 @@ final class EquipeController extends AbstractController{
 
         return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
     }
+
+   
+
+   
 }

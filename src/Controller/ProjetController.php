@@ -21,25 +21,82 @@ final class ProjetController extends AbstractController{
         ]);
     }
 
-    #[Route('/new', name: 'app_projet_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $projet = new Projet();
-        $form = $this->createForm(ProjetType::class, $projet);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($projet);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
+   
+    /*#[Route('/new', name: 'app_projet_new', methods: ['GET', 'POST'])]
+public function new(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $projet = new Projet();
+    $form = $this->createForm(ProjetType::class, $projet);
+    $form->handleRequest($request);
+    
+    if ($form->isSubmitted() && $form->isValid()) {
+        $imageFile = $form->get('imageProjet')->getData();
+        
+        if ($imageFile) {
+            $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+            
+            // Répertoire de stockage des images dans le répertoire public
+            $destination = $this->getParameter('image_directory');  // public/img
+            
+            // Déplacer l'image dans le répertoire public
+            $imageFile->move($destination, $newFilename);
+            
+            // Enregistrer le chemin relatif de l'image (cela sera utilisé dans le front-end de Symfony)
+            $projet->setImageProjet('img/' . $newFilename);  
         }
 
-        return $this->render('projet/new.html.twig', [
-            'projet' => $projet,
-            'form' => $form,
-        ]);
+        // Sauvegarder le projet dans la base de données
+        $entityManager->persist($projet);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    return $this->render('projet/new.html.twig', [
+        'projet' => $projet,
+        'form' => $form,
+    ]);
+}
+*/
+
+#[Route('/new', name: 'app_projet_new', methods: ['GET', 'POST'])]
+public function new(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $projet = new Projet();
+    $form = $this->createForm(ProjetType::class, $projet);
+    $form->handleRequest($request);
+    
+    if ($form->isSubmitted() && $form->isValid()) {
+        $imageFile = $form->get('imageProjet')->getData();
+        
+        if ($imageFile) {
+            $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+            $destination = $this->getParameter('image_directory');
+            $imageFile->move($destination, $newFilename);
+            $projet->setImageProjet('img/' . $newFilename);  
+        }
+
+        // Mettre à jour le nombre de projets de l'équipe
+        $equipe = $projet->getEquipe();
+        if ($equipe) {
+            $currentCount = $equipe->getNbrProjet() ?? 0;
+            $equipe->setNbrProjet($currentCount + 1);
+            $entityManager->persist($equipe);
+        }
+
+        $entityManager->persist($projet);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    return $this->render('projet/new.html.twig', [
+        'projet' => $projet,
+        'form' => $form,
+    ]);
+}
+    
+
 
     #[Route('/{id}', name: 'app_projet_show', methods: ['GET'])]
     public function show(Projet $projet): Response
@@ -49,25 +106,92 @@ final class ProjetController extends AbstractController{
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_projet_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Projet $projet, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(ProjetType::class, $projet);
-        $form->handleRequest($request);
+/*#[Route('/{id}/edit', name: 'app_projet_edit', methods: ['GET', 'POST'])]
+public function edit(Request $request, Projet $projet, EntityManagerInterface $entityManager): Response
+{
+    $form = $this->createForm(ProjetType::class, $projet);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Check if a new image has been uploaded
+        $imageFile = $form->get('imageProjet')->getData(); // Assuming the field name is 'imageProjet'
 
-            return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
+        if ($imageFile) {
+            // Generate a unique filename
+            $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+
+            // Move the file to the appropriate directory
+            $imageFile->move(
+                $this->getParameter('image_directory'),
+                $newFilename
+            );
+
+            // Update the image in the project entity (save only the relative path)
+            $projet->setImageProjet('img/' . $newFilename);
         }
 
-        return $this->render('projet/edit.html.twig', [
-            'projet' => $projet,
-            'form' => $form,
-        ]);
+        // Persist the changes
+        $entityManager->flush();
+
+        // Redirect to the project index after the update
+        return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}', name: 'app_projet_delete', methods: ['POST'])]
+    return $this->render('projet/edit.html.twig', [
+        'projet' => $projet,
+        'form' => $form,
+    ]);
+}*/
+
+#[Route('/{id}/edit', name: 'app_projet_edit', methods: ['GET', 'POST'])]
+public function edit(Request $request, Projet $projet, EntityManagerInterface $entityManager): Response
+{
+    $ancienneEquipe = $projet->getEquipe(); 
+    
+    $form = $this->createForm(ProjetType::class, $projet);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $imageFile = $form->get('imageProjet')->getData();
+        
+        if ($imageFile) {
+            $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+            $imageFile->move($this->getParameter('image_directory'), $newFilename);
+            $projet->setImageProjet('img/' . $newFilename);
+        }
+
+        $nouvelleEquipe = $projet->getEquipe();
+        
+        // Logique de mise à jour du nombre de projets
+        if ($ancienneEquipe !== $nouvelleEquipe) {
+            // Décrémenter l'ancienne équipe
+            if ($ancienneEquipe) {
+                $ancienCount = $ancienneEquipe->getNbrProjet() ?? 0;
+                $ancienneEquipe->setNbrProjet(max(0, $ancienCount - 1));
+                $entityManager->persist($ancienneEquipe);
+            }
+            
+            // Incrémenter la nouvelle équipe
+            if ($nouvelleEquipe) {
+                $nouveauCount = $nouvelleEquipe->getNbrProjet() ?? 0;
+                $nouvelleEquipe->setNbrProjet($nouveauCount + 1);
+                $entityManager->persist($nouvelleEquipe);
+            }
+        }
+
+        $entityManager->flush();
+        return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    return $this->render('projet/edit.html.twig', [
+        'projet' => $projet,
+        'form' => $form,
+    ]);
+}
+
+
+
+    /*#[Route('/{id}', name: 'app_projet_delete', methods: ['POST'])]
     public function delete(Request $request, Projet $projet, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$projet->getId(), $request->getPayload()->getString('_token'))) {
@@ -76,5 +200,25 @@ final class ProjetController extends AbstractController{
         }
 
         return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
+    }*/
+
+    #[Route('/{id}', name: 'app_projet_delete', methods: ['POST'])]
+public function delete(Request $request, Projet $projet, EntityManagerInterface $entityManager): Response
+{
+    if ($this->isCsrfTokenValid('delete'.$projet->getId(), $request->getPayload()->getString('_token'))) {
+        // Mettre à jour le nombre de projets de l'équipe avant suppression
+        $equipe = $projet->getEquipe();
+        if ($equipe) {
+            $currentCount = $equipe->getNbrProjet() ?? 0;
+            $newCount = max(0, $currentCount - 1); // Empêche les valeurs négatives
+            $equipe->setNbrProjet($newCount);
+            $entityManager->persist($equipe);
+        }
+
+        $entityManager->remove($projet);
+        $entityManager->flush();
     }
+
+    return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
+}
 }

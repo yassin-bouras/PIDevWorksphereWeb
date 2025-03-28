@@ -24,10 +24,14 @@
                 <td>{{ projet.id }}</td>
                 <td>{{ projet.nom }}</td>
                 <td>{{ projet.description }}</td>
-                <td>{{ projet.datecréation ? projet.datecréation|date('Y-m-d') : '' }}</td>
+                <td>{{ projet.dateCreation ? projet.dateCreation|date('Y-m-d') : '' }}</td>
                 <td>{{ projet.deadline ? projet.deadline|date('Y-m-d') : '' }}</td>
                 <td>{{ projet.etat }}</td>
-                <td>{{ projet.imageProjet }}</td>
+    <td>
+    <img src="{{ asset(projet.imageProjet) }}" alt="Image du projet" width="100">
+</td>
+
+
                 <td>
                     <a href="{{ path('app_projet_show', {'id': projet.id}) }}">show</a>
                     <a href="{{ path('app_projet_edit', {'id': projet.id}) }}">edit</a>

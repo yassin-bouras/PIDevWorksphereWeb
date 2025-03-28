@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <title>Equipe</title>
 
 {% block body %}
@@ -17,7 +16,7 @@
             </tr>
             <tr>
                 <th>ImageEquipe</th>
-                <td>{{ equipe.imageEquipe }}</td>
+                <td><img src="{{ asset(equipe.imageEquipe) }}" alt="Image du equipe" width="100"></td>
             </tr>
             <tr>
                 <th>NbrProjet</th>
@@ -26,9 +25,68 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_equipe_index') }}">back to list</a>
+    {# Afficher la liste des employés de l'équipe #}
+    <h3>Membres de l'équipe</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Prénom</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in equipe.users %}
+                <tr>
+                    <td>{{ user.nom }}</td>
+                    <td>{{ user.prenom }}</td>
+                    <td>{{ user.email }}</td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">Aucun employé dans cette équipe</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 
-    <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}">edit</a>
+    {# Afficher la liste des projets associés à cette équipe #}
+    <h3>Projets de l'équipe</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for projet in equipe.projets %}
+                <tr>
+                    <td>{{ projet.nom }}</td>
+                    <td>
+                        {% if projet.imageProjet %}
+                            <img src="{{ asset(projet.imageProjet) }}" alt="Image du projet" width="100">
+                        {% else %}
+                            Pas d'image
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ path('app_projet_show', {'id': projet.id}) }}" class="btn btn-info btn-sm">Voir</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="3">Aucun projet associé à cette équipe</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="mt-3">
+        <a href="{{ path('app_equipe_index') }}" class="btn btn-secondary">Retour à la liste</a>
+        <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" class="btn btn-primary">Modifier</a>
+    </div>
 
     {{ include('equipe/_delete_form.html.twig') }}
 {% endblock %}

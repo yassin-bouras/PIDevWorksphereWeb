@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -57,19 +56,20 @@ class Projet
         return $this;
     }
 
-    #[ORM\Column(type: 'date', nullable: true)]
-    private ?\DateTimeInterface $datecréation = null;
+    #[ORM\Column(name: 'datecréation',type: 'date', nullable: true)]
+    private ?\DateTimeInterface $dateCreation = null;
 
-    public function getDatecréation(): ?\DateTimeInterface
+    public function getDateCreation(): ?\DateTimeInterface
     {
-        return $this->datecréation;
+    return $this->dateCreation;
     }
 
-    public function setDatecréation(?\DateTimeInterface $datecréation): self
+    public function setDateCreation(?\DateTimeInterface $dateCreation): self
     {
-        $this->datecréation = $datecréation;
-        return $this;
+    $this->dateCreation = $dateCreation;
+    return $this;
     }
+
 
     #[ORM\Column(type: 'date', nullable: true)]
     private ?\DateTimeInterface $deadline = null;
@@ -100,6 +100,7 @@ class Projet
         return $this;
     }
 
+    
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $etat = null;
 
@@ -114,7 +115,10 @@ class Projet
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
+   
+
+   
+    #[ORM\Column(name: 'imageProjet', type: 'string', nullable: false)]
     private ?string $imageProjet = null;
 
     public function getImageProjet(): ?string
@@ -128,4 +132,6 @@ class Projet
         return $this;
     }
 
+
+    
 }

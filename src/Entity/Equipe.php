@@ -28,21 +28,27 @@ class Equipe
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
+        $this->projets = new ArrayCollection(); // Also initialize this if you haven't
+    }
+
+    #[ORM\Column(name: 'nom_equipe', type: 'string', nullable: false)]
     private ?string $nom_equipe = null;
 
-    public function getNom_equipe(): ?string
+    public function getNomEquipe(): ?string
     {
         return $this->nom_equipe;
     }
 
-    public function setNom_equipe(string $nom_equipe): self
+    public function setNomEquipe(string $nom_equipe): self
     {
         $this->nom_equipe = $nom_equipe;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'imageEquipe', type: 'string', nullable: true)] 
     private ?string $imageEquipe = null;
 
     public function getImageEquipe(): ?string
@@ -56,8 +62,9 @@ class Equipe
         return $this;
     }
 
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $nbrProjet = null;
+
+    #[ORM\Column(name: 'nbrProjet', type: 'integer', nullable: true)]
+     private ?int $nbrProjet = null;
 
     public function getNbrProjet(): ?int
     {
@@ -110,12 +117,6 @@ class Equipe
     )]
     private Collection $users;
 
-    public function __construct()
-    {
-        $this->projets = new ArrayCollection();
-        $this->users = new ArrayCollection();
-    }
-
     /**
      * @return Collection<int, User>
      */
@@ -141,16 +142,5 @@ class Equipe
         return $this;
     }
 
-    public function getNomEquipe(): ?string
-    {
-        return $this->nom_equipe;
-    }
-
-    public function setNomEquipe(string $nom_equipe): static
-    {
-        $this->nom_equipe = $nom_equipe;
-
-        return $this;
-    }
-
+   
 }

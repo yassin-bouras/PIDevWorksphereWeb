@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <title>Projet</title>
 
 {% block body %}
@@ -20,8 +19,8 @@
                 <td>{{ projet.description }}</td>
             </tr>
             <tr>
-                <th>Datecréation</th>
-                <td>{{ projet.datecréation ? projet.datecréation|date('Y-m-d') : '' }}</td>
+                <th>Date création</th>
+                <td>{{ projet.dateCreation ? projet.dateCreation|date('Y-m-d') : '' }}</td>
             </tr>
             <tr>
                 <th>Deadline</th>
@@ -32,15 +31,33 @@
                 <td>{{ projet.etat }}</td>
             </tr>
             <tr>
-                <th>ImageProjet</th>
-                <td>{{ projet.imageProjet }}</td>
+                <th>Image Projet</th>
+                <td><img src="{{ asset(projet.imageProjet) }}" alt="Image du projet" width="100"></td>
+            </tr>
+            {# Ajout des informations de l'équipe #}
+            <tr>
+                <th>Équipe assignée</th>
+                <td>
+                    {% if projet.equipe %}
+                        <div class="d-flex align-items-center">
+                            <img src="{{ asset(projet.equipe.imageEquipe) }}" 
+                                 alt="Image de l'équipe {{ projet.equipe.nomEquipe }}" 
+                                 width="80" 
+                                 class="mr-3">
+                            <span>{{ projet.equipe.nomEquipe }}</span>
+                        </div>
+                    {% else %}
+                        <span class="text-muted">Aucune équipe assignée</span>
+                    {% endif %}
+                </td>
             </tr>
         </tbody>
     </table>
 
-    <a href="{{ path('app_projet_index') }}">back to list</a>
-
-    <a href="{{ path('app_projet_edit', {'id': projet.id}) }}">edit</a>
+    <div class="mt-3">
+        <a href="{{ path('app_projet_index') }}" class="btn btn-secondary">Retour à la liste</a>
+        <a href="{{ path('app_projet_edit', {'id': projet.id}) }}" class="btn btn-primary">Modifier</a>
+    </div>
 
     {{ include('projet/_delete_form.html.twig') }}
 {% endblock %}
