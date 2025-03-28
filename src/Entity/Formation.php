@@ -17,6 +17,12 @@ class Formation
     #[ORM\Column(type: 'integer')]
     private ?int $id_f = null;
 
+    public function getIdf(): ?int
+    {
+        return $this->id_f;
+    }
+
+
     public function getId_f(): ?int
     {
         return $this->id_f;
@@ -71,28 +77,28 @@ class Formation
     }
 
     #[ORM\Column(type: 'time', nullable: false)]
-    private ?string $heure_debut = null;
+    private ?\DateTimeInterface $heure_debut = null;
 
-    public function getHeure_debut(): ?string
+    public function getHeuredebut(): ?\DateTimeInterface
     {
         return $this->heure_debut;
     }
 
-    public function setHeure_debut(string $heure_debut): self
+    public function setHeuredebut(\DateTimeInterface $heure_debut): self
     {
         $this->heure_debut = $heure_debut;
         return $this;
     }
 
     #[ORM\Column(type: 'time', nullable: false)]
-    private ?string $heure_fin = null;
+    private ?\DateTimeInterface $heure_fin = null;
 
-    public function getHeure_fin(): ?string
+    public function getHeurefin(): ?\DateTimeInterface
     {
         return $this->heure_fin;
     }
 
-    public function setHeure_fin(string $heure_fin): self
+    public function setHeurefin(\DateTimeInterface $heure_fin): self
     {
         $this->heure_fin = $heure_fin;
         return $this;
@@ -101,12 +107,12 @@ class Formation
     #[ORM\Column(type: 'integer', nullable: false)]
     private ?int $nb_place = null;
 
-    public function getNb_place(): ?int
+    public function getNbplace(): ?int
     {
         return $this->nb_place;
     }
 
-    public function setNb_place(int $nb_place): self
+    public function setNbplace(int $nb_place): self
     {
         $this->nb_place = $nb_place;
         return $this;
@@ -129,12 +135,12 @@ class Formation
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $id_user = null;
 
-    public function getId_user(): ?int
+    public function getIduser(): ?int
     {
         return $this->id_user;
     }
 
-    public function setId_user(?int $id_user): self
+    public function setIduser(?int $id_user): self
     {
         $this->id_user = $id_user;
         return $this;
@@ -151,6 +157,38 @@ class Formation
     public function setPhoto(?string $photo): self
     {
         $this->photo = $photo;
+        return $this;
+    }
+
+    #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'formation')]
+    private Collection $reservations;
+
+    public function __construct()
+    {
+        $this->reservations = new ArrayCollection();
+    }
+ /**
+     * @return Collection<int, Reservation>
+     */
+    public function getReservations(): Collection {
+        return $this->reservations;
+    }
+
+    public function addReservation(Reservation $reservation): self {
+        if (!$this->reservations->contains($reservation)) {
+            $this->reservations->add($reservation);
+            $reservation->setFormation($this);
+        }
+        return $this;
+    }
+
+    public function removeReservation(Reservation $reservation): self {
+        if ($this->reservations->removeElement($reservation)) {
+            // Set the owning side to null (unless already changed)
+            if ($reservation->getFormation() === $this) {
+                $reservation->setFormation(null);
+            }
+        }
         return $this;
     }
 

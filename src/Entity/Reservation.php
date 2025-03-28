@@ -16,6 +16,10 @@ class Reservation
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id_r = null;
+    public function getIdr(): ?int
+    {
+        return $this->id_r;
+    }
 
     public function getId_r(): ?int
     {
@@ -45,12 +49,12 @@ class Reservation
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $id_f = null;
 
-    public function getId_f(): ?int
+    public function getIdf(): ?int
     {
         return $this->id_f;
     }
 
-    public function setId_f(?int $id_f): self
+    public function setIdf(?int $id_f): self
     {
         $this->id_f = $id_f;
         return $this;
@@ -59,12 +63,12 @@ class Reservation
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $id_user = null;
 
-    public function getId_user(): ?int
+    public function getIduser(): ?int
     {
         return $this->id_user;
     }
 
-    public function setId_user(?int $id_user): self
+    public function setIduser(?int $id_user): self
     {
         $this->id_user = $id_user;
         return $this;
@@ -73,12 +77,12 @@ class Reservation
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $motif_r = null;
 
-    public function getMotif_r(): ?string
+    public function getMotifr(): ?string
     {
         return $this->motif_r;
     }
 
-    public function setMotif_r(string $motif_r): self
+    public function setMotifr(string $motif_r): self
     {
         $this->motif_r = $motif_r;
         return $this;
@@ -139,5 +143,20 @@ class Reservation
         $this->getMeetings()->removeElement($meeting);
         return $this;
     }
+
+    #[ORM\ManyToOne(targetEntity: Formation::class, inversedBy: 'reservations')]
+#[ORM\JoinColumn(name: 'id_f', referencedColumnName: 'id_f', nullable: false)]
+private ?Formation $formation = null;
+
+public function getFormation(): ?Formation
+{
+    return $this->formation;
+}
+
+public function setFormation(?Formation $formation): self
+{
+    $this->formation = $formation;
+    return $this;
+}
 
 }

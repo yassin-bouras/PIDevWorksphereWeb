@@ -8,7 +8,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Id_f</th>
+                <th>Photo</th>
                 <th>Titre</th>
                 <th>Description</th>
                 <th>Date</th>
@@ -17,14 +17,20 @@
                 <th>Nb_place</th>
                 <th>Type</th>
                 <th>Id_user</th>
-                <th>Photo</th>
+             
                 <th>actions</th>
             </tr>
         </thead>
         <tbody>
         {% for formation in formations %}
             <tr>
-                <td>{{ formation.idF }}</td>
+             <td>
+                        {% if formation.photo %}
+                            <img src="{{ asset(formation.photo) }}" alt="Image Formation" width="100">
+                        {% else %}
+                            Pas d'image
+                        {% endif %}
+                </td>
                 <td>{{ formation.titre }}</td>
                 <td>{{ formation.description }}</td>
                 <td>{{ formation.date ? formation.date|date('Y-m-d') : '' }}</td>
@@ -33,10 +39,10 @@
                 <td>{{ formation.nbPlace }}</td>
                 <td>{{ formation.type }}</td>
                 <td>{{ formation.idUser }}</td>
-                <td>{{ formation.photo }}</td>
+               
                 <td>
-                    <a href="{{ path('app_formation_show', {'id_f': formation.id_f}) }}">show</a>
-                    <a href="{{ path('app_formation_edit', {'id_f': formation.id_f}) }}">edit</a>
+                    <a href="{{ path('app_formation_show', {'id_f': formation.idF}) }}">show</a>
+                    <a href="{{ path('app_formation_edit', {'id_f': formation.idF}) }}">edit</a>
                 </td>
             </tr>
         {% else %}

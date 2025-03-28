@@ -10,9 +10,9 @@
             <tr>
                 <th>Id_r</th>
                 <th>Date</th>
-                <th>Id_f</th>
-                <th>Id_user</th>
-                <th>Motif_r</th>
+                <th>Formation</th>
+             
+                <th>Motif de la réservation</th>
                 <th>Attente</th>
                 <th>Langue</th>
                 <th>actions</th>
@@ -23,8 +23,7 @@
             <tr>
                 <td>{{ reservation.idR }}</td>
                 <td>{{ reservation.date ? reservation.date|date('Y-m-d') : '' }}</td>
-                <td>{{ reservation.idF }}</td>
-                <td>{{ reservation.idUser }}</td>
+                 <td>{{ reservation.formation ? reservation.formation.titre : 'Non spécifié' }}</td>
                 <td>{{ reservation.motifR }}</td>
                 <td>{{ reservation.attente }}</td>
                 <td>{{ reservation.langue }}</td>
