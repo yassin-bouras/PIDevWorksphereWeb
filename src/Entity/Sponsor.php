@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -14,10 +13,12 @@ use App\Repository\SponsorRepository;
 class Sponsor
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
-    private ?int $idSponsor = null;
-
+#[ORM\GeneratedValue]
+#[ORM\Column(name: 'idSponsor', type: 'integer')]
+private ?int $idSponsor = null;
+    public function getId(): ?int {
+        return $this->idSponsor;
+    }
     public function getIdSponsor(): ?int
     {
         return $this->idSponsor;
@@ -29,7 +30,7 @@ class Sponsor
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'nomSponso',type: 'string', nullable: true)]
     private ?string $nomSponso = null;
 
     public function getNomSponso(): ?string
@@ -43,7 +44,7 @@ class Sponsor
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'prenomSponso',type: 'string', nullable: true)]
     private ?string $prenomSponso = null;
 
     public function getPrenomSponso(): ?string
@@ -57,7 +58,7 @@ class Sponsor
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'emailSponso',type: 'string', nullable: true)]
     private ?string $emailSponso = null;
 
     public function getEmailSponso(): ?string
@@ -71,19 +72,19 @@ class Sponsor
         return $this;
     }
 
-    #[ORM\Column(type: 'decimal', nullable: true)]
-    private ?float $budgetSponso = null;
+    #[ORM\Column(name: 'budgetSponso', type: 'decimal', precision: 10, scale: 2, nullable: true)]
+private ?string $budgetSponso = null;
 
-    public function getBudgetSponso(): ?float
-    {
-        return $this->budgetSponso;
-    }
+public function getBudgetSponso(): ?string
+{
+    return $this->budgetSponso;
+}
 
-    public function setBudgetSponso(?float $budgetSponso): self
-    {
-        $this->budgetSponso = $budgetSponso;
-        return $this;
-    }
+public function setBudgetSponso(?string $budgetSponso): self
+{
+    $this->budgetSponso = $budgetSponso;
+    return $this;
+}
 
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $classement = null;
@@ -99,18 +100,18 @@ class Sponsor
         return $this;
     }
 
-    #[ORM\Column(type: 'decimal', nullable: true)]
-    private ?float $BudgetApresReduction = null;
+    #[ORM\Column(name: 'BudgetApresReduction', type: 'decimal', precision: 10, scale: 2, nullable: true)]
+    private ?string $BudgetApresReduction = null;
 
-    public function getBudgetApresReduction(): ?float
-    {
-        return $this->BudgetApresReduction;
-    }
+    public function getBudgetApresReduction(): ?string
+{
+    return $this->BudgetApresReduction;
+}
 
-    public function setBudgetApresReduction(?float $BudgetApresReduction): self
-    {
-        $this->BudgetApresReduction = $BudgetApresReduction;
-        return $this;
-    }
+public function setBudgetApresReduction(?string $BudgetApresReduction): self
+{
+    $this->BudgetApresReduction = $BudgetApresReduction;
+    return $this;
+}
 
 }

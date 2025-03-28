@@ -8,27 +8,28 @@
     <table class="table">
         <tbody>
             <tr>
-                <th>Evenement_id</th>
-                <td>{{ evenement_sponsor.evenementId }}</td>
+                <th>Événement</th>
+                <td>{{ evenement_sponsor.evenement.nomEvent }}</td>
             </tr>
             <tr>
-                <th>Sponsor_id</th>
-                <td>{{ evenement_sponsor.sponsorId }}</td>
+                <th>Sponsor</th>
+                <td>{{ evenement_sponsor.sponsor.nomSponso }}</td>
             </tr>
             <tr>
-                <th>DatedebutContrat</th>
+                <th>Date de début du contrat</th>
                 <td>{{ evenement_sponsor.datedebutContrat ? evenement_sponsor.datedebutContrat|date('Y-m-d') : '' }}</td>
             </tr>
             <tr>
-                <th>Duree</th>
+                <th>Durée</th>
                 <td>{{ evenement_sponsor.duree }}</td>
             </tr>
         </tbody>
     </table>
 
-    <a href="{{ path('app_evenement_sponsor_index') }}">back to list</a>
+    <a href="{{ path('app_evenement_sponsor_index') }}">Retour à la liste</a>
 
-    <a href="{{ path('app_evenement_sponsor_edit', {'evenement_id': evenement_sponsor.evenement_id}) }}">edit</a>
+    <a href="{{ path('app_evenement_sponsor_edit', {'evenement_id': evenement_sponsor.evenement.idEvent, 'sponsor_id': evenement_sponsor.sponsor.idSponsor}) }}">Modifier</a>
 
     {{ include('evenement_sponsor/_delete_form.html.twig') }}
 {% endblock %}
+

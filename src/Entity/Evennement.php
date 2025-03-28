@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -15,7 +14,7 @@ class Evennement
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column(type: 'integer')]
+    #[ORM\Column(name: 'idEvent', type: 'integer')]
     private ?int $idEvent = null;
 
     public function getIdEvent(): ?int
@@ -29,7 +28,7 @@ class Evennement
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'nomEvent',type: 'string', nullable: true)]
     private ?string $nomEvent = null;
 
     public function getNomEvent(): ?string
@@ -43,7 +42,7 @@ class Evennement
         return $this;
     }
 
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(name: 'descEvent',type: 'text', nullable: true)]
     private ?string $descEvent = null;
 
     public function getDescEvent(): ?string
@@ -57,7 +56,7 @@ class Evennement
         return $this;
     }
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
+    #[ORM\Column(name: 'dateEvent',type: 'datetime', nullable: true)]
     private ?\DateTimeInterface $dateEvent = null;
 
     public function getDateEvent(): ?\DateTimeInterface
@@ -71,7 +70,7 @@ class Evennement
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
+    #[ORM\Column(name: 'lieuEvent',type: 'string', nullable: true)]
     private ?string $lieuEvent = null;
 
     public function getLieuEvent(): ?string
@@ -85,7 +84,7 @@ class Evennement
         return $this;
     }
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(name: 'capaciteEvent',type: 'integer', nullable: true)]
     private ?int $capaciteEvent = null;
 
     public function getCapaciteEvent(): ?int
