@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -116,11 +115,6 @@ class Reservation
     #[ORM\OneToMany(targetEntity: Meeting::class, mappedBy: 'reservation')]
     private Collection $meetings;
 
-    public function __construct()
-    {
-        $this->meetings = new ArrayCollection();
-    }
-
     /**
      * @return Collection<int, Meeting>
      */
@@ -143,47 +137,6 @@ class Reservation
     public function removeMeeting(Meeting $meeting): self
     {
         $this->getMeetings()->removeElement($meeting);
-        return $this;
-    }
-
-    public function getIdR(): ?int
-    {
-        return $this->id_r;
-    }
-
-    public function getIdF(): ?int
-    {
-        return $this->id_f;
-    }
-
-    public function setIdF(?int $id_f): static
-    {
-        $this->id_f = $id_f;
-
-        return $this;
-    }
-
-    public function getIdUser(): ?int
-    {
-        return $this->id_user;
-    }
-
-    public function setIdUser(?int $id_user): static
-    {
-        $this->id_user = $id_user;
-
-        return $this;
-    }
-
-    public function getMotifR(): ?string
-    {
-        return $this->motif_r;
-    }
-
-    public function setMotifR(string $motif_r): static
-    {
-        $this->motif_r = $motif_r;
-
         return $this;
     }
 

@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -152,59 +151,6 @@ class Formation
     public function setPhoto(?string $photo): self
     {
         $this->photo = $photo;
-        return $this;
-    }
-
-    public function getIdF(): ?int
-    {
-        return $this->id_f;
-    }
-
-    public function getHeureDebut(): ?\DateTimeInterface
-    {
-        return $this->heure_debut;
-    }
-
-    public function setHeureDebut(\DateTimeInterface $heure_debut): static
-    {
-        $this->heure_debut = $heure_debut;
-
-        return $this;
-    }
-
-    public function getHeureFin(): ?\DateTimeInterface
-    {
-        return $this->heure_fin;
-    }
-
-    public function setHeureFin(\DateTimeInterface $heure_fin): static
-    {
-        $this->heure_fin = $heure_fin;
-
-        return $this;
-    }
-
-    public function getNbPlace(): ?int
-    {
-        return $this->nb_place;
-    }
-
-    public function setNbPlace(int $nb_place): static
-    {
-        $this->nb_place = $nb_place;
-
-        return $this;
-    }
-
-    public function getIdUser(): ?int
-    {
-        return $this->id_user;
-    }
-
-    public function setIdUser(?int $id_user): static
-    {
-        $this->id_user = $id_user;
-
         return $this;
     }
 
