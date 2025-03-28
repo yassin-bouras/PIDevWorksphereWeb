@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+
+<title>Evennement index</title>
+
+{% block body %}
+    <h1>Evennement index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>IdEvent</th>
+                <th>NomEvent</th>
+                <th>DescEvent</th>
+                <th>DateEvent</th>
+                <th>LieuEvent</th>
+                <th>CapaciteEvent</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for evennement in evennements %}
+            <tr>
+                <td>{{ evennement.idEvent }}</td>
+                <td>{{ evennement.nomEvent }}</td>
+                <td>{{ evennement.descEvent }}</td>
+                <td>{{ evennement.dateEvent ? evennement.dateEvent|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ evennement.lieuEvent }}</td>
+                <td>{{ evennement.capaciteEvent }}</td>
+                <td>
+                    <a href="{{ path('app_evennement_show', {'idEvent': evennement.idEvent}) }}">show</a>
+                    <a href="{{ path('app_evennement_edit', {'idEvent': evennement.idEvent}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="7">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_evennement_new') }}">Create new</a>
+{% endblock %}

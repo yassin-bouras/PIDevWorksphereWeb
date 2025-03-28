@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<title>Offre index</title>
+
+{% block body %}
+    <h1>Offre index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id_offre</th>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Type_contrat</th>
+                <th>Salaire</th>
+                <th>Lieu_travail</th>
+                <th>Date_publication</th>
+                <th>Date_limite</th>
+                <th>Statut_offre</th>
+                <th>Experience</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for offre in offres %}
+            <tr>
+                <td>{{ offre.idOffre }}</td>
+                <td>{{ offre.titre }}</td>
+                <td>{{ offre.description }}</td>
+                <td>{{ offre.typeContrat }}</td>
+                <td>{{ offre.salaire }}</td>
+                <td>{{ offre.lieuTravail }}</td>
+                <td>{{ offre.datePublication ? offre.datePublication|date('Y-m-d') : '' }}</td>
+                <td>{{ offre.dateLimite ? offre.dateLimite|date('Y-m-d') : '' }}</td>
+                <td>{{ offre.statutOffre }}</td>
+                <td>{{ offre.experience }}</td>
+                <td>
+                    <a href="{{ path('app_offre_show', {'id_offre': offre.id_offre}) }}">show</a>
+                    <a href="{{ path('app_offre_edit', {'id_offre': offre.id_offre}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="11">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_offre_new') }}">Create new</a>
+{% endblock %}

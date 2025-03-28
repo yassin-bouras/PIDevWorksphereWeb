@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+
+<title>Favori index</title>
+
+{% block body %}
+    <h1>Favori index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id_favori</th>
+                <th>Id_user</th>
+                <th>Id_f</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for favori in favoris %}
+            <tr>
+                <td>{{ favori.idFavori }}</td>
+                <td>{{ favori.idUser }}</td>
+                <td>{{ favori.idF }}</td>
+                <td>
+                    <a href="{{ path('app_favori_show', {'id_favori': favori.id_favori}) }}">show</a>
+                    <a href="{{ path('app_favori_edit', {'id_favori': favori.id_favori}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_favori_new') }}">Create new</a>
+{% endblock %}

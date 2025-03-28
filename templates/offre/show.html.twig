@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<title>Offre</title>
+
+{% block body %}
+    <h1>Offre</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id_offre</th>
+                <td>{{ offre.idOffre }}</td>
+            </tr>
+            <tr>
+                <th>Titre</th>
+                <td>{{ offre.titre }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ offre.description }}</td>
+            </tr>
+            <tr>
+                <th>Type_contrat</th>
+                <td>{{ offre.typeContrat }}</td>
+            </tr>
+            <tr>
+                <th>Salaire</th>
+                <td>{{ offre.salaire }}</td>
+            </tr>
+            <tr>
+                <th>Lieu_travail</th>
+                <td>{{ offre.lieuTravail }}</td>
+            </tr>
+            <tr>
+                <th>Date_publication</th>
+                <td>{{ offre.datePublication ? offre.datePublication|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Date_limite</th>
+                <td>{{ offre.dateLimite ? offre.dateLimite|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Statut_offre</th>
+                <td>{{ offre.statutOffre }}</td>
+            </tr>
+            <tr>
+                <th>Experience</th>
+                <td>{{ offre.experience }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_offre_index') }}">back to list</a>
+
+    <a href="{{ path('app_offre_edit', {'id_offre': offre.id_offre}) }}">edit</a>
+
+    {{ include('offre/_delete_form.html.twig') }}
+{% endblock %}

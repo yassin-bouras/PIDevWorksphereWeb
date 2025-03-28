@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+
+<title>HistoriqueEntretien</title>
+
+{% block body %}
+    <h1>HistoriqueEntretien</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ historique_entretien.id }}</td>
+            </tr>
+            <tr>
+                <th>Titre</th>
+                <td>{{ historique_entretien.titre }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ historique_entretien.description }}</td>
+            </tr>
+            <tr>
+                <th>Date_entretien</th>
+                <td>{{ historique_entretien.dateEntretien ? historique_entretien.dateEntretien|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Heure_entretien</th>
+                <td>{{ historique_entretien.heureEntretien ? historique_entretien.heureEntretien|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Type_entretien</th>
+                <td>{{ historique_entretien.typeEntretien }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ historique_entretien.status ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>Action</th>
+                <td>{{ historique_entretien.action }}</td>
+            </tr>
+            <tr>
+                <th>Date_action</th>
+                <td>{{ historique_entretien.dateAction ? historique_entretien.dateAction|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Employe_id</th>
+                <td>{{ historique_entretien.employeId }}</td>
+            </tr>
+            <tr>
+                <th>FeedbackId</th>
+                <td>{{ historique_entretien.feedbackId }}</td>
+            </tr>
+            <tr>
+                <th>CandidatId</th>
+                <td>{{ historique_entretien.candidatId }}</td>
+            </tr>
+            <tr>
+                <th>IdOffre</th>
+                <td>{{ historique_entretien.idOffre }}</td>
+            </tr>
+            <tr>
+                <th>IdCandidature</th>
+                <td>{{ historique_entretien.idCandidature }}</td>
+            </tr>
+            <tr>
+                <th>Entretien_id</th>
+                <td>{{ historique_entretien.entretienId }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_historique_entretien_index') }}">back to list</a>
+
+    <a href="{{ path('app_historique_entretien_edit', {'id': historique_entretien.id}) }}">edit</a>
+
+    {{ include('historique_entretien/_delete_form.html.twig') }}
+{% endblock %}

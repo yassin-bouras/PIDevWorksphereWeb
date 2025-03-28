@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+
+<title>New EvenementSponsor</title>
+
+{% block body %}
+    <h1>Create new EvenementSponsor</h1>
+
+    {{ include('evenement_sponsor/_form.html.twig') }}
+
+    <a href="{{ path('app_evenement_sponsor_index') }}">back to list</a>
+{% endblock %}

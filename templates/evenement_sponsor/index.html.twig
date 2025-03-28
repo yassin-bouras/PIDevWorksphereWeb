@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<title>EvenementSponsor index</title>
+
+{% block body %}
+    <h1>EvenementSponsor index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Evenement_id</th>
+                <th>Sponsor_id</th>
+                <th>DatedebutContrat</th>
+                <th>Duree</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for evenement_sponsor in evenement_sponsors %}
+            <tr>
+                <td>{{ evenement_sponsor.evenementId }}</td>
+                <td>{{ evenement_sponsor.sponsorId }}</td>
+                <td>{{ evenement_sponsor.datedebutContrat ? evenement_sponsor.datedebutContrat|date('Y-m-d') : '' }}</td>
+                <td>{{ evenement_sponsor.duree }}</td>
+                <td>
+                    <a href="{{ path('app_evenement_sponsor_show', {'evenement_id': evenement_sponsor.evenement_id}) }}">show</a>
+                    <a href="{{ path('app_evenement_sponsor_edit', {'evenement_id': evenement_sponsor.evenement_id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_evenement_sponsor_new') }}">Create new</a>
+{% endblock %}

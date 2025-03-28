@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<title>Sponsor index</title>
+
+{% block body %}
+    <h1>Sponsor index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>IdSponsor</th>
+                <th>NomSponso</th>
+                <th>PrenomSponso</th>
+                <th>EmailSponso</th>
+                <th>BudgetSponso</th>
+                <th>Classement</th>
+                <th>BudgetApresReduction</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for sponsor in sponsors %}
+            <tr>
+                <td>{{ sponsor.idSponsor }}</td>
+                <td>{{ sponsor.nomSponso }}</td>
+                <td>{{ sponsor.prenomSponso }}</td>
+                <td>{{ sponsor.emailSponso }}</td>
+                <td>{{ sponsor.budgetSponso }}</td>
+                <td>{{ sponsor.classement }}</td>
+                <td>{{ sponsor.BudgetApresReduction }}</td>
+                <td>
+                    <a href="{{ path('app_sponsor_show', {'idSponsor': sponsor.idSponsor}) }}">show</a>
+                    <a href="{{ path('app_sponsor_edit', {'idSponsor': sponsor.idSponsor}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_sponsor_new') }}">Create new</a>
+{% endblock %}

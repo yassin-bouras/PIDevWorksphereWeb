@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+
+<title>HistoriqueEntretien index</title>
+
+{% block body %}
+    <h1>HistoriqueEntretien index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Date_entretien</th>
+                <th>Heure_entretien</th>
+                <th>Type_entretien</th>
+                <th>Status</th>
+                <th>Action</th>
+                <th>Date_action</th>
+                <th>Employe_id</th>
+                <th>FeedbackId</th>
+                <th>CandidatId</th>
+                <th>IdOffre</th>
+                <th>IdCandidature</th>
+                <th>Entretien_id</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for historique_entretien in historique_entretiens %}
+            <tr>
+                <td>{{ historique_entretien.id }}</td>
+                <td>{{ historique_entretien.titre }}</td>
+                <td>{{ historique_entretien.description }}</td>
+                <td>{{ historique_entretien.dateEntretien ? historique_entretien.dateEntretien|date('Y-m-d') : '' }}</td>
+                <td>{{ historique_entretien.heureEntretien ? historique_entretien.heureEntretien|date('H:i:s') : '' }}</td>
+                <td>{{ historique_entretien.typeEntretien }}</td>
+                <td>{{ historique_entretien.status ? 'Yes' : 'No' }}</td>
+                <td>{{ historique_entretien.action }}</td>
+                <td>{{ historique_entretien.dateAction ? historique_entretien.dateAction|date('Y-m-d H:i:s') : '' }}</td>
+                <td>{{ historique_entretien.employeId }}</td>
+                <td>{{ historique_entretien.feedbackId }}</td>
+                <td>{{ historique_entretien.candidatId }}</td>
+                <td>{{ historique_entretien.idOffre }}</td>
+                <td>{{ historique_entretien.idCandidature }}</td>
+                <td>{{ historique_entretien.entretienId }}</td>
+                <td>
+                    <a href="{{ path('app_historique_entretien_show', {'id': historique_entretien.id}) }}">show</a>
+                    <a href="{{ path('app_historique_entretien_edit', {'id': historique_entretien.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="16">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_historique_entretien_new') }}">Create new</a>
+{% endblock %}

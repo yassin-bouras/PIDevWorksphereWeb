@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+
+<title>New HistoriqueEntretien</title>
+
+{% block body %}
+    <h1>Create new HistoriqueEntretien</h1>
+
+    {{ include('historique_entretien/_form.html.twig') }}
+
+    <a href="{{ path('app_historique_entretien_index') }}">back to list</a>
+{% endblock %}

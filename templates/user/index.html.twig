@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<title>User index</title>
+
+{% block body %}
+    <h1>User index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id_user</th>
+                <th>Nom</th>
+                <th>Prenom</th>
+                <th>Email</th>
+                <th>Mdp</th>
+                <th>Role</th>
+                <th>Adresse</th>
+                <th>Sexe</th>
+                <th>Image_profil</th>
+                <th>Status</th>
+                <th>Salaire_attendu</th>
+                <th>Poste</th>
+                <th>Salaire</th>
+                <th>Experience_travail</th>
+                <th>Departement</th>
+                <th>Competence</th>
+                <th>NombreProjet</th>
+                <th>Budget</th>
+                <th>Departement_géré</th>
+                <th>Ans_experience</th>
+                <th>Specialisation</th>
+                <th>Banned</th>
+                <th>Messagereclamation</th>
+                <th>Numt_tel</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.idUser }}</td>
+                <td>{{ user.nom }}</td>
+                <td>{{ user.prenom }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.mdp }}</td>
+                <td>{{ user.role }}</td>
+                <td>{{ user.adresse }}</td>
+                <td>{{ user.sexe }}</td>
+                <td>{{ user.imageProfil }}</td>
+                <td>{{ user.status }}</td>
+                <td>{{ user.salaireAttendu }}</td>
+                <td>{{ user.poste }}</td>
+                <td>{{ user.salaire }}</td>
+                <td>{{ user.experienceTravail }}</td>
+                <td>{{ user.departement }}</td>
+                <td>{{ user.competence }}</td>
+                <td>{{ user.nombreProjet }}</td>
+                <td>{{ user.budget }}</td>
+                <td>{{ user.departementgere }}</td>
+                <td>{{ user.ansExperience }}</td>
+                <td>{{ user.specialisation }}</td>
+                <td>{{ user.banned ? 'Yes' : 'No' }}</td>
+                <td>{{ user.messagereclamation }}</td>
+                <td>{{ user.numtel }}</td>
+                <td>
+                    <a href="{{ path('app_user_show', {'iduser': user.iduser}) }}">show</a>
+                    <a href="{{ path('app_user_edit', {'iduser': user.iduser}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="25">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_user_new') }}">Create new</a>
+{% endblock %}

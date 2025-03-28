@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+
+<title>Formation index</title>
+
+{% block body %}
+    <h1>Formation index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id_f</th>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Date</th>
+                <th>Heure_debut</th>
+                <th>Heure_fin</th>
+                <th>Nb_place</th>
+                <th>Type</th>
+                <th>Id_user</th>
+                <th>Photo</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for formation in formations %}
+            <tr>
+                <td>{{ formation.idF }}</td>
+                <td>{{ formation.titre }}</td>
+                <td>{{ formation.description }}</td>
+                <td>{{ formation.date ? formation.date|date('Y-m-d') : '' }}</td>
+                <td>{{ formation.heureDebut ? formation.heureDebut|date('H:i:s') : '' }}</td>
+                <td>{{ formation.heureFin ? formation.heureFin|date('H:i:s') : '' }}</td>
+                <td>{{ formation.nbPlace }}</td>
+                <td>{{ formation.type }}</td>
+                <td>{{ formation.idUser }}</td>
+                <td>{{ formation.photo }}</td>
+                <td>
+                    <a href="{{ path('app_formation_show', {'id_f': formation.id_f}) }}">show</a>
+                    <a href="{{ path('app_formation_edit', {'id_f': formation.id_f}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="11">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_formation_new') }}">Create new</a>
+{% endblock %}

@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+
+<title>New Favori</title>
+
+{% block body %}
+    <h1>Create new Favori</h1>
+
+    {{ include('favori/_form.html.twig') }}
+
+    <a href="{{ path('app_favori_index') }}">back to list</a>
+{% endblock %}

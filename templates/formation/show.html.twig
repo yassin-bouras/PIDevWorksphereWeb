@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+
+<title>Formation</title>
+
+{% block body %}
+    <h1>Formation</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id_f</th>
+                <td>{{ formation.idF }}</td>
+            </tr>
+            <tr>
+                <th>Titre</th>
+                <td>{{ formation.titre }}</td>
+            </tr>
+            <tr>
+                <th>Description</th>
+                <td>{{ formation.description }}</td>
+            </tr>
+            <tr>
+                <th>Date</th>
+                <td>{{ formation.date ? formation.date|date('Y-m-d') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Heure_debut</th>
+                <td>{{ formation.heureDebut ? formation.heureDebut|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Heure_fin</th>
+                <td>{{ formation.heureFin ? formation.heureFin|date('H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Nb_place</th>
+                <td>{{ formation.nbPlace }}</td>
+            </tr>
+            <tr>
+                <th>Type</th>
+                <td>{{ formation.type }}</td>
+            </tr>
+            <tr>
+                <th>Id_user</th>
+                <td>{{ formation.idUser }}</td>
+            </tr>
+            <tr>
+                <th>Photo</th>
+                <td>{{ formation.photo }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_formation_index') }}">back to list</a>
+
+    <a href="{{ path('app_formation_edit', {'id_f': formation.id_f}) }}">edit</a>
+
+    {{ include('formation/_delete_form.html.twig') }}
+{% endblock %}

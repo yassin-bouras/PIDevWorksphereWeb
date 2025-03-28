@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<title>User</title>
+
+{% block body %}
+    <h1>User</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id_user</th>
+                <td>{{ user.idUser }}</td>
+            </tr>
+            <tr>
+                <th>Nom</th>
+                <td>{{ user.nom }}</td>
+            </tr>
+            <tr>
+                <th>Prenom</th>
+                <td>{{ user.prenom }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ user.email }}</td>
+            </tr>
+            <tr>
+                <th>Mdp</th>
+                <td>{{ user.mdp }}</td>
+            </tr>
+            <tr>
+                <th>Role</th>
+                <td>{{ user.role }}</td>
+            </tr>
+            <tr>
+                <th>Adresse</th>
+                <td>{{ user.adresse }}</td>
+            </tr>
+            <tr>
+                <th>Sexe</th>
+                <td>{{ user.sexe }}</td>
+            </tr>
+            <tr>
+                <th>Image_profil</th>
+                <td>{{ user.imageProfil }}</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td>{{ user.status }}</td>
+            </tr>
+            <tr>
+                <th>Salaire_attendu</th>
+                <td>{{ user.salaireAttendu }}</td>
+            </tr>
+            <tr>
+                <th>Poste</th>
+                <td>{{ user.poste }}</td>
+            </tr>
+            <tr>
+                <th>Salaire</th>
+                <td>{{ user.salaire }}</td>
+            </tr>
+            <tr>
+                <th>Experience_travail</th>
+                <td>{{ user.experienceTravail }}</td>
+            </tr>
+            <tr>
+                <th>Departement</th>
+                <td>{{ user.departement }}</td>
+            </tr>
+            <tr>
+                <th>Competence</th>
+                <td>{{ user.competence }}</td>
+            </tr>
+            <tr>
+                <th>NombreProjet</th>
+                <td>{{ user.nombreProjet }}</td>
+            </tr>
+            <tr>
+                <th>Budget</th>
+                <td>{{ user.budget }}</td>
+            </tr>
+            <tr>
+                <th>Departement_géré</th>
+                <td>{{ user.departementgere }}</td>
+            </tr>
+            <tr>
+                <th>Ans_experience</th>
+                <td>{{ user.ansExperience }}</td>
+            </tr>
+            <tr>
+                <th>Specialisation</th>
+                <td>{{ user.specialisation }}</td>
+            </tr>
+            <tr>
+                <th>Banned</th>
+                <td>{{ user.banned ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>Messagereclamation</th>
+                <td>{{ user.messagereclamation }}</td>
+            </tr>
+            <tr>
+                <th>Numt_tel</th>
+                <td>{{ user.numtel }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_user_index') }}">back to list</a>
+
+    <a href="{{ path('app_user_edit', {'iduser': user.iduser}) }}">edit</a>
+
+    {{ include('user/_delete_form.html.twig') }}
+{% endblock %}

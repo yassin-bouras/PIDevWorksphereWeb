@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+
+<title>New Meeting</title>
+
+{% block body %}
+    <h1>Create new Meeting</h1>
+
+    {{ include('meeting/_form.html.twig') }}
+
+    <a href="{{ path('app_meeting_index') }}">back to list</a>
+{% endblock %}
