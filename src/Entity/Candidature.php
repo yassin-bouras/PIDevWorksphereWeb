@@ -21,8 +21,16 @@ class Candidature
     {
         return $this->id_candidature;
     }
+    public function getId(): ?int
+    {
+        return $this->id_candidature;
+    }
+    public function getIdcandidature(): ?int
+    {
+        return $this->id_candidature;
+    }
 
-    public function setId_candidature(int $id_candidature): self
+    public function setIdcandidature(int $id_candidature): self
     {
         $this->id_candidature = $id_candidature;
         return $this;
@@ -79,20 +87,30 @@ class Candidature
     {
         return $this->lettre_motivation;
     }
+    /////////////////////////
+    public function getLettreMotivation(): ?string
+    {
+        return $this->lettre_motivation;
+    }
+    public function setLettreMotivation(string $lettre_motivation): self
+    {
+        $this->lettre_motivation = $lettre_motivation;
+        return $this;
+    }
+    //////////////////////////
 
     public function setLettre_motivation(string $lettre_motivation): self
     {
         $this->lettre_motivation = $lettre_motivation;
         return $this;
     }
-
-    #[ORM\OneToMany(targetEntity: Entretien::class, mappedBy: 'candidature')]
-    private Collection $entretiens;
-
     public function __construct()
     {
         $this->entretiens = new ArrayCollection();
     }
+
+    #[ORM\OneToMany(targetEntity: Entretien::class, mappedBy: 'candidature')]
+    private Collection $entretiens;
 
     /**
      * @return Collection<int, Entretien>
@@ -118,22 +136,4 @@ class Candidature
         $this->getEntretiens()->removeElement($entretien);
         return $this;
     }
-
-    public function getIdCandidature(): ?int
-    {
-        return $this->id_candidature;
-    }
-
-    public function getLettreMotivation(): ?string
-    {
-        return $this->lettre_motivation;
-    }
-
-    public function setLettreMotivation(string $lettre_motivation): static
-    {
-        $this->lettre_motivation = $lettre_motivation;
-
-        return $this;
-    }
-
 }

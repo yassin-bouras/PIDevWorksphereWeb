@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -18,12 +17,20 @@ class Offre
     #[ORM\Column(type: 'integer')]
     private ?int $id_offre = null;
 
+    public function getIdoffre(): ?int
+    {
+        return $this->id_offre;
+    }
     public function getId_offre(): ?int
     {
         return $this->id_offre;
     }
+    public function getId(): ?int
+    {
+        return $this->id_offre;
+    }
 
-    public function setId_offre(int $id_offre): self
+    public function setIdoffre(int $id_offre): self
     {
         $this->id_offre = $id_offre;
         return $this;
@@ -60,12 +67,12 @@ class Offre
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $type_contrat = null;
 
-    public function getType_contrat(): ?string
+    public function getTypecontrat(): ?string
     {
         return $this->type_contrat;
     }
 
-    public function setType_contrat(string $type_contrat): self
+    public function setTypecontrat(string $type_contrat): self
     {
         $this->type_contrat = $type_contrat;
         return $this;
@@ -88,12 +95,12 @@ class Offre
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $lieu_travail = null;
 
-    public function getLieu_travail(): ?string
+    public function getLieutravail(): ?string
     {
         return $this->lieu_travail;
     }
 
-    public function setLieu_travail(string $lieu_travail): self
+    public function setLieutravail(string $lieu_travail): self
     {
         $this->lieu_travail = $lieu_travail;
         return $this;
@@ -102,12 +109,12 @@ class Offre
     #[ORM\Column(type: 'date', nullable: false)]
     private ?\DateTimeInterface $date_publication = null;
 
-    public function getDate_publication(): ?\DateTimeInterface
+    public function getDatepublication(): ?\DateTimeInterface
     {
         return $this->date_publication;
     }
 
-    public function setDate_publication(\DateTimeInterface $date_publication): self
+    public function setDatepublication(\DateTimeInterface $date_publication): self
     {
         $this->date_publication = $date_publication;
         return $this;
@@ -116,12 +123,12 @@ class Offre
     #[ORM\Column(type: 'date', nullable: false)]
     private ?\DateTimeInterface $date_limite = null;
 
-    public function getDate_limite(): ?\DateTimeInterface
+    public function getDatelimite(): ?\DateTimeInterface
     {
         return $this->date_limite;
     }
 
-    public function setDate_limite(\DateTimeInterface $date_limite): self
+    public function setDatelimite(\DateTimeInterface $date_limite): self
     {
         $this->date_limite = $date_limite;
         return $this;
@@ -130,12 +137,12 @@ class Offre
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $statut_offre = null;
 
-    public function getStatut_offre(): ?string
+    public function getStatutoffre(): ?string
     {
         return $this->statut_offre;
     }
 
-    public function setStatut_offre(string $statut_offre): self
+    public function setStatutoffre(string $statut_offre): self
     {
         $this->statut_offre = $statut_offre;
         return $this;
@@ -153,6 +160,12 @@ class Offre
     {
         $this->experience = $experience;
         return $this;
+    }
+    public function __construct()
+    {
+        $this->users = new ArrayCollection();
+        $this->candidatures = new ArrayCollection();
+        $this->entretiens = new ArrayCollection();
     }
 
     #[ORM\OneToMany(targetEntity: Candidature::class, mappedBy: 'offre')]
@@ -223,13 +236,6 @@ class Offre
     )]
     private Collection $users;
 
-    public function __construct()
-    {
-        $this->candidatures = new ArrayCollection();
-        $this->entretiens = new ArrayCollection();
-        $this->users = new ArrayCollection();
-    }
-
     /**
      * @return Collection<int, User>
      */
@@ -254,70 +260,4 @@ class Offre
         $this->getUsers()->removeElement($user);
         return $this;
     }
-
-    public function getIdOffre(): ?int
-    {
-        return $this->id_offre;
-    }
-
-    public function getTypeContrat(): ?string
-    {
-        return $this->type_contrat;
-    }
-
-    public function setTypeContrat(string $type_contrat): static
-    {
-        $this->type_contrat = $type_contrat;
-
-        return $this;
-    }
-
-    public function getLieuTravail(): ?string
-    {
-        return $this->lieu_travail;
-    }
-
-    public function setLieuTravail(string $lieu_travail): static
-    {
-        $this->lieu_travail = $lieu_travail;
-
-        return $this;
-    }
-
-    public function getDatePublication(): ?\DateTimeInterface
-    {
-        return $this->date_publication;
-    }
-
-    public function setDatePublication(\DateTimeInterface $date_publication): static
-    {
-        $this->date_publication = $date_publication;
-
-        return $this;
-    }
-
-    public function getDateLimite(): ?\DateTimeInterface
-    {
-        return $this->date_limite;
-    }
-
-    public function setDateLimite(\DateTimeInterface $date_limite): static
-    {
-        $this->date_limite = $date_limite;
-
-        return $this;
-    }
-
-    public function getStatutOffre(): ?string
-    {
-        return $this->statut_offre;
-    }
-
-    public function setStatutOffre(string $statut_offre): static
-    {
-        $this->statut_offre = $statut_offre;
-
-        return $this;
-    }
-
 }
