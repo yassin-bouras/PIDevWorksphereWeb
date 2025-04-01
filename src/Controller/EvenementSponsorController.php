@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\EvenementSponsor;
 use App\Form\EvenementSponsorType;
 use App\Repository\EvenementSponsorRepository;
+use App\Repository\SponsorRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,11 +23,54 @@ final class EvenementSponsorController extends AbstractController
         ]);
     }
 
+   
+    // #[Route('/new', name: 'app_evenement_sponsor_new', methods: ['GET', 'POST'])]
+    // public function new(Request $request, EntityManagerInterface $entityManager,SponsorRepository $sponsorRepository): Response
+    // {
+    //     $evenementSponsor = new EvenementSponsor();
+    //     $form = $this->createForm(EvenementSponsorType::class, $evenementSponsor);
+    //     $form->handleRequest($request);
+    
+    //     //Récupérer l'idSponsor depuis la query
+    //     $sponsorId = $request->query->get('sponsor_id');
+    
+    //     if($sponsorId){
+    //         $sponsor = $sponsorRepository->find($sponsorId);
+    //         $evenementSponsor->setSponsor($sponsor);
+    //     }
+    
+    //     if ($form->isSubmitted() && $form->isValid()) {
+    //         $entityManager->persist($evenementSponsor);
+    //         $entityManager->flush();
+    
+    //         return $this->redirectToRoute('app_evenement_sponsor_index', [], Response::HTTP_SEE_OTHER);
+    //     }
+    
+    //     return $this->render('evenement_sponsor/new.html.twig', [
+    //         'evenement_sponsor' => $evenementSponsor,
+    //         'form' => $form,
+    //     ]);
+    // }
     #[Route('/new', name: 'app_evenement_sponsor_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SponsorRepository $sponsorRepository): Response
     {
         $evenementSponsor = new EvenementSponsor();
-        $form = $this->createForm(EvenementSponsorType::class, $evenementSponsor);
+        $sponsorId = $request->query->get('sponsor_id');
+
+        // Si un sponsor est sélectionné, le pré-remplir et ne pas inclure le champ sponsor dans le formulaire
+        if ($sponsorId) {
+            $sponsor = $sponsorRepository->find($sponsorId);
+            $evenementSponsor->setSponsor($sponsor);
+            $form = $this->createFormBuilder($evenementSponsor)
+                ->add('evenement')
+                ->add('datedebutContrat')
+                ->add('duree')
+                ->getForm();
+        } else {
+            // Sinon, inclure le champ sponsor dans le formulaire
+            $form = $this->createForm(EvenementSponsorType::class, $evenementSponsor);
+        }
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -38,10 +82,10 @@ final class EvenementSponsorController extends AbstractController
 
         return $this->render('evenement_sponsor/new.html.twig', [
             'evenement_sponsor' => $evenementSponsor,
-            'form' => $form,
+            'form' => $form->createView(),
+            'sponsorId' => $sponsorId,
         ]);
     }
-
     #[Route('/{evenement_id}/{sponsor_id}', name: 'app_evenement_sponsor_show', methods: ['GET'])]
     public function show(
         #[MapEntity(mapping: ['evenement_id' => 'evenement', 'sponsor_id' => 'sponsor'])]

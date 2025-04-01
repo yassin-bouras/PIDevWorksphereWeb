@@ -1,11 +1,21 @@
-<!DOCTYPE html>
+{% extends '/home/index.html.twig' %}
 
-<title>New EvenementSponsor</title>
+{% block title %}Créer un nouveau EvenementSponsor{% endblock %}
 
 {% block body %}
-    <h1>Create new EvenementSponsor</h1>
+    <div class="container" style="margin-top: 100px;"> 
+        <h1>Créer une nouvelle sponsorship</h1>
 
-    {{ include('evenement_sponsor/_form.html.twig') }}
+        {{ form_start(form) }}
+            {{ form_row(form.evenement) }}
+            {% if sponsorId is not defined %}
+                {{ form_row(form.sponsor) }}
+            {% endif %}
+            {{ form_row(form.datedebutContrat) }}
+            {{ form_row(form.duree) }}
+            <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+        {{ form_end(form) }}
 
-    <a href="{{ path('app_evenement_sponsor_index') }}">back to list</a>
+        <a href="{{ path('app_evenement_sponsor_index') }}">Retour à la liste</a>
+    </div>
 {% endblock %}

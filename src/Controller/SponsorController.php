@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Sponsor;
 use App\Form\SponsorType;
+use App\Repository\EvenementSponsorRepository;
 use App\Repository\SponsorRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -76,5 +77,18 @@ final class SponsorController extends AbstractController{
         }
 
         return $this->redirectToRoute('app_sponsor_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+
+
+    #[Route('/{idSponsor}/events', name: 'app_sponsor_events', methods: ['GET'])]
+    public function showSponsorEvents(Sponsor $sponsor, EvenementSponsorRepository $evenementSponsorRepository): Response
+    {
+        $evenementSponsors = $evenementSponsorRepository->findBy(['sponsor' => $sponsor]);
+
+        return $this->render('sponsor/events.html.twig', [
+            'sponsor' => $sponsor,
+            'evenement_sponsors' => $evenementSponsors,
+        ]);
     }
 }

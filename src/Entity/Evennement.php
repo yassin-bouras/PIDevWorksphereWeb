@@ -112,5 +112,8 @@ class Evennement
         $this->user = $user;
         return $this;
     }
-
+    public function __toString(): string
+    {
+        return $this->nomEvent; // Ou toute autre propriété que vous souhaitez afficher
+    }
 }
