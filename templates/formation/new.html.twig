@@ -1,11 +1,13 @@
-<!DOCTYPE html>
+{% extends '/home/index.html.twig' %}
 
-<title>New Formation</title>
+{% block title %} Nouvelle Formation {% endblock %}
 
 {% block body %}
-    <h1>Create new Formation</h1>
+  <h1 style="text-align: center; margin-top: 7%;">Ajouter Formation</h1>
 
     {{ include('formation/_form.html.twig') }}
+     <div style="display: flex; justify-content: center; gap:10px;">
+     <a href="{{ path('app_formation_index') }}" class="btn btn-primary">Back to list</a>
+     </div>
 
-    <a href="{{ path('app_formation_index') }}">back to list</a>
 {% endblock %}

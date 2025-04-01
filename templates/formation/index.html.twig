@@ -1,57 +1,57 @@
-<!DOCTYPE html>
+{% extends '/home/index.html.twig' %}
 
-<title>Formation index</title>
+{% block title %} Formations {% endblock %}
 
 {% block body %}
-    <h1>Formation index</h1>
+    <div class="container" style="margin-top:10%;">
+        <h1 class="text-center mb-4">Liste des Formations</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Photo</th>
-                <th>Titre</th>
-                <th>Description</th>
-                <th>Date</th>
-                <th>Heure_debut</th>
-                <th>Heure_fin</th>
-                <th>Nb_place</th>
-                <th>Type</th>
-                <th>Id_user</th>
-             
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for formation in formations %}
-            <tr>
-             <td>
-                        {% if formation.photo %}
-                            <img src="{{ asset(formation.photo) }}" alt="Image Formation" width="100">
-                        {% else %}
-                            Pas d'image
-                        {% endif %}
-                </td>
-                <td>{{ formation.titre }}</td>
-                <td>{{ formation.description }}</td>
-                <td>{{ formation.date ? formation.date|date('Y-m-d') : '' }}</td>
-                <td>{{ formation.heureDebut ? formation.heureDebut|date('H:i:s') : '' }}</td>
-                <td>{{ formation.heureFin ? formation.heureFin|date('H:i:s') : '' }}</td>
-                <td>{{ formation.nbPlace }}</td>
-                <td>{{ formation.type }}</td>
-                <td>{{ formation.idUser }}</td>
-               
-                <td>
-                    <a href="{{ path('app_formation_show', {'id_f': formation.idF}) }}">show</a>
-                    <a href="{{ path('app_formation_edit', {'id_f': formation.idF}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="11">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Photo</th>
+                    <th>Titre</th>
+                    <th>Description</th>
+                    <th>Date</th>
+                    <th>Heure début</th>
+                    <th>Heure fin</th>
+                    <th>Places disponibles</th>
+                    <th>Type</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for formation in formations %}
+                    <tr>
+                        <td>
+                            {% if formation.photo %}
+                                <img src="{{ asset(formation.photo) }}" alt="Image Formation" width="100">
+                            {% else %}
+                                Pas d'image
+                            {% endif %}
+                        </td>
+                        <td>{{ formation.titre }}</td>
+                        <td>{{ formation.description }}</td>
+                        <td>{{ formation.date ? formation.date|date('Y-m-d') : 'N/A' }}</td>
+                        <td>{{ formation.heureDebut ? formation.heureDebut|date('H:i:s') : 'N/A' }}</td>
+                        <td>{{ formation.heureFin ? formation.heureFin|date('H:i:s') : 'N/A' }}</td>
+                        <td>{{ formation.nbPlace }}</td>
+                        <td>{{ formation.type }}</td>
+                        <td>
+                            <a class="btn btn-info btn-sm" href="{{ path('app_formation_show', {'id_f': formation.idF}) }}">Voir</a>
+                            <a class="btn btn-warning btn-sm" href="{{ path('app_formation_edit', {'id_f': formation.idF}) }}">Modifier</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="9" class="text-center">Aucune formation trouvée</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
 
-    <a href="{{ path('app_formation_new') }}">Create new</a>
+        <div class="text-center">
+            <a href="{{ path('app_formation_new') }}" class="btn btn-success">Créer une nouvelle formation</a>
+        </div>
+    </div>
 {% endblock %}

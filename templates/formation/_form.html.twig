@@ -1,4 +1,16 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+{% extends '/home/index.html.twig' %}
+{% block body %}
+    <div class="container" style="margin-top:5%;">
+     
+        <div class="card p-2 shadow">
+        
+            {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <div class="text-center mt-3">
+                    <button class="btn btn-success">{{ button_label|default('Enregistrer') }}</button>
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}
+
