@@ -3,49 +3,53 @@
 {% block title %}Sponsors{% endblock %}
 
 {% block body %}
-    <div class="container" style="margin-top:10%;">
-        <h1 class="text-center mb-4">Liste des Sponsors</h1>
+    <div class="container" style="margin-top:7%;">
+        <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Liste des Sponsors</h1>
 
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                   
-                    <th>Nom</th>
-                    <th>Prénom</th>
-                    <th>Email</th>
-                    <th>Budget</th>
-                    <th>Classement</th>
-                    <th>Budget Après Réduction</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for sponsor in sponsors %}
-                    <tr>
-                        
-                        <td>{{ sponsor.nomSponso }}</td>
-                        <td>{{ sponsor.prenomSponso }}</td>
-                        <td>{{ sponsor.emailSponso }}</td>
-                        <td>{{ sponsor.budgetSponso }}</td>
-                        <td>{{ sponsor.classement }}</td>
-                        <td>{{ sponsor.BudgetApresReduction }}</td>
-                        <td>
-                            <a class="btn btn-info btn-sm" href="{{ path('app_sponsor_show', {'idSponsor': sponsor.idSponsor}) }}">Voir</a>
-                            <a class="btn btn-warning btn-sm" href="{{ path('app_sponsor_edit', {'idSponsor': sponsor.idSponsor}) }}">Modifier</a>
-                            <a class="btn btn-primary btn-sm" href="{{ path('app_evenement_sponsor_new') }}?sponsor_id={{ sponsor.idSponsor }}">Affecter un événement</a>
-                            <a class="btn btn-success btn-sm" href="{{ path('app_sponsor_events', {'idSponsor': sponsor.idSponsor}) }}">Voir les événements</a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="8" class="text-center">Aucun sponsor trouvé</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="text-center mb-4">
+            <a href="{{ path('app_sponsor_new') }}" class="btn" style="background-color: #4a6fa5; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Créer un nouveau sponsor</a>
+        </div>
 
-        <div class="text-center">
-            <a href="{{ path('app_sponsor_new') }}" class="btn btn-success">Créer un nouveau sponsor</a>
+        <div class="sponsor-grid" style="max-width: 1060px; margin: 0 auto;">
+            {% for sponsor in sponsors %}
+                <div class="sponsor-card" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 25px;">
+                    <div class="sponsor-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h2 style="margin: 0; font-size: 1.5rem; color: #333;">{{ sponsor.nomSponso }} {{ sponsor.prenomSponso }}</h2>
+                        <span style="background-color: #f0f0f0; padding: 5px 10px; border-radius: 4px; font-size: 0.9rem;">Classement: {{ sponsor.classement }}</span>
+                    </div>
+                    
+                    <div class="sponsor-info" style="margin-bottom: 15px;">
+                        <p style="margin: 5px 0; color: #555;"><strong>Email:</strong> {{ sponsor.emailSponso }}</p>
+                        <p style="margin: 5px 0; color: #555;"><strong>Budget:</strong> {{ sponsor.budgetSponso }} €</p>
+                        <p style="margin: 5px 0; color: #555;"><strong>Budget après réduction:</strong> {{ sponsor.BudgetApresReduction }} €</p>
+                    </div>
+                    
+                    <div class="sponsor-actions" style="display: flex; gap: 10px;">
+                        <a class="btn" href="{{ path('app_sponsor_show', {'idSponsor': sponsor.idSponsor}) }}" style="background-color: #4a6fa5; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Voir</a>
+                        <a class="btn" href="{{ path('app_sponsor_edit', {'idSponsor': sponsor.idSponsor}) }}" style="background-color: #e67e22; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Modifier</a>
+                        <a class="btn" href="{{ path('app_evenement_sponsor_new') }}?sponsor_id={{ sponsor.idSponsor }}" style="background-color: #2ecc71; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Affecter événement</a>
+                        <a class="btn" href="{{ path('app_sponsor_events', {'idSponsor': sponsor.idSponsor}) }}" style="background-color: #9b59b6; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Événements</a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="no-sponsors" style="text-align: center; padding: 40px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <p style="font-size: 1.2rem; color: #777;">Aucun sponsor trouvé</p>
+                </div>
+            {% endfor %}
         </div>
     </div>
+
+    <style>
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .sponsor-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .sponsor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+    </style>
 {% endblock %}
