@@ -1,58 +1,95 @@
 {% extends '/home/index.html.twig' %}
 
-{% block title %} Afficher Formation {% endblock %}
+{% block title %}Détails de la Formation{% endblock %}
 
 {% block body %}
-    <div class="container" style="margin-top:10%;">
-        <h1 class="text-center mb-4">Détails de la Formation</h1>
+    <div class="container" style="margin-top:7%;">
+        <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Détails de la Formation</h1>
 
-        <table class="table table-bordered table-striped">
-            <tbody>
-                <tr>
-                    <th class="table-dark">Photo</th>
-                    <td>
-                        {% if formation.photo %}
-                            <img src="{{ asset(formation.photo) }}" alt="Image Formation" width="150">
-                        {% else %}
-                            Pas d'image
-                        {% endif %}
-                    </td>
-                </tr>
-                <tr>
-                    <th class="table-dark">Titre</th>
-                    <td>{{ formation.titre }}</td>
-                </tr>
-                <tr>
-                    <th class="table-dark">Description</th>
-                    <td>{{ formation.description }}</td>
-                </tr>
-                <tr>
-                    <th class="table-dark">Date</th>
-                    <td>{{ formation.date ? formation.date|date('Y-m-d') : 'N/A' }}</td>
-                </tr>
-                <tr>
-                    <th class="table-dark">Heure début</th>
-                    <td>{{ formation.heureDebut ? formation.heureDebut|date('H:i:s') : 'N/A' }}</td>
-                </tr>
-                <tr>
-                    <th class="table-dark">Heure fin</th>
-                    <td>{{ formation.heureFin ? formation.heureFin|date('H:i:s') : 'N/A' }}</td>
-                </tr>
-                <tr>
-                    <th class="table-dark">Places disponibles</th>
-                    <td>{{ formation.nbPlace }}</td>
-                </tr>
-                <tr>
-                    <th class="table-dark">Type</th>
-                    <td>{{ formation.type }}</td>
-                </tr>
-            </tbody>
-        </table>
+        <div class="formation-details" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 30px; margin-bottom: 30px;">
+            <div class="row">
+                <div class="col-md-4 text-center mb-4">
+                    {% if formation.photo %}
+                        <img src="{{ asset(formation.photo) }}" alt="Image Formation" style="max-width: 100%; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    {% else %}
+                        <div style="background: #f8f9fa; padding: 40px; border-radius: 8px; color: #777;">
+                            Pas d'image disponible
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="col-md-8">
+                    <div class="detail-item" style="margin-bottom: 20px;">
+                        <h3 style="color: #4a6fa5; margin-bottom: 5px;">Titre</h3>
+                        <p style="font-size: 1.1rem;">{{ formation.titre }}</p>
+                    </div>
+                    
+                    <div class="detail-item" style="margin-bottom: 20px;">
+                        <h3 style="color: #4a6fa5; margin-bottom: 5px;">Description</h3>
+                        <p style="font-size: 1.1rem; white-space: pre-line;">{{ formation.description }}</p>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="detail-item" style="margin-bottom: 20px;">
+                                <h3 style="color: #4a6fa5; margin-bottom: 5px;">Date</h3>
+                                <p>{{ formation.date ? formation.date|date('d/m/Y') : 'N/A' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="detail-item" style="margin-bottom: 20px;">
+                                <h3 style="color: #4a6fa5; margin-bottom: 5px;">Heure début</h3>
+                                <p>{{ formation.heureDebut ? formation.heureDebut|date('H:i') : 'N/A' }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="detail-item" style="margin-bottom: 20px;">
+                                <h3 style="color: #4a6fa5; margin-bottom: 5px;">Heure fin</h3>
+                                <p>{{ formation.heureFin ? formation.heureFin|date('H:i') : 'N/A' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="detail-item" style="margin-bottom: 20px;">
+                                <h3 style="color: #4a6fa5; margin-bottom: 5px;">Places disponibles</h3>
+                                <p>{{ formation.nbPlace }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="detail-item" style="margin-bottom: 20px;">
+                                <h3 style="color: #4a6fa5; margin-bottom: 5px;">Type</h3>
+                                <p>{{ formation.type }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="text-center mt-4">
-            <a href="{{ path('app_formation_index') }}" class="btn btn-primary">Retour à la liste</a>
-            <a href="{{ path('app_formation_edit', {'id_f': formation.idF}) }}" class="btn btn-warning">Modifier</a>
+            <a href="{{ path('app_formation_index') }}" class="btn" style="background-color: rgb(51, 204, 197); color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px; height:7% ; width:15%">Retour à la liste</a>
+            <a href="{{ path('app_formation_edit', {'id_f': formation.idF}) }}" class="btn" style="background-color: #e67e22; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px; height:7% ; width:10%">Modifier</a>
             {{ include('formation/_delete_form.html.twig') }}
         </div>
     </div>
+
+    <style>
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .formation-details {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .formation-details:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .detail-item h3 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+    </style>
 {% endblock %}
