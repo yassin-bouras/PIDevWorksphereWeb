@@ -15,10 +15,15 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/sponsor')]
 final class SponsorController extends AbstractController{
     #[Route(name: 'app_sponsor_index', methods: ['GET'])]
-    public function index(SponsorRepository $sponsorRepository): Response
+    public function index(SponsorRepository $sponsorRepository, Request $request): Response
     {
+        $searchTerm = $request->query->get('search');
+        $budgetFilter = $request->query->get('budget');
+
+        $sponsors = $sponsorRepository->findBySearchAndBudget($searchTerm, $budgetFilter);
+
         return $this->render('sponsor/index.html.twig', [
-            'sponsors' => $sponsorRepository->findAll(),
+            'sponsors' => $sponsors,
         ]);
     }
 
