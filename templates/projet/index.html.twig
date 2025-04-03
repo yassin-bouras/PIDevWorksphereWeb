@@ -10,6 +10,31 @@
             <a href="{{ path('app_projet_new') }}" class="btn" style="background-color: #4a6fa5; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Créer un nouveau projet</a>
         </div>
 
+        <div class="mb-4">
+            <form method="GET" action="{{ path('app_projet_index') }}">
+                <div class="input-group">
+                    <!-- Champ pour rechercher par nom -->
+                    <input type="text" name="search" class="form-control" placeholder="Rechercher un projet" value="{{ app.request.query.get('search') }}">
+
+                    <!-- Sélection du statut -->
+                    <select name="etat" class="form-control" style="width: 150px;">
+                        <option value="">-- Sélectionner un statut --</option>
+                        <option value="Terminé" {% if app.request.query.get('etat') == 'Terminé' %}selected{% endif %}>Terminé</option>
+                        <option value="Annulé" {% if app.request.query.get('etat') == 'Annulé' %}selected{% endif %}>Annulé</option>
+                        <option value="En Cours" {% if app.request.query.get('etat') == 'En Cours' %}selected{% endif %}>En Cours</option>
+                    </select>
+
+                    <!-- Champ pour rechercher par nom d'équipe -->
+                    <input type="text" name="nomEquipe" class="form-control" placeholder="Nom de l'équipe" value="{{ app.request.query.get('nomEquipe') }}">
+
+                    <!-- Bouton de soumission -->
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit">Rechercher</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
         <div class="project-grid" style="max-width: 1060px; margin: 0 auto;">
             {% for projet in projets %}
                 <div class="project-card" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 25px; display: flex; align-items: center;">

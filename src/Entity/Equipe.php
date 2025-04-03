@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\EquipeRepository;
 
 #[ORM\Entity(repositoryClass: EquipeRepository::class)]
@@ -31,10 +31,17 @@ class Equipe
     public function __construct()
     {
         $this->users = new ArrayCollection();
-        $this->projets = new ArrayCollection(); // Also initialize this if you haven't
+        $this->projets = new ArrayCollection(); 
     }
 
     #[ORM\Column(name: 'nom_equipe', type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: "Le nom de l'équipe est obligatoire.")]
+    #[Assert\Length(
+        min: 3,
+        minMessage: "Le nom doit contenir au moins 3 caractères.",
+        max: 30,
+        maxMessage: "Le nom ne peut pas dépasser 30 caractères."
+    )]
     private ?string $nom_equipe = null;
 
     public function getNomEquipe(): ?string
@@ -49,6 +56,11 @@ class Equipe
     }
 
     #[ORM\Column(name: 'imageEquipe', type: 'string', nullable: true)] 
+    #[Assert\Image(
+        maxSize: "10M",
+        mimeTypes: ["image/jpeg", "image/png", "image/gif", "image/jpg"],
+        mimeTypesMessage: "Veuillez télécharger une image valide (JPEG, PNG, GIF)."
+    )]
     private ?string $imageEquipe = null;
 
     public function getImageEquipe(): ?string
@@ -115,6 +127,8 @@ class Equipe
             new ORM\JoinColumn(name: 'id_user', referencedColumnName: 'id_user')
         ]
     )]
+
+    #[Assert\Count(min: 2,minMessage: "Une équipe doit avoir au moins 2 employés")]
     private Collection $users;
 
     /**
@@ -142,5 +156,5 @@ class Equipe
         return $this;
     }
 
-   
+    
 }

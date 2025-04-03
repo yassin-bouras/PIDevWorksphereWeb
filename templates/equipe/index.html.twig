@@ -10,6 +10,17 @@
             <a href="{{ path('app_equipe_new') }}" class="btn" style="background-color: #4a6fa5; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Créer une nouvelle équipe</a>
         </div>
 
+        <div class="mb-4">
+            <form method="GET" action="{{ path('app_equipe_index') }}">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Rechercher par nom de l'equipe" value="{{ app.request.query.get('search') }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit">Rechercher</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
         <div class="team-grid" style="max-width: 1060px; margin: 0 auto;">
             {% for equipe in equipes %}
                 <div class="team-card" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 25px; display: flex; align-items: center;">
