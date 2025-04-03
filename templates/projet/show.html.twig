@@ -1,63 +1,81 @@
-<!DOCTYPE html>
-<title>Projet</title>
+{% extends '/home/index.html.twig' %}
+
+{% block title %}Détails du Projet{% endblock %}
 
 {% block body %}
-    <h1>Projet</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ projet.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ projet.nom }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ projet.description }}</td>
-            </tr>
-            <tr>
-                <th>Date création</th>
-                <td>{{ projet.dateCreation ? projet.dateCreation|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Deadline</th>
-                <td>{{ projet.deadline ? projet.deadline|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Etat</th>
-                <td>{{ projet.etat }}</td>
-            </tr>
-            <tr>
-                <th>Image Projet</th>
-                <td><img src="{{ asset(projet.imageProjet) }}" alt="Image du projet" width="100"></td>
-            </tr>
-            {# Ajout des informations de l'équipe #}
-            <tr>
-                <th>Équipe assignée</th>
-                <td>
-                    {% if projet.equipe %}
-                        <div class="d-flex align-items-center">
-                            <img src="{{ asset(projet.equipe.imageEquipe) }}" 
-                                 alt="Image de l'équipe {{ projet.equipe.nomEquipe }}" 
-                                 width="80" 
-                                 class="mr-3">
-                            <span>{{ projet.equipe.nomEquipe }}</span>
-                        </div>
-                    {% else %}
-                        <span class="text-muted">Aucune équipe assignée</span>
-                    {% endif %}
-                </td>
-            </tr>
-        </tbody>
-    </table>
+<div class="container" style="margin-top:5%; max-width: 900px;">
+    <h1 class="text-center mb-4" style="font-weight: 600; color: #333;">Détails du Projet</h1>
 
-    <div class="mt-3">
+    {# Informations sur le projet #}
+    <div class="project-card d-flex align-items-center p-3" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 25px;">
+        {% if projet.imageProjet %}
+            <img src="{{ asset(projet.imageProjet) }}" alt="Image du projet" class="rounded-img">
+        {% else %}
+            <img src="https://via.placeholder.com/50" alt="No Image" class="rounded-img">
+        {% endif %}
+        <div>
+            <h2 style="margin: 0; font-size: 1.6rem; color: #333;">{{ projet.nom }}</h2>
+            <p style="color: #555; margin: 5px 0;"><strong>Description:</strong> {{ projet.description }}</p>
+            <p style="color: #555; margin: 5px 0;"><strong>Date de création:</strong> {{ projet.dateCreation ? projet.dateCreation|date('Y-m-d') : '' }}</p>
+            <p style="color: #555; margin: 5px 0;"><strong>Deadline:</strong> {{ projet.deadline ? projet.deadline|date('Y-m-d') : '' }}</p>
+            <p style="color: #555; margin: 5px 0;"><strong>Etat:</strong> {{ projet.etat }}</p>
+        </div>
+    </div>
+
+    {# Équipe assignée au projet #}
+    <h3 style="color: #333;">Équipe assignée</h3>
+    <div class="team-card d-flex align-items-center p-3" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 25px;">
+        {% if projet.equipe %}
+            <div class="d-flex align-items-center">
+                <img src="{{ asset(projet.equipe.imageEquipe) }}" alt="Image de l'équipe {{ projet.equipe.nomEquipe }}" class="rounded-img" width="80">
+                <span>{{ projet.equipe.nomEquipe }}</span>
+            </div>
+        {% else %}
+            <span class="text-muted">Aucune équipe assignée</span>
+        {% endif %}
+    </div>
+
+    {# Boutons d'action #}
+    <div class="mt-4 text-center">
         <a href="{{ path('app_projet_index') }}" class="btn btn-secondary">Retour à la liste</a>
         <a href="{{ path('app_projet_edit', {'id': projet.id}) }}" class="btn btn-primary">Modifier</a>
     </div>
+</div>
 
-    {{ include('projet/_delete_form.html.twig') }}
+
+{# Script pour ajuster les boutons et animations #}
+<script>
+    document.querySelectorAll('.btn').forEach(function(btn) {
+        btn.addEventListener('mouseover', function() {
+            btn.style.opacity = '0.9';
+            btn.style.transform = 'translateY(-1px)';
+        });
+        btn.addEventListener('mouseout', function() {
+            btn.style.opacity = '1';
+            btn.style.transform = 'translateY(0)';
+        });
+    });
+</script>
+
+<style>
+    .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+    .project-card, .team-card {
+        transition: background 0.3s ease;
+    }
+    .project-card:hover, .team-card:hover {
+        background: #f9f9f9;
+    }
+    .rounded-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 15px;
+    }
+</style>
+
 {% endblock %}

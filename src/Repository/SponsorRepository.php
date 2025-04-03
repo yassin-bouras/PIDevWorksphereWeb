@@ -16,28 +16,29 @@ class SponsorRepository extends ServiceEntityRepository
         parent::__construct($registry, Sponsor::class);
     }
 
-//    /**
-//     * @return Sponsor[] Returns an array of Sponsor objects
-//     */
-//    public function findByExampleField($value): array
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->orderBy('s.id', 'ASC')
-//            ->setMaxResults(10)
-//            ->getQuery()
-//            ->getResult()
-//        ;
-//    }
+    public function findBySearchAndBudget(string $searchTerm = null, string $budgetFilter = null): array
+    {
+        $queryBuilder = $this->createQueryBuilder('s');
 
-//    public function findOneBySomeField($value): ?Sponsor
-//    {
-//        return $this->createQueryBuilder('s')
-//            ->andWhere('s.exampleField = :val')
-//            ->setParameter('val', $value)
-//            ->getQuery()
-//            ->getOneOrNullResult()
-//        ;
-//    }
+        if ($searchTerm) {
+            $queryBuilder->andWhere('s.nomSponso LIKE :searchTerm OR s.prenomSponso LIKE :searchTerm')
+                ->setParameter('searchTerm', '%' . $searchTerm . '%');
+        }
+
+        if ($budgetFilter) {
+            switch ($budgetFilter) {
+                case 'moins_10000':
+                    $queryBuilder->andWhere('s.budgetSponso < 10000');
+                    break;
+                case 'entre_10000_50000':
+                    $queryBuilder->andWhere('s.budgetSponso >= 10000 AND s.budgetSponso <= 50000');
+                    break;
+                case 'plus_50000':
+                    $queryBuilder->andWhere('s.budgetSponso > 50000');
+                    break;
+            }
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
 }

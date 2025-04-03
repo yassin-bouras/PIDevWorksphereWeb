@@ -12,12 +12,21 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/evennement')]
-final class EvennementController extends AbstractController{
+final class EvennementController extends AbstractController
+{
     #[Route(name: 'app_evennement_index', methods: ['GET'])]
-    public function index(EvennementRepository $evennementRepository): Response
+    public function index(EvennementRepository $evennementRepository, Request $request): Response
     {
+        $searchTerm = $request->query->get('search');
+
+        if ($searchTerm) {
+            $evennements = $evennementRepository->findByNomEvent($searchTerm);
+        } else {
+            $evennements = $evennementRepository->findAll();
+        }
+
         return $this->render('evennement/index.html.twig', [
-            'evennements' => $evennementRepository->findAll(),
+            'evennements' => $evennements,
         ]);
     }
 
@@ -27,17 +36,24 @@ final class EvennementController extends AbstractController{
         $evennement = new Evennement();
         $form = $this->createForm(EvennementType::class, $evennement);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($evennement);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_evennement_index', [], Response::HTTP_SEE_OTHER);
+            try {
+                // Associez l'utilisateur courant si nécessaire
+                // $evennement->setUser($this->getUser());
+                
+                $entityManager->persist($evennement);
+                $entityManager->flush();
+    
+                $this->addFlash('success', 'Événement créé avec succès!');
+                return $this->redirectToRoute('app_evennement_index');
+            } catch (\Exception $e) {
+                $this->addFlash('error', 'Une erreur est survenue: '.$e->getMessage());
+            }
         }
-
+    
         return $this->render('evennement/new.html.twig', [
-            'evennement' => $evennement,
-            'form' => $form,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -70,7 +86,7 @@ final class EvennementController extends AbstractController{
     #[Route('/{idEvent}', name: 'app_evennement_delete', methods: ['POST'])]
     public function delete(Request $request, Evennement $evennement, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$evennement->getIdEvent(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $evennement->getIdEvent(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($evennement);
             $entityManager->flush();
         }

@@ -1,40 +1,55 @@
-<!DOCTYPE html>
+{% extends '/home/index.html.twig' %}
 
-<title>Equipe index</title>
+{% block title %}Équipes{% endblock %}
 
 {% block body %}
-    <h1>Equipe index</h1>
+    <div class="container" style="margin-top:7%;">
+        <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Liste des Équipes</h1>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nom_equipe</th>
-                <th>ImageEquipe</th>
-                <th>NbrProjet</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for equipe in equipes %}
-            <tr>
-                <td>{{ equipe.id }}</td>
-                <td>{{ equipe.nomEquipe }}</td>
-     
-     <td>    <img src="{{ asset(equipe.imageEquipe) }} " alt="Image du equipe" width="100"></td>
-        <td>{{ equipe.nbrProjet }}</td>
-                <td>
-                    <a href="{{ path('app_equipe_show', {'id': equipe.id}) }}">show</a>
-                    <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="5">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        <div class="text-center mb-4">
+            <a href="{{ path('app_equipe_new') }}" class="btn" style="background-color: #4a6fa5; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Créer une nouvelle équipe</a>
+        </div>
 
-    <a href="{{ path('app_equipe_new') }}">Create new</a>
+        <div class="team-grid" style="max-width: 1060px; margin: 0 auto;">
+            {% for equipe in equipes %}
+                <div class="team-card" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 25px; display: flex; align-items: center;">
+                    
+                    {% if equipe.imageEquipe %}
+                        <div class="team-image" style="margin-right: 20px;">
+                            <img src="{{ asset(equipe.imageEquipe) }}" alt="Image de l'équipe" width="60" height="60" style="border-radius: 50%; object-fit: cover;">
+                        </div>
+                    {% endif %}
+
+                    <div class="team-content" style="flex: 1;">
+                        <h2 style="margin: 0; font-size: 1.5rem; color: #333;">{{ equipe.nomEquipe }}</h2>
+                        <p style="margin: 5px 0; color: #555;"><strong>Nombre de projets:</strong> {{ equipe.nbrProjet }}</p>
+                    </div>
+
+                    <div class="team-actions" style="display: flex; gap: 10px;">
+                        <a class="btn" href="{{ path('app_equipe_show', {'id': equipe.id}) }}" style="background-color: #4a6fa5; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Voir</a>
+                        <a class="btn" href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" style="background-color: #e67e22; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Modifier</a>
+                        {{ include('equipe/_delete_form.html.twig') }}
+                    </div>
+                </div>
+            {% else %}
+                <div class="no-teams" style="text-align: center; padding: 40px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <p style="font-size: 1.2rem; color: #777;">Aucune équipe trouvée</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <style>
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .team-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .team-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+    </style>
 {% endblock %}

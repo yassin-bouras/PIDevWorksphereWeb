@@ -10,6 +10,32 @@
             <a href="{{ path('app_sponsor_new') }}" class="btn" style="background-color: #4a6fa5; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Créer un nouveau sponsor</a>
         </div>
 
+        <div class="mb-4">
+            <form method="GET" action="{{ path('app_sponsor_index') }}">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Rechercher par nom ou prénom" value="{{ app.request.query.get('search') }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit">Rechercher</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="mb-4">
+            <form method="GET" action="{{ path('app_sponsor_index') }}">
+                <div class="form-group">
+                    <label for="budget">Filtrer par budget:</label>
+                    <select name="budget" id="budget" class="form-control">
+                        <option value="">Tous les budgets</option>
+                        <option value="moins_10000" {% if app.request.query.get('budget') == 'moins_10000' %}selected{% endif %}>Moins de 10 000 €</option>
+                        <option value="entre_10000_50000" {% if app.request.query.get('budget') == 'entre_10000_50000' %}selected{% endif %}>Entre 10 000 € et 50 000 €</option>
+                        <option value="plus_50000" {% if app.request.query.get('budget') == 'plus_50000' %}selected{% endif %}>Plus de 50 000 €</option>
+                    </select>
+                </div>
+                <button class="btn btn-outline-secondary" type="submit">Filtrer</button>
+            </form>
+        </div>
+
         <div class="sponsor-grid" style="max-width: 1060px; margin: 0 auto;">
             {% for sponsor in sponsors %}
                 <div class="sponsor-card" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 25px;">
@@ -17,13 +43,13 @@
                         <h2 style="margin: 0; font-size: 1.5rem; color: #333;">{{ sponsor.nomSponso }} {{ sponsor.prenomSponso }}</h2>
                         <span style="background-color: #f0f0f0; padding: 5px 10px; border-radius: 4px; font-size: 0.9rem;">Classement: {{ sponsor.classement }}</span>
                     </div>
-                    
+
                     <div class="sponsor-info" style="margin-bottom: 15px;">
                         <p style="margin: 5px 0; color: #555;"><strong>Email:</strong> {{ sponsor.emailSponso }}</p>
                         <p style="margin: 5px 0; color: #555;"><strong>Budget:</strong> {{ sponsor.budgetSponso }} €</p>
                         <p style="margin: 5px 0; color: #555;"><strong>Budget après réduction:</strong> {{ sponsor.BudgetApresReduction }} €</p>
                     </div>
-                    
+
                     <div class="sponsor-actions" style="display: flex; gap: 10px;">
                         <a class="btn" href="{{ path('app_sponsor_show', {'idSponsor': sponsor.idSponsor}) }}" style="background-color: #4a6fa5; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Voir</a>
                         <a class="btn" href="{{ path('app_sponsor_edit', {'idSponsor': sponsor.idSponsor}) }}" style="background-color: #e67e22; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Modifier</a>
