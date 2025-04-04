@@ -3,7 +3,7 @@
         'name' => '__root__',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '65d1bf8f85bef052c7d35790ae97ca337d7a4ed9',
+        'reference' => 'a6beb6ecb421159b7ca622273be00b0bb7977734',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -13,7 +13,7 @@
         '__root__' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '65d1bf8f85bef052c7d35790ae97ca337d7a4ed9',
+            'reference' => 'a6beb6ecb421159b7ca622273be00b0bb7977734',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -412,8 +412,8 @@
         'psr/log-implementation' => array(
             'dev_requirement' => false,
             'provided' => array(
-                0 => '3.0.0',
-                1 => '1.0|2.0|3.0',
+                0 => '1.0|2.0|3.0',
+                1 => '3.0.0',
             ),
         ),
         'psr/simple-cache-implementation' => array(
@@ -795,9 +795,9 @@
             'dev_requirement' => false,
         ),
         'symfony/framework-bundle' => array(
-            'pretty_version' => 'v6.4.19',
-            'version' => '6.4.19.0',
-            'reference' => '078a6f11cb34d208d6efc74003d77f66a09fa3c2',
+            'pretty_version' => 'v7.0.10',
+            'version' => '7.0.10.0',
+            'reference' => '07a37173aace78420ccaf5eceaf4a79c7dfab375',
             'type' => 'symfony-bundle',
             'install_path' => __DIR__ . '/../symfony/framework-bundle',
             'aliases' => array(),

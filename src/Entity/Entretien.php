@@ -71,19 +71,19 @@ class Entretien
         return $this;
     }
 
-    #[ORM\Column(type: 'time', nullable: false)]
-    private ?string $heure_entretien = null;
+    #[ORM\Column(name:"heure_entretien",type: 'time', nullable: false)]
+        private ?\DateTimeInterface $heureentretien = null;
 
-    public function getHeure_entretien(): ?string
-    {
-        return $this->heure_entretien;
-    }
+        public function getHeureentretien(): ?\DateTimeInterface
+        {
+            return $this->heureentretien;
+        }
 
-    public function setHeure_entretien(string $heure_entretien): self
-    {
-        $this->heure_entretien = $heure_entretien;
-        return $this;
-    }
+        public function setHeureentretien(\DateTimeInterface $heureentretien): self
+        {
+            $this->heureentretien = $heureentretien;
+            return $this;
+        }
 
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $type_entretien = null;
@@ -143,7 +143,7 @@ class Entretien
         return $this;
     }
 
-    #[ORM\Column(type: 'integer', nullable: true)]
+    #[ORM\Column(name: 'candidatId', type: 'integer', nullable: true)]
     private ?int $candidatId = null;
 
     public function getCandidatId(): ?int
@@ -195,18 +195,6 @@ class Entretien
     public function setDateEntretien(\DateTimeInterface $date_entretien): static
     {
         $this->date_entretien = $date_entretien;
-
-        return $this;
-    }
-
-    public function getHeureEntretien(): ?\DateTimeInterface
-    {
-        return $this->heure_entretien;
-    }
-
-    public function setHeureEntretien(\DateTimeInterface $heure_entretien): static
-    {
-        $this->heure_entretien = $heure_entretien;
 
         return $this;
     }
