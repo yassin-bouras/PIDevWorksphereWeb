@@ -10,6 +10,17 @@
             <a href="{{ path('app_evennement_new') }}" class="btn" style="background-color: #4a6fa5; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Créer un nouvel événement</a>
         </div>
 
+        <div class="mb-4">
+            <form method="GET" action="{{ path('app_evennement_index') }}">
+                <div class="input-group">
+                    <input type="text" name="search" class="form-control" placeholder="Rechercher par nom d'événement" value="{{ app.request.query.get('search') }}">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit">Rechercher</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
         <div class="event-grid" style="max-width: 1060px; margin: 0 auto;">
             {% for evenement in evennements %}
                 <div class="event-card" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 25px;">
@@ -17,13 +28,13 @@
                         <h2 style="margin: 0; font-size: 1.5rem; color: #333;">{{ evenement.nomEvent }}</h2>
                         <span style="background-color: #f0f0f0; padding: 5px 10px; border-radius: 4px; font-size: 0.9rem;">Lieu: {{ evenement.lieuEvent }}</span>
                     </div>
-                    
+
                     <div class="event-info" style="margin-bottom: 15px;">
                         <p style="margin: 5px 0; color: #555;"><strong>Description:</strong> {{ evenement.descEvent }}</p>
                         <p style="margin: 5px 0; color: #555;"><strong>Date:</strong> {{ evenement.dateEvent ? evenement.dateEvent|date('Y-m-d H:i:s') : 'N/A' }}</p>
                         <p style="margin: 5px 0; color: #555;"><strong>Capacité:</strong> {{ evenement.capaciteEvent }}</p>
                     </div>
-                    
+
                     <div class="event-actions" style="display: flex; gap: 10px;">
                         <a class="btn" href="{{ path('app_evennement_show', {'idEvent': evenement.idEvent}) }}" style="background-color: #4a6fa5; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Voir</a>
                         <a class="btn" href="{{ path('app_evennement_edit', {'idEvent': evenement.idEvent}) }}" style="background-color: #e67e22; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Modifier</a>

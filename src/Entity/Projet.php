@@ -3,9 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\ProjetRepository;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
@@ -29,6 +27,13 @@ class Projet
     }
 
     #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\NotBlank(message: "Le nom du projet est obligatoire.")]
+    #[Assert\Length(
+        min: 3,
+        minMessage: "Le nom doit contenir au moins 3 caractères.",
+        max: 30,
+        maxMessage: "Le nom ne peut pas dépasser 30 caractères."
+    )]
     private ?string $nom = null;
 
     public function getNom(): ?string
@@ -43,6 +48,7 @@ class Projet
     }
 
     #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\NotBlank(message: "La description du projet est obligatoire.")]
     private ?string $description = null;
 
     public function getDescription(): ?string
@@ -57,6 +63,7 @@ class Projet
     }
 
     #[ORM\Column(name: 'datecréation',type: 'date', nullable: true)]
+    #[Assert\NotBlank(message: "La date de création est obligatoire.")]
     private ?\DateTimeInterface $dateCreation = null;
 
     public function getDateCreation(): ?\DateTimeInterface
@@ -72,6 +79,8 @@ class Projet
 
 
     #[ORM\Column(type: 'date', nullable: true)]
+    #[Assert\NotBlank(message: "Le deadline est obligatoire.")]
+    #[Assert\GreaterThan(propertyPath: "dateCreation", message: "Le deadline doit être postérieur à la date de création.")]
     private ?\DateTimeInterface $deadline = null;
 
     public function getDeadline(): ?\DateTimeInterface
@@ -119,6 +128,11 @@ class Projet
 
    
     #[ORM\Column(name: 'imageProjet', type: 'string', nullable: false)]
+    #[Assert\Image(
+        maxSize: "10M",
+        mimeTypes: ["image/jpeg", "image/png", "image/gif", "image/jpg"],
+        mimeTypesMessage: "Veuillez télécharger une image valide (JPEG, PNG, GIF)."
+    )]
     private ?string $imageProjet = null;
 
     public function getImageProjet(): ?string

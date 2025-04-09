@@ -1,92 +1,100 @@
-<!DOCTYPE html>
-<title>Equipe</title>
+{% extends '/home/index.html.twig' %}
+
+{% block title %}Détails de l'Équipe{% endblock %}
 
 {% block body %}
-    <h1>Equipe</h1>
+<div class="container" style="margin-top:5%; max-width: 900px;">
+    <h1 class="text-center mb-4" style="font-weight: 600; color: #333;">Détails de l'Équipe</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ equipe.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom_equipe</th>
-                <td>{{ equipe.nomEquipe }}</td>
-            </tr>
-            <tr>
-                <th>ImageEquipe</th>
-                <td><img src="{{ asset(equipe.imageEquipe) }}" alt="Image du equipe" width="100"></td>
-            </tr>
-            <tr>
-                <th>NbrProjet</th>
-                <td>{{ equipe.nbrProjet }}</td>
-            </tr>
-        </tbody>
-    </table>
+    {# Informations sur l'équipe #}
+    <div class="team-card d-flex align-items-center p-3" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 25px;">
+        {% if equipe.imageEquipe %}
+            <img src="{{ asset(equipe.imageEquipe) }}" alt="Image de l'équipe" class="rounded-img">
+        {% endif %}
+        <div>
+            <h2 style="margin: 0; font-size: 1.6rem; color: #333;">{{ equipe.nomEquipe }}</h2>
+            <p style="color: #555; margin: 5px 0;"><strong>Nombre de projets:</strong> {{ equipe.nbrProjet }}</p>
+        </div>
+    </div>
 
-    {# Afficher la liste des employés de l'équipe #}
-    <h3>Membres de l'équipe</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Prénom</th>
-                <th>Email</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for user in equipe.users %}
-                <tr>
-                    <td>{{ user.nom }}</td>
-                    <td>{{ user.prenom }}</td>
-                    <td>{{ user.email }}</td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="3">Aucun employé dans cette équipe</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    {# Liste des membres avec barre de recherche #}
+    <h3 style="color: #333;">Membres de l'équipe</h3>
+    <input type="text" id="searchInput" class="form-control mb-2" placeholder="Rechercher un membre..." onkeyup="filterMembers()">
 
-    {# Afficher la liste des projets associés à cette équipe #}
-    <h3>Projets de l'équipe</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Image</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
+    <div class="member-list p-3" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        {% if equipe.users is not empty %}
+            <ul id="memberList" class="list-group">
+                {% for user in equipe.users %}
+                    <li class="list-group-item d-flex align-items-center">
+                        <img src="https://via.placeholder.com/50" alt="User Image" class="rounded-img">
+                        <span>{{ user.nom }} {{ user.prenom }} - <span style="color: #666;">{{ user.email }}</span></span>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-center text-muted">Aucun employé dans cette équipe.</p>
+        {% endif %}
+    </div>
+
+    {# Liste des projets de l'équipe #}
+    <h3 class="mt-4" style="color: #333;">Projets de l'équipe</h3>
+    <div class="project-list p-3" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+        {% if equipe.projets is not empty %}
             {% for projet in equipe.projets %}
-                <tr>
-                    <td>{{ projet.nom }}</td>
-                    <td>
-                        {% if projet.imageProjet %}
-                            <img src="{{ asset(projet.imageProjet) }}" alt="Image du projet" width="100">
-                        {% else %}
-                            Pas d'image
-                        {% endif %}
-                    </td>
-                    <td>
-                        <a href="{{ path('app_projet_show', {'id': projet.id}) }}" class="btn btn-info btn-sm">Voir</a>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="3">Aucun projet associé à cette équipe</td>
-                </tr>
+                <div class="project-card d-flex align-items-center p-2 mb-2" style="border-bottom: 1px solid #ddd;">
+                    {% if projet.imageProjet %}
+                        <img src="{{ asset(projet.imageProjet) }}" alt="Image du projet" class="rounded-img">
+                    {% else %}
+                        <img src="https://via.placeholder.com/50" alt="No Image" class="rounded-img">
+                    {% endif %}
+                    <div>
+                        <strong>{{ projet.nom }}</strong>
+                    </div>
+                    <a href="{{ path('app_projet_show', {'id': projet.id}) }}" class="btn btn-sm btn-info ml-auto">Voir</a>
+                </div>
             {% endfor %}
-        </tbody>
-    </table>
+        {% else %}
+            <p class="text-center text-muted">Aucun projet associé à cette équipe.</p>
+        {% endif %}
+    </div>
 
-    <div class="mt-3">
+    {# Boutons d'action #}
+    <div class="mt-4 text-center">
         <a href="{{ path('app_equipe_index') }}" class="btn btn-secondary">Retour à la liste</a>
         <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" class="btn btn-primary">Modifier</a>
     </div>
+</div>
 
-    {{ include('equipe/_delete_form.html.twig') }}
+{# Script pour filtrer les membres #}
+<script>
+    function filterMembers() {
+        let input = document.getElementById("searchInput").value.toLowerCase();
+        let members = document.getElementById("memberList").getElementsByTagName("li");
+
+        for (let i = 0; i < members.length; i++) {
+            let text = members[i].textContent.toLowerCase();
+            members[i].style.display = text.includes(input) ? "" : "none";
+        }
+    }
+</script>
+
+<style>
+    .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+    .project-card, .list-group-item {
+        transition: background 0.3s ease;
+    }
+    .project-card:hover, .list-group-item:hover {
+        background: #f9f9f9;
+    }
+    .rounded-img {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-right: 15px;
+    }
+</style>
 {% endblock %}

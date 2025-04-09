@@ -6,14 +6,15 @@
     <title>Modifier Événement</title>
     <style>
         :root {
-            --primary-color: #2c5aa0; /* Bleu professionnel */
-            --secondary-color: #4a90e2; /* Bleu plus clair */
-            --accent-color: #ff6b35; /* Orange pour les accents */
+            --primary-color: #2c5aa0;
+            --secondary-color: #4a90e2;
+            --accent-color: #ff6b35;
             --light-gray: #f5f7fa;
             --medium-gray: #e1e5eb;
             --dark-gray: #6c757d;
             --text-color: #2d3748;
-            --success-color: #4caf50;
+            --success-color: #28a745;
+            --error-color: #dc3545;
         }
         
         body {
@@ -110,6 +111,26 @@
             box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
             background-color: white;
         }
+
+        /* Classes de validation */
+        .is-invalid {
+            border-color: var(--error-color) !important;
+        }
+        
+        .is-valid {
+            border-color: var(--success-color) !important;
+        }
+        
+        .invalid-feedback {
+            display: none;
+            color: var(--error-color);
+            font-size: 0.85rem;
+            margin-top: 5px;
+        }
+        
+        .was-validated .form-control:invalid ~ .invalid-feedback {
+            display: block;
+        }
         
         .form-row {
             display: flex;
@@ -205,30 +226,84 @@
         {% block body %}
             <h1>Modifier Événement</h1>
 
-            {{ form_start(form) }}
+            {{ form_start(form, {'attr': {'id': 'event-form', 'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
                 <div class="form-group">
                     {{ form_label(form.nomEvent) }}
-                    {{ form_widget(form.nomEvent, {'attr': {'class': 'form-control', 'placeholder': 'Nom de l\'événement'}}) }}
+                    {{ form_widget(form.nomEvent, {
+                        'attr': {
+                            'class': 'form-control',
+                            'required': 'required',
+                            'minlength': '3',
+                            'placeholder': 'Nom de l\'événement'
+                        }
+                    }) }}
+                    <div class="invalid-feedback">
+                        Le nom doit contenir au moins 3 caractères
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    {{ form_label(form.dateEvent) }}
-                    {{ form_widget(form.dateEvent, {'attr': {'class': 'form-control'}}) }}
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            {{ form_label(form.dateEvent) }}
+                            {{ form_widget(form.dateEvent, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'required': 'required'
+                                }
+                            }) }}
+                            <div class="invalid-feedback">
+                                La date doit être dans le futur
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            {{ form_label(form.capaciteEvent) }}
+                            {{ form_widget(form.capaciteEvent, {
+                                'attr': {
+                                    'class': 'form-control',
+                                    'required': 'required',
+                                    'min': '1',
+                                    'placeholder': 'Capacité maximale'
+                                }
+                            }) }}
+                            <div class="invalid-feedback">
+                                La capacité doit être supérieure à 0
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="form-group">
                     {{ form_label(form.lieuEvent) }}
-                    {{ form_widget(form.lieuEvent, {'attr': {'class': 'form-control', 'placeholder': 'Lieu de l\'événement'}}) }}
+                    {{ form_widget(form.lieuEvent, {
+                        'attr': {
+                            'class': 'form-control',
+                            'required': 'required',
+                            'minlength': '3',
+                            'placeholder': 'Lieu de l\'événement'
+                        }
+                    }) }}
+                    <div class="invalid-feedback">
+                        Le lieu doit contenir au moins 3 caractères
+                    </div>
                 </div>
 
                 <div class="form-group">
                     {{ form_label(form.descEvent) }}
-                    {{ form_widget(form.descEvent, {'attr': {'class': 'form-control', 'placeholder': 'Description détaillée', 'rows': 4}}) }}
-                </div>
-
-                <div class="form-group">
-                    {{ form_label(form.capaciteEvent) }}
-                    {{ form_widget(form.capaciteEvent, {'attr': {'class': 'form-control', 'placeholder': 'Capacité maximale'}}) }}
+                    {{ form_widget(form.descEvent, {
+                        'attr': {
+                            'class': 'form-control',
+                            'required': 'required',
+                            'minlength': '10',
+                            'placeholder': 'Description détaillée',
+                            'rows': 4
+                        }
+                    }) }}
+                    <div class="invalid-feedback">
+                        La description doit contenir au moins 10 caractères
+                    </div>
                 </div>
 
                 <div class="action-buttons">
@@ -245,5 +320,80 @@
             <a href="{{ path('app_evennement_index') }}" class="back-link">← Retour à la liste</a>
         {% endblock %}
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('event-form');
+        
+        // Validation en temps réel
+        form.querySelectorAll('.form-control').forEach(input => {
+            // Validation quand on quitte le champ
+            input.addEventListener('blur', function() {
+                validateField(this);
+            });
+            
+            // Validation pendant la saisie après une erreur
+            input.addEventListener('input', function() {
+                if (this.classList.contains('is-invalid')) {
+                    validateField(this);
+                }
+            });
+        });
+
+        // Validation spécifique pour la date
+        const dateField = document.querySelector('[name$="[dateEvent]"]');
+        if (dateField) {
+            dateField.addEventListener('change', function() {
+                validateDateField(this);
+            });
+            
+            // Valider aussi au blur pour plus de réactivité
+            dateField.addEventListener('blur', function() {
+                validateDateField(this);
+            });
+        }
+
+        // Validation au submit
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            
+            form.classList.add('was-validated');
+            
+            // Valider tous les champs
+            form.querySelectorAll('.form-control').forEach(validateField);
+            if (dateField) validateDateField(dateField);
+        });
+
+        function validateField(field) {
+            field.classList.remove('is-valid', 'is-invalid');
+            
+            if (field.checkValidity()) {
+                field.classList.add('is-valid');
+                field.setCustomValidity(''); // Réinitialiser la validation personnalisée
+            } else {
+                field.classList.add('is-invalid');
+            }
+        }
+
+        function validateDateField(field) {
+            const selectedDate = new Date(field.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            field.classList.remove('is-valid', 'is-invalid');
+            
+            if (selectedDate >= today) {
+                field.classList.add('is-valid');
+                field.setCustomValidity(''); // IMPORTANT: Réinitialiser si valide
+            } else {
+                field.classList.add('is-invalid');
+                field.setCustomValidity('La date doit être dans le futur');
+            }
+        }
+    });
+</script>
 </body>
-</html>
+</html> 

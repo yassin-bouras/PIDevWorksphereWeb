@@ -13,11 +13,11 @@ class ComposerStaticInit54c05e64f01f49eb136e9af7b3075bdd
         '667aeda72477189d0494fecd327c3641' => __DIR__ . '/..' . '/symfony/var-dumper/Resources/functions/dump.php',
         'e69f7f6ee287b969198c3c9d6777bd38' => __DIR__ . '/..' . '/symfony/polyfill-intl-normalizer/bootstrap.php',
         '8825ede83f2f289127722d4e842cf7e8' => __DIR__ . '/..' . '/symfony/polyfill-intl-grapheme/bootstrap.php',
-        'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
         '89efb1254ef2d1c5d80096acd12c4098' => __DIR__ . '/..' . '/twig/twig/src/Resources/core.php',
         'ffecb95d45175fd40f75be8a23b34f90' => __DIR__ . '/..' . '/twig/twig/src/Resources/debug.php',
         'c7baa00073ee9c61edf148c51917cfb4' => __DIR__ . '/..' . '/twig/twig/src/Resources/escaper.php',
         'f844ccf1d25df8663951193c3fc307c8' => __DIR__ . '/..' . '/twig/twig/src/Resources/string_loader.php',
+        'b6b991a57620e2fb6b2f66f03fe9ddc2' => __DIR__ . '/..' . '/symfony/string/Resources/functions.php',
         'f598d06aa772fa33d905e87be6398fb1' => __DIR__ . '/..' . '/symfony/polyfill-intl-idn/bootstrap.php',
         '2203a247e6fda86070a5e4e07aed533a' => __DIR__ . '/..' . '/symfony/clock/Resources/now.php',
         '6124b4c8570aa390c21fafd04a26c69f' => __DIR__ . '/..' . '/myclabs/deep-copy/src/DeepCopy/deep_copy.php',
@@ -43,8 +43,10 @@ class ComposerStaticInit54c05e64f01f49eb136e9af7b3075bdd
         ),
         'S' => 
         array (
+            'Symfony\\UX\\TwigComponent\\' => 25,
             'Symfony\\UX\\Turbo\\' => 17,
             'Symfony\\UX\\StimulusBundle\\' => 26,
+            'Symfony\\UX\\LiveComponent\\' => 25,
             'Symfony\\Runtime\\Symfony\\Component\\' => 34,
             'Symfony\\Polyfill\\Php83\\' => 23,
             'Symfony\\Polyfill\\Mbstring\\' => 26,
@@ -183,6 +185,10 @@ class ComposerStaticInit54c05e64f01f49eb136e9af7b3075bdd
         array (
             0 => __DIR__ . '/..' . '/twig/twig/src',
         ),
+        'Symfony\\UX\\TwigComponent\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/ux-twig-component/src',
+        ),
         'Symfony\\UX\\Turbo\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/ux-turbo/src',
@@ -190,6 +196,10 @@ class ComposerStaticInit54c05e64f01f49eb136e9af7b3075bdd
         'Symfony\\UX\\StimulusBundle\\' => 
         array (
             0 => __DIR__ . '/..' . '/symfony/stimulus-bundle/src',
+        ),
+        'Symfony\\UX\\LiveComponent\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/symfony/ux-live-component/src',
         ),
         'Symfony\\Runtime\\Symfony\\Component\\' => 
         array (
@@ -1108,8 +1118,15 @@ class ComposerStaticInit54c05e64f01f49eb136e9af7b3075bdd
         'SebastianBergmann\\CodeUnit\\CodeUnitCollection' => __DIR__ . '/..' . '/sebastian/code-unit/src/CodeUnitCollection.php',
         'SebastianBergmann\\CodeUnit\\CodeUnitCollectionIterator' => __DIR__ . '/..' . '/sebastian/code-unit/src/CodeUnitCollectionIterator.php',
         'SebastianBergmann\\CodeUnit\\Exception' => __DIR__ . '/..' . '/sebastian/code-unit/src/exceptions/Exception.php',
+        'SebastianBergmann\\CodeUnit\\FunctionUnit' => __DIR__ . '/..' . '/sebastian/code-unit/src/FunctionUnit.php',
+        'SebastianBergmann\\CodeUnit\\InterfaceMethodUnit' => __DIR__ . '/..' . '/sebastian/code-unit/src/InterfaceMethodUnit.php',
+        'SebastianBergmann\\CodeUnit\\InterfaceUnit' => __DIR__ . '/..' . '/sebastian/code-unit/src/InterfaceUnit.php',
         'SebastianBergmann\\CodeUnit\\InvalidCodeUnitException' => __DIR__ . '/..' . '/sebastian/code-unit/src/exceptions/InvalidCodeUnitException.php',
+        'SebastianBergmann\\CodeUnit\\Mapper' => __DIR__ . '/..' . '/sebastian/code-unit/src/Mapper.php',
         'SebastianBergmann\\CodeUnit\\NoTraitException' => __DIR__ . '/..' . '/sebastian/code-unit/src/exceptions/NoTraitException.php',
+        'SebastianBergmann\\CodeUnit\\ReflectionException' => __DIR__ . '/..' . '/sebastian/code-unit/src/exceptions/ReflectionException.php',
+        'SebastianBergmann\\CodeUnit\\TraitMethodUnit' => __DIR__ . '/..' . '/sebastian/code-unit/src/TraitMethodUnit.php',
+        'SebastianBergmann\\CodeUnit\\TraitUnit' => __DIR__ . '/..' . '/sebastian/code-unit/src/TraitUnit.php',
         'SebastianBergmann\\Comparator\\ArrayComparator' => __DIR__ . '/..' . '/sebastian/comparator/src/ArrayComparator.php',
         'SebastianBergmann\\Comparator\\Comparator' => __DIR__ . '/..' . '/sebastian/comparator/src/Comparator.php',
         'SebastianBergmann\\Comparator\\ComparisonFailure' => __DIR__ . '/..' . '/sebastian/comparator/src/ComparisonFailure.php',

@@ -16,8 +16,16 @@ class EquipeRepository extends ServiceEntityRepository
         parent::__construct($registry, Equipe::class);
     }
 
-    
+    public function findByNomEquipe(string $nom): array
+    {
+        return $this->createQueryBuilder('e')
+            ->where('LOWER(e.nom_equipe) LIKE LOWER(:nom)')
+            ->setParameter('nom', '%'.$nom.'%')
+            ->getQuery()
+            ->getResult();
+    }
 
+    
 //    /**
 //     * @return Equipe[] Returns an array of Equipe objects
 //     */

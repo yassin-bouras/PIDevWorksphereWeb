@@ -13,51 +13,31 @@ use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/projet')]
 final class ProjetController extends AbstractController{
-    #[Route(name: 'app_projet_index', methods: ['GET'])]
+
+   /* #[Route(name: 'app_projet_index', methods: ['GET'])]
     public function index(ProjetRepository $projetRepository): Response
     {
         return $this->render('projet/index.html.twig', [
             'projets' => $projetRepository->findAll(),
         ]);
-    }
+    }*/
 
-   
-    /*#[Route('/new', name: 'app_projet_new', methods: ['GET', 'POST'])]
-public function new(Request $request, EntityManagerInterface $entityManager): Response
-{
-    $projet = new Projet();
-    $form = $this->createForm(ProjetType::class, $projet);
-    $form->handleRequest($request);
-    
-    if ($form->isSubmitted() && $form->isValid()) {
-        $imageFile = $form->get('imageProjet')->getData();
-        
-        if ($imageFile) {
-            $newFilename = uniqid() . '.' . $imageFile->guessExtension();
-            
-            // Répertoire de stockage des images dans le répertoire public
-            $destination = $this->getParameter('image_directory');  // public/img
-            
-            // Déplacer l'image dans le répertoire public
-            $imageFile->move($destination, $newFilename);
-            
-            // Enregistrer le chemin relatif de l'image (cela sera utilisé dans le front-end de Symfony)
-            $projet->setImageProjet('img/' . $newFilename);  
-        }
+    #[Route(name: 'app_projet_index', methods: ['GET'])]
+    public function index(ProjetRepository $projetRepository, Request $request): Response
+     {
+    // Récupérer les paramètres de recherche
+    $nom = $request->query->get('search');
+    $etat = $request->query->get('etat');
+    $nomEquipe = $request->query->get('nomEquipe');
 
-        // Sauvegarder le projet dans la base de données
-        $entityManager->persist($projet);
-        $entityManager->flush();
+    // Appeler la méthode de recherche
+    $projets = $projetRepository->searchProjects($nom, $etat, $nomEquipe);
 
-        return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-    return $this->render('projet/new.html.twig', [
-        'projet' => $projet,
-        'form' => $form,
+    // Retourner la vue avec les résultats
+    return $this->render('projet/index.html.twig', [
+        'projets' => $projets,
     ]);
-}
-*/
+    }
 
 #[Route('/new', name: 'app_projet_new', methods: ['GET', 'POST'])]
 public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -106,42 +86,6 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         ]);
     }
 
-/*#[Route('/{id}/edit', name: 'app_projet_edit', methods: ['GET', 'POST'])]
-public function edit(Request $request, Projet $projet, EntityManagerInterface $entityManager): Response
-{
-    $form = $this->createForm(ProjetType::class, $projet);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        // Check if a new image has been uploaded
-        $imageFile = $form->get('imageProjet')->getData(); // Assuming the field name is 'imageProjet'
-
-        if ($imageFile) {
-            // Generate a unique filename
-            $newFilename = uniqid() . '.' . $imageFile->guessExtension();
-
-            // Move the file to the appropriate directory
-            $imageFile->move(
-                $this->getParameter('image_directory'),
-                $newFilename
-            );
-
-            // Update the image in the project entity (save only the relative path)
-            $projet->setImageProjet('img/' . $newFilename);
-        }
-
-        // Persist the changes
-        $entityManager->flush();
-
-        // Redirect to the project index after the update
-        return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-    return $this->render('projet/edit.html.twig', [
-        'projet' => $projet,
-        'form' => $form,
-    ]);
-}*/
 
 #[Route('/{id}/edit', name: 'app_projet_edit', methods: ['GET', 'POST'])]
 public function edit(Request $request, Projet $projet, EntityManagerInterface $entityManager): Response
@@ -191,18 +135,7 @@ public function edit(Request $request, Projet $projet, EntityManagerInterface $e
 
 
 
-    /*#[Route('/{id}', name: 'app_projet_delete', methods: ['POST'])]
-    public function delete(Request $request, Projet $projet, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$projet->getId(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($projet);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
-    }*/
-
-    #[Route('/{id}', name: 'app_projet_delete', methods: ['POST'])]
+#[Route('/{id}', name: 'app_projet_delete', methods: ['POST'])]
 public function delete(Request $request, Projet $projet, EntityManagerInterface $entityManager): Response
 {
     if ($this->isCsrfTokenValid('delete'.$projet->getId(), $request->getPayload()->getString('_token'))) {

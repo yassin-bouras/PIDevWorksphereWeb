@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert; // Ajout de l'espace de noms pour les contraintes de validation
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -28,7 +29,8 @@ class Evennement
         return $this;
     }
 
-    #[ORM\Column(name: 'nomEvent',type: 'string', nullable: true)]
+    #[ORM\Column(name: 'nomEvent', type: 'string')]
+    #[Assert\NotBlank(message: "Le nom de l'événement est obligatoire.")]
     private ?string $nomEvent = null;
 
     public function getNomEvent(): ?string
@@ -42,7 +44,8 @@ class Evennement
         return $this;
     }
 
-    #[ORM\Column(name: 'descEvent',type: 'text', nullable: true)]
+    #[ORM\Column(name: 'descEvent', type: 'text')]
+    #[Assert\NotBlank(message: "La description de l'événement est obligatoire.")]
     private ?string $descEvent = null;
 
     public function getDescEvent(): ?string
@@ -56,7 +59,9 @@ class Evennement
         return $this;
     }
 
-    #[ORM\Column(name: 'dateEvent',type: 'datetime', nullable: true)]
+    #[ORM\Column(name: 'dateEvent', type: 'datetime')]
+    #[Assert\NotBlank(message: "La date de l'événement est obligatoire.")]
+    #[Assert\GreaterThan("today", message: "La date de l'événement doit être postérieure à aujourd'hui.")]
     private ?\DateTimeInterface $dateEvent = null;
 
     public function getDateEvent(): ?\DateTimeInterface
@@ -70,7 +75,8 @@ class Evennement
         return $this;
     }
 
-    #[ORM\Column(name: 'lieuEvent',type: 'string', nullable: true)]
+    #[ORM\Column(name: 'lieuEvent', type: 'string')]
+    #[Assert\NotBlank(message: "Le lieu de l'événement est obligatoire.")]
     private ?string $lieuEvent = null;
 
     public function getLieuEvent(): ?string
@@ -84,7 +90,9 @@ class Evennement
         return $this;
     }
 
-    #[ORM\Column(name: 'capaciteEvent',type: 'integer', nullable: true)]
+    #[ORM\Column(name: 'capaciteEvent', type: 'integer')]
+    #[Assert\NotBlank(message: "La capacité de l'événement est obligatoire.")]
+    #[Assert\Positive(message: "La capacité doit être un nombre positif.")]
     private ?int $capaciteEvent = null;
 
     public function getCapaciteEvent(): ?int
@@ -112,6 +120,7 @@ class Evennement
         $this->user = $user;
         return $this;
     }
+
     public function __toString(): string
     {
         return $this->nomEvent; 
