@@ -45,10 +45,10 @@
         }
 
         .container {
-            max-width: 800px;
+            max-width: 1000px;
             margin: 40px auto;
             background: white;
-            padding: 30px;
+            padding: 20px;
             border-radius: 10px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.15);
             position: relative;
@@ -87,7 +87,7 @@
         }
 
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 12px;
         }
 
         .form-group label {
@@ -100,7 +100,7 @@
 
         .form-control {
             width: 100%;
-            padding: 10px 12px;
+            padding: px 12px;
             border: 2px solid var(--medium-gray);
             border-radius: 6px;
             font-size: 0.95rem;
@@ -169,21 +169,86 @@
         }
     </style>
 </head>
-    <div class="overlay"></div>
-    <div class="container">
-        <div class="form-header">
-            <h2>Créer un Entretien</h2>
-            <p>Ajoutez les informations nécessaires pour organiser un entretien</p>
-        </div>
 
-        {% block body %}
-            <h1>Nouvel Entretien</h1>
+<div class="overlay"></div>
 
-            {{ include('entretien/_form.html.twig') }}
-
-            <a href="{{ path('app_entretien_index') }}" class="back-link">← Retour à la liste</a>
-        {% endblock %}
+<div class="container">
+    <div class="form-header">
+        <h2>Créer un Entretien</h2>
+        <p>Ajoutez les informations nécessaires pour organiser un entretien</p>
     </div>
+
+    {{ form_start(form) }}
+
+    <div class="form-group">
+        {{ form_label(form.titre) }}
+        {{ form_widget(form.titre, {'attr': {'class': 'form-control', 'placeholder': 'Titre de l\'entretien'}}) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.description) }}
+        {{ form_widget(form.description, {'attr': {'class': 'form-control', 'placeholder': 'Description détaillée', 'rows': 4}}) }}
+    </div>
+
+    <div class="form-row">
+        <div class="form-col">
+            <div class="form-group">
+                {{ form_label(form.date_entretien) }}
+                {{ form_widget(form.date_entretien, {'attr': {'class': 'form-control'}}) }}
+            </div>
+        </div>
+        <div class="form-col">
+            <div class="form-group">
+                {{ form_label(form.heureentretien) }}
+                {{ form_widget(form.heureentretien, {'attr': {'class': 'form-control'}}) }}
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.type_entretien) }}
+        {{ form_widget(form.type_entretien, {'attr': {'class': 'form-control', 'placeholder': 'Type d\'entretien'}}) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.status) }}
+        {{ form_widget(form.status) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.candidatId) }}
+        {{ form_widget(form.candidatId, {'attr': {'class': 'form-control', 'placeholder': 'ID du candidat'}}) }}
+    </div>
+
+    <div class="form-row">
+        <div class="form-col">
+            <div class="form-group">
+                {{ form_label(form.user) }}
+                {{ form_widget(form.user, {'attr': {'class': 'form-control'}}) }}
+            </div>
+        </div>
+        <div class="form-col">
+            <div class="form-group">
+                {{ form_label(form.offre) }}
+                {{ form_widget(form.offre, {'attr': {'class': 'form-control'}}) }}
+            </div>
+        </div>
+        <div class="form-col">
+            <div class="form-group">
+                {{ form_label(form.candidature) }}
+                {{ form_widget(form.candidature, {'attr': {'class': 'form-control'}}) }}
+            </div>
+        </div>
+    </div>
+
+    <button class="btn">{{ button_label|default('Créer l\'Entretien') }}</button>
+
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_entretien_index') }}" class="back-link">← Retour à la liste</a>
+</div>
+
+    
 </body>
 </html>
 
