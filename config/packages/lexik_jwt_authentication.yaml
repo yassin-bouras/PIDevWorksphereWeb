@@ -1,0 +1,14 @@
+lexik_jwt_authentication:
+  secret_key: "%env(resolve:JWT_SECRET_KEY)%"
+  # Remove public_key and pass_phrase - not needed for HS256
+  encoder:
+    signature_algorithm: HS256 # Switch to symmetric signing
+  token_ttl: 3600
+  token_extractors:
+    authorization_header:
+      enabled: true
+      prefix: Bearer
+      name: Authorization
+    cookie:
+      enabled: true
+      name: BEARER

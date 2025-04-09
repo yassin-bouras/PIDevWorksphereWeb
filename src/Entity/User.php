@@ -6,38 +6,146 @@ use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Repository\UserRepository;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: 'user')]
-class User
+class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(name: 'id_user', type: 'integer')]
     private ?int $iduser = null;
 
-    public function getIduser(): ?int
+    #[ORM\Column(type: 'string', nullable: false)]
+    private ?string $nom = null;
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    private ?string $prenom = null;
+
+    #[ORM\Column(type: 'string', nullable: false, unique: true)]
+    private ?string $email = null;
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    private ?string $mdp = null;
+    public function getPassword(): string
     {
-        return $this->iduser;
+        return $this->mdp;
     }
 
-    public function setIduser(int $iduser): self
+    #[ORM\Column(type: 'string', nullable: false)]
+    private ?string $role = null;
+
+    #[ORM\Column(type: 'text', nullable: false)]
+    private ?string $adresse = null;
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    private ?string $sexe = null;
+
+    #[ORM\Column(name: 'image_profil', type: 'string', nullable: true)]
+    private ?string $imageprofil = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $status = null;
+
+    #[ORM\Column(name: 'salaire_attendu', type: 'decimal', nullable: true)]
+    private ?float $salaireattendu = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $poste = null;
+
+    #[ORM\Column(type: 'decimal', nullable: true)]
+    private ?float $salaire = null;
+
+    #[ORM\Column(name: 'experience_travail', type: 'integer', nullable: true)]
+    private ?int $experiencetravail = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $departement = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $competence = null;
+
+    #[ORM\Column(name: 'nombreProjet', type: 'integer', nullable: true)]
+    private ?int $nombreprojet = null;
+
+    #[ORM\Column(type: 'decimal', nullable: true)]
+    private ?float $budget = null;
+
+    #[ORM\Column(name: 'departement_géré', type: 'string', nullable: true)]
+    private ?string $departementgere = null;
+
+    #[ORM\Column(name: 'ans_experience', type: 'integer', nullable: true)]
+    private ?int $ansexperience = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    private ?string $specialisation = null;
+
+    #[ORM\Column(type: 'boolean', nullable: true)]
+    private ?bool $banned = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    private ?string $messagereclamation = null;
+
+    #[ORM\Column(name: 'numt_tel', type: 'integer', nullable: true)]
+    private ?int $numtel = null;
+
+    #[ORM\OneToMany(targetEntity: Candidature::class, mappedBy: 'user')]
+    private Collection $candidatures;
+
+    #[ORM\OneToMany(targetEntity: Entretien::class, mappedBy: 'user')]
+    private Collection $entretiens;
+
+    #[ORM\OneToMany(targetEntity: Evennement::class, mappedBy: 'user')]
+    private Collection $evennements;
+
+    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'user')]
+    private Collection $notifications;
+
+    #[ORM\OneToMany(targetEntity: Reclamation::class, mappedBy: 'user')]
+    private Collection $reclamations;
+
+    #[ORM\OneToMany(targetEntity: Reponse::class, mappedBy: 'user')]
+    private Collection $reponses;
+
+    #[ORM\ManyToMany(targetEntity: Offre::class, inversedBy: 'users')]
+    #[ORM\JoinTable(
+        name: 'bookmarks',
+        joinColumns: [new ORM\JoinColumn(name: 'id_candidat', referencedColumnName: 'id_user')],
+        inverseJoinColumns: [new ORM\JoinColumn(name: 'id_offre', referencedColumnName: 'id_offre')]
+    )]
+    private Collection $offres;
+
+    #[ORM\ManyToMany(targetEntity: Equipe::class, inversedBy: 'users')]
+    #[ORM\JoinTable(
+        name: 'equipe_employee',
+        joinColumns: [new ORM\JoinColumn(name: 'id_user', referencedColumnName: 'id_user')],
+        inverseJoinColumns: [new ORM\JoinColumn(name: 'equipe_id', referencedColumnName: 'id')]
+    )]
+    private Collection $equipes;
+
+    public function __construct()
     {
-        $this->iduser = $iduser;
-        return $this;
+        $this->candidatures = new ArrayCollection();
+        $this->entretiens = new ArrayCollection();
+        $this->evennements = new ArrayCollection();
+        $this->notifications = new ArrayCollection();
+        $this->reclamations = new ArrayCollection();
+        $this->reponses = new ArrayCollection();
+        $this->offres = new ArrayCollection();
+        $this->equipes = new ArrayCollection();
     }
+
+
     public function getId(): ?int
     {
         return $this->iduser;
     }
-    public function setId(int $id): self
+    public function getIduser(): ?int
     {
-        $this->iduser = $id;
-        return $this;
+        return $this->iduser;
     }
-
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $nom = null;
 
     public function getNom(): ?string
     {
@@ -50,22 +158,20 @@ class User
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $prenom = null;
-
     public function getPrenom(): ?string
     {
         return $this->prenom;
     }
-
+    public function getFullName(): ?string
+    {
+        return $this->nom . ' ' . $this->prenom;
+    }
     public function setPrenom(string $prenom): self
     {
         $this->prenom = $prenom;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $email = null;
 
     public function getEmail(): ?string
     {
@@ -78,22 +184,17 @@ class User
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $mdp = null;
-
-    public function getMdp(): ?string
+    public function getMdp(): string
     {
         return $this->mdp;
     }
-
     public function setMdp(string $mdp): self
     {
         $this->mdp = $mdp;
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $role = null;
+
 
     public function getRole(): ?string
     {
@@ -106,8 +207,10 @@ class User
         return $this;
     }
 
-    #[ORM\Column(type: 'text', nullable: false)]
-    private ?string $adresse = null;
+    public function getRoles(): array
+    {
+        return [$this->role ?: 'ROLE_USER'];
+    }
 
     public function getAdresse(): ?string
     {
@@ -120,9 +223,6 @@ class User
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $sexe = null;
-
     public function getSexe(): ?string
     {
         return $this->sexe;
@@ -133,9 +233,6 @@ class User
         $this->sexe = $sexe;
         return $this;
     }
-
-    #[ORM\Column(name: 'image_profil', type: 'string', nullable: true)]
-    private ?string $imageprofil = null;
 
     public function getImageprofil(): ?string
     {
@@ -148,9 +245,6 @@ class User
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $status = null;
-
     public function getStatus(): ?string
     {
         return $this->status;
@@ -161,9 +255,6 @@ class User
         $this->status = $status;
         return $this;
     }
-
-    #[ORM\Column(name: 'salaire_attendu', type: 'decimal', nullable: true)]
-    private ?float $salaireattendu = null;
 
     public function getSalaireattendu(): ?float
     {
@@ -176,9 +267,6 @@ class User
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $poste = null;
-
     public function getPoste(): ?string
     {
         return $this->poste;
@@ -189,9 +277,6 @@ class User
         $this->poste = $poste;
         return $this;
     }
-
-    #[ORM\Column(type: 'decimal', nullable: true)]
-    private ?float $salaire = null;
 
     public function getSalaire(): ?float
     {
@@ -204,9 +289,6 @@ class User
         return $this;
     }
 
-    #[ORM\Column(name: 'experience_travail', type: 'integer', nullable: true)]
-    private ?int $experiencetravail = null;
-
     public function getExperiencetravail(): ?int
     {
         return $this->experiencetravail;
@@ -217,9 +299,6 @@ class User
         $this->experiencetravail = $experiencetravail;
         return $this;
     }
-
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $departement = null;
 
     public function getDepartement(): ?string
     {
@@ -232,9 +311,6 @@ class User
         return $this;
     }
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $competence = null;
-
     public function getCompetence(): ?string
     {
         return $this->competence;
@@ -245,9 +321,6 @@ class User
         $this->competence = $competence;
         return $this;
     }
-
-    #[ORM\Column(name: 'nombreProjet', type: 'integer', nullable: true)]
-    private ?int $nombreprojet = null;
 
     public function getNombreprojet(): ?int
     {
@@ -260,9 +333,6 @@ class User
         return $this;
     }
 
-    #[ORM\Column(type: 'decimal', nullable: true)]
-    private ?float $budget = null;
-
     public function getBudget(): ?float
     {
         return $this->budget;
@@ -273,9 +343,6 @@ class User
         $this->budget = $budget;
         return $this;
     }
-
-    #[ORM\Column(name: 'departement_géré', type: 'string', nullable: true)]
-    private ?string $departementgere = null;
 
     public function getDepartementgere(): ?string
     {
@@ -288,9 +355,6 @@ class User
         return $this;
     }
 
-    #[ORM\Column(name: 'ans_experience', type: 'integer', nullable: true)]
-    private ?int $ansexperience = null;
-
     public function getAnsexperience(): ?int
     {
         return $this->ansexperience;
@@ -301,9 +365,6 @@ class User
         $this->ansexperience = $ansexperience;
         return $this;
     }
-
-    #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $specialisation = null;
 
     public function getSpecialisation(): ?string
     {
@@ -316,9 +377,6 @@ class User
         return $this;
     }
 
-    #[ORM\Column(type: 'boolean', nullable: true)]
-    private ?bool $banned = null;
-
     public function isBanned(): ?bool
     {
         return $this->banned;
@@ -329,9 +387,6 @@ class User
         $this->banned = $banned;
         return $this;
     }
-
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $messagereclamation = null;
 
     public function getMessagereclamation(): ?string
     {
@@ -344,9 +399,6 @@ class User
         return $this;
     }
 
-    #[ORM\Column(name: 'numt_tel', type: 'integer', nullable: true)]
-    private ?int $numtel = null;
-
     public function getNumtel(): ?int
     {
         return $this->numtel;
@@ -358,245 +410,209 @@ class User
         return $this;
     }
 
-    #[ORM\OneToMany(targetEntity: Candidature::class, mappedBy: 'user')]
-    private Collection $candidatures;
-
-    /**
-     * @return Collection<int, Candidature>
-     */
     public function getCandidatures(): Collection
     {
-        if (!$this->candidatures instanceof Collection) {
-            $this->candidatures = new ArrayCollection();
-        }
         return $this->candidatures;
     }
 
     public function addCandidature(Candidature $candidature): self
     {
-        if (!$this->getCandidatures()->contains($candidature)) {
-            $this->getCandidatures()->add($candidature);
+        if (!$this->candidatures->contains($candidature)) {
+            $this->candidatures->add($candidature);
+            $candidature->setUser($this);
         }
         return $this;
     }
 
     public function removeCandidature(Candidature $candidature): self
     {
-        $this->getCandidatures()->removeElement($candidature);
+        if ($this->candidatures->removeElement($candidature)) {
+            if ($candidature->getUser() === $this) {
+                $candidature->setUser(null);
+            }
+        }
         return $this;
     }
 
-    #[ORM\OneToMany(targetEntity: Entretien::class, mappedBy: 'user')]
-    private Collection $entretiens;
-
-    /**
-     * @return Collection<int, Entretien>
-     */
     public function getEntretiens(): Collection
     {
-        if (!$this->entretiens instanceof Collection) {
-            $this->entretiens = new ArrayCollection();
-        }
         return $this->entretiens;
     }
 
     public function addEntretien(Entretien $entretien): self
     {
-        if (!$this->getEntretiens()->contains($entretien)) {
-            $this->getEntretiens()->add($entretien);
+        if (!$this->entretiens->contains($entretien)) {
+            $this->entretiens->add($entretien);
+            $entretien->setUser($this);
         }
         return $this;
     }
 
     public function removeEntretien(Entretien $entretien): self
     {
-        $this->getEntretiens()->removeElement($entretien);
+        if ($this->entretiens->removeElement($entretien)) {
+            if ($entretien->getUser() === $this) {
+                $entretien->setUser(null);
+            }
+        }
         return $this;
     }
 
-    #[ORM\OneToMany(targetEntity: Evennement::class, mappedBy: 'user')]
-    private Collection $evennements;
-
-    /**
-     * @return Collection<int, Evennement>
-     */
     public function getEvennements(): Collection
     {
-        if (!$this->evennements instanceof Collection) {
-            $this->evennements = new ArrayCollection();
-        }
         return $this->evennements;
     }
 
     public function addEvennement(Evennement $evennement): self
     {
-        if (!$this->getEvennements()->contains($evennement)) {
-            $this->getEvennements()->add($evennement);
+        if (!$this->evennements->contains($evennement)) {
+            $this->evennements->add($evennement);
+            $evennement->setUser($this);
         }
         return $this;
     }
 
     public function removeEvennement(Evennement $evennement): self
     {
-        $this->getEvennements()->removeElement($evennement);
+        if ($this->evennements->removeElement($evennement)) {
+            if ($evennement->getUser() === $this) {
+                $evennement->setUser(null);
+            }
+        }
         return $this;
     }
 
-    #[ORM\OneToMany(targetEntity: Notification::class, mappedBy: 'user')]
-    private Collection $notifications;
-
-    /**
-     * @return Collection<int, Notification>
-     */
     public function getNotifications(): Collection
     {
-        if (!$this->notifications instanceof Collection) {
-            $this->notifications = new ArrayCollection();
-        }
         return $this->notifications;
     }
 
     public function addNotification(Notification $notification): self
     {
-        if (!$this->getNotifications()->contains($notification)) {
-            $this->getNotifications()->add($notification);
+        if (!$this->notifications->contains($notification)) {
+            $this->notifications->add($notification);
+            $notification->setUser($this);
         }
         return $this;
     }
 
     public function removeNotification(Notification $notification): self
     {
-        $this->getNotifications()->removeElement($notification);
+        if ($this->notifications->removeElement($notification)) {
+            if ($notification->getUser() === $this) {
+                $notification->setUser(null);
+            }
+        }
         return $this;
     }
 
-    #[ORM\OneToMany(targetEntity: Reclamation::class, mappedBy: 'user')]
-    private Collection $reclamations;
-
-    /**
-     * @return Collection<int, Reclamation>
-     */
     public function getReclamations(): Collection
     {
-        if (!$this->reclamations instanceof Collection) {
-            $this->reclamations = new ArrayCollection();
-        }
         return $this->reclamations;
     }
 
     public function addReclamation(Reclamation $reclamation): self
     {
-        if (!$this->getReclamations()->contains($reclamation)) {
-            $this->getReclamations()->add($reclamation);
+        if (!$this->reclamations->contains($reclamation)) {
+            $this->reclamations->add($reclamation);
+            $reclamation->setUser($this);
         }
         return $this;
     }
 
     public function removeReclamation(Reclamation $reclamation): self
     {
-        $this->getReclamations()->removeElement($reclamation);
+        if ($this->reclamations->removeElement($reclamation)) {
+            if ($reclamation->getUser() === $this) {
+                $reclamation->setUser(null);
+            }
+        }
         return $this;
     }
 
-    #[ORM\OneToMany(targetEntity: Reponse::class, mappedBy: 'user')]
-    private Collection $reponses;
-
-    /**
-     * @return Collection<int, Reponse>
-     */
     public function getReponses(): Collection
     {
-        if (!$this->reponses instanceof Collection) {
-            $this->reponses = new ArrayCollection();
-        }
         return $this->reponses;
     }
 
     public function addReponse(Reponse $reponse): self
     {
-        if (!$this->getReponses()->contains($reponse)) {
-            $this->getReponses()->add($reponse);
+        if (!$this->reponses->contains($reponse)) {
+            $this->reponses->add($reponse);
+            $reponse->setUser($this);
         }
         return $this;
     }
 
     public function removeReponse(Reponse $reponse): self
     {
-        $this->getReponses()->removeElement($reponse);
+        if ($this->reponses->removeElement($reponse)) {
+            if ($reponse->getUser() === $this) {
+                $reponse->setUser(null);
+            }
+        }
         return $this;
     }
 
-    #[ORM\ManyToMany(targetEntity: Offre::class, inversedBy: 'users')]
-    #[ORM\JoinTable(
-        name: 'bookmarks',
-        joinColumns: [
-            new ORM\JoinColumn(name: 'id_candidat', referencedColumnName: 'id_user')
-        ],
-        inverseJoinColumns: [
-            new ORM\JoinColumn(name: 'id_offre', referencedColumnName: 'id_offre')
-        ]
-    )]
-    private Collection $offres;
-
-    /**
-     * @return Collection<int, Offre>
-     */
     public function getOffres(): Collection
     {
-        if (!$this->offres instanceof Collection) {
-            $this->offres = new ArrayCollection();
-        }
         return $this->offres;
     }
 
     public function addOffre(Offre $offre): self
     {
-        if (!$this->getOffres()->contains($offre)) {
-            $this->getOffres()->add($offre);
+        if (!$this->offres->contains($offre)) {
+            $this->offres->add($offre);
         }
         return $this;
     }
 
     public function removeOffre(Offre $offre): self
     {
-        $this->getOffres()->removeElement($offre);
+        $this->offres->removeElement($offre);
         return $this;
     }
 
-    #[ORM\ManyToMany(targetEntity: Equipe::class, inversedBy: 'users')]
-    #[ORM\JoinTable(
-        name: 'equipe_employee',
-        joinColumns: [
-            new ORM\JoinColumn(name: 'id_user', referencedColumnName: 'id_user')
-        ],
-        inverseJoinColumns: [
-            new ORM\JoinColumn(name: 'equipe_id', referencedColumnName: 'id')
-        ]
-    )]
-    private Collection $equipes;
-
-    /**
-     * @return Collection<int, Equipe>
-     */
     public function getEquipes(): Collection
     {
-        if (!$this->equipes instanceof Collection) {
-            $this->equipes = new ArrayCollection();
-        }
         return $this->equipes;
     }
 
     public function addEquipe(Equipe $equipe): self
     {
-        if (!$this->getEquipes()->contains($equipe)) {
-            $this->getEquipes()->add($equipe);
+        if (!$this->equipes->contains($equipe)) {
+            $this->equipes->add($equipe);
         }
         return $this;
     }
 
     public function removeEquipe(Equipe $equipe): self
     {
-        $this->getEquipes()->removeElement($equipe);
+        $this->equipes->removeElement($equipe);
         return $this;
+    }
+
+    public function getUserIdentifier(): string
+    {
+        return (string) $this->email;
+    }
+
+    public function eraseCredentials(): void {}
+    public function __serialize(): array
+    {
+        return [
+            'id' => $this->iduser,
+            'email' => $this->email,
+            'roles' => $this->getRoles(),
+            'password' => $this->mdp,
+        ];
+    }
+
+    public function __unserialize(array $data): void
+    {
+        $this->iduser = $data['id'];
+        $this->email = $data['email'];
+        $this->role = $data['roles'][0] ?? 'ROLE_USER';
+        $this->mdp = $data['password'];
     }
 }

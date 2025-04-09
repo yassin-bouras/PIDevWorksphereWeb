@@ -1,0 +1,31 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Hello DashboardController!</title>
+</head>
+<body>
+{% extends 'dashboard/layout.html.twig' %}
+{% block body %}
+<style>
+    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+</style>
+
+<div class="example-wrapper">
+    <h1>Hello {{ controller_name }}! ✅</h1>
+    {% if app.user %}
+        <p>Welcome, {{ app.user.userIdentifier }}!</p>
+    {% else %}
+        <p>No user authenticated. This should not happen if JWT is working.</p>
+    {% endif %}
+
+    <p>This friendly message is coming from:</p>
+    <ul>
+        <li>Your controller at <code>C:/Users/yassi/OneDrive/Documents/GitHub/finalone/safeone/PIDevWorksphereWeb/src/Controller/DashboardController.php</code></li>
+        <li>Your template at <code>C:/Users/yassi/OneDrive/Documents/GitHub/finalone/safeone/PIDevWorksphereWeb/templates/dashboard/index.html.twig</code></li>
+    </ul>
+</div>
+{% endblock %}
+</body>
+</html>

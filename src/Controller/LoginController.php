@@ -1,0 +1,22 @@
+<?php
+
+namespace App\Controller;
+
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+final class LoginController extends AbstractController
+{
+    #[Route('/login', name: 'app_login', methods: ['POST', 'GET'])]
+    public function loginForm(): Response
+    {
+        return $this->render('login/index.html.twig');
+    }
+
+    #[Route('/forget', name: 'app_forgot_password', methods: ['GET'])]
+    public function forgotPassword(): Response
+    {
+        return $this->render('login/forgot_password.html.twig');
+    }
+}

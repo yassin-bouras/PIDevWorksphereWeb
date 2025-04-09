@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <title>{% block title %}Dleohr - Dashboard{% endblock %}</title>
+    <link rel="shortcut icon" href="{{ asset('back/img/favicon.png') }}">
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('back/css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/fontawesome.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/all.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('back/css/style.css') }}">
+    {% endblock %}
+</head>
+<body>
+    <div class="main-wrapper">
+        {% include 'dashboard/header_sidebar.html.twig' %}
+        
+        <div class="page-wrapper" id="content-wrapper">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    {% block javascripts %}
+        <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
+        <script src="{{ asset('back/js/popper.min.js') }}"></script>
+        <script src="{{ asset('back/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('back/js/feather.min.js') }}"></script>
+        <script src="{{ asset('back/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
+        <script src="{{ asset('back/plugins/apexchart/apexcharts.min.js') }}"></script>
+        <script src="{{ asset('back/plugins/apexchart/chart-data.js') }}"></script>
+        <script src="{{ asset('back/js/script.js') }}"></script>
+        <script>
+            $(document).ready(function() {
+                // Handle sidebar navigation
+                $('.sidebar-menu a').on('click', function(e) {
+                    e.preventDefault();
+                    var url = $(this).attr('href');
+                    
+                    $.ajax({
+                        url: url,
+                        method: 'GET',
+                        success: function(response) {
+                            // Extract content from the response
+                            var content = $(response).find('.page-wrapper').html() || 
+                                        $(response).filter('.page-wrapper').html() ||
+                                        $(response).find('#content-wrapper').html();
+                            if (content) {
+                                $('#content-wrapper').html(content);
+                                feather.replace();
+                                $('.sidebar-menu li').removeClass('active');
+                                $(e.target).closest('li').addClass('active');
+                                // Update browser URL without reloading
+                                window.history.pushState({}, document.title, url);
+                            }
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error loading content:', error);
+                        }
+                    });
+                });
+
+                // Handle browser back/forward buttons
+                $(window).on('popstate', function() {
+                    $.ajax({
+                        url: window.location.pathname,
+                        method: 'GET',
+                        success: function(response) {
+                            var content = $(response).find('.page-wrapper').html() || 
+                                        $(response).filter('.page-wrapper').html() ||
+                                        $(response).find('#content-wrapper').html();
+                            if (content) {
+                                $('#content-wrapper').html(content);
+                                feather.replace();
+                            }
+                        }
+                    });
+                });
+
+                // Set initial active state
+                var currentPath = window.location.pathname;
+                $('.sidebar-menu a').each(function() {
+                    if ($(this).attr('href') === currentPath) {
+                        $(this).closest('li').addClass('active');
+                    }
+                });
+            });
+        </script>
+    {% endblock %}
+</body>
+</html>

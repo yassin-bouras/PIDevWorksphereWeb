@@ -12,7 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/formation')]
-final class FormationController extends AbstractController{
+final class FormationController extends AbstractController
+{
     #[Route(name: 'app_formation_index', methods: ['GET'])]
     public function index(FormationRepository $formationRepository): Response
     {
@@ -27,42 +28,29 @@ final class FormationController extends AbstractController{
         $formation = new Formation();
         $form = $this->createForm(FormationType::class, $formation);
         $form->handleRequest($request);
-    
+
         if ($form->isSubmitted() && $form->isValid()) {
-         
             $photoFile = $form->get('photo')->getData();
             if ($photoFile) {
-                // Générer un nom unique pour le fichier
                 $newFilename = uniqid() . '.' . $photoFile->guessExtension();
-                
                 $photoFile->move(
                     $this->getParameter('kernel.project_dir') . '/public/img',
                     $newFilename
                 );
-             
                 $formation->setPhoto('img/' . $newFilename);
             }
+
             $entityManager->persist($formation);
             $entityManager->flush();
-    
+
             return $this->redirectToRoute('app_formation_index', [], Response::HTTP_SEE_OTHER);
         }
-    
+
         return $this->render('formation/new.html.twig', [
             'formation' => $formation,
             'form' => $form,
         ]);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($formation);
-            $entityManager->flush();
-        
-            return $this->redirectToRoute('app_formation_index');
-        } else {
-            // Ajoute cette ligne pour voir les erreurs dans le dump
-            dump($form->getErrors(true));
-        }
     }
-    
 
     #[Route('/{id_f}', name: 'app_formation_show', methods: ['GET'])]
     public function show(Formation $formation): Response
@@ -77,46 +65,44 @@ final class FormationController extends AbstractController{
     {
         $form = $this->createForm(FormationType::class, $formation);
         $form->handleRequest($request);
-    
+
         if ($form->isSubmitted() && $form->isValid()) {
-           
             $photoFile = $form->get('photo')->getData();
             if ($photoFile) {
-             
-                if ($formation->getPhoto()) {
-                    unlink($this->getParameter('kernel.project_dir') . '/public/' . $formation->getPhoto());
+                // Supprimer l'ancienne image si elle existe
+                $oldPhoto = $formation->getPhoto();
+                if ($oldPhoto) {
+                    $oldPath = $this->getParameter('kernel.project_dir') . '/public/' . $oldPhoto;
+                    if (file_exists($oldPath)) {
+                        unlink($oldPath);
+                    }
                 }
-            
-            
+
                 $newFilename = uniqid() . '.' . $photoFile->guessExtension();
-            
                 $photoFile->move(
-                    $this->getParameter('kernel.project_dir') . '/public/img', 
+                    $this->getParameter('kernel.project_dir') . '/public/img',
                     $newFilename
                 );
-              
                 $formation->setPhoto('img/' . $newFilename);
             }
-    
+
             $entityManager->flush();
-    
+
             return $this->redirectToRoute('app_formation_index', [], Response::HTTP_SEE_OTHER);
         }
-    
+
         return $this->render('formation/edit.html.twig', [
             'formation' => $formation,
             'form' => $form,
         ]);
     }
-    
+
     #[Route('/{id_f}', name: 'app_formation_delete', methods: ['POST'])]
     public function delete(Request $request, Formation $formation, EntityManagerInterface $entityManager): Response
     {
-<<<<<<< Updated upstream
-        if ($this->isCsrfTokenValid('delete'.$formation->getIdF(), $request->getPayload()->getString('_token'))) {
-=======
-        if ($this->isCsrfTokenValid('delete'.$formation->getIdf(), $request->getPayload()->getString('_token'))) {
->>>>>>> Stashed changes
+        $token = $request->request->get('_token');
+
+        if ($this->isCsrfTokenValid('delete' . $formation->getIdF(), $token)) {
             $entityManager->remove($formation);
             $entityManager->flush();
         }

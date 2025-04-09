@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+    <title>Dleohr - Login</title>
+    <link rel="shortcut icon" href="{{ asset('back/img/favicon.png') }}">
+    <link rel="stylesheet" href="{{ asset('back/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/fontawesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('back/css/style.css') }}">
+</head>
+<body>
+    <div class="main-wrapper login-body">
+        <div class="login-wrapper">
+            <div class="container">
+                <img class="img-fluid logo-dark mb-2" src="{{ asset('back/img/logo.png') }}" alt="Logo">
+                <div class="loginbox">
+                    <div class="login-right">
+                        <div class="login-right-wrap">
+                            <h1>Login</h1>
+                            <p class="account-subtitle">Access to our dashboard</p>
+
+                            <form id="loginForm" method="post">
+                                <div class="form-group">
+                                    <label class="form-control-label">Email Address</label>
+                                    <input type="email" class="form-control" name="email" required autofocus>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-control-label">Password</label>
+                                    <div class="pass-group">
+                                        <input type="password" class="form-control pass-input" name="password" required>
+                                        <span class="fas fa-eye toggle-password"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" class="custom-control-input" id="remember_me" name="_remember_me">
+                                                <label class="custom-control-label" for="remember_me">Remember me</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 text-right">
+                                            <a class="forgot-link" href="{{ path('app_forgot_password') }}">Forgot Password?</a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn btn-lg btn-block btn-primary" type="submit">Login</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
+    <script>
+    $(document).ready(function() {
+        $('#loginForm').on('submit', function(e) {
+            e.preventDefault();
+
+            const email = $('input[name="email"]').val();
+            const password = $('input[name="password"]').val();
+            const data = { email: email, password: password };
+
+            $.ajax({
+                url: '/login',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function(response) {
+                    if (response.token) {
+                        // Store the token
+                        document.cookie = `BEARER=${response.token}; Path=/; Secure; SameSite=Strict`;
+                        
+                        const userRole = response.role?.toLowerCase();
+                        
+                        switch(userRole) {
+                            case 'candidat':
+                                window.location.href = '/dashboardcandidat';
+                                break;
+                            case 'rh':
+                                window.location.href = '/dashboard';
+                                break;
+                            case 'employee':
+                                window.location.href = '/dashboardemployee';
+                                break;
+                            case 'manager':
+                                window.location.href = '/dashboardmanager';
+                                break;
+                            default:
+                                window.location.href = '/dashboard';
+                        }
+                    }
+                },
+                error: function(xhr) {
+                    const errorMessage = xhr.responseJSON?.message || 'Login failed';
+                    $('.login-right-wrap').prepend(`<div class="alert alert-danger">${errorMessage}</div>`);
+                }
+            });
+        });
+
+        $('.toggle-password').click(function() {
+            const input = $(this).siblings('.pass-input');
+            input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
+            $(this).toggleClass('fa-eye fa-eye-slash');
+        });
+    });
+    </script>
+</body>
+</html>

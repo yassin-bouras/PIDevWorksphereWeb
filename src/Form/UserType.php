@@ -5,6 +5,7 @@ namespace App\Form;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -16,7 +17,13 @@ class UserType extends AbstractType
             ->add('nom')
             ->add('prenom')
             ->add('email')
-            ->add('mdp')
+            // Remove 'mdp' from the form; we'll handle it via plainPassword
+            ->add('plainPassword', PasswordType::class, [
+                'mapped' => false, // This field is not directly linked to the entity
+                'required' => $options['is_new'] ?? true, // Required for new users, optional for edits
+                'label' => 'Password',
+                'attr' => ['autocomplete' => 'new-password'], // Improves security
+            ])
             ->add('role')
             ->add('adresse')
             ->add('sexe')
@@ -69,6 +76,7 @@ class UserType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'is_new' => true, // Default to true for new users; override in edit action
         ]);
     }
 }
