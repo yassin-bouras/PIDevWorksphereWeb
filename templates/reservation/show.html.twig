@@ -1,46 +1,71 @@
-<!DOCTYPE html>
+{% extends '/home/index.html.twig' %}
 
-<title>Reservation</title>
+{% block title %}Détails de la Réservation{% endblock %}
 
 {% block body %}
-    <h1>Reservation</h1>
+    <div class="container" style="margin-top:7%;">
+        <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Détails de la Réservation</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id_r</th>
-                <td>{{ reservation.idR }}</td>
-            </tr>
-            <tr>
-                <th>Date</th>
-                <td>{{ reservation.date ? reservation.date|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Id_f</th>
-                <td>{{ reservation.idF }}</td>
-            </tr>
-            <tr>
-                <th>Id_user</th>
-                <td>{{ reservation.idUser }}</td>
-            </tr>
-            <tr>
-                <th>Motif_r</th>
-                <td>{{ reservation.motifR }}</td>
-            </tr>
-            <tr>
-                <th>Attente</th>
-                <td>{{ reservation.attente }}</td>
-            </tr>
-            <tr>
-                <th>Langue</th>
-                <td>{{ reservation.langue }}</td>
-            </tr>
-        </tbody>
-    </table>
+        <div class="reservation-details" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 30px; margin-bottom: 30px;">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6 mb-4">
+                            <h4 style="color: #4a6fa5;">ID Réservation</h4>
+                            <p>{{ reservation.idR }}</p>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h4 style="color: #4a6fa5;">Date</h4>
+                            <p>{{ reservation.date ? reservation.date|date('d/m/Y') : 'N/A' }}</p>
+                        </div>
 
-    <a href="{{ path('app_reservation_index') }}">back to list</a>
+                        <div class="col-md-6 mb-4">
+                            <h4 style="color: #4a6fa5;">Formation</h4>
+                            <p>{{ reservation.formation ? reservation.formation.titre : 'N/A' }}</p>
+                        </div>
+                      
 
-    <a href="{{ path('app_reservation_edit', {'id_r': reservation.id_r}) }}">edit</a>
+                        <div class="col-md-6 mb-4">
+                            <h4 style="color: #4a6fa5;">Motif</h4>
+                            <p>{{ reservation.motifR }}</p>
+                        </div>
+                        <div class="col-md-6 mb-4">
+                            <h4 style="color: #4a6fa5;">Attente</h4>
+                            <p>{{ reservation.attente }}</p>
+                        </div>
 
-    {{ include('reservation/_delete_form.html.twig') }}
+                        <div class="col-md-6 mb-4">
+                            <h4 style="color: #4a6fa5;">Langue</h4>
+                            <p>{{ reservation.langue }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ path('app_reservation_index') }}" class="btn" style="background-color: rgb(51, 204, 197); color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px;">Retour à la liste</a>
+            <a href="{{ path('app_reservation_edit', {'id_r': reservation.idR}) }}" class="btn" style="background-color: #e67e22; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px;">Modifier</a>
+            {{ include('reservation/_delete_form.html.twig') }}
+        </div>
+    </div>
+
+    <style>
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .reservation-details {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .reservation-details:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        h4 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+    </style>
 {% endblock %}

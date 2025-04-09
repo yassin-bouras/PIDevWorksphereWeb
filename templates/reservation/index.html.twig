@@ -1,47 +1,76 @@
 {% extends '/home/index.html.twig' %}
 
-{% block title %} Reservations {% endblock %}
+{% block title %}Réservations{% endblock %}
 
 {% block body %}
-   <div class="container" style="margin-top:10%;">
-        <h1 class="text-center mb-4">Liste des Réservations</h1>
+    <div class="container" style="margin-top: 7%;">
+        <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Liste des Réservations</h1>
 
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
-                <tr>
-                    <th>ID</th>
-                    <th>Date</th>
-                    <th>Formation</th>
-                    <th>Motif</th>
-                    <th>Attente</th>
-                    <th>Langue</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for reservation in reservations %}
-                    <tr>
-                        <td>{{ reservation.idR }}</td>
-                        <td>{{ reservation.date ? reservation.date|date('Y-m-d') : 'N/A' }}</td>
-                        <td>{{ reservation.formation ? reservation.formation.titre : 'Non spécifié' }}</td>
-                        <td>{{ reservation.motifR }}</td>
-                        <td>{{ reservation.attente }}</td>
-                        <td>{{ reservation.langue }}</td>
-                        <td>
-                            <a class="btn btn-info btn-sm" href="{{ path('app_reservation_show', {'id_r': reservation.idR}) }}">Voir</a>
-                            <a class="btn btn-warning btn-sm" href="{{ path('app_reservation_edit', {'id_r': reservation.idR}) }}">Modifier</a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="7" class="text-center">Aucune réservation trouvée</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="text-center mb-4">
+            <a href="{{ path('app_reservation_new') }}" class="btn" style="background-color: #33ccc5; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Créer une nouvelle réservation</a>
+        </div>
 
-        <div class="text-center">
-            <a href="{{ path('app_reservation_new') }}" class="btn btn-success">Créer une nouvelle réservation</a>
+        <div class="table-container" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden;">
+            <table class="table" style="margin-bottom: 0;">
+                <thead style="background-color: #f8f9fa;">
+                    <tr>
+                        <th style="padding: 15px;">Date</th>
+                        <th style="padding: 15px;">Formation</th>
+                        <th style="padding: 15px;">Motif</th>
+                        <th style="padding: 15px;">Attente</th>
+                        <th style="padding: 15px;">Langue</th>
+                        <th style="padding: 15px;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for reservation in reservations %}
+                        <tr style="transition: all 0.3s ease;">
+                            <td style="padding: 15px; vertical-align: middle;">
+                                {{ reservation.date ? reservation.date|date('Y-m-d') : 'N/A' }}
+                            </td>
+                            <td style="padding: 15px; vertical-align: middle;">
+                                {{ reservation.formation ? reservation.formation.titre : 'Formation supprimée' }}
+                            </td>
+                            <td style="padding: 15px; vertical-align: middle;">
+                                {{ reservation.motifR }}
+                            </td>
+                            <td style="padding: 15px; vertical-align: middle;">
+                                {{ reservation.attente }}
+                            </td>
+                            <td style="padding: 15px; vertical-align: middle;">
+                                {{ reservation.langue }}
+                            </td>
+                            <td style="padding: 15px; vertical-align: middle;">
+                                <div style="display: flex; gap: 8px;">
+                                    <a href="{{ path('app_reservation_show', {'id_r': reservation.idR}) }}" class="btn" style="background-color: #33ccc5; color: white; padding: 6px 12px; border-radius: 5px; font-size: 0.85rem;">Voir</a>
+                                    <a href="{{ path('app_reservation_edit', {'id_r': reservation.idR}) }}" class="btn" style="background-color: #e67e22; color: white; padding: 6px 12px; border-radius: 5px; font-size: 0.85rem;">Modifier</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="6" style="padding: 20px; text-align: center; color: #777;">Aucune réservation trouvée</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
+
+    <style>
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        tr:hover {
+            background-color: #f8f9fa;
+        }
+        .table-container {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .table-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+    </style>
 {% endblock %}

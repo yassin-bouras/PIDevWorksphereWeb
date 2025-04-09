@@ -3,9 +3,9 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-
 use App\Repository\FormationRepository;
 
 #[ORM\Entity(repositoryClass: FormationRepository::class)]
@@ -16,26 +16,75 @@ class Formation
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id_f = null;
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\NotBlank(message: "Le titre est obligatoire.")]
+    private ?string $titre = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\NotBlank(message: "la description est obligatoire.")]
+    #[Assert\Length(max: 500, maxMessage: "La description ne doit pas dépasser 200 caractères.")]
+    private ?string $description = null;
+
+    #[ORM\Column(type: 'date', nullable: false)]
+    #[Assert\NotNull(message: "La date ne peut pas être vide.")]
+    #[Assert\Type(type: "\DateTimeInterface", message: "Le format de la date est invalide.")]
+    #[Assert\GreaterThanOrEqual("today", message: "La date doit être aujourd'hui ou dans le futur.")]
+    private ?\DateTimeInterface $date = null;
+    
+    #[ORM\Column(type: 'time', nullable: false)]
+    #[Assert\NotNull(message: "L'heure de début est obligatoire.")]
+    #[Assert\Type(type: "\DateTimeInterface", message: "Le format de l'heure est invalide.")]
+    private ?\DateTimeInterface $heure_debut = null;
+    
+    #[ORM\Column(type: 'time', nullable: false)]
+    #[Assert\NotNull(message: "L'heure de fin est obligatoire.")]
+    #[Assert\Type(type: "\DateTimeInterface", message: "Le format de l'heure est invalide.")]
+    private ?\DateTimeInterface $heure_fin = null;
+
+    #[ORM\Column(type: 'integer', nullable: false)]
+    #[Assert\NotBlank(message: "Le nombre de places est obligatoire.")]
+    #[Assert\Positive(message: "Le nombre de places doit être supérieur à zéro.")]
+    private ?int $nb_place = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Choice(choices: ['présentiel', 'distanciel'], message: "Le type doit être 'présentiel' ou 'en ligne'.")]
+    private ?string $type = null;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $id_user = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    //#[Assert\NotBlank(message: "Vous devez insérer une image.")]
+    #[Assert\Image(
+        maxSize: "10M",
+        mimeTypes: ["image/jpeg", "image/png", "image/gif", "image/jpg"],
+        mimeTypesMessage: "Veuillez télécharger une image valide (JPEG, PNG, GIF)."
+    )]
+    private ?string $photo = null;
+
+    #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'formation')]
+    private Collection $reservations;
+
+    public function __construct()
+    {
+        $this->reservations = new ArrayCollection();
+    }
+
+    public function getId(): ?int
+    {
+        return $this->id_f;
+    }
 
     public function getIdf(): ?int
     {
         return $this->id_f;
     }
 
-
-    public function getId_f(): ?int
-    {
-        return $this->id_f;
-    }
-
-    public function setId_f(int $id_f): self
+    public function setIdf(int $id_f): self
     {
         $this->id_f = $id_f;
         return $this;
     }
-
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $titre = null;
 
     public function getTitre(): ?string
     {
@@ -48,9 +97,6 @@ class Formation
         return $this;
     }
 
-    #[ORM\Column(type: 'text', nullable: true)]
-    private ?string $description = null;
-
     public function getDescription(): ?string
     {
         return $this->description;
@@ -61,9 +107,6 @@ class Formation
         $this->description = $description;
         return $this;
     }
-
-    #[ORM\Column(type: 'date', nullable: false)]
-    private ?\DateTimeInterface $date = null;
 
     public function getDate(): ?\DateTimeInterface
     {
@@ -76,9 +119,6 @@ class Formation
         return $this;
     }
 
-    #[ORM\Column(type: 'time', nullable: false)]
-    private ?\DateTimeInterface $heure_debut = null;
-
     public function getHeuredebut(): ?\DateTimeInterface
     {
         return $this->heure_debut;
@@ -89,9 +129,6 @@ class Formation
         $this->heure_debut = $heure_debut;
         return $this;
     }
-
-    #[ORM\Column(type: 'time', nullable: false)]
-    private ?\DateTimeInterface $heure_fin = null;
 
     public function getHeurefin(): ?\DateTimeInterface
     {
@@ -104,9 +141,6 @@ class Formation
         return $this;
     }
 
-    #[ORM\Column(type: 'integer', nullable: false)]
-    private ?int $nb_place = null;
-
     public function getNbplace(): ?int
     {
         return $this->nb_place;
@@ -117,9 +151,6 @@ class Formation
         $this->nb_place = $nb_place;
         return $this;
     }
-
-    #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $type = null;
 
     public function getType(): ?string
     {
@@ -132,9 +163,6 @@ class Formation
         return $this;
     }
 
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $id_user = null;
-
     public function getIduser(): ?int
     {
         return $this->id_user;
@@ -145,9 +173,6 @@ class Formation
         $this->id_user = $id_user;
         return $this;
     }
-
-    #[ORM\Column(type: 'string', nullable: true)]
-    private ?string $photo = null;
 
     public function getPhoto(): ?string
     {
@@ -160,21 +185,16 @@ class Formation
         return $this;
     }
 
-    #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'formation')]
-    private Collection $reservations;
-
-    public function __construct()
-    {
-        $this->reservations = new ArrayCollection();
-    }
- /**
+    /**
      * @return Collection<int, Reservation>
      */
-    public function getReservations(): Collection {
+    public function getReservations(): Collection
+    {
         return $this->reservations;
     }
 
-    public function addReservation(Reservation $reservation): self {
+    public function addReservation(Reservation $reservation): self
+    {
         if (!$this->reservations->contains($reservation)) {
             $this->reservations->add($reservation);
             $reservation->setFormation($this);
@@ -182,7 +202,8 @@ class Formation
         return $this;
     }
 
-    public function removeReservation(Reservation $reservation): self {
+    public function removeReservation(Reservation $reservation): self
+    {
         if ($this->reservations->removeElement($reservation)) {
             // Set the owning side to null (unless already changed)
             if ($reservation->getFormation() === $this) {
@@ -191,5 +212,4 @@ class Formation
         }
         return $this;
     }
-
 }

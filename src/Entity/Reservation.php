@@ -144,7 +144,7 @@ class Reservation
         return $this;
     }
 
-    #[ORM\ManyToOne(targetEntity: Formation::class, inversedBy: 'reservations')]
+#[ORM\ManyToOne(targetEntity: Formation::class, inversedBy: 'reservations')]
 #[ORM\JoinColumn(name: 'id_f', referencedColumnName: 'id_f', nullable: false)]
 private ?Formation $formation = null;
 

@@ -27,19 +27,33 @@ final class FormationController extends AbstractController{
         $formation = new Formation();
         $form = $this->createForm(FormationType::class, $formation);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
+         
+            $photoFile = $form->get('photo')->getData();
+            if ($photoFile) {
+                // Générer un nom unique pour le fichier
+                $newFilename = uniqid() . '.' . $photoFile->guessExtension();
+                
+                $photoFile->move(
+                    $this->getParameter('kernel.project_dir') . '/public/img',
+                    $newFilename
+                );
+             
+                $formation->setPhoto('img/' . $newFilename);
+            }
             $entityManager->persist($formation);
             $entityManager->flush();
-
+    
             return $this->redirectToRoute('app_formation_index', [], Response::HTTP_SEE_OTHER);
         }
-
+    
         return $this->render('formation/new.html.twig', [
             'formation' => $formation,
             'form' => $form,
         ]);
     }
+    
 
     #[Route('/{id_f}', name: 'app_formation_show', methods: ['GET'])]
     public function show(Formation $formation): Response
@@ -54,23 +68,42 @@ final class FormationController extends AbstractController{
     {
         $form = $this->createForm(FormationType::class, $formation);
         $form->handleRequest($request);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
+           
+            $photoFile = $form->get('photo')->getData();
+            if ($photoFile) {
+             
+                if ($formation->getPhoto()) {
+                    unlink($this->getParameter('kernel.project_dir') . '/public/' . $formation->getPhoto());
+                }
+            
+            
+                $newFilename = uniqid() . '.' . $photoFile->guessExtension();
+            
+                $photoFile->move(
+                    $this->getParameter('kernel.project_dir') . '/public/img', 
+                    $newFilename
+                );
+              
+                $formation->setPhoto('img/' . $newFilename);
+            }
+    
             $entityManager->flush();
-
+    
             return $this->redirectToRoute('app_formation_index', [], Response::HTTP_SEE_OTHER);
         }
-
+    
         return $this->render('formation/edit.html.twig', [
             'formation' => $formation,
             'form' => $form,
         ]);
     }
-
+    
     #[Route('/{id_f}', name: 'app_formation_delete', methods: ['POST'])]
     public function delete(Request $request, Formation $formation, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$formation->getId_f(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$formation->getIdF(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($formation);
             $entityManager->flush();
         }

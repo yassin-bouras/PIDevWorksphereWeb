@@ -30,10 +30,10 @@
                         <tr style="transition: all 0.3s ease;">
                             <td style="padding: 15px; border-bottom: 1px solid #dee2e6; vertical-align: middle;">
                                 {% if formation.photo %}
-                                    <img src="{{ asset(formation.photo) }}" alt="Image Formation" width="100" style="border-radius: 4px;">
-                                {% else %}
-                                    <span style="color: #777;">Pas d'image</span>
-                                {% endif %}
+                                <img src="{{ asset(formation.photo) }}" alt="Image Formation" width="150" height="100" style=" object-fit: cover;">
+                            {% else %}
+                                <span style="color: #777;">Pas d'image</span>
+                            {% endif %}
                             </td>
                             <td style="padding: 15px; border-bottom: 1px solid #dee2e6; vertical-align: middle;">{{ formation.titre }}</td>
                             <td style="padding: 15px; border-bottom: 1px solid #dee2e6; vertical-align: middle;">{{ formation.description|slice(0, 50) }}{% if formation.description|length > 50 %}...{% endif %}</td>
