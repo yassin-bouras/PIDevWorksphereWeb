@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use App\Repository\FormationRepository;
 
+
 #[ORM\Entity(repositoryClass: FormationRepository::class)]
 #[ORM\Table(name: 'formation')]
 class Formation
@@ -16,6 +17,7 @@ class Formation
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id_f = null;
+<<<<<<< Updated upstream
     #[ORM\Column(type: 'text', nullable: true)]
     #[Assert\NotBlank(message: "Le titre est obligatoire.")]
     private ?string $titre = null;
@@ -23,12 +25,23 @@ class Formation
     #[ORM\Column(type: 'text', nullable: true)]
     #[Assert\NotBlank(message: "la description est obligatoire.")]
     #[Assert\Length(max: 500, maxMessage: "La description ne doit pas dépasser 200 caractères.")]
+=======
+    #[Assert\NotBlank(message: "Le titre est obligatoire.")]
+    #[Assert\Length(min: 5, max: 100, minMessage: "Le titre doit contenir au moins 5 caractères.")]
+    private ?string $titre = null;
+
+    #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\Length(max: 500, maxMessage: "La description ne doit pas dépasser 500 caractères.")]
+>>>>>>> Stashed changes
     private ?string $description = null;
 
     #[ORM\Column(type: 'date', nullable: false)]
     #[Assert\NotNull(message: "La date ne peut pas être vide.")]
     #[Assert\Type(type: "\DateTimeInterface", message: "Le format de la date est invalide.")]
+<<<<<<< Updated upstream
     #[Assert\GreaterThanOrEqual("today", message: "La date doit être aujourd'hui ou dans le futur.")]
+=======
+>>>>>>> Stashed changes
     private ?\DateTimeInterface $date = null;
     
     #[ORM\Column(type: 'time', nullable: false)]
@@ -47,14 +60,21 @@ class Formation
     private ?int $nb_place = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
+<<<<<<< Updated upstream
     #[Assert\Choice(choices: ['présentiel', 'distanciel'], message: "Le type doit être 'présentiel' ou 'en ligne'.")]
+=======
+    #[Assert\Choice(choices: ['présentiel', 'en ligne'], message: "Le type doit être 'présentiel' ou 'en ligne'.")]
+>>>>>>> Stashed changes
     private ?string $type = null;
 
     #[ORM\Column(type: 'integer', nullable: true)]
     private ?int $id_user = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
+<<<<<<< Updated upstream
     //#[Assert\NotBlank(message: "Vous devez insérer une image.")]
+=======
+>>>>>>> Stashed changes
     #[Assert\Image(
         maxSize: "10M",
         mimeTypes: ["image/jpeg", "image/png", "image/gif", "image/jpg"],

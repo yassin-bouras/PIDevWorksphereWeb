@@ -52,6 +52,15 @@ final class FormationController extends AbstractController{
             'formation' => $formation,
             'form' => $form,
         ]);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($formation);
+            $entityManager->flush();
+        
+            return $this->redirectToRoute('app_formation_index');
+        } else {
+            // Ajoute cette ligne pour voir les erreurs dans le dump
+            dump($form->getErrors(true));
+        }
     }
     
 
@@ -103,7 +112,11 @@ final class FormationController extends AbstractController{
     #[Route('/{id_f}', name: 'app_formation_delete', methods: ['POST'])]
     public function delete(Request $request, Formation $formation, EntityManagerInterface $entityManager): Response
     {
+<<<<<<< Updated upstream
         if ($this->isCsrfTokenValid('delete'.$formation->getIdF(), $request->getPayload()->getString('_token'))) {
+=======
+        if ($this->isCsrfTokenValid('delete'.$formation->getIdf(), $request->getPayload()->getString('_token'))) {
+>>>>>>> Stashed changes
             $entityManager->remove($formation);
             $entityManager->flush();
         }
