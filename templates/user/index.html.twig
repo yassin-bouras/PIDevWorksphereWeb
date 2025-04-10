@@ -1,6 +1,4 @@
-  
-  
-    <!DOCTYPE html>
+<!DOCTYPE html>
 
 <title>User index</title>
 
@@ -10,11 +8,9 @@
     <table class="table">
         <thead>
             <tr>
-                <th>Id_user</th>
                 <th>Nom</th>
                 <th>Prenom</th>
                 <th>Email</th>
-                <th>Mdp</th>
                 <th>Role</th>
                 <th>Adresse</th>
                 <th>Sexe</th>
@@ -40,15 +36,20 @@
         <tbody>
         {% for user in users %}
             <tr>
-                <td>{{ user.idUser }}</td>
                 <td>{{ user.nom }}</td>
                 <td>{{ user.prenom }}</td>
                 <td>{{ user.email }}</td>
-                <td>{{ user.mdp }}</td>
                 <td>{{ user.role }}</td>
                 <td>{{ user.adresse }}</td>
                 <td>{{ user.sexe }}</td>
-                <td>{{ user.imageProfil }}</td>
+                <td>
+                    {% if user.imageProfil %}
+                        <img src="http://localhost/img/eya.jpg
+" alt="Profile Image" style="width: 60px; height: 60px; object-fit: cover; border-radius: 50%;">
+                    {% else %}
+                        <span>No image</span>
+                    {% endif %}
+                </td>
                 <td>{{ user.status }}</td>
                 <td>{{ user.salaireAttendu }}</td>
                 <td>{{ user.poste }}</td>
@@ -71,7 +72,7 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="25">no records found</td>
+                <td colspan="23">no records found</td>
             </tr>
         {% endfor %}
         </tbody>

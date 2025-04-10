@@ -72,7 +72,7 @@
                 data: JSON.stringify(data),
                 success: function(response) {
                     if (response.token) {
-                        // Store the token
+                    
                         document.cookie = `BEARER=${response.token}; Path=/; Secure; SameSite=Strict`;
                         
                         const userRole = response.role?.toLowerCase();

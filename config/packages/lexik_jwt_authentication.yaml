@@ -3,7 +3,7 @@ lexik_jwt_authentication:
   # Remove public_key and pass_phrase - not needed for HS256
   encoder:
     signature_algorithm: HS256 # Switch to symmetric signing
-  token_ttl: 3600
+  token_ttl: 86400
   token_extractors:
     authorization_header:
       enabled: true

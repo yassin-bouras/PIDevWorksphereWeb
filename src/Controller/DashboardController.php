@@ -11,7 +11,7 @@ final class DashboardController extends AbstractController
     #[Route('/dashboard', name: 'app_dashboard')]
     public function index(): Response
     {
-        return $this->render('dashboard/layout.html.twig', [
+        return $this->render('dashboard/base.html.twig', [
             'controller_name' => 'DashboardController',
         ]);
     }
