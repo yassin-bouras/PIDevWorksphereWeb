@@ -81,9 +81,15 @@
                                                     <a href="{{ path('app_evenement_sponsor_new') }}?sponsor_id={{ sponsor.idSponsor }}" class="btn btn-sm btn-outline-success me-1" title="Affecter événement">
                                                         <i class="fas fa-calendar-plus"></i>
                                                     </a>
-                                                    <a href="{{ path('app_sponsor_events', {'idSponsor': sponsor.idSponsor}) }}" class="btn btn-sm btn-outline-info" title="Événements">
+                                                    <a href="{{ path('app_sponsor_events', {'idSponsor': sponsor.idSponsor}) }}" class="btn btn-sm btn-outline-info me-1" title="Événements">
                                                         <i class="fas fa-list"></i>
                                                     </a>
+                                                    <form method="post" action="{{ path('app_sponsor_delete', {'idSponsor': sponsor.idSponsor}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce sponsor ?');">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ sponsor.idSponsor) }}">
+                                                        <button class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                                            <i class="far fa-trash-alt"></i>
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </td>
                                         </tr>
