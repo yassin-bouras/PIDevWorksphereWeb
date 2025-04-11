@@ -10,9 +10,6 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Doctrine\Persistence\ManagerRegistry;
-use App\Entity\PropertySearch;
-use App\Form\PropertySearchType;
 
 
 #[Route('/equipe')]
@@ -41,6 +38,41 @@ final class EquipeController extends AbstractController{
             'equipes' => $equipes,
         ]);
     }
+
+    /*#[Route(name: 'app_equipe_index', methods: ['GET'])]
+    public function index(EquipeRepository $equipeRepository, Request $request): Response
+    {
+        $searchTerm = $request->query->get('search');
+        
+        if ($request->isXmlHttpRequest()) {
+            $equipes = $equipeRepository->findByNomEquipe($searchTerm);
+            $data = [];
+            
+            foreach ($equipes as $equipe) {
+                $imagePath = $equipe->getImageEquipe() ? 
+                    $this->getParameter('kernel.project_dir').'/public'.$equipe->getImageEquipe() : 
+                    null;
+                
+                $data[] = [
+                    'id' => $equipe->getId(),
+                    'nomEquipe' => $equipe->getNomEquipe(),
+                    'nbrProjet' => $equipe->getNbrProjet(),
+                    'imageEquipe' => $equipe->getImageEquipe(), // Stockez seulement le chemin relatif
+                    'showUrl' => $this->generateUrl('app_equipe_show', ['id' => $equipe->getId()]),
+                    'editUrl' => $this->generateUrl('app_equipe_edit', ['id' => $equipe->getId()]),
+                    'deleteUrl' => $this->generateUrl('app_equipe_delete', ['id' => $equipe->getId()]),
+                ];
+            }
+            
+            return $this->json($data);
+        }
+        
+        $equipes = $searchTerm ? $equipeRepository->findByNomEquipe($searchTerm) : $equipeRepository->findAll();
+        
+        return $this->render('equipe/index.html.twig', [
+            'equipes' => $equipes,
+        ]);
+    }*/
 
    
     #[Route('/new', name: 'app_equipe_new', methods: ['GET', 'POST'])]

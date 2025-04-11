@@ -1,13 +1,260 @@
-<!DOCTYPE html>
+{% extends 'dashboard/manager.html.twig' %}
 
-<title>Edit Projet</title>
+{% block title %}Modifier Projet{% endblock %}
 
 {% block body %}
-    <h1>Edit Projet</h1>
+<div class="page-wrapper">
+    <div class="content container-fluid">
+        <div class="row">
+            <div class="col-xl-12 col-sm-12 col-12">
+                <div class="breadcrumb-path mb-4">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Accueil</a></li>
+                        <li class="breadcrumb-item"><a href="{{ path('app_projet_index') }}">Projets</a></li>
+                        <li class="breadcrumb-item active">Modifier projet</li>
+                    </ul>
+                    <h3>Modifier le projet</h3>
+                </div>
+            </div>
+            
+            <div class="col-xl-12 col-sm-12 col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-titles">Modifier les détails du projet</h2>
+                    </div>
+                    <div class="card-body">
+                        {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+                        
+                        {# Prévisualisation d'image #}
+                        <div class="row mb-4">
+                            <div class="col-md-6">
+                                <div class="image-upload-box" id="imageUploadBox">
+                                    <div class="image-preview" id="imagePreview">
+                                        {% if projet.imageProjet %}
+                                            <img src="{{ asset(projet.imageProjet) }}" alt="Image actuelle" class="preview-image" style="display: block;">
+                                            <div class="upload-icon" style="display: none;">
+                                                <i class="fas fa-image"></i>
+                                                <span>Changer l'image</span>
+                                            </div>
+                                        {% else %}
+                                            <img src="" alt="Aperçu" class="preview-image" style="display: none;">
+                                            <div class="upload-icon">
+                                                <i class="fas fa-image"></i>
+                                                <span>Sélectionner une image</span>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    {{ form_widget(form.imageProjet, {'attr': {'class': 'd-none'}}) }}
+                                    <div class="invalid-feedback">Veuillez sélectionner une image valide</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {# Conteneur du formulaire #}
+                        <div class="styled-form-wrapper">
+                            {{ form_widget(form) }}
+                        </div>
+                        
+                        <div class="form-actions mt-4">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Mettre à jour
+                            </button>
+                            <a href="{{ path('app_projet_index') }}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Retour à la liste
+                            </a>
+                        </div>
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
 
-    {{ include('projet/_form.html.twig', {'button_label': 'Update'}) }}
+<style>
+    /* Style général */
+    .styled-form-wrapper .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Style des champs */
+    .styled-form-wrapper input:not([type="file"]),
+    .styled-form-wrapper textarea,
+    .styled-form-wrapper select {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #ced4da;
+        border-radius: 0.375rem;
+        font-size: 1rem;
+        transition: all 0.3s;
+    }
+    
+    /* Style spécifique pour les selects */
+    .styled-form-wrapper select {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 1rem center;
+        background-size: 16px 12px;
+        appearance: none;
+    }
+    
+    /* Upload d'image */
+    .image-upload-box {
+        position: relative;
+        cursor: pointer;
+    }
+    
+    .image-preview {
+        width: 200px;
+        height: 200px;
+        border: 2px dashed #dee2e6;
+        border-radius: 0.375rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        background-color: #f8f9fa;
+        transition: all 0.3s;
+    }
+    
+    .image-preview:hover {
+        border-color: #adb5bd;
+    }
+    
+    .preview-image {
+        max-width: 100%;
+        max-height: 100%;
+        object-fit: cover;
+    }
+    
+    .upload-icon {
+        text-align: center;
+        color: #6c757d;
+    }
+    
+    .upload-icon i {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Boutons */
+    .btn-primary {
+        background-color: #4a90e2;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        transition: all 0.3s;
+    }
+    
+    .btn-primary:hover {
+        background-color: #3a7bc8;
+        transform: translateY(-1px);
+    }
+    
+    .btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        margin-left: 0.5rem;
+        transition: all 0.3s;
+    }
+    
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        transform: translateY(-1px);
+    }
+    
+    /* Zone de suppression */
+    .card-header.bg-light {
+        background-color: #f8f9fa !important;
+    }
+    
+    .text-danger {
+        color: #dc3545 !important;
+    }
+    
+    /* Validation */
+    .is-invalid {
+        border-color: #dc3545 !important;
+    }
+    
+    .invalid-feedback {
+        display: none;
+        color: #dc3545;
+        font-size: 0.875em;
+    }
+    
+    .was-validated .form-control:invalid ~ .invalid-feedback,
+    .form-control.is-invalid ~ .invalid-feedback {
+        display: block;
+    }
+</style>
 
-    <a href="{{ path('app_projet_index') }}">back to list</a>
-
-    {{ include('projet/_delete_form.html.twig') }}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Gestion de la prévisualisation d'image
+    const imageUploadBox = document.getElementById('imageUploadBox');
+    const imageInput = document.querySelector('input[type="file"]');
+    const imagePreview = document.querySelector('.preview-image');
+    const uploadIcon = document.querySelector('.upload-icon');
+    
+    if (imageUploadBox && imageInput) {
+        imageUploadBox.addEventListener('click', function() {
+            imageInput.click();
+        });
+        
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    imagePreview.src = event.target.result;
+                    imagePreview.style.display = 'block';
+                    if (uploadIcon) uploadIcon.style.display = 'none';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+    
+    // Validation du formulaire
+    const form = document.querySelector('.needs-validation');
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add('was-validated');
+        }, false);
+    }
+    
+    // Appliquer des classes aux éléments générés par form_widget
+    setTimeout(() => {
+        // Ajouter des classes aux inputs
+        const inputs = document.querySelectorAll('.styled-form-wrapper input:not([type="file"])');
+        inputs.forEach(input => {
+            input.classList.add('form-control');
+        });
+        
+        // Ajouter des classes aux selects
+        const selects = document.querySelectorAll('.styled-form-wrapper select');
+        selects.forEach(select => {
+            select.classList.add('form-control');
+        });
+        
+        // Ajouter des classes aux textareas
+        const textareas = document.querySelectorAll('.styled-form-wrapper textarea');
+        textareas.forEach(textarea => {
+            textarea.classList.add('form-control');
+        });
+        
+        // Ajouter des classes aux labels
+        const labels = document.querySelectorAll('.styled-form-wrapper label');
+        labels.forEach(label => {
+            label.classList.add('form-label');
+        });
+    }, 100);
+});
+</script>
 {% endblock %}
