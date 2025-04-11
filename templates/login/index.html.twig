@@ -9,7 +9,6 @@
     <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('back/css/style.css') }}">
-    <script src="https://unpkg.com/jwt-decode@3.1.2/build/jwt-decode.js"></script>
 </head>
 <body>
     <div class="main-wrapper login-body">
@@ -58,85 +57,65 @@
 
     <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
     <script>
-    $(document).ready(function() {
-        // Function to decode JWT and extract role
-        function decodeJwt(token) {
-            try {
-                const decoded = jwt_decode(token);
-                // Try 'roles' (array, e.g., ["ROLE_CANDIDAT"]) or 'role' (string, e.g., "candidat")
-                let role = decoded.roles ? decoded.roles[0] : decoded.role;
-                if (!role) {
-                    throw new Error('No role found in JWT');
-                }
-                // Clean role: remove "ROLE_" prefix and lowercase (e.g., "ROLE_CANDIDAT" -> "candidat")
-                return role.toLowerCase().replace(/^role_/, '');
-            } catch (error) {
-                console.error('JWT decode error:', error);
-                return null;
-            }
-        }
+   $(document).ready(function() {
+    $('#loginForm').on('submit', function(e) {
+        e.preventDefault();
 
-        $('#loginForm').on('submit', function(e) {
-            e.preventDefault();
+        const email = $('input[name="email"]').val();
+        const password = $('input[name="password"]').val();
+        const data = { email: email, password: password };
 
-            const email = $('input[name="email"]').val();
-            const password = $('input[name="password"]').val();
-            const data = { email: email, password: password };
+        $.ajax({
+            url: '/login',
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(data),
+            success: function(response) {
+                if (response.token) {
+                    // Store the token
+                    document.cookie = `BEARER=${response.token}; Path=/; Secure; SameSite=Strict`;
 
-            $.ajax({
-                url: '/login',
-                method: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify(data),
-                success: function(response) {
-                    if (response.token) {
-                        // Store JWT in cookie
-                        document.cookie = `BEARER=${response.token}; Path=/; Secure; SameSite=Strict`;
+                    // Decode the token to extract the roles
+                    const token = response.token;
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    const userRole = payload.roles && payload.roles.length > 0 ? payload.roles[0].toLowerCase() : null;
 
-                        // Decode JWT to get role
-                        const userRole = decodeJwt(response.token);
+                    console.log('Token:', token);
+                    console.log('User Role:', userRole);
 
-                        if (userRole) {
-                            // Redirect based on role
-                            switch (userRole) {
-                                case 'candidat':
-        window.location.href = '/dashboardcandidat';
-                                    break;
-                                case 'rh':
-
-                                 window.location.href = '/dashboard';
-                                    break;
-                                case 'employee':
-                                    window.location.href = '/dashboardemploye';
-                                    break;
-                                case 'manager':
-                                    window.location.href = '/dashboardmanager';
-                                    break;
-                                default:
-                                
-                                console.log('t3adech');
-                                //    window.location.href = '/dashboard';
-                            }
-                        } else {
-                            $('.login-right-wrap').prepend('<div class="alert alert-danger">Could not determine user role</div>');
-                        }
-                    } else {
-                        $('.login-right-wrap').prepend('<div class="alert alert-danger">No token received</div>');
+                    // Redirect based on role
+                    switch(userRole) {
+                        case 'candidat':
+                            window.location.href = '/dashboardcandidat';
+                            break;
+                        case 'rh':
+                            window.location.href = '/dashboard';
+                            break;
+                        case 'employe':
+                            window.location.href = '/dashboardemploye';
+                            break;
+                        case 'manager':
+                            window.location.href = '/dashboardmanager';
+                            break;
+                        default:
+                            console.error('Unknown role:', userRole);
+                            $('.login-right-wrap').prepend('<div class="alert alert-danger">Unknown role</div>');
                     }
-                },
-                error: function(xhr) {
-                    const errorMessage = xhr.responseJSON?.message || 'Login failed';
-                    $('.login-right-wrap').prepend(`<div class="alert alert-danger">${errorMessage}</div>`);
                 }
-            });
-        });
-
-        $('.toggle-password').click(function() {
-            const input = $(this).siblings('.pass-input');
-            input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
-            $(this).toggleClass('fa-eye fa-eye-slash');
+            },
+            error: function(xhr) {
+                const errorMessage = xhr.responseJSON?.message || 'Login failed';
+                $('.login-right-wrap').prepend(`<div class="alert alert-danger">${errorMessage}</div>`);
+            }
         });
     });
+
+    $('.toggle-password').click(function() {
+        const input = $(this).siblings('.pass-input');
+        input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
+        $(this).toggleClass('fa-eye fa-eye-slash');
+    });
+});
     </script>
 </body>
 </html>
