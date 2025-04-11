@@ -77,7 +77,7 @@ final class EvenementSponsorController extends AbstractController
             $entityManager->persist($evenementSponsor);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_evenement_sponsor_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_sponsor_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('evenement_sponsor/new.html.twig', [
@@ -129,6 +129,6 @@ final class EvenementSponsorController extends AbstractController
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('app_evenement_sponsor_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_sponsor_index', [], Response::HTTP_SEE_OTHER);
     }
 }

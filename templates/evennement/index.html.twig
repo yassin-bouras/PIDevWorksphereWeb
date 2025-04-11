@@ -58,9 +58,15 @@
                                             <a href="{{ path('app_evennement_show', {'idEvent': evenement.idEvent}) }}" class="btn btn-sm btn-success">
                                                 <i class="fas fa-eye"></i> Voir
                                             </a>
-                                            <a href="{{ path('app_evennement_edit', {'idEvent': evenement.idEvent}) }}" class="btn btn-sm btn-primary float-end">
+                                            <a href="{{ path('app_evennement_edit', {'idEvent': evenement.idEvent}) }}" class="btn btn-sm btn-warning">
                                                 <i class="fas fa-pen"></i> Modifier
                                             </a>
+                                            <form method="post" action="{{ path('app_evennement_delete', {'idEvent': evenement.idEvent}) }}" class="d-inline" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ evenement.idEvent) }}">
+                                                <button class="btn btn-sm btn-danger float-end">
+                                                    <i class="fas fa-trash-alt"></i> Supprimer
+                                                </button>
+                                            </form>
                                         </div>
                                     </div>
                                 </div>
@@ -77,4 +83,33 @@
             </div>
         </div>
     </div>
+{% endblock %}
+
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    /* Styles optionnels pour améliorer l'apparence des boutons */
+    .btn-warning {
+        color: #212529; /* Texte noir pour meilleur contraste sur fond jaune */
+    }
+    .btn-warning:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .card-footer .btn {
+        margin-right: 5px;
+    }
+    @media (max-width: 576px) {
+        .card-footer .btn {
+            width: 100%;
+            margin-bottom: 5px;
+        }
+        .card-footer form {
+            width: 100%;
+        }
+        .card-footer .float-end {
+            float: none !important;
+        }
+    }
+</style>
 {% endblock %}
