@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('back/css/style.css') }}">
+    <script src="https://unpkg.com/jwt-decode@3.1.2/build/jwt-decode.js"></script>
 </head>
 <body>
     <div class="main-wrapper login-body">
@@ -58,6 +59,23 @@
     <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
     <script>
     $(document).ready(function() {
+        // Function to decode JWT and extract role
+        function decodeJwt(token) {
+            try {
+                const decoded = jwt_decode(token);
+                // Try 'roles' (array, e.g., ["ROLE_CANDIDAT"]) or 'role' (string, e.g., "candidat")
+                let role = decoded.roles ? decoded.roles[0] : decoded.role;
+                if (!role) {
+                    throw new Error('No role found in JWT');
+                }
+                // Clean role: remove "ROLE_" prefix and lowercase (e.g., "ROLE_CANDIDAT" -> "candidat")
+                return role.toLowerCase().replace(/^role_/, '');
+            } catch (error) {
+                console.error('JWT decode error:', error);
+                return null;
+            }
+        }
+
         $('#loginForm').on('submit', function(e) {
             e.preventDefault();
 
@@ -72,27 +90,38 @@
                 data: JSON.stringify(data),
                 success: function(response) {
                     if (response.token) {
-                    
+                        // Store JWT in cookie
                         document.cookie = `BEARER=${response.token}; Path=/; Secure; SameSite=Strict`;
-                        
-                        const userRole = response.role?.toLowerCase();
-                        
-                        switch(userRole) {
-                            case 'candidat':
-                                window.location.href = '/dashboardcandidat';
-                                break;
-                            case 'rh':
-                                window.location.href = '/dashboard';
-                                break;
-                            case 'employee':
-                                window.location.href = '/dashboardemployee';
-                                break;
-                            case 'manager':
-                                window.location.href = '/dashboardmanager';
-                                break;
-                            default:
-                                window.location.href = '/dashboard';
+
+                        // Decode JWT to get role
+                        const userRole = decodeJwt(response.token);
+
+                        if (userRole) {
+                            // Redirect based on role
+                            switch (userRole) {
+                                case 'candidat':
+        window.location.href = '/dashboardcandidat';
+                                    break;
+                                case 'rh':
+
+                                 window.location.href = '/dashboard';
+                                    break;
+                                case 'employee':
+                                    window.location.href = '/dashboardemploye';
+                                    break;
+                                case 'manager':
+                                    window.location.href = '/dashboardmanager';
+                                    break;
+                                default:
+                                
+                                console.log('t3adech');
+                                //    window.location.href = '/dashboard';
+                            }
+                        } else {
+                            $('.login-right-wrap').prepend('<div class="alert alert-danger">Could not determine user role</div>');
                         }
+                    } else {
+                        $('.login-right-wrap').prepend('<div class="alert alert-danger">No token received</div>');
                     }
                 },
                 error: function(xhr) {

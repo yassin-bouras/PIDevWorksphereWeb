@@ -26,10 +26,10 @@ final class LoginController extends AbstractController
     #[Route('/logout', name: 'app_logout')]
     public function logout(): Response
     {
-        // Create a redirect response to "/"
+
         $response = new RedirectResponse('/');
 
-        // Clear the JWT cookie
+
         $response->headers->clearCookie('BEARER');
 
         return $response;
