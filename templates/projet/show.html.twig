@@ -1,81 +1,281 @@
-{% extends '/home/index.html.twig' %}
-
+{% extends '/dashboard/manager.html.twig' %}
 {% block title %}Détails du Projet{% endblock %}
 
-{% block body %}
-
-<div class="container" style="margin-top:5%; max-width: 900px;">
-    <h1 class="text-center mb-4" style="font-weight: 600; color: #333;">Détails du Projet</h1>
-
-    {# Informations sur le projet #}
-    <div class="project-card d-flex align-items-center p-3" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 25px;">
-        {% if projet.imageProjet %}
-            <img src="{{ asset(projet.imageProjet) }}" alt="Image du projet" class="rounded-img">
-        {% else %}
-            <img src="https://via.placeholder.com/50" alt="No Image" class="rounded-img">
-        {% endif %}
-        <div>
-            <h2 style="margin: 0; font-size: 1.6rem; color: #333;">{{ projet.nom }}</h2>
-            <p style="color: #555; margin: 5px 0;"><strong>Description:</strong> {{ projet.description }}</p>
-            <p style="color: #555; margin: 5px 0;"><strong>Date de création:</strong> {{ projet.dateCreation ? projet.dateCreation|date('Y-m-d') : '' }}</p>
-            <p style="color: #555; margin: 5px 0;"><strong>Deadline:</strong> {{ projet.deadline ? projet.deadline|date('Y-m-d') : '' }}</p>
-            <p style="color: #555; margin: 5px 0;"><strong>Etat:</strong> {{ projet.etat }}</p>
+{% block content %}
+<div class="content container-fluid">
+    <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12">
+            <div class="breadcrumb-path mb-4">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard_manager') }}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_projet_index') }}">Projet</a></li>
+                    <li class="breadcrumb-item active">Détails du Projet</li>
+                </ul>
+                <h3>Détails du Projet</h3>
+            </div>
         </div>
     </div>
 
-    {# Équipe assignée au projet #}
-    <h3 style="color: #333;">Équipe assignée</h3>
-    <div class="team-card d-flex align-items-center p-3" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 25px;">
-        {% if projet.equipe %}
-            <div class="d-flex align-items-center">
-                <img src="{{ asset(projet.equipe.imageEquipe) }}" alt="Image de l'équipe {{ projet.equipe.nomEquipe }}" class="rounded-img" width="80">
-                <span>{{ projet.equipe.nomEquipe }}</span>
+    <div class="card">
+        <div class="card-header">
+            <h2 class="card-titles">Informations du projet</h2>
+        </div>
+        <div class="card-body">
+            {# Informations principales #}
+            <div class="project-info d-flex align-items-start p-3 mb-4">
+                {% if projet.imageProjet %}
+                    <img src="{{ asset(projet.imageProjet) }}" alt="Image du projet" class="project-image">
+                {% else %}
+                    <div class="project-image-placeholder">
+                        <i class="fas fa-project-diagram"></i>
+                    </div>
+                {% endif %}
+                <div class="project-details ml-4">
+                    <h3 class="project-name">{{ projet.nom }}</h3>
+                    <div class="project-stats">
+                        <span class="stat-item">
+                            <i class="fas fa-calendar-alt"></i> 
+                            Créé le: {{ projet.dateCreation|date('d/m/Y') }}
+                        </span>
+                        <span class="stat-item">
+                            <i class="fas fa-flag-checkered"></i> 
+                            Deadline: <span class="{{ projet.deadline and projet.deadline < date() ? 'text-danger' : '' }}">
+                                {{ projet.deadline ? projet.deadline|date('d/m/Y') : 'Non définie' }}
+                            </span>
+                        </span>
+                        <span class="stat-item">
+                            <i class="fas fa-tasks"></i> 
+                            État: <span class="badge {{ projet.etat == 'Terminé' ? 'bg-success' : (projet.etat == 'En cours' ? 'bg-primary' : 'bg-warning') }}">
+                                {{ projet.etat }}
+                            </span>
+                        </span>
+                    </div>
+                </div>
             </div>
-        {% else %}
-            <span class="text-muted">Aucune équipe assignée</span>
-        {% endif %}
-    </div>
 
-    {# Boutons d'action #}
-    <div class="mt-4 text-center">
-        <a href="{{ path('app_projet_index') }}" class="btn btn-secondary">Retour à la liste</a>
-        <a href="{{ path('app_projet_edit', {'id': projet.id}) }}" class="btn btn-primary">Modifier</a>
+            {# Description #}
+            <div class="section-title mb-3">
+                <h4>Description</h4>
+            </div>
+            <div class="project-description p-3 mb-4 bg-light rounded">
+                <p>{{ projet.description }}</p>
+            </div>
+
+            {# Équipe assignée #}
+            <div class="section-title mb-3">
+                <h4>Équipe assignée</h4>
+            </div>
+            <div class="assigned-team">
+                {% if projet.equipe %}
+                    <div class="team-card d-flex align-items-center p-3 bg-light rounded">
+                        {% if projet.equipe.imageEquipe %}
+                            <img src="{{ asset(projet.equipe.imageEquipe) }}" alt="Image de l'équipe" class="team-image">
+                        {% else %}
+                            <div class="team-image-placeholder">
+                                <i class="fas fa-users"></i>
+                            </div>
+                        {% endif %}
+                        <div class="team-details ml-4">
+                            <h5>{{ projet.equipe.nomEquipe }}</h5>
+                            <div class="team-stats">
+                                <span class="stat-item">
+                                    <i class="fas fa-project-diagram"></i> 
+                                    {{ projet.equipe.nbrProjet }} Projets
+                                </span>
+                                <span class="stat-item">
+                                    <i class="fas fa-users"></i> 
+                                    {{ projet.equipe.users|length }} Membres
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <p>Aucune équipe assignée à ce projet</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            
+        </div>
+        
+        {# Boutons d'action #}
+        <div class="card-footer">
+            <div class="form-btn">
+                <a href="{{ path('app_projet_index') }}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Retour
+                </a>
+               <!--  <a href="{{ path('app_projet_edit', {'id': projet.id}) }}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Modifier
+                </a> -->
+            </div>
+        </div>
     </div>
 </div>
 
-
-{# Script pour ajuster les boutons et animations #}
-<script>
-    document.querySelectorAll('.btn').forEach(function(btn) {
-        btn.addEventListener('mouseover', function() {
-            btn.style.opacity = '0.9';
-            btn.style.transform = 'translateY(-1px)';
-        });
-        btn.addEventListener('mouseout', function() {
-            btn.style.opacity = '1';
-            btn.style.transform = 'translateY(0)';
-        });
-    });
-</script>
-
 <style>
-    .btn:hover {
-        opacity: 0.9;
-        transform: translateY(-1px);
+    /* Style général */
+    .project-info {
+        background: #f8f9fa;
+        border-radius: 8px;
     }
-    .project-card, .team-card {
-        transition: background 0.3s ease;
-    }
-    .project-card:hover, .team-card:hover {
-        background: #f9f9f9;
-    }
-    .rounded-img {
-        width: 50px;
-        height: 50px;
-        border-radius: 50%;
+    
+    .project-image {
+        width: 100px;
+        height: 100px;
+        border-radius: 8px;
         object-fit: cover;
-        margin-right: 15px;
+    }
+    
+    .project-image-placeholder {
+        width: 100px;
+        height: 100px;
+        border-radius: 8px;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        color: #6c757d;
+    }
+    
+    .project-name {
+        color: #333;
+        margin-bottom: 1rem;
+    }
+    
+    .project-stats {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+    
+    .stat-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #6c757d;
+    }
+    
+    /* Style de l'équipe */
+    .team-card {
+        transition: all 0.3s ease;
+    }
+    
+    .team-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    
+    .team-image {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        object-fit: cover;
+    }
+    
+    .team-image-placeholder {
+        width: 60px;
+        height: 60px;
+        border-radius: 8px;
+        background: #e9ecef;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+        color: #6c757d;
+    }
+    
+    .team-details h5 {
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    
+    /* Description */
+    .project-description {
+        line-height: 1.6;
+    }
+    
+    /* Section titles */
+    .section-title {
+        position: relative;
+        padding-bottom: 0.5rem;
+    }
+    
+    .section-title h4 {
+        color: #4a73e8;
+        font-weight: 600;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 50px;
+        height: 2px;
+        background: #4a73e8;
+    }
+    
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 2rem;
+        color: #6c757d;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+    
+    .empty-state i {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #dee2e6;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .project-info {
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        .project-details {
+            margin-left: 0;
+            margin-top: 1.5rem;
+        }
+        
+        .project-stats {
+            justify-content: center;
+        }
+        
+        .team-card {
+            flex-direction: column;
+            text-align: center;
+        }
+        
+        .team-details {
+            margin-left: 0;
+            margin-top: 1rem;
+        }
+        
+        .team-stats {
+            justify-content: center;
+        }
     }
 </style>
 
+<script>
+    // Animation simple au chargement
+    document.addEventListener('DOMContentLoaded', function() {
+        const elements = document.querySelectorAll('.project-info, .assigned-team');
+        elements.forEach((el, index) => {
+            setTimeout(() => {
+                el.style.opacity = '1';
+                el.style.transform = 'translateY(0)';
+            }, index * 150);
+        });
+    });
+</script>
 {% endblock %}
