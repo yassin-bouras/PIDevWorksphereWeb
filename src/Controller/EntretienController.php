@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Entretien;
+use App\Entity\User;
 use App\Form\EntretienType;
 use App\Repository\EntretienRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -42,12 +43,22 @@ final class EntretienController extends AbstractController{
     }
 
     #[Route('/{id}', name: 'app_entretien_show', methods: ['GET'])]
-    public function show(Entretien $entretien): Response
-    {
-        return $this->render('entretien/show.html.twig', [
-            'entretien' => $entretien,
-        ]);
+public function show(Entretien $entretien, EntityManagerInterface $em): Response
+{
+    $candidat = null;
+
+    $candidatId = $entretien->getCandidatId();
+
+    if ($candidatId !== null) {
+        $candidat = $em->getRepository(User::class)->find($candidatId);
     }
+
+    return $this->render('entretien/show.html.twig', [
+        'entretien' => $entretien,
+        'candidat' => $candidat,
+    ]); }
+
+   
 
     #[Route('/{id}/edit', name: 'app_entretien_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Entretien $entretien, EntityManagerInterface $entityManager): Response

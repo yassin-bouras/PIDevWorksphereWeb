@@ -178,7 +178,7 @@
         <p>Ajoutez les informations nécessaires pour organiser un entretien</p>
     </div>
 
-    {{ form_start(form) }}
+{{ form_start(form, {'attr': {'id': 'entretienForm'}}) }}
 
     <div class="form-group">
         {{ form_label(form.titre) }}
@@ -244,6 +244,69 @@
 
     
 </body>
+
+
+<script>
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('entretienForm');
+    const titre = form.querySelector('[name$="[titre]"]');
+    const description = form.querySelector('[name$="[description]"]');
+    const dateEntretien = form.querySelector('[name$="[date_entretien]"]');
+    const heureEntretien = form.querySelector('[name$="[heureentretien]"]');
+    const typeEntretien = form.querySelector('[name$="[type_entretien]"]');
+
+    form.addEventListener('submit', function (e) {
+        let valid = true;
+        let messages = [];
+
+        // Titre validation
+        if (!titre.value.trim()) {
+            valid = false;
+            messages.push("Le titre est requis.");
+        } else if (titre.value.trim().length < 5) {
+            valid = false;
+            messages.push("Le titre doit contenir au moins 5 caractères.");
+        }
+
+        // Description validation
+        if (!description.value.trim()) {
+            valid = false;
+            messages.push("La description est requise.");
+        } else if (description.value.trim().length < 10) {
+            valid = false;
+            messages.push("La description doit contenir au moins 10 caractères.");
+        }
+
+        // Date validation
+        if (!dateEntretien.value) {
+            valid = false;
+            messages.push("La date de l'entretien est requise.");
+        }
+
+        // Heure validation
+        if (!heureEntretien.value) {
+            valid = false;
+            messages.push("L'heure de l'entretien est requise.");
+        }
+
+        // Type validation
+        if (!typeEntretien.value.trim()) {
+            valid = false;
+            messages.push("Le type d'entretien est requis.");
+        }
+
+        if (!valid) {
+            e.preventDefault();
+            alert(messages.join("\n"));
+        }
+    });
+});
+    
+</script>
+
+
+
 </html>
 
 

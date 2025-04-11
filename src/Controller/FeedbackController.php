@@ -49,8 +49,6 @@ final class FeedbackController extends AbstractController{
         $entretien = $entityManager->getRepository(Entretien::class)->find($id);
 
          
-
-
         if (!$entretien) {
             throw $this->createNotFoundException('Entretien non trouvé');
         }
@@ -76,9 +74,8 @@ final class FeedbackController extends AbstractController{
             'entretiens' => $entretienRepository->findAll(),
         ]);
 
-        
-        }
 
+        }
 
         return $this->render('feedback/new.html.twig', [
             'form' => $form->createView(),
@@ -92,11 +89,6 @@ final class FeedbackController extends AbstractController{
 
 
 
-    
-
-
-
-
 
     #[Route('/{id}', name: 'app_feedback_show', methods: ['GET'])]
     public function show(Feedback $feedback): Response
@@ -107,7 +99,7 @@ final class FeedbackController extends AbstractController{
     }
 
     #[Route('/{id}/edit', name: 'app_feedback_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Feedback $feedback, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Feedback $feedback, EntityManagerInterface $entityManager, EntretienRepository $entretienRepository): Response
     {
         $form = $this->createForm(FeedbackType::class, $feedback);
         $form->handleRequest($request);
@@ -115,7 +107,10 @@ final class FeedbackController extends AbstractController{
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_feedback_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Feedback ajouté avec succès !');
+            return $this->render('entretien/index.html.twig', [
+           'entretiens' => $entretienRepository->findAll(),
+            ]);
         }
 
         return $this->render('feedback/edit.html.twig', [

@@ -33,7 +33,11 @@
                     <div class="event-actions" style="display: flex; gap: 10px;">
                         <a class="btn" href="{{ path('app_entretien_show', {'id': entretien.id}) }}" style="background-color: #4a6fa5; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Voir</a>
                         <a class="btn" href="{{ path('app_entretien_edit', {'id': entretien.id}) }}" style="background-color: #2D6E13FF; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Modifier</a>
+                        {% if entretien.feedback is  null %}
                         <a class="btn" href="{{ path('app_feedback_news', {'id': entretien.id}) }}" style="background-color: #FF8C00; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Ajouter Feedback</a>
+                        {% else %}
+                        <a class="btn" href="{{ path('app_feedback_edit', {'id': entretien.feedback.id}) }}" style="background-color: #FF8C00; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">modifier   Feedback</a>
+                        {% endif %}
                         <form method="post" action="{{ path('app_entretien_delete', {'id': entretien.id}) }}" onsubmit="return confirm('Are you sure you want to delete this Entretien?');" style="display: inline; margin-left: auto;">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entretien.id) }}">
                             <button type="submit" class="btn" style="background-color: #E74412FF; color: white; padding: 8px 15px; border-radius: 5px; font-size: 0.9rem; border: none; cursor: pointer;">

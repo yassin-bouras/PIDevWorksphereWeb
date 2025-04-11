@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
+
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 
@@ -30,6 +33,11 @@ class Entretien
     }
 
     #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: 'Le titre est obligatoire.')]
+    #[Assert\Length(
+        min: 5,
+        minMessage: 'Le titre doit contenir au moins {{ limit }} caractères.'
+    )]
     private ?string $titre = null;
 
     public function getTitre(): ?string
@@ -44,6 +52,11 @@ class Entretien
     }
 
     #[ORM\Column(type: 'text', nullable: false)]
+    #[Assert\NotBlank(message: 'La description est obligatoire.')]
+    #[Assert\Length(
+        min: 10,
+        minMessage: 'La description doit contenir au moins {{ limit }} caractères.'
+    )]
     private ?string $description = null;
 
     public function getDescription(): ?string
@@ -58,6 +71,8 @@ class Entretien
     }
 
     #[ORM\Column(type: 'date', nullable: false)]
+    #[Assert\NotNull(message: 'La date est obligatoire.')]
+    #[Assert\GreaterThanOrEqual('today', message: 'La date de l\'entretien doit être aujourd\'hui ou dans le futur.')]
     private ?\DateTimeInterface $date_entretien = null;
 
     public function getDate_entretien(): ?\DateTimeInterface
@@ -72,6 +87,7 @@ class Entretien
     }
 
     #[ORM\Column(name:"heure_entretien",type: 'time', nullable: false)]
+    
         private ?\DateTimeInterface $heureentretien = null;
 
         public function getHeureentretien(): ?\DateTimeInterface
