@@ -210,10 +210,10 @@
         {{ form_widget(form.type_entretien, {'attr': {'class': 'form-control', 'placeholder': 'Type d\'entretien'}}) }}
     </div>
 
-    <div class="form-group">
-        {{ form_label(form.status) }}
-        {{ form_widget(form.status) }}
-    </div>
+    <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+    {{ form_label(form.status, null, {'label_attr': {'style': 'margin-bottom: 0'}}) }}
+    {{ form_widget(form.status) }}
+</div>
 
     <div class="form-group">
         {{ form_label(form.candidatId) }}
@@ -231,12 +231,6 @@
             <div class="form-group">
                 {{ form_label(form.offre) }}
                 {{ form_widget(form.offre, {'attr': {'class': 'form-control'}}) }}
-            </div>
-        </div>
-        <div class="form-col">
-            <div class="form-group">
-                {{ form_label(form.candidature) }}
-                {{ form_widget(form.candidature, {'attr': {'class': 'form-control'}}) }}
             </div>
         </div>
     </div>

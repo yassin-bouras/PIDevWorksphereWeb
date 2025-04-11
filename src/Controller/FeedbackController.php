@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Entretien;
 use App\Entity\Feedback;
 use App\Form\FeedbackType;
+use App\Repository\EntretienRepository;
 use App\Repository\FeedbackRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -40,6 +42,61 @@ final class FeedbackController extends AbstractController{
             'form' => $form,
         ]);
     }
+
+    #[Route('/feedback/news/{id}', name: 'app_feedback_news')]
+    public function news(int $id, Request $request, EntityManagerInterface $entityManager , EntretienRepository $entretienRepository): Response
+    {
+        $entretien = $entityManager->getRepository(Entretien::class)->find($id);
+
+         
+
+
+        if (!$entretien) {
+            throw $this->createNotFoundException('Entretien non trouvé');
+        }
+
+        if ($entretien->getFeedback()) {
+            $this->addFlash('warning', 'Cet entretien a déjà un feedback.');
+            return $this->redirectToRoute('app_entretien_show', ['id' => $id]);
+        }
+
+        $feedback = new Feedback();
+        $form = $this->createForm(FeedbackType::class, $feedback);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $feedback->setEntretien($entretien);
+            $entretien->setFeedback($feedback);
+
+            $entityManager->persist($feedback);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Feedback ajouté avec succès !');
+             return $this->render('entretien/index.html.twig', [
+            'entretiens' => $entretienRepository->findAll(),
+        ]);
+
+        
+        }
+
+
+        return $this->render('feedback/new.html.twig', [
+            'form' => $form->createView(),
+            'entretien' => $entretien,
+        ]);
+
+        // return $this->render('entretien/index.html.twig', [
+        //     'entretiens' => $entretienRepository->findAll(),
+        // ]);
+    }
+
+
+
+    
+
+
+
+
 
     #[Route('/{id}', name: 'app_feedback_show', methods: ['GET'])]
     public function show(Feedback $feedback): Response

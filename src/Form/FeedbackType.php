@@ -6,6 +6,7 @@ use App\Entity\Entretien;
 use App\Entity\Feedback;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -19,10 +20,10 @@ class FeedbackType extends AbstractType
             ->add('date_feedback', null, [
                 'widget' => 'single_text'
             ])
-            ->add('entretien', EntityType::class, [
-                'class' => Entretien::class,
-'choice_label' => 'id',
-            ])
+            ->add('entretien', HiddenType::class, [
+                'mapped' => false, 
+            ]);
+            
         ;
     }
 

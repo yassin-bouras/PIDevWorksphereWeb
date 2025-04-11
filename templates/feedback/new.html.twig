@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{# <!DOCTYPE html>
 
 <title>New Feedback</title>
 
@@ -8,4 +8,26 @@
     {{ include('feedback/_form.html.twig') }}
 
     <a href="{{ path('app_feedback_index') }}">back to list</a>
+{% endblock %} #}
+
+
+
+{% block title %}New Feedback{% endblock %}
+
+{% block body %}
+    <h1>Create New Feedback</h1>
+
+    {% if entretien %}
+        <p>Creating feedback for Entretien: {{ entretien.titre }}</p>
+    {% endif %}
+
+    {{ form_start(form) }}
+        {{ form_widget(form) }}
+        {% if entretien %}
+            <input type="hidden" name="entretien" value="{{ entretien.id }}">
+        {% endif %}
+        <button class="btn">{{ button_label|default('Save Feedback') }}</button>
+    {{ form_end(form) }}
+
+    <a href="{{ path('app_feedback_index') }}">Back to list</a>
 {% endblock %}
