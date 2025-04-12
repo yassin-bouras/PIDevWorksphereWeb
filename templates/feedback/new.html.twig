@@ -218,14 +218,16 @@ document.addEventListener('DOMContentLoaded', function () {
         let valid = true;
         let messages = [];
 
-        // Reset previous warnings
         warningDiv.style.display = 'none';
         warningDiv.innerHTML = '';
         const inputs = form.querySelectorAll('.form-control');
         inputs.forEach(input => input.classList.remove('is-invalid'));
 
-        // Message validation
-        const message = document.getElementById('message');
+        const message = document.querySelector('[id$="_message"]');
+        const rate = document.querySelector('[id$="_rate"]');
+        const dateFeedback = document.querySelector('[id$="_date_feedback"]');
+        const entretien = document.querySelector('[id$="_entretien"]');
+
         if (!message.value.trim()) {
             valid = false;
             messages.push("Le message est obligatoire.");
@@ -236,8 +238,6 @@ document.addEventListener('DOMContentLoaded', function () {
             message.classList.add('is-invalid');
         }
 
-        // Rate validation
-        const rate = document.getElementById('rate');
         const rateValue = rate.value.trim();
         if (!rateValue) {
             valid = false;
@@ -252,8 +252,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Date validation
-        const dateFeedback = document.getElementById('date_feedback');
         if (!dateFeedback.value) {
             valid = false;
             messages.push("La date du feedback est obligatoire.");
@@ -267,24 +265,18 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        // Entretien validation (only if not hidden)
-        const entretien = document.getElementById('entretien');
-        if (entretien && !entretien.value) {
-            valid = false;
-            messages.push("L'entretien est obligatoire.");
-            entretien.classList.add('is-invalid');
-        }
-
+       
         if (!valid) {
             e.preventDefault();
-            // Display warnings in the warning div
             warningDiv.innerHTML = '<ul>' + messages.map(msg => `<li>${msg}</li>`).join('') + '</ul>';
             warningDiv.style.display = 'block';
-            // Scroll to the top to ensure warnings are visible
             window.scrollTo({ top: warningDiv.offsetTop - 20, behavior: 'smooth' });
         }
     });
 });
 </script>
+
+
+
 </body>
 </html>

@@ -71,7 +71,7 @@ final class FeedbackController extends AbstractController{
 
             $this->addFlash('success', 'Feedback ajouté avec succès !');
              return $this->render('entretien/index2.html.twig', [
-            'entretiens' => $entretienRepository->findAll(),
+            'entretiens' => $entretienRepository->findByEmployeeId(50),
         ]);
 
 
@@ -109,7 +109,7 @@ final class FeedbackController extends AbstractController{
 
             $this->addFlash('success', 'Feedback ajouté avec succès !');
             return $this->render('entretien/index2.html.twig', [
-           'entretiens' => $entretienRepository->findAll(),
+           'entretiens' => $entretienRepository->findByEmployeeId(50),
             ]);
         }
 
