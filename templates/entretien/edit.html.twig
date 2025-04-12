@@ -14,6 +14,7 @@
             --dark-gray: #6c757d;
             --text-color: #2d3748;
             --success-color: #4caf50;
+            --danger-color: #dc3545;
         }
 
         body {
@@ -42,7 +43,7 @@
         }
 
         .container {
-            width:500px ; 
+            width: 500px;
             max-width: 1200px;
             margin: 40px auto;
             background: white;
@@ -114,6 +115,11 @@
             background-color: white;
         }
 
+        .form-control.is-invalid {
+            border-color: var(--danger-color);
+            background-color: #fff5f5;
+        }
+
         .btn {
             background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
@@ -157,9 +163,37 @@
             text-decoration: none;
         }
 
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-danger ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .alert-danger li {
+            margin-bottom: 5px;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-col {
+            flex: 1;
         }
     </style>
 </head>
@@ -173,7 +207,10 @@
         <p>Mettez à jour les informations de l'entretien</p>
     </div>
 
-    {{ form_start(form) }}
+    <!-- Error Display Div -->
+    <div class="alert-danger" id="errorMessages"></div>
+
+    {{ form_start(form, {'attr': {'id': 'entretienForm'}}) }}
 
     <div class="form-group">
         {{ form_label(form.titre) }}
@@ -182,7 +219,7 @@
 
     <div class="form-group">
         {{ form_label(form.description) }}
-        {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
+        {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '4'}}) }}
     </div>
 
     <div class="form-row">
@@ -228,7 +265,6 @@
                 {{ form_widget(form.offre, {'attr': {'class': 'form-control'}}) }}
             </div>
         </div>
-        
     </div>
 
     <button class="btn">{{ button_label|default('Mettre à jour') }}</button>
@@ -237,5 +273,102 @@
 
     <a href="{{ path('app_entretien_index') }}" class="back-link">← Retour à la liste</a>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('entretienForm');
+    const errorDiv = document.getElementById('errorMessages');
+
+    form.addEventListener('submit', function (e) {
+        let valid = true;
+        let messages = [];
+
+        errorDiv.style.display = 'none';
+        errorDiv.innerHTML = '';
+        const inputs = form.querySelectorAll('.form-control');
+        inputs.forEach(input => input.classList.remove('is-invalid'));
+
+        const titre = form.querySelector('[name$="[titre]"]');
+        if (!titre.value.trim()) {
+            valid = false;
+            messages.push("Le titre est obligatoire.");
+            titre.classList.add('is-invalid');
+        } else if (titre.value.trim().length < 5) {
+            valid = false;
+            messages.push("Le titre doit contenir au moins 5 caractères.");
+            titre.classList.add('is-invalid');
+        }
+
+        const description = form.querySelector('[name$="[description]"]');
+        if (!description.value.trim()) {
+            valid = false;
+            messages.push("La description est obligatoire.");
+            description.classList.add('is-invalid');
+        } else if (description.value.trim().length < 10) {
+            valid = false;
+            messages.push("La description doit contenir au moins 10 caractères.");
+            description.classList.add('is-invalid');
+        }
+
+        const dateEntretien = form.querySelector('[name$="[date_entretien]"]');
+        if (!dateEntretien.value) {
+            valid = false;
+            messages.push("La date de l'entretien est obligatoire.");
+            dateEntretien.classList.add('is-invalid');
+        } else {
+            const selectedDate = new Date(dateEntretien.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (selectedDate < today) {
+                valid = false;
+                messages.push("La date de l'entretien doit être aujourd'hui ou dans le futur.");
+                dateEntretien.classList.add('is-invalid');
+            }
+        }
+
+        const heureEntretien = form.querySelector('[name$="[heureentretien]"]');
+        if (!heureEntretien.value) {
+            valid = false;
+            messages.push("L'heure de l'entretien est obligatoire.");
+            heureEntretien.classList.add('is-invalid');
+        }
+
+        const typeEntretien = form.querySelector('[name$="[type_entretien]"]');
+        if (!typeEntretien.value.trim()) {
+            valid = false;
+            messages.push("Le type d'entretien est obligatoire.");
+            typeEntretien.classList.add('is-invalid');
+        }
+
+        const candidatId = form.querySelector('[name$="[candidatId]"]');
+        if (candidatId.value.trim() && isNaN(candidatId.value.trim())) {
+            valid = false;
+            messages.push("L'ID du candidat doit être un nombre.");
+            candidatId.classList.add('is-invalid');
+        }
+
+        const user = form.querySelector('[name$="[user]"]');
+        if (!user.value) {
+            valid = false;
+            messages.push("L'employé est obligatoire.");
+            user.classList.add('is-invalid');
+        }
+
+        const offre = form.querySelector('[name$="[offre]"]');
+        if (!offre.value) {
+            valid = false;
+            messages.push("L'offre est obligatoire.");
+            offre.classList.add('is-invalid');
+        }
+
+        if (!valid) {
+            e.preventDefault();
+            errorDiv.innerHTML = '<ul>' + messages.map(msg => `<li>${msg}</li>`).join('') + '</ul>';
+            errorDiv.style.display = 'block';
+            window.scrollTo({ top: errorDiv.offsetTop - 20, behavior: 'smooth' });
+        }
+    });
+});
+</script>
 </body>
 </html>

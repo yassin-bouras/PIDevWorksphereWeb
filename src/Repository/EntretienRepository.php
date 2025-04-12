@@ -16,6 +16,16 @@ class EntretienRepository extends ServiceEntityRepository
         parent::__construct($registry, Entretien::class);
     }
 
+    public function findByEmployeeId(int $employeeId): array
+{
+    return $this->createQueryBuilder('e')
+        ->andWhere('e.user = :id')
+        ->setParameter('id', $employeeId)
+        ->orderBy('e.date_entretien', 'DESC')
+        ->getQuery()
+        ->getResult();
+}
+
 //    /**
 //     * @return Entretien[] Returns an array of Entretien objects
 //     */

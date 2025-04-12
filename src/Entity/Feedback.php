@@ -6,6 +6,8 @@ use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 use App\Repository\FeedbackRepository;
 
@@ -30,6 +32,11 @@ class Feedback
     }
 
     #[ORM\Column(type: 'text', nullable: false)]
+    #[Assert\NotBlank(message: 'Le message ne doit pas être vide.')]
+    #[Assert\Length(
+        min: 10,
+        minMessage: 'Le message doit contenir au moins {{ limit }} caractères.'
+    )]
     private ?string $message = null;
 
     public function getMessage(): ?string
@@ -44,6 +51,12 @@ class Feedback
     }
 
     #[ORM\Column(type: 'integer', nullable: false)]
+    #[Assert\NotNull(message: 'Le rate ne doit pas être vide.')]
+    #[Assert\Range(
+        min: 1,
+        max: 5,
+        notInRangeMessage: 'La note doit être comprise entre {{ min }} et {{ max }}.'
+    )]
     private ?int $rate = null;
 
     public function getRate(): ?int

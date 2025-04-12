@@ -22,6 +22,19 @@ final class EntretienController extends AbstractController{
         ]);
     }
 
+    #[Route('/employee', name: 'entretien_by_employee')]
+    public function showEntretienByEmployee( EntretienRepository $entretienRepository): Response
+    {
+        $entretiens = $entretienRepository->findByEmployeeId(50);
+
+        return $this->render('entretien/index2.html.twig', [
+            'entretiens' => $entretiens,
+        ]);
+    }
+
+
+
+
     #[Route('/new', name: 'app_entretien_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {

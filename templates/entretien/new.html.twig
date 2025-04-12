@@ -1,8 +1,4 @@
 <!DOCTYPE html>
-
-
-
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -17,6 +13,7 @@
             --dark-gray: #6c757d;
             --text-color: #2d3748;
             --success-color: #4caf50;
+            --danger-color: #dc3545;
         }
 
         body {
@@ -99,8 +96,8 @@
         }
 
         .form-control {
-            width: 100%;
-            padding: px 12px;
+            width: 80%;
+            padding: 12px;
             border: 2px solid var(--medium-gray);
             border-radius: 6px;
             font-size: 0.95rem;
@@ -113,6 +110,11 @@
             outline: none;
             box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
             background-color: white;
+        }
+
+        .form-control.is-invalid {
+            border-color: var(--danger-color);
+            background-color: #fff5f5;
         }
 
         .btn {
@@ -158,7 +160,25 @@
             text-decoration: none;
         }
 
-        /* Animation subtile */
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid var(--danger-color);
+            color: var(--danger-color);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-danger ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .alert-danger li {
+            margin-bottom: 5px;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -167,176 +187,187 @@
         .container {
             animation: fadeIn 0.5s ease-out;
         }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-col {
+            flex: 1;
+        }
     </style>
 </head>
 
-<div class="overlay"></div>
+<body>
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="form-header">
+            <h2>Créer un Entretien</h2>
+            <p>Ajoutez les informations nécessaires pour organiser un entretien</p>
+        </div>
 
-<div class="container">
-    <div class="form-header">
-        <h2>Créer un Entretien</h2>
-        <p>Ajoutez les informations nécessaires pour organiser un entretien</p>
-    </div>
+        <div class="alert-danger" id="errorMessages"></div>
 
-{{ form_start(form, {'attr': {'id': 'entretienForm'}}) }}
+        {{ form_start(form, {'attr': {'id': 'entretienForm'}}) }}
 
-    <div class="form-group">
-        {{ form_label(form.titre) }}
-        {{ form_widget(form.titre, {'attr': {'class': 'form-control', 'placeholder': 'Titre de l\'entretien'}}) }}
-    </div>
+        <div class="form-group">
+            {{ form_label(form.titre) }}
+            {{ form_widget(form.titre, {'attr': {'class': 'form-control', 'placeholder': 'Titre de l\'entretien'}}) }}
+        </div>
 
-    <div class="form-group">
-        {{ form_label(form.description) }}
-        {{ form_widget(form.description, {'attr': {'class': 'form-control', 'placeholder': 'Description détaillée', 'rows': 4}}) }}
-    </div>
+        <div class="form-group">
+            {{ form_label(form.description) }}
+            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'placeholder': 'Description détaillée', 'rows': 4}}) }}
+        </div>
 
-    <div class="form-row">
-        <div class="form-col">
-            <div class="form-group">
-                {{ form_label(form.date_entretien) }}
-                {{ form_widget(form.date_entretien, {'attr': {'class': 'form-control'}}) }}
+        <div class="form-row">
+            <div class="form-col">
+                <div class="form-group">
+                    {{ form_label(form.date_entretien) }}
+                    {{ form_widget(form.date_entretien, {'attr': {'class': 'form-control'}}) }}
+                </div>
+            </div>
+            <div class="form-col">
+                <div class="form-group">
+                    {{ form_label(form.heureentretien) }}
+                    {{ form_widget(form.heureentretien, {'attr': {'class': 'form-control'}}) }}
+                </div>
             </div>
         </div>
-        <div class="form-col">
-            <div class="form-group">
-                {{ form_label(form.heureentretien) }}
-                {{ form_widget(form.heureentretien, {'attr': {'class': 'form-control'}}) }}
+
+        <div class="form-group">
+            {{ form_label(form.type_entretien) }}
+            {{ form_widget(form.type_entretien, {'attr': {'class': 'form-control', 'placeholder': 'Type d\'entretien'}}) }}
+        </div>
+
+        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+            {{ form_label(form.status, null, {'label_attr': {'style': 'margin-bottom: 0'}}) }}
+            {{ form_widget(form.status) }}
+        </div>
+
+        <div class="form-group">
+            {{ form_label(form.candidatId) }}
+            {{ form_widget(form.candidatId, {'attr': {'class': 'form-control', 'placeholder': 'ID du candidat'}}) }}
+        </div>
+
+        <div class="form-row">
+            <div class="form-col">
+                <div class="form-group">
+                    {{ form_label(form.user) }}
+                    {{ form_widget(form.user, {'attr': {'class': 'form-control'}}) }}
+                </div>
+            </div>
+            <div class="form-col">
+                <div class="form-group">
+                    {{ form_label(form.offre) }}
+                    {{ form_widget(form.offre, {'attr': {'class': 'form-control'}}) }}
+                </div>
             </div>
         </div>
+
+        <button class="btn">{{ button_label|default('Créer l\'Entretien') }}</button>
+
+        {{ form_end(form) }}
+
+        <a href="{{ path('app_entretien_index') }}" class="back-link">← Retour à la liste</a>
     </div>
 
-    <div class="form-group">
-        {{ form_label(form.type_entretien) }}
-        {{ form_widget(form.type_entretien, {'attr': {'class': 'form-control', 'placeholder': 'Type d\'entretien'}}) }}
-    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('entretienForm');
+            const errorDiv = document.getElementById('errorMessages');
 
-    <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
-    {{ form_label(form.status, null, {'label_attr': {'style': 'margin-bottom: 0'}}) }}
-    {{ form_widget(form.status) }}
-</div>
+            form.addEventListener('submit', function (e) {
+                let valid = true;
+                let messages = [];
 
-    <div class="form-group">
-        {{ form_label(form.candidatId) }}
-        {{ form_widget(form.candidatId, {'attr': {'class': 'form-control', 'placeholder': 'ID du candidat'}}) }}
-    </div>
+                errorDiv.style.display = 'none';
+                errorDiv.innerHTML = '';
+                const inputs = form.querySelectorAll('.form-control');
+                inputs.forEach(input => input.classList.remove('is-invalid'));
 
-    <div class="form-row">
-        <div class="form-col">
-            <div class="form-group">
-                {{ form_label(form.user) }}
-                {{ form_widget(form.user, {'attr': {'class': 'form-control'}}) }}
-            </div>
-        </div>
-        <div class="form-col">
-            <div class="form-group">
-                {{ form_label(form.offre) }}
-                {{ form_widget(form.offre, {'attr': {'class': 'form-control'}}) }}
-            </div>
-        </div>
-    </div>
+                const titre = form.querySelector('[name$="[titre]"]');
+                if (!titre.value.trim()) {
+                    valid = false;
+                    messages.push("Le titre est obligatoire.");
+                    titre.classList.add('is-invalid');
+                } else if (titre.value.trim().length < 5) {
+                    valid = false;
+                    messages.push("Le titre doit contenir au moins 5 caractères.");
+                    titre.classList.add('is-invalid');
+                }
 
-    <button class="btn">{{ button_label|default('Créer l\'Entretien') }}</button>
+                const description = form.querySelector('[name$="[description]"]');
+                if (!description.value.trim()) {
+                    valid = false;
+                    messages.push("La description est obligatoire.");
+                    description.classList.add('is-invalid');
+                } else if (description.value.trim().length < 10) {
+                    valid = false;
+                    messages.push("La description doit contenir au moins 10 caractères.");
+                    description.classList.add('is-invalid');
+                }
 
-    {{ form_end(form) }}
+                const dateEntretien = form.querySelector('[name$="[date_entretien]"]');
+                if (!dateEntretien.value) {
+                    valid = false;
+                    messages.push("La date de l'entretien est obligatoire.");
+                    dateEntretien.classList.add('is-invalid');
+                } else {
+                    const selectedDate = new Date(dateEntretien.value);
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
+                    if (selectedDate < today) {
+                        valid = false;
+                        messages.push("La date de l'entretien doit être aujourd'hui ou dans le futur.");
+                        dateEntretien.classList.add('is-invalid');
+                    }
+                }
 
-    <a href="{{ path('app_entretien_index') }}" class="back-link">← Retour à la liste</a>
-</div>
+                const heureEntretien = form.querySelector('[name$="[heureentretien]"]');
+                if (!heureEntretien.value) {
+                    valid = false;
+                    messages.push("L'heure de l'entretien est obligatoire.");
+                    heureEntretien.classList.add('is-invalid');
+                }
 
-    
+                const typeEntretien = form.querySelector('[name$="[type_entretien]"]');
+                if (!typeEntretien.value.trim()) {
+                    valid = false;
+                    messages.push("Le type d'entretien est obligatoire.");
+                    typeEntretien.classList.add('is-invalid');
+                }
+
+                const candidatId = form.querySelector('[name$="[candidatId]"]');
+                if (candidatId.value.trim() && isNaN(candidatId.value.trim())) {
+                    valid = false;
+                    messages.push("L'ID du candidat doit être un nombre.");
+                    candidatId.classList.add('is-invalid');
+                }
+
+                const user = form.querySelector('[name$="[user]"]');
+                if (!user.value) {
+                    valid = false;
+                    messages.push("L'employé est obligatoire.");
+                    user.classList.add('is-invalid');
+                }
+
+                const offre = form.querySelector('[name$="[offre]"]');
+                if (!offre.value) {
+                    valid = false;
+                    messages.push("L'offre est obligatoire.");
+                    offre.classList.add('is-invalid');
+                }
+
+                if (!valid) {
+                    e.preventDefault();
+                    errorDiv.innerHTML = '<ul>' + messages.map(msg => `<li>${msg}</li>`).join('') + '</ul>';
+                    errorDiv.style.display = 'block';
+                    window.scrollTo({ top: errorDiv.offsetTop - 20, behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
 </body>
-
-
-<script>
-
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('entretienForm');
-    const titre = form.querySelector('[name$="[titre]"]');
-    const description = form.querySelector('[name$="[description]"]');
-    const dateEntretien = form.querySelector('[name$="[date_entretien]"]');
-    const heureEntretien = form.querySelector('[name$="[heureentretien]"]');
-    const typeEntretien = form.querySelector('[name$="[type_entretien]"]');
-
-    form.addEventListener('submit', function (e) {
-        let valid = true;
-        let messages = [];
-
-        // Titre validation
-        if (!titre.value.trim()) {
-            valid = false;
-            messages.push("Le titre est requis.");
-        } else if (titre.value.trim().length < 5) {
-            valid = false;
-            messages.push("Le titre doit contenir au moins 5 caractères.");
-        }
-
-        // Description validation
-        if (!description.value.trim()) {
-            valid = false;
-            messages.push("La description est requise.");
-        } else if (description.value.trim().length < 10) {
-            valid = false;
-            messages.push("La description doit contenir au moins 10 caractères.");
-        }
-
-        // Date validation
-        if (!dateEntretien.value) {
-            valid = false;
-            messages.push("La date de l'entretien est requise.");
-        }
-
-        // Heure validation
-        if (!heureEntretien.value) {
-            valid = false;
-            messages.push("L'heure de l'entretien est requise.");
-        }
-
-        // Type validation
-        if (!typeEntretien.value.trim()) {
-            valid = false;
-            messages.push("Le type d'entretien est requis.");
-        }
-
-        if (!valid) {
-            e.preventDefault();
-            alert(messages.join("\n"));
-        }
-    });
-});
-    
-</script>
-
-
-
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{# <!DOCTYPE html>
-
-<title>New Entretien</title>
-
-{% block body %}
-    <h1>Create new Entretien</h1>
-
-    {{ include('entretien/_form.html.twig') }}
-
-    <a href="{{ path('app_entretien_index') }}">back to list</a>
-{% endblock %} #}

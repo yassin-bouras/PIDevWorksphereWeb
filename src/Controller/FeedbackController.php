@@ -70,7 +70,7 @@ final class FeedbackController extends AbstractController{
             $entityManager->flush();
 
             $this->addFlash('success', 'Feedback ajouté avec succès !');
-             return $this->render('entretien/index.html.twig', [
+             return $this->render('entretien/index2.html.twig', [
             'entretiens' => $entretienRepository->findAll(),
         ]);
 
@@ -108,7 +108,7 @@ final class FeedbackController extends AbstractController{
             $entityManager->flush();
 
             $this->addFlash('success', 'Feedback ajouté avec succès !');
-            return $this->render('entretien/index.html.twig', [
+            return $this->render('entretien/index2.html.twig', [
            'entretiens' => $entretienRepository->findAll(),
             ]);
         }
