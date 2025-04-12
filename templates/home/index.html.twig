@@ -23,6 +23,9 @@
     <link rel="stylesheet" href="{{ asset('front/css/animated.css') }}">
     <link rel="stylesheet" href="{{ asset('front/css/owl.css') }}">
     {% endblock %}
+
+    {% block stylesheets %}{% endblock %}
+    
 </head>
   <!-- ***** Header Area Start ***** -->
   {% include 'home/navbar.html.twig' %}
@@ -48,28 +51,10 @@
               <div class="col-lg-6 align-self-center">
                 <div class="left-content header-text wow fadeInLeft" data-wow-duration="1s" data-wow-delay="1s">
                   <div class="row">
-                    <div class="col-lg-4 col-sm-4">
-                      <div class="info-stat">
-                        <h6>Agency Status:</h6>
-                        <h4>Ready Work</h4>
-                      </div>
-                    </div>
-                    <div class="col-lg-4 col-sm-4">
-                      <div class="info-stat">
-                        <h6>Price:</h6>
-                        <h4>$720/Month</h4>
-                      </div>
-                    </div>
-                    <div class="col-lg-4 col-sm-4">
-                      <div class="info-stat">
-                        <h6>Schedules</h6>
-                        <h4>$450/Meeting</h4>
-                      </div>
-                    </div>
                     <div class="col-lg-12">
-                      <h2>SEO &amp; Digital Marketing Agency</h2>
+                      <h2 style="text-align: center;">Une solution numérique pour les tâches administratives</h2>
                     </div>
-                    <div class="col-lg-12">
+                    <div class="col-lg-12 d-flex justify-content-center">
                       <div class="main-green-button scroll-to-section">
                         <a href="#contact">Get Your Quote</a>
                       </div>
@@ -79,11 +64,11 @@
               </div>
               <div class="col-lg-6">
                 <div class="right-image wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.5s">
-                  <img src="front/images/banner-right-image.png" alt="">
+                  <img src="front/images/main.png" alt="">
                 </div>
               </div>
             </div>
-          </div>
+          </div>  
         </div>
       </div>
     </div>
@@ -95,25 +80,26 @@
             <div class="features-content">
               <div class="row">
                 <div class="col-lg-3">
-                  <div class="features-item first-feature wow fadeInUp" data-wow-duration="1s" data-wow-delay="0s">
+                  
+                  <div class="features-item first-feature wow fadeInUp" onclick="window.location.href='formation'" style="cursor: pointer;" data-wow-duration="1s" data-wow-delay="0s">
                     <div class="first-number number">
                       <h6>01</h6>
                     </div>
                     <div class="icon"></div>
-                    <h4>Reach Out</h4>
+                    <h4>Trouver une formation</h4>
                     <div class="line-dec"></div>
-                    <p>This HTML5 template is based on Bootstrap 5 CSS. You are free to customize anything.</p>
+                    <p>Explorez une large sélection de formations adaptées à vos objectifs professionnels et développez de nouvelles compétences.</p>
                   </div>
                 </div>
                 <div class="col-lg-3">
-                  <div class="features-item second-feature wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.2s">
+                  <div class="features-item second-feature wow fadeInUp"onclick="window.location.href='evennement'" style="cursor: pointer;" data-wow-duration="1s" data-wow-delay="0.2s">
                     <div class="second-number number">
                       <h6>02</h6>
                     </div>
                     <div class="icon"></div>
-                    <h4>Develop a Strategy</h4>
+                    <h4>Participer à un événement</h4>
                     <div class="line-dec"></div>
-                    <p>Lorem ipsum dolor sit ameter consectetur adipiscing li elit sed do eiusmod.</p>
+                    <p>Rejoignez des événements, ateliers ou webinaires pour élargir votre réseau et enrichir vos connaissances.</p>
                   </div>
                 </div>
                 <div class="col-lg-3">
@@ -122,9 +108,9 @@
                       <h6>03</h6>
                     </div>
                     <div class="icon"></div>
-                    <h4>Implementation</h4>
+                    <h4>Trouver un emploi</h4>
                     <div class="line-dec"></div>
-                    <p>If this template is useful for your website, please consider to <a rel="nofollow" href="https://www.paypal.me/templatemo" target="_blank">support us</a> a little.</p>
+                    <p>Accédez à des offres d’emploi ciblées et boostez votre carrière en quelques clics grâce à notre plateforme.</p>
                   </div>
                 </div>
                 <div class="col-lg-3">
@@ -133,9 +119,9 @@
                       <h6>04</h6>
                     </div>
                     <div class="icon"></div>
-                    <h4>Analyze the result</h4>
+                    <h4>Visualiser vos candidatures </h4>
                     <div class="line-dec"></div>
-                    <p>Below circular progress bar animation supports those CSS values 10, 20, 30, till 100.</p>
+                    <p>Gardez un œil sur vos opportunités et ne manquez aucune réponse de recruteur.</p>
                   </div>
                 </div>
               </div>
@@ -143,7 +129,7 @@
           </div>
           <div class="col-lg-12">
             <div class="skills-content">
-              <div class="row">
+              <!-- <div class="row">
                 <div class="col-lg-3">
                   <div class="skill-item wow fadeIn" data-wow-duration="1s" data-wow-delay="0s">
                     <div class="progress" data-percentage="80">
@@ -216,7 +202,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
         </div>
@@ -233,11 +219,11 @@
           </div>
           <div class="col-lg-6 align-self-center wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.5s">
             <div class="section-heading">
-              <h6>About Us</h6>
-              <h2>Top <em>marketing</em> agency &amp; consult your website <span>with us</span></h2>
+              <h6 style="text-align: center;">About Us</h6>
+              <h2 style="text-align: center;">Le <em>Meilleur</em> site de RH consulter notre site web <span>avec nous</span></h2>
             </div>
             <div class="row">
-              <div class="col-lg-4 col-sm-4">
+              <!-- <div class="col-lg-4 col-sm-4">
                 <div class="about-item">
                   <h4>750+</h4>
                   <h6>projects finished</h6>
@@ -245,7 +231,7 @@
               </div>
               <div class="col-lg-4 col-sm-4">
                 <div class="about-item">
-                  <h4>340+</h4>
+                 <h4>340+</h4>
                   <h6>happy clients</h6>
                 </div>
               </div>
@@ -255,9 +241,9 @@
                   <h6>awards</h6>
                 </div>
               </div>
-            </div>
-            <p><a rel="nofollow" href="https://templatemo.com/tm-563-seo-dream" target="_parent">SEO Dream</a> is free digital marketing CSS template provided by TemplateMo website. You are allowed to use this template for your business websites. Please DO NOT redistribute this template ZIP file on any Free CSS collection websites. You may contact us for more information. Thank you.</p>
-            <div class="main-green-button"><a href="#">Discover company</a></div>
+            </div> -->
+            <p> <span style="color: rgb(83, 190, 190); font-weight: bold;">worksphere </span> Il s'agit d'un site web dédié à la gestion des tâches administratives. C’est une solution complète qui permet de gérer les offres d’emploi, les candidatures, les formations, les événements et les projets. </p>
+            <!-- <div class="main-green-button"><a href="#">Discover company</a></div> -->
           </div>
         </div>
       </div>
@@ -268,8 +254,8 @@
         <div class="row">
           <div class="col-lg-6 offset-lg-3">
             <div class="section-heading wow bounceIn" data-wow-duration="1s" data-wow-delay="0.2s">
-              <h6>Our Services</h6>
-              <h2>Discover What We Do &amp; <span>Offer</span> To Our <em>Clients</em></h2>
+              <h6>Nos Service</h6>
+              <h2>Decrouvrir ce que notre site offre</h2>
             </div>
           </div>
         </div>
@@ -286,8 +272,8 @@
                 </div>
                 <div class="col-lg-8">
                   <div class="right-content">
-                    <h4>Similar Websites</h4>
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium dormque laudantium.</p>
+                    <h4>Reconnaissance Faciale</h4>
+                    <p >Grâce à notre API Face ID, bénéficiez d'une authentification rapide et sécurisée par reconnaissance faciale. Une technologie fiable pour renforcer la sécurité des accès.</p>
                   </div>
                 </div>
               </div>
@@ -303,8 +289,8 @@
                 </div>
                 <div class="col-lg-8">
                   <div class="right-content">
-                    <h4>Website Trends</h4>
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium dormque laudantium.</p>
+                    <h4>Meetings</h4>
+                    <p>Organisez vos réunions efficacement grâce à notre API Meetings. Assister à vos formations à distance,tout est automatisé pour optimiser votre temps.</p>
                   </div>
                 </div>
               </div>
@@ -320,8 +306,10 @@
                 </div>
                 <div class="col-lg-8">
                   <div class="right-content">
-                    <h4>Traffic Analysis</h4>
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium dormque laudantium.</p>
+                    <h4>Calendrier Intégré</h4>
+                    <p>Planifiez vos événements en toute simplicité. Grâce à l’API Calendrier, gérez facilement vos entretiens et visualisez vos disponibilités en temps réel via une interface intuitive.
+
+                    </p>
                   </div>
                 </div>
               </div>
@@ -337,8 +325,8 @@
                 </div>
                 <div class="col-lg-8">
                   <div class="right-content">
-                    <h4>Optimizing Keywords</h4>
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium dormque laudantium.</p>
+                    <h4>Envoi de SMS</h4>
+                    <p>Communiquez instantanément avec vos utilisateurs grâce à notre API SMS. Envois automatiques de messages pour confirmations, rappels ou alertes.</p>
                   </div>
                 </div>
               </div>
@@ -354,8 +342,8 @@
                 </div>
                 <div class="col-lg-8">
                   <div class="right-content">
-                    <h4>Page Optimizations</h4>
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium dormque laudantium.</p>
+                    <h4>Génération de PDF</h4>
+                    <p>Créez des rapports avec notre API de génération PDF. Un outil pratique pour produire et télécharger des fichiers personnalisés.</p>
                   </div>
                 </div>
               </div>
@@ -371,8 +359,8 @@
                 </div>
                 <div class="col-lg-8">
                   <div class="right-content">
-                    <h4>Deep URL Analysis</h4>
-                    <p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium dormque laudantium.</p>
+                    <h4>Localisation en Temps Réel</h4>
+                    <p>Notre API permet d'afficher la localisation de l'événement, pour une expérience personnalisée et dynamique.</p>
                   </div>
                 </div>
               </div>
@@ -384,14 +372,14 @@
   
     <div id="portfolio" class="our-portfolio section">
       <div class="container">
-        <div class="row">
+        <!-- <div class="row">
           <div class="col-lg-5">
             <div class="section-heading wow fadeInLeft" data-wow-duration="1s" data-wow-delay="0.3s">
               <h6>Our Portofolio</h6>
               <h2>Discover Our Recent <em>Projects</em> And <span>Showcases</span></h2>
             </div>
           </div>
-        </div>
+        </div> -->
       </div>
       <div class="container-fluid wow fadeIn" data-wow-duration="1s" data-wow-delay="0.7s">
         <div class="row">
@@ -508,29 +496,29 @@
                 <div class="col-lg-6 offset-lg-3">
                   <div class="section-heading">
                     <h6>Contact Us</h6>
-                    <h2>Fill Out The Form Below To <span>Get</span> In <em>Touch</em> With Us</h2>
+                    <h2>Remplir ce formulaire</h2>
                   </div>
                 </div>
                 <div class="col-lg-9">
                   <div class="row">
                     <div class="col-lg-6">
                       <fieldset>
-                        <input type="name" name="name" id="name" placeholder="Name" autocomplete="on" required>
+                        <input type="name" name="name" id="name" placeholder="Nom" autocomplete="on" required>
                       </fieldset>
                     </div>
                     <div class="col-lg-6">
                       <fieldset>
-                        <input type="surname" name="surname" id="surname" placeholder="Surname" autocomplete="on" required>
+                        <input type="surname" name="surname" id="surname" placeholder="Prenom" autocomplete="on" required>
                       </fieldset>
                     </div>
                     <div class="col-lg-6">
                       <fieldset>
-                        <input type="text" name="email" id="email" pattern="[^ @]*@[^ @]*" placeholder="Your Email" required="">
+                        <input type="text" name="email" id="email" pattern="[^ @]*@[^ @]*" placeholder="Email" required="">
                       </fieldset>
                     </div>
                     <div class="col-lg-6">
                       <fieldset>
-                        <input type="subject" name="subject" id="subject" placeholder="Subject" autocomplete="on">
+                        <input type="subject" name="subject" id="subject" placeholder="Sujet" autocomplete="on">
                       </fieldset>
                     </div>
                     <div class="col-lg-12">
@@ -552,19 +540,20 @@
                         <div class="icon">
                           <img src="front/images/contact-icon-01.png" alt="email icon">
                         </div>
-                        <a href="#">info@company.com</a>
+                        <a href="mailto:worksphere12345@gmail.com">worksphere12345@gmail.com</a>
+
                       </li>
                       <li>
                         <div class="icon">
                           <img src="front/images/contact-icon-02.png" alt="phone">
                         </div>
-                        <a href="#">+001-002-0034</a>
+                        <a href="#">+216-71-105-105</a>
                       </li>
                       <li>
                         <div class="icon">
                           <img src="front/images/contact-icon-03.png" alt="location">
                         </div>
-                        <a href="#">26th Street, Digital Villa</a>
+                        <a href="#">26,Rue de dollar,Les berges du lac1 </a>
                       </li>
                     </ul>
                   </div>

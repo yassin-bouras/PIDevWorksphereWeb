@@ -7,5 +7,9 @@
 
     {{ include('offre/_form.html.twig') }}
 
-    <a href="{{ path('app_offre_index') }}">back to list</a>
+    {% if context == 'front' %}
+        <a href="{{ path('app_offre_front_index') }}">Back to list</a>
+    {% else %}
+        <a href="{{ path('app_offre_index') }}">Back to list</a>
+    {% endif %}
 {% endblock %}

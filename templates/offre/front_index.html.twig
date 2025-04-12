@@ -1,7 +1,7 @@
-{% extends '/dashboard/base.html.twig' %}
+{% extends '/home/index.html.twig' %}
 {% block title %}Offres{% endblock %}
 
-{% block content %}
+{% block body %}
 <div class="wrapper">
     <div class="inner" style="--quantity: 10;">
         {% for i in 0..9 %}
@@ -12,7 +12,7 @@
         {% endfor %}
     </div>
 </div>
-<div class="container" style="margin-top:7%;">
+<div class="container" style="margin-top:-30%;">
     <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Liste des Offres</h1>
 
     <div class="text-center mb-5">

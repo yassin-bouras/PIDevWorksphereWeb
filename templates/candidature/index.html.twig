@@ -1,37 +1,162 @@
-<!DOCTYPE html>
+{% extends '/home/index.html.twig' %}
 
-<title>Candidature index</title>
+{% block title %}Liste des Candidatures{% endblock %}
 
 {% block body %}
-    <h1>Candidature index</h1>
-
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id_candidature</th>
-                <th>Cv</th>
-                <th>Lettre_motivation</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for candidature in candidatures %}
-            <tr>
-                <td>{{ candidature.idCandidature }}</td>
-                <td>{{ candidature.cv }}</td>
-                <td>{{ candidature.lettreMotivation }}</td>
-                <td>
-                    <a href="{{ path('app_candidature_show', {'id_candidature': candidature.id_candidature}) }}">show</a>
-                    <a href="{{ path('app_candidature_edit', {'id_candidature': candidature.id_candidature}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
+<div class="wrapper">
+    <div class="inner" style="--quantity: 10;">
+        {% for i in 0..9 %}
+        <div class="card"
+            style="--index: {{ i }}; --color-card: {% set colors = ['142, 249, 252', '142, 252, 204', '142, 252, 157', '215, 252, 142', '252, 252, 142', '252, 208, 142', '252, 142, 142', '252, 142, 239', '204, 142, 252', '142, 202, 252'] %}{{ colors[i] }}">
+            <div class="img"></div>
+        </div>
         {% endfor %}
-        </tbody>
-    </table>
+    </div>
+</div>
 
-    <a href="{{ path('app_candidature_new') }}">Create new</a>
+<div class="container" style="margin-top:-9%;">
+    <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Liste des Candidatures</h1>
+
+    <div class="text-center mb-4">
+        <a href="{{ path('app_candidature_new') }}" class="btn"
+            style="background-color: #4a6fa5; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Créer
+            une nouvelle candidature</a>
+    </div>
+
+    <div class="mb-4">
+        <form method="GET" action="{{ path('app_candidature_index') }}">
+            <div class="input-group" style="max-width: 1050px; margin: 0 auto;">
+                <input type="text" name="search" class="form-control"
+                    placeholder="Rechercher par CV ou lettre de motivation"
+                    value="{{ app.request.query.get('search') }}">
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit">Rechercher</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <div class="candidature-grid" style="max-width: 1060px; margin: 0 auto;">
+        {% for candidature in candidatures %}
+        <div class="candidature-card"
+            style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 25px;">
+            <div class="candidature-header"
+                style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0; font-size: 1.5rem; color: #333;">Candidature #{{ candidature.idCandidature }}</h2>
+            </div>
+
+            <div class="candidature-info" style="margin-bottom: 15px;">
+                <!-- <p style="margin: 5px 0; color: #555;"><strong>CV:</strong> {{ candidature.cv }}</p> -->
+                <p><strong>CV:</strong>
+                    {% if candidature.cv %}
+                        <a href="{{ asset('uploads/' ~ candidature.cv) }}" target="_blank">Télécharger</a>
+                    {% else %}
+                        Non fourni
+                    {% endif %}
+                </p>
+                <!-- <p style="margin: 5px 0; color: #555;"><strong>Lettre de Motivation:</strong> {{
+                    candidature.lettreMotivation }}</p> -->
+                    <p><strong>Lettre de Motivation:</strong>
+                        {% if candidature.lettreMotivation %}
+                            <a href="{{ asset('uploads/' ~ candidature.lettreMotivation) }}" target="_blank">Télécharger</a>
+                        {% else %}
+                            Non fournie
+                        {% endif %}
+                    </p>
+            </div>
+
+            <div class="candidature-actions" style="display: flex; gap: 10px;">
+                <a class="btn" href="{{ path('app_candidature_show', {'id_candidature': candidature.idCandidature}) }}"
+                    style="background-color: #4a6fa5; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Voir</a>
+                <a class="btn" href="{{ path('app_candidature_edit', {'id_candidature': candidature.idCandidature}) }}"
+                    style="background-color: #e67e22; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Modifier</a>
+            </div>
+        </div>
+        {% else %}
+        <div class="no-candidature"
+            style="text-align: center; padding: 40px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+            <p style="font-size: 1.2rem; color: #777;">Aucune candidature trouvée</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    html,
+    body {
+        height: 100%;
+    }
+
+    .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    .candidature-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .candidature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Animation CSS */
+    .wrapper {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .inner {
+        --w: 100px;
+        --h: 150px;
+        --translateZ: calc((var(--w) + var(--h)) + 0px);
+        --rotateX: -15deg;
+        --perspective: 1000px;
+        position: absolute;
+        width: var(--w);
+        height: var(--h);
+        top: 25%;
+        left: calc(50% - (var(--w) / 2) - 2.5px);
+        z-index: 2;
+        transform-style: preserve-3d;
+        transform: perspective(var(--perspective));
+        animation: rotating 20s linear infinite;
+    }
+
+    @keyframes rotating {
+        from {
+            transform: perspective(var(--perspective)) rotateX(var(--rotateX)) rotateY(0);
+        }
+
+        to {
+            transform: perspective(var(--perspective)) rotateX(var(--rotateX)) rotateY(1turn);
+        }
+    }
+
+    .card {
+        position: absolute;
+        border: 2px solid rgba(var(--color-card));
+        border-radius: 12px;
+        overflow: hidden;
+        inset: 0;
+        transform: rotateY(calc((360deg / var(--quantity)) * var(--index))) translateZ(var(--translateZ));
+    }
+
+    .img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        background: #0000 radial-gradient(circle,
+                rgba(var(--color-card), 0.2) 0%,
+                rgba(var(--color-card), 0.6) 80%,
+                rgba(var(--color-card), 0.9) 100%);
+    }
+</style>
 {% endblock %}
