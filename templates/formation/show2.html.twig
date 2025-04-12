@@ -1,12 +1,10 @@
-{% extends '/dashboard/base.html.twig' %}
+{% extends '/home/index.html.twig' %}
 
 {% block title %}Détails de la Formation{% endblock %}
 
-
-{% block content %}
+{% block body %}
     <div class="container" style="margin-top:7%;">
         <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Détails de la Formation</h1>
-        <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}"></a></li>
 
         <div class="formation-details" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 30px; margin-bottom: 30px;">
             <div class="row">
@@ -70,9 +68,9 @@
         </div>
 
         <div class="text-center mt-4">
-            <a href="{{ path('app_formation_index') }}" class="btn" style="background-color: #4771cb; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px; height:7% ; width:20%">Retour à la liste <i data-feather="arrow-left-circle"></i> </a>
-            <a href="{{ path('app_formation_edit', {'id_f': formation.idF}) }}" class="btn" style="background-color: #e67e22; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px; height:7% ; width:15%">Modifier <i data-feather="edit-3"></i></a>
-            <div style="margin-top: 10px;">{{ include('formation/_delete_form.html.twig') }}</div>
+            <a href="{{ path('app_formation_index2') }}" class="btn" style="background-color: rgb(51, 204, 197); color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px; height:7% ; width:15%">Retour à la liste</a>
+            <a href="{{ path('app_reservation_new') }}" class="btn" style="background-color: #4771cb; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px; height:7% ; width:10%">Réserver</a>
+            
         </div>
     </div>
 

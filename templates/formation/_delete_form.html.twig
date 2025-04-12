@@ -1,4 +1,4 @@
 <form method="post" action="{{ path('app_formation_delete', {'id_f': formation.idF}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ formation.idF) }}">
-    <button class="btn btn-danger">Supprimer</button>
+    <button class="btn btn-danger">Supprimer  <i data-feather="trash-2"></i> </button>
 </form>

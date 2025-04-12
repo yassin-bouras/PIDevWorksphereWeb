@@ -22,6 +22,31 @@ final class FormationController extends AbstractController
         ]);
     }
 
+    #[Route('/front', name:'app_formation_index2', methods: ['GET'])]
+    public function index2(FormationRepository $formationRepository): Response
+    {
+        return $this->render('formation/index2.html.twig', [
+            'formations' => $formationRepository->findAll(),
+        ]);
+    }
+
+
+    #[Route('/front/search', name: 'app_formation_search', methods: ['GET'])]
+    public function search(Request $request, FormationRepository $formationRepository): Response
+{
+    $searchTerm = $request->query->get('search');
+
+    $formations = $formationRepository->createQueryBuilder('f')
+        ->where('f.titre LIKE :search')
+        ->setParameter('search', '%' . $searchTerm . '%')
+        ->getQuery()
+        ->getResult();
+
+    return $this->render('formation/index2.html.twig', [
+        'formations' => $formations,
+    ]);
+}
+
     #[Route('/new', name: 'app_formation_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -59,7 +84,13 @@ final class FormationController extends AbstractController
             'formation' => $formation,
         ]);
     }
-
+    #[Route('/front/{id_f}', name: 'app_formation_show2', methods: ['GET'])]
+    public function show2(Formation $formation): Response
+    {
+        return $this->render('formation/show2.html.twig', [
+            'formation' => $formation,
+        ]);
+    }
     #[Route('/{id_f}/edit', name: 'app_formation_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Formation $formation, EntityManagerInterface $entityManager): Response
     {

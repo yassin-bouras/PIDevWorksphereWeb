@@ -13,6 +13,9 @@ use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Image;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 
 class FormationType extends AbstractType
 {
@@ -39,7 +42,7 @@ class FormationType extends AbstractType
                 'required' => true,
                 'attr' => ['class' => 'form-control'],
             ])
-
+            
             ->add('heure_debut', TimeType::class, [
                 'widget' => 'single_text',
                 'required' => true,
@@ -50,7 +53,14 @@ class FormationType extends AbstractType
                 'required' => true,
                 'attr' => ['class' => 'form-control'],
             ])
-            ->add('nb_place')
+            ->add('nb_place', IntegerType::class, [
+                'label' => 'Nombre de places',
+                'attr' => [
+                    'placeholder' => 'Ex: 25',
+                    'class' => 'form-control',
+                    'min' => 1 
+                ]
+            ])
             ->add('type', ChoiceType::class, [
                 'choices' => [
                     'Présentiel' => 'présentiel',

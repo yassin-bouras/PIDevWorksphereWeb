@@ -22,7 +22,7 @@ class ReservationType extends AbstractType
             ])
             ->add('formation', EntityType::class, [
                 'class' => Formation::class,
-                'choice_label' => 'titre', // Affiche le titre des formations dans le select
+                'choice_label' => 'titre',
                 'placeholder' => 'Sélectionnez une formation'
             ])
           
@@ -31,8 +31,8 @@ class ReservationType extends AbstractType
                     
             ->add('langue', ChoiceType::class, [
                 'choices' => [
-                    'Français' => 'fr',
-                    'Anglais' => 'en',
+                    'Français' => 'Français',
+                    'Anglais' => 'Anglais',
                 ],
                 'expanded' => false,
                 'multiple' => false

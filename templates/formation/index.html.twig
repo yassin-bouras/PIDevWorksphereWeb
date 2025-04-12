@@ -1,61 +1,53 @@
-{% extends '/home/index.html.twig' %}
-
+{% extends '/dashboard/base.html.twig' %}
 {% block title %}Formations{% endblock %}
-
-{% block body %}
+{% block content %}
     <div class="container" style="margin-top:7%;">
         <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Liste des Formations</h1>
-
+        <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}"></a></li>
         <div class="text-center mb-4">
-            <a href="{{ path('app_formation_new') }}" class="btn" style="background-color:rgb(51, 204, 197); color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Créer une nouvelle formation</a>
+            <a href="{{ path('app_formation_new') }}" class="btn " style="background-color:#00882E;color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
+                Créer une formation
+                <i data-feather="plus-circle"></i> </a>
         </div>
 
-        <div class="table-container" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); overflow: hidden;">
-            <table class="table" style="margin-bottom: 0;">
-                <thead style="background-color: #f8f9fa;">
-                    <tr>
-                        <th style="padding: 15px; border-bottom: 1px solid #dee2e6;">Photo</th>
-                        <th style="padding: 15px; border-bottom: 1px solid #dee2e6;">Titre</th>
-                        <th style="padding: 15px; border-bottom: 1px solid #dee2e6;">Description</th>
-                        <th style="padding: 15px; border-bottom: 1px solid #dee2e6;">Date</th>
-                        <th style="padding: 15px; border-bottom: 1px solid #dee2e6;">Heure début</th>
-                        <th style="padding: 15px; border-bottom: 1px solid #dee2e6;">Heure fin</th>
-                        <th style="padding: 15px; border-bottom: 1px solid #dee2e6;">Places</th>
-                        <th style="padding: 15px; border-bottom: 1px solid #dee2e6;">Type</th>
-                        <th style="padding: 15px; border-bottom: 1px solid #dee2e6;">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for formation in formations %}
-                        <tr style="transition: all 0.3s ease;">
-                            <td style="padding: 15px; border-bottom: 1px solid #dee2e6; vertical-align: middle;">
-                                {% if formation.photo %}
-                                <img src="{{ asset(formation.photo) }}" alt="Image Formation" width="150" height="100" style=" object-fit: cover;">
-                            {% else %}
-                                <span style="color: #777;">Pas d'image</span>
-                            {% endif %}
-                            </td>
-                            <td style="padding: 15px; border-bottom: 1px solid #dee2e6; vertical-align: middle;">{{ formation.titre }}</td>
-                            <td style="padding: 15px; border-bottom: 1px solid #dee2e6; vertical-align: middle;">{{ formation.description|slice(0, 50) }}{% if formation.description|length > 50 %}...{% endif %}</td>
-                            <td style="padding: 15px; border-bottom: 1px solid #dee2e6; vertical-align: middle;">{{ formation.date ? formation.date|date('Y-m-d') : 'N/A' }}</td>
-                            <td style="padding: 15px; border-bottom: 1px solid #dee2e6; vertical-align: middle;">{{ formation.heureDebut ? formation.heureDebut|date('H:i') : 'N/A' }}</td>
-                            <td style="padding: 15px; border-bottom: 1px solid #dee2e6; vertical-align: middle;">{{ formation.heureFin ? formation.heureFin|date('H:i') : 'N/A' }}</td>
-                            <td style="padding: 15px; border-bottom: 1px solid #dee2e6; vertical-align: middle;">{{ formation.nbPlace }}</td>
-                            <td style="padding: 15px; border-bottom: 1px solid #dee2e6; vertical-align: middle;">{{ formation.type }}</td>
-                            <td style="padding: 15px; border-bottom: 1px solid #dee2e6; vertical-align: middle;">
-                                <div style="display: flex; gap: 8px;">
-                                    <a href="{{ path('app_formation_show', {'id_f': formation.idF}) }}" class="btn" style="background-color: #33ccc5; color: white; padding: 6px 12px; border-radius: 5px;font-size: 0.85rem;">Voir</a>
-                                    <a href="{{ path('app_formation_edit', {'id_f': formation.idF}) }}" class="btn" style="background-color: #e67e22; color: white; padding: 6px 12px; border-radius: 5px; font-size: 0.85rem; ">Modifier</a>
-                                </div>
-                            </td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="9" style="padding: 20px; text-align: center; color: #777;">Aucune formation trouvée</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="formation-grid" style="max-width: 1060px; margin: 0 auto;">
+            {% for formation in formations %}
+                <div class="formation-card" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 25px; display: flex; align-items: center;">
+                    
+                    {% if formation.photo %}
+                        <div class="formation-image" style="margin-right: 15px;">
+                            <img src="{{ asset(formation.photo) }}" alt="Image formation" width="100" height="100" style="object-fit: cover; border-radius: 8px;">
+                        </div>
+                    {% endif %}
+
+                    <div style="flex: 1;">
+                        <div class="formation-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <h2 style="margin: 0; font-size: 1.5rem; color: #333;">{{ formation.titre }}</h2>
+                            <span style="padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; color: white; background-color: #4771cb;">
+                                {{ formation.type }}
+                            </span>
+                        </div>
+
+                        <div class="formation-info" style="margin-bottom: 10px;">
+                            <p style="margin: 5px 0; color: #555;"><strong>Description :</strong> {{ formation.description }}</p>
+                            <p style="margin: 5px 0; color: #555;"><strong>Date :</strong> {{ formation.date ? formation.date|date('Y-m-d') : 'N/A' }}</p>
+                            <p style="margin: 5px 0; color: #555;"><strong>Heure début :</strong> {{ formation.heureDebut ? formation.heureDebut|date('H:i') : 'N/A' }}</p>
+                            <p style="margin: 5px 0; color: #555;"><strong>Heure fin :</strong> {{ formation.heureFin ? formation.heureFin|date('H:i') : 'N/A' }}</p>
+                            <p style="margin: 5px 0; color: #555;"><strong>Places :</strong> {{ formation.nbPlace }}</p>
+                        </div>
+
+                        <div class="formation-actions" style="display: flex; gap: 10px;">
+                            <a class="btn" href="{{ path('app_formation_show', {'id_f': formation.idF}) }}" style="background-color: #4771cb; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Voir details <i data-feather="eye"></i> </a>
+                            <a class="btn" href="{{ path('app_formation_edit', {'id_f': formation.idF}) }}" style="background-color: #f88f33; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Modifier<i data-feather="edit-3"></i></a>
+                        
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="no-formations" style="text-align: center; padding: 40px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                    <p style="font-size: 1.2rem; color: #777;">Aucune formation trouvée</p>
+                </div>
+            {% endfor %}
         </div>
     </div>
 
@@ -64,13 +56,10 @@
             opacity: 0.9;
             transform: translateY(-1px);
         }
-        tr:hover {
-            background-color: #f8f9fa;
-        }
-        .table-container {
+        .formation-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
-        .table-container:hover {
+        .formation-card:hover {
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
