@@ -12,7 +12,7 @@
         {% endfor %}
     </div>
 </div>
-<div class="container" style="margin-top:-30%;">
+<div class="container" style="margin-top:-32%;">
     <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Liste des Offres</h1>
 
     <div class="text-center mb-5">
@@ -24,7 +24,8 @@
     <div class="row" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
         {% for offre in offres %}
         <div class="flip-card">
-            <div class="flip-card-inner" onclick="window.location.href='{{ path('app_candidature_new', {'offre_id': offre.idOffre}) }}'">
+            <div class="flip-card-inner"
+                onclick="window.location.href='{{ path('app_candidature_new', {'offre_id': offre.idOffre}) }}'">
                 <div class="flip-card-front">
                     <p class="title">{{ offre.titre }}</p>
                     <p><strong>Type:</strong> {{ offre.typeContrat }}</p>
@@ -42,7 +43,7 @@
                     <p style="max-height: 320px; overflow-y: auto; text-align: justify;">
                         <strong>DESC : </strong> {{ offre.description }}
                     </p>
-                    
+
                     <div style="margin-top: 10px;">
                         <a class="btn btn-sm" href="{{ path('app_offre_show', {'id_offre': offre.idOffre}) }}"
                             style="background-color: #4a6fa5; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none;">Voir</a>
@@ -65,6 +66,7 @@
     body {
         height: 100%;
     }
+
     /* Animation CSS */
     .wrapper {
         width: 100%;
@@ -78,8 +80,8 @@
     }
 
     .inner {
-        --w: 100px;
-        --h: 150px;
+        --w: 60px;
+        --h: 90px;
         --translateZ: calc((var(--w) + var(--h)) + 0px);
         --rotateX: -15deg;
         --perspective: 1000px;
@@ -87,11 +89,12 @@
         width: var(--w);
         height: var(--h);
         top: 25%;
-        left: calc(50% - (var(--w) / 2) - 2.5px);
+        left: calc(20% - (var(--w) / 2) - 2.5px);
         z-index: 2;
         transform-style: preserve-3d;
         transform: perspective(var(--perspective));
         animation: rotating 20s linear infinite;
+        pointer-events: none;
     }
 
     @keyframes rotating {
@@ -145,7 +148,8 @@
         width: 390px;
         height: 450px;
         border-radius: 12px;
-        background: linear-gradient(-45deg, #e81cff 0%, #40c9ff 100%);
+        /* background: linear-gradient(-45deg, #e81cff 0%, #40c9ff 100%); */
+        background: linear-gradient(-45deg, gold 0%, silver 100%);
         z-index: -10;
         pointer-events: none;
         transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -156,7 +160,9 @@
         z-index: -1;
         position: absolute;
         inset: 0;
-        background: linear-gradient(-45deg, #fc00ff 0%, #00dbde 100%);
+        /* background: linear-gradient(-45deg, #fc00ff 0%, #00dbde 100%); */
+        background: linear-gradient(-45deg, gold 0%, silver 100%);
+
         transform: translate3d(0, 0, 0) scale(0.95);
         filter: blur(20px);
         border-radius: 12px;
@@ -204,7 +210,7 @@
         backface-visibility: hidden;
         padding: 18px;
         box-shadow: 0 8px 14px 0 rgba(0, 0, 0, 0.2);
-        background-color: #000000cc;
+        background-color: #ffffff;
         color: white;
     }
 
@@ -272,7 +278,7 @@
     .flip-card-back p,
     .flip-card-front strong,
     .flip-card-back strong {
-        color: white;
+        color: #000000;
     }
 
 
@@ -288,6 +294,12 @@
     .flip-card-front p {
         font-family: 'Montserrat', sans-serif;
         font-weight: 400;
+    }
+
+    .container a.btn {
+        position: relative;
+        z-index: 10;
+        /* Permet de superposer le bouton au-dessus de l'animation */
     }
 </style>
 {% endblock %}

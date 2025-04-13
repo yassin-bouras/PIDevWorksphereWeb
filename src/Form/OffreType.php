@@ -27,12 +27,12 @@ class OffreType extends AbstractType
             ])
             ->add('statut_offre')
             ->add('experience')
-            ->add('users', EntityType::class, [
+            /*->add('users', EntityType::class, [
                 'class' => User::class,
 'choice_label' => 'id',
 'multiple' => true,
             ])
-        ;
+        ;*/;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
