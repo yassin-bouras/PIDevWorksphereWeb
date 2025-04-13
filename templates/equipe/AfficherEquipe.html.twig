@@ -1,0 +1,84 @@
+{% extends '/home/index.html.twig' %}
+
+{% block title %}Équipes & Projets{% endblock %}
+
+{% block body %}
+<div class="container" style="margin-top: 7%;">
+    <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Liste des Équipes et leurs Projets</h1>
+
+    {% if equipes is not empty %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for equipe in equipes %}
+                <div class="col">
+                    <div class="card h-100 shadow-sm" style="border-radius: 10px;">
+                        {% if equipe.imageEquipe %}
+                            <img src="{{ asset(equipe.imageEquipe) }}" class="card-img-top" alt="Image Équipe" style="height: 180px; object-fit: cover; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                        {% else %}
+                            <div class="d-flex align-items-center justify-content-center bg-light" style="height: 180px; color: #999;">Pas d'image</div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h4 class="card-title">{{ equipe.nomEquipe}}</h4>
+                            <p class="card-text">
+                                <strong>Nombre de projets :</strong> {{ equipe.projets|length }}
+                            </p>
+
+                            {% if equipe.projets is not empty %}
+                                <table class="table table-sm mt-3">
+                                    <thead>
+                                        <tr>
+                                            <th>Image</th>
+                                            <th>Nom du projet</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for projet in equipe.projets %}
+                                            <tr>
+                                                <td style="width: 60px;">
+                                                    {% if projet.imageProjet %}
+                                                        <img src="{{ asset(projet.imageProjet) }}" alt="Image Projet" style="width: 50px; height: 50px; object-fit: cover; border-radius: 5px;">
+                                                    {% else %}
+                                                        <span class="text-muted">Aucune</span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{ projet.nom }}</td>
+                                             
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            {% else %}
+                                <p class="text-muted">Aucun projet pour cette équipe.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center mt-4" style="color: #777;">
+            Aucune équipe trouvée.
+        </div>
+    {% endif %}
+
+    <div class="text-center mt-5">
+        <a href="{{ path('app_home') }}" class="btn" style="background-color: rgb(51, 204, 197); color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
+            Retour au home
+        </a>
+    </div>
+</div>
+
+<style>
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease-in-out;
+    }
+    .card-title {
+        font-weight: 600;
+        color: #333;
+    }
+    .table td, .table th {
+        vertical-align: middle;
+    }
+</style>
+{% endblock %}

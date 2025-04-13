@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Equipe;
 use App\Form\EquipeType;
 use App\Repository\EquipeRepository;
+use App\Repository\ProjetRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -39,7 +40,17 @@ final class EquipeController extends AbstractController{
         ]);
     }
 
-    /*#[Route(name: 'app_equipe_index', methods: ['GET'])]
+
+    #[Route('/equipefront',name: 'AfficherEquipeFront', methods: ['GET'])]
+    public function AfficherEquipe(EquipeRepository $equipeRepository): Response
+    {
+        return $this->render('equipe/AfficherEquipe.html.twig', [
+            'equipes' => $equipeRepository->findAll(),
+        ]);
+    }
+
+
+    /* avec la search ajax #[Route(name: 'app_equipe_index', methods: ['GET'])]
     public function index(EquipeRepository $equipeRepository, Request $request): Response
     {
         $searchTerm = $request->query->get('search');
@@ -168,8 +179,6 @@ final class EquipeController extends AbstractController{
 
         return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
     }
-
-   
 
    
 }
