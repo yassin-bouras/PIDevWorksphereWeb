@@ -88,16 +88,12 @@
                                                     </a>
                                                 </label>
                                                 <label>
-                                                  
-                                                 <!--  <form action="{{ path('app_equipe_delete', {'id': equipe.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette équipe ?');">
-                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ equipe.id) }}">
-                                                        <input type="hidden" name="_method" value="DELETE">
-                                                        <button class="btn" style="background-color: #e74c3c; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem; border: none;">Supprimer</button>
-                                                    </form>  -->
                                                     <a href="#" style="background-color: #e74c3c; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem; border: none;" class="action_label5" data-toggle="modal" data-target="#deleteModal{{ equipe.id }}">
                                                         <i class="fas fa-trash"></i> Supprimer
                                                     </a>
                                                 </label>
+
+                                                
                                             </div>
                                         </td>
                                     </tr>
@@ -123,6 +119,7 @@
                                     </div>
                                 </div>
                             </div>
+
                                     {% else %}
                                     <tr>
                                         <td colspan="4" class="text-center">
@@ -139,5 +136,34 @@
         </div>
     </div>
 </div>
+{% endblock %}
 
+{% block javascripts %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+
+$(document).ready(function() {
+    // Initialisation de Select2 avec recherche
+    $('.select2-multiple').select2({
+        placeholder: "Rechercher et sélectionner des projets",
+        allowClear: true,
+        width: '100%',
+        dropdownParent: $('.modal')
+    });
+
+    // Lorsqu'un modal s'ouvre, réinitialiser Select2 pour s'assurer qu'il fonctionne correctement
+    $('.modal').on('shown.bs.modal', function() {
+        $(this).find('.select2-multiple').select2({
+            dropdownParent: $(this)
+        });
+    });
+
+    // Confirmation avant de supprimer
+    $('[data-toggle="confirmation"]').confirmation({
+        btnOkLabel: 'Oui',
+        btnCancelLabel: 'Non'
+    });
+});
+</script>
 {% endblock %}

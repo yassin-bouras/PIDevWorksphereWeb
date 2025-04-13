@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Equipe;
+use App\Entity\Projet;
 use App\Form\EquipeType;
 use App\Repository\EquipeRepository;
 use App\Repository\ProjetRepository;
@@ -16,14 +17,7 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/equipe')]
 final class EquipeController extends AbstractController{
     
-   /*#[Route(name: 'app_equipe_index', methods: ['GET'])]
-    public function index(EquipeRepository $equipeRepository): Response
-    {
-        return $this->render('equipe/index.html.twig', [
-            'equipes' => $equipeRepository->findAll(),
-        ]);
-    }*/
-
+   
     #[Route(name: 'app_equipe_index', methods: ['GET'])]
     public function index(EquipeRepository $equipeRepository, Request $request): Response
     {
@@ -40,15 +34,7 @@ final class EquipeController extends AbstractController{
         ]);
     }
 
-
-    #[Route('/equipefront',name: 'AfficherEquipeFront', methods: ['GET'])]
-    public function AfficherEquipe(EquipeRepository $equipeRepository): Response
-    {
-        return $this->render('equipe/AfficherEquipe.html.twig', [
-            'equipes' => $equipeRepository->findAll(),
-        ]);
-    }
-
+  
 
     /* avec la search ajax #[Route(name: 'app_equipe_index', methods: ['GET'])]
     public function index(EquipeRepository $equipeRepository, Request $request): Response
@@ -86,6 +72,10 @@ final class EquipeController extends AbstractController{
     }*/
 
    
+
+
+
+
     #[Route('/new', name: 'app_equipe_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {

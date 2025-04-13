@@ -117,6 +117,10 @@ class Equipe
         return $this;
     }
 
+
+
+
+
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'equipes')]
     #[ORM\JoinTable(
         name: 'equipe_employee',
