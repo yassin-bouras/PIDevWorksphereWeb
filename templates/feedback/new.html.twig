@@ -191,11 +191,6 @@
         {{ form_widget(form.rate, {'attr': {'class': 'form-control', 'id': 'rate'}}) }}
     </div>
 
-    <div class="form-group">
-        {{ form_label(form.date_feedback) }}
-        {{ form_widget(form.date_feedback, {'attr': {'class': 'form-control', 'id': 'date_feedback', 'type': 'date'}}) }}
-    </div>
-
     {% if entretien %}
         <input type="hidden" name="entretien" value="{{ entretien.id }}">
     {% else %}
@@ -252,20 +247,6 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         }
 
-        if (!dateFeedback.value) {
-            valid = false;
-            messages.push("La date du feedback est obligatoire.");
-            dateFeedback.classList.add('is-invalid');
-        } else {
-            const selectedDate = new Date(dateFeedback.value);
-            if (isNaN(selectedDate.getTime())) {
-                valid = false;
-                messages.push("Veuillez sélectionner une date valide.");
-                dateFeedback.classList.add('is-invalid');
-            }
-        }
-
-       
         if (!valid) {
             e.preventDefault();
             warningDiv.innerHTML = '<ul>' + messages.map(msg => `<li>${msg}</li>`).join('') + '</ul>';

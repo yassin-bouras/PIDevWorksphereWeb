@@ -195,6 +195,13 @@
         .form-col {
             flex: 1;
         }
+
+        input[type="hidden"],
+        select[type="hidden"],
+        .hidden-field,
+        .hidden-field-container {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -202,77 +209,70 @@
 <div class="overlay"></div>
 
 <div class="container">
-    <div class="form-header">
-        <h2>Modifier l'Entretien</h2>
-        <p>Mettez à jour les informations de l'entretien</p>
-    </div>
+        <div class="form-header">
+            <h2>Modifier l'Entretien</h2>
+            <p>Mettez à jour les informations de l'entretien</p>
+        </div>
 
-    <!-- Error Display Div -->
-    <div class="alert-danger" id="errorMessages"></div>
+        <div class="alert-danger" id="errorMessages"></div>
 
-    {{ form_start(form, {'attr': {'id': 'entretienForm'}}) }}
+        {{ form_start(form, {'attr': {'id': 'entretienForm'}}) }}
 
-    <div class="form-group">
-        {{ form_label(form.titre) }}
-        {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
-    </div>
+        {{ form_widget(form.candidatId, {'attr': {'type': 'hidden', 'class': 'hidden-field'}}) }}
+        {{ form_widget(form.offre, {'attr': {'type': 'hidden', 'class': 'hidden-field'}}) }}
 
-    <div class="form-group">
-        {{ form_label(form.description) }}
-        {{ form_widget(form.description, {'attr': {'class': 'form-control', 'rows': '4'}}) }}
-    </div>
+        <div class="form-group">
+            {{ form_label(form.titre) }}
+            {{ form_widget(form.titre, {'attr': {'class': 'form-control', 'placeholder': 'Titre de l\'entretien'}}) }}
+        </div>
 
-    <div class="form-row">
-        <div class="form-col">
-            <div class="form-group">
-                {{ form_label(form.date_entretien) }}
-                {{ form_widget(form.date_entretien, {'attr': {'class': 'form-control'}}) }}
+        <div class="form-group">
+            {{ form_label(form.description) }}
+            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'placeholder': 'Description détaillée', 'rows': '5'}}) }}
+        </div>
+
+        <div class="form-row">
+            <div class="form-col">
+                <div class="form-group">
+                    {{ form_label(form.date_entretien) }}
+                    {{ form_widget(form.date_entretien, {'attr': {'class': 'form-control'}}) }}
+                </div>
+            </div>
+            <div class="form-col">
+                <div class="form-group">
+                    {{ form_label(form.heureentretien) }}
+                    {{ form_widget(form.heureentretien, {'attr': {'class': 'form-control'}}) }}
+                </div>
             </div>
         </div>
-        <div class="form-col">
-            <div class="form-group">
-                {{ form_label(form.heureentretien) }}
-                {{ form_widget(form.heureentretien, {'attr': {'class': 'form-control'}}) }}
-            </div>
+
+        <div class="form-group">
+            {{ form_label(form.type_entretien) }}
+            {{ form_widget(form.type_entretien, {'attr': {'class': 'form-control', 'placeholder': 'Type d\'entretien'}}) }}
         </div>
-    </div>
 
-    <div class="form-group">
-        {{ form_label(form.type_entretien) }}
-        {{ form_widget(form.type_entretien, {'attr': {'class': 'form-control', 'placeholder': 'Type d\'entretien'}}) }}
-    </div>
-
-    <div class="form-group">
-        {{ form_label(form.status) }}
-        {{ form_widget(form.status) }}
-    </div>
-
-    <div class="form-group">
-        {{ form_label(form.candidatId) }}
-        {{ form_widget(form.candidatId, {'attr': {'class': 'form-control'}}) }}
-    </div>
-
-    <div class="form-row">
-        <div class="form-col">
-            <div class="form-group">
-                {{ form_label(form.user) }}
-                {{ form_widget(form.user, {'attr': {'class': 'form-control'}}) }}
-            </div>
+        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+            {{ form_label(form.status, null, {'label_attr': {'style': 'margin-bottom: 0'}}) }}
+            {{ form_widget(form.status, {'attr': {'class': 'form-check-input'}}) }}
         </div>
-        <div class="form-col">
-            <div class="form-group">
-                {{ form_label(form.offre) }}
-                {{ form_widget(form.offre, {'attr': {'class': 'form-control'}}) }}
-            </div>
+
+        <div class="form-group">
+            {{ form_label(form.user) }}
+            {{ form_widget(form.user, {'attr': {'class': 'form-control'}}) }}
         </div>
+
+       
+
+        <button type="submit" class="btn">Enregistrer</button>
+
+        {{ form_end(form) }}
+
+        <a href="{{ path('app_entretien_index') }}" class="back-link">← Retour à la liste</a>
     </div>
 
-    <button class="btn">{{ button_label|default('Mettre à jour') }}</button>
 
-    {{ form_end(form) }}
 
-    <a href="{{ path('app_entretien_index') }}" class="back-link">← Retour à la liste</a>
-</div>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
@@ -340,12 +340,7 @@ document.addEventListener('DOMContentLoaded', function () {
             typeEntretien.classList.add('is-invalid');
         }
 
-        const candidatId = form.querySelector('[name$="[candidatId]"]');
-        if (candidatId.value.trim() && isNaN(candidatId.value.trim())) {
-            valid = false;
-            messages.push("L'ID du candidat doit être un nombre.");
-            candidatId.classList.add('is-invalid');
-        }
+        
 
         const user = form.querySelector('[name$="[user]"]');
         if (!user.value) {
@@ -354,12 +349,6 @@ document.addEventListener('DOMContentLoaded', function () {
             user.classList.add('is-invalid');
         }
 
-        const offre = form.querySelector('[name$="[offre]"]');
-        if (!offre.value) {
-            valid = false;
-            messages.push("L'offre est obligatoire.");
-            offre.classList.add('is-invalid');
-        }
 
         if (!valid) {
             e.preventDefault();
@@ -369,6 +358,13 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 });
+
+const hiddenFields = form.querySelectorAll('input[type="hidden"], select[type="hidden"]');
+hiddenFields.forEach(field => {
+    field.style.display = 'none';
+    field.parentElement.style.display = 'none';
+});
+const hiddenFields = form.querySelectorAll('[name="entretien[candidatId]"], [name="entretien[offre]"], .hidden-field-container');
 </script>
 </body>
 </html>

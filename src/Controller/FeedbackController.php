@@ -59,6 +59,7 @@ final class FeedbackController extends AbstractController{
         }
 
         $feedback = new Feedback();
+        $feedback->setDate_feedback(new \DateTime());
         $form = $this->createForm(FeedbackType::class, $feedback);
         $form->handleRequest($request);
 
@@ -101,6 +102,8 @@ final class FeedbackController extends AbstractController{
     #[Route('/{id}/edit', name: 'app_feedback_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Feedback $feedback, EntityManagerInterface $entityManager, EntretienRepository $entretienRepository): Response
     {
+
+        $feedback->setDate_feedback(new \DateTime());
         $form = $this->createForm(FeedbackType::class, $feedback);
         $form->handleRequest($request);
 

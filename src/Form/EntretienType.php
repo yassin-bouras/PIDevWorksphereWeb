@@ -60,9 +60,8 @@ class EntretienType extends AbstractType
                 ],
                 'placeholder' => 'Choisir le type d\'entretien',
             ])
-            ->add('status')
             ->add('candidatId', IntegerType::class, [
-                'required' => true,
+                'required' => false,
                 'attr' => [
                     'class' => 'form-control',
                     'min' => 1, 

@@ -17,9 +17,6 @@ class FeedbackType extends AbstractType
         $builder
             ->add('message')
             ->add('rate')
-            ->add('date_feedback', null, [
-                'widget' => 'single_text'
-            ])
             ->add('entretien', HiddenType::class, [
                 'mapped' => false, 
             ]);

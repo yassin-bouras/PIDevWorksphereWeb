@@ -22,7 +22,8 @@
     <title>New Feedback</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
-        :root {
+
+    :root {
             --primary-color: #2c5aa0;
             --secondary-color: #4a90e2;
             --accent-color: #ff6b35;
@@ -30,6 +31,8 @@
             --medium-gray: #e1e5eb;
             --dark-gray: #6c757d;
             --text-color: #2d3748;
+            --warning-color: #ffc107; /* Yellow for warning */
+            --warning-bg: #fff3cd; /* Light yellow background */
         }
 
         body {
@@ -108,6 +111,11 @@
             background-color: white;
         }
 
+        .form-control.is-invalid {
+            border-color: var(--warning-color);
+            background-color: var(--warning-bg);
+        }
+
         .btn {
             background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
             color: white;
@@ -149,10 +157,30 @@
             text-decoration: none;
         }
 
+        .alert-warning {
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-color);
+            color: var(--text-color);
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .alert-warning ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .alert-warning li {
+            margin-bottom: 5px;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+      
     </style>
 </head>
 
@@ -163,7 +191,7 @@
 
     
 
-    {{ form_start(form) }}
+    {{ form_start(form, {'attr': {'id': 'feedbackForm', 'novalidate': 'novalidate'}}) }}
 
         <div class="form-group">
             {{ form_label(form.message) }}
@@ -175,12 +203,7 @@
             {{ form_widget(form.rate, {'attr': {'class': 'form-control', 'placeholder': 'Note sur 10'}}) }}
         </div>
 
-        <div class="form-group">
-            {{ form_label(form.date_feedback) }}
-            {{ form_widget(form.date_feedback, {'attr': {'class': 'form-control'}}) }}
-        </div>
 
-       
 
         <button class="btn">{{ button_label|default('Enregistrer le Feedback') }}</button>
 
@@ -189,5 +212,82 @@
     <a href="{{ path('entretien_by_employee') }}" class="back-link">← Retour à la liste</a>
 </div>
 </body>
+
+
+<script>
+
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('feedbackForm');
+    const warningDiv = document.getElementById('warningMessages');
+
+    form.addEventListener('submit', function (e) {
+        let valid = true;
+        let messages = [];
+
+        warningDiv.style.display = 'none';
+        warningDiv.innerHTML = '';
+        const inputs = form.querySelectorAll('.form-control');
+        inputs.forEach(input => input.classList.remove('is-invalid'));
+
+        const message = document.querySelector('[id$="_message"]');
+        const rate = document.querySelector('[id$="_rate"]');
+        const dateFeedback = document.querySelector('[id$="_date_feedback"]');
+        const entretien = document.querySelector('[id$="_entretien"]');
+
+        if (!message.value.trim()) {
+            valid = false;
+            messages.push("Le message est obligatoire.");
+            message.classList.add('is-invalid');
+        } else if (message.value.trim().length < 10) {
+            valid = false;
+            messages.push("Le message doit contenir au moins 10 caractères.");
+            message.classList.add('is-invalid');
+        }
+
+        const rateValue = rate.value.trim();
+        if (!rateValue) {
+            valid = false;
+            messages.push("Veuillez sélectionner une note.");
+            rate.classList.add('is-invalid');
+        } else {
+            const rateNum = parseInt(rateValue, 10);
+            if (isNaN(rateNum) || rateNum < 1 || rateNum > 5) {
+                valid = false;
+                messages.push("La note doit être un nombre entre 1 et 5.");
+                rate.classList.add('is-invalid');
+            }
+        }
+
+        if (!valid) {
+            e.preventDefault();
+            warningDiv.innerHTML = '<ul>' + messages.map(msg => `<li>${msg}</li>`).join('') + '</ul>';
+            warningDiv.style.display = 'block';
+            window.scrollTo({ top: warningDiv.offsetTop - 20, behavior: 'smooth' });
+        }
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+</script>
+
+
+
+
+
 </html>
+
+
 

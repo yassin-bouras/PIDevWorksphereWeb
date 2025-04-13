@@ -43,6 +43,8 @@ public function new(Request $request, EntityManagerInterface $entityManager, Can
     $entretien = new Entretien();
     $candidature = new Candidature();
 
+        $entretien->setStatus(false);
+
     $form = $this->createForm(EntretienType::class, $entretien);
     $form->handleRequest($request);
 
