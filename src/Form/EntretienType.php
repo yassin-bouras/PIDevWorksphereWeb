@@ -61,14 +61,13 @@ class EntretienType extends AbstractType
                 'placeholder' => 'Choisir le type d\'entretien',
             ])
             ->add('status')
-            ->add('candidatId', ChoiceType::class, [
-                'choices' => $candidatChoices,
-                'label' => 'Candidat',
-                'placeholder' => 'Sélectionnez un candidat',
-                'attr' => ['class' => 'form-control'],
-                'mapped' => true
-            ])
-
+            ->add('candidatId', IntegerType::class, [
+                'required' => true,
+                'attr' => [
+                    'class' => 'form-control',
+                    'min' => 1, 
+                ],
+            ])     
             ->add('user', EntityType::class, [
                 'class' => User::class,
                 'query_builder' => fn() => $this->userRepository->findByRoleQueryBuilder('Employe'),
@@ -77,14 +76,19 @@ class EntretienType extends AbstractType
                 'label' => 'Employé',
                 'attr' => ['class' => 'form-control']
             ])
-            
+
             ->add('offre', EntityType::class, [
                 'class' => Offre::class,
                 'choice_label' => 'titre',
                 'placeholder' => 'Sélectionnez une offre',
                 'label' => 'Offre',
-                'attr' => ['class' => 'form-control']
+                'attr' => [
+                    'class' => 'form-control',
+                    'id' => 'offre-select'
+                ]
             ])
+            
+            
             ;
            
     }
