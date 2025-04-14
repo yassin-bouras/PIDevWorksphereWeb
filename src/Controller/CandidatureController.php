@@ -15,71 +15,79 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 #[Route('/candidature')]
-final class CandidatureController extends AbstractController{
+final class CandidatureController extends AbstractController
+{
     #[Route(name: 'app_candidature_index', methods: ['GET'])]
-    public function index(CandidatureRepository $candidatureRepository): Response
+    public function index(Request $request, CandidatureRepository $candidatureRepository): Response
     {
+        $search = $request->query->get('search', ''); // Get the search term from the query string
+        $candidatures = $candidatureRepository->findByOffreTitre($search);
+
         return $this->render('candidature/index.html.twig', [
-            'candidatures' => $candidatureRepository->findAll(),
+            // 'candidatures' => $candidatureRepository->findAll(),
+            'candidatures' => $candidatures,
+            'search' => $search, // Pass the search term back to the template    
         ]);
     }
 
     #[Route('/new/{offre_id}', name: 'app_candidature_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger , ?int $offre_id = null): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, ?int $offre_id = null): Response
     {
         $candidature = new Candidature();
-        
+        $candidature->setUser($this->getUser());
+
+
         if ($offre_id) {
             $offre = $entityManager->getRepository(Offre::class)->find($offre_id);
             if ($offre) {
                 $candidature->setOffre($offre);
             }
         }
-        
+
         $form = $this->createForm(CandidatureType::class, $candidature, [
             'offre_id' => $offre_id
         ]);
-        
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             // CV Upload
-        $cvFile = $form->get('cv')->getData();
-        if ($cvFile) {
-            $originalFilename = pathinfo($cvFile->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeFilename = $slugger->slug($originalFilename);
-            $newFilename = $safeFilename.'-'.uniqid().'.'.$cvFile->guessExtension();
+            $cvFile = $form->get('cv')->getData();
+            if ($cvFile) {
+                $originalFilename = pathinfo($cvFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $cvFile->guessExtension();
 
-            try {
-                $cvFile->move(
-                    $this->getParameter('uploads_directory'),
-                    $newFilename
-                );
-            } catch (FileException $e) {
-                // Handle error here
+                try {
+                    $cvFile->move(
+                        $this->getParameter('uploads_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // Handle error here
+                }
+
+                $candidature->setCv($newFilename);
             }
 
-            $candidature->setCv($newFilename);
-        }
+            // Lettre de Motivation Upload
+            $lmFile = $form->get('lettre_motivation')->getData();
+            if ($lmFile) {
+                $originalFilename = pathinfo($lmFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $lmFile->guessExtension();
 
-        // Lettre de Motivation Upload
-        $lmFile = $form->get('lettre_motivation')->getData();
-        if ($lmFile) {
-            $originalFilename = pathinfo($lmFile->getClientOriginalName(), PATHINFO_FILENAME);
-            $safeFilename = $slugger->slug($originalFilename);
-            $newFilename = $safeFilename.'-'.uniqid().'.'.$lmFile->guessExtension();
+                try {
+                    $lmFile->move(
+                        $this->getParameter('uploads_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // Handle error here
+                }
 
-            try {
-                $lmFile->move(
-                    $this->getParameter('uploads_directory'),
-                    $newFilename
-                );
-            } catch (FileException $e) {
-                // Handle error here
+                $candidature->setLettreMotivation($newFilename);
             }
-
-            $candidature->setLettreMotivation($newFilename);
-        }
             $entityManager->persist($candidature);
             $entityManager->flush();
 
@@ -121,7 +129,7 @@ final class CandidatureController extends AbstractController{
     #[Route('/{id_candidature}', name: 'app_candidature_delete', methods: ['POST'])]
     public function delete(Request $request, Candidature $candidature, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$candidature->getId_candidature(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $candidature->getId_candidature(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($candidature);
             $entityManager->flush();
         }

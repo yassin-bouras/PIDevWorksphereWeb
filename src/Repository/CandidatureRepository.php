@@ -6,6 +6,7 @@ use App\Entity\Candidature;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
+use Doctrine\ORM\QueryBuilder;
 /**
  * @extends ServiceEntityRepository<Candidature>
  */
@@ -40,4 +41,28 @@ class CandidatureRepository extends ServiceEntityRepository
 //            ->getOneOrNullResult()
 //        ;
 //    }
+    // public function findByOffreTitre($titre): array
+    // {
+    //     $qb = $this->createQueryBuilder('c')
+    //         ->innerJoin('c.offre', 'o')
+    //         ->addSelect('o')
+    //         ->where('o.titre LIKE :titre')
+    //         ->setParameter('titre', '%' . $titre . '%')
+    //         ->orderBy('c.id_candidature', 'ASC');
+
+    //     return $qb->getQuery()->getResult();
+    // }
+    public function findByOffreTitre(string $search): array
+{
+    $qb = $this->createQueryBuilder('c')
+        ->join('c.offre', 'o') // Join the related Offre entity
+        ->addSelect('o');
+
+    if (!empty($search)) {
+        $qb->andWhere('o.titre LIKE :search')
+           ->setParameter('search', '%' . $search . '%');
+    }
+
+    return $qb->getQuery()->getResult();
+}
 }
