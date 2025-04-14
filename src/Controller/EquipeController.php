@@ -34,7 +34,22 @@ final class EquipeController extends AbstractController{
         ]);
     }
 
-  
+
+    #[Route('/equipefront',name: 'AfficherEquipeFront', methods: ['GET'])]
+    public function AfficherEquipe(EquipeRepository $equipeRepository, ProjetRepository $projetRepository, Request $request): Response
+    {
+        $searchTerm = $request->query->get('search');
+        if ($searchTerm) {
+            $equipes = $equipeRepository->searchTeamsAndProjects($searchTerm);
+        } else {
+            $equipes = $equipeRepository->findAllWithProjects();
+        }
+    
+        return $this->render('equipe/AfficherEquipe.html.twig', [
+            'equipes' => $equipes,
+            'searchTerm' => $searchTerm
+        ]);
+    }
 
     /* avec la search ajax #[Route(name: 'app_equipe_index', methods: ['GET'])]
     public function index(EquipeRepository $equipeRepository, Request $request): Response

@@ -56,7 +56,7 @@
                                     {% for user in equipe.users %}
                                         <li class="list-group-item d-flex align-items-center">
                                             <div class="member-avatar">
-                                                <img src="https://via.placeholder.com/50" alt="User Image">
+                                                <img src="{{ asset(user.imageprofil) }}" alt="User Image">
                                             </div>
                                             <div class="member-info">
                                                 <h5>{{ user.nom }} {{ user.prenom }}</h5>
