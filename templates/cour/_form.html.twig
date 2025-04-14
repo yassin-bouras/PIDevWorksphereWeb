@@ -1,0 +1,53 @@
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}, 'enctype': 'multipart/form-data'}) }}
+
+{% block body %}
+    <div class="container" style="margin-top:5%;">
+        <div class="card p-2 shadow">
+
+            {# Champ spécifique pour la photo #}
+            <div class="mb-3">
+                {{ form_label(form.photo) }}
+                {{ form_widget(form.photo, {'attr': {'class': 'form-control'}}) }}
+
+                {% if form.photo.vars.errors|length > 0 %}
+                    <div class="text-danger mt-1">
+                        {% for error in form.photo.vars.errors %}
+                            <small>{{ error.message }}</small><br>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+
+            {# Les autres champs du formulaire #}
+            {% for field in form %}
+                {% if field.vars.name != 'photo' and field.vars.name != '_token' %}
+                    <div class="mb-3">
+                        {% if field.vars.name == 'date' %}
+                            {{ form_label(field) }}
+                            {{ form_widget(field, {'attr': {'class': 'form-control', 'min': 'now'|date('Y-m-d')}}) }}
+                        {% else %}
+                            {{ form_label(field) }}
+                            {{ form_widget(field, {'attr': {'class': 'form-control'}}) }}
+                        {% endif %}
+
+                        {% if field.vars.errors|length > 0 %}
+                            <div class="text-danger mt-1">
+                                {% for error in field.vars.errors %}
+                                    <small>{{ error.message }}</small><br>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+
+            <div class="text-center mt-3">
+                <button class="btn btn-success" style="background-color:#00882E; color: white;">
+                    {{ button_label|default('Enregistrer') }}
+                </button>
+            </div>
+
+        </div>
+    </div>
+{{ form_end(form) }}
+{% endblock %}

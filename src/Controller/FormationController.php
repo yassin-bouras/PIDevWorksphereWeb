@@ -140,4 +140,22 @@ final class FormationController extends AbstractController
 
         return $this->redirectToRoute('app_formation_index', [], Response::HTTP_SEE_OTHER);
     }
+
+
+    #[Route('/{id_f}/cours', name: 'app_formation_cours')]
+public function showCours(int $id_f, FormationRepository $formationRepository): Response
+{
+    $formation = $formationRepository->find($id_f);
+
+    if (!$formation) {
+        throw $this->createNotFoundException('Formation non trouvée');
+    }
+
+    $cours = $formation->getCours(); 
+
+    return $this->render('formation/cours.html.twig', [
+        'formation' => $formation,
+        'cours' => $cours,
+    ]);
+}
 }

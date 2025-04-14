@@ -1,0 +1,85 @@
+{% extends '/dashboard/base.html.twig' %}
+
+{% block title %}Détails du Cours{% endblock %}
+
+{% block content %}
+    <div class="container" style="margin-top:7%;">
+        <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Détails du Cours</h1>
+        <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}"></a></li>
+
+        <div class="formation-details" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 30px; margin-bottom: 30px;">
+            <div class="row">
+                <div class="col-md-4 text-center mb-4">
+                    {% if cour.photo %}
+                        <img src="{{ asset(cour.photo) }}" alt="Image du Cours" style="max-width: 70%; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                    {% else %}
+                        <div style="background: #f8f9fa; padding: 40px; border-radius: 8px; color: #777;">
+                            Pas d'image disponible
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="col-md-8">
+                    <div class="detail-item" style="margin-bottom: 20px;">
+                        <h3 style="color: #4a6fa5;">Nom du cours</h3>
+                        <p style="font-size: 1.1rem;">{{ cour.nomC }}</p>
+                    </div>
+
+                    <div class="detail-item" style="margin-bottom: 20px;">
+                        <h3 style="color: #4a6fa5;">Description</h3>
+                        <p style="font-size: 1.1rem; white-space: pre-line;">{{ cour.descriptionC }}</p>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="detail-item" style="margin-bottom: 20px;">
+                                <h3 style="color: #4a6fa5;">Date</h3>
+                                <p>{{ cour.date ? cour.date|date('d/m/Y') : 'N/A' }}</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="detail-item" style="margin-bottom: 20px;">
+                                <h3 style="color: #4a6fa5;">Heure de début</h3>
+                                <p>{{ cour.heureDebut ? cour.heureDebut|date('H:i') : 'N/A' }}</p>
+                            </div>
+                        </div>
+
+                        <div class="col-md-4">
+                            <div class="detail-item" style="margin-bottom: 20px;">
+                                <h3 style="color: #4a6fa5;">Heure de fin</h3>
+                                <p>{{ cour.heureFin ? cour.heureFin|date('H:i') : 'N/A' }}</p>
+                            </div>
+                        </div>
+                    </div>
+                
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ path('app_cour_index') }}" class="btn" style="background-color: #4771cb; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px; width: 20%;">Retour à la liste <i data-feather="arrow-left-circle"></i></a>
+            <a href="{{ path('app_cour_edit', {'id_c': cour.idC}) }}" class="btn" style="background-color: #e67e22; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px; width: 15%;">Modifier <i data-feather="edit-3"></i></a>
+            <div style="margin-top: 10px;">{{ include('cour/_delete_form.html.twig') }}</div>
+        </div>
+    </div>
+
+    <style>
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+        .formation-details {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .formation-details:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        .detail-item h3 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+    </style>
+{% endblock %}

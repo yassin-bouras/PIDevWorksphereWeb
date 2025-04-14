@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Reservation;
+use App\Entity\Formation;
 use App\Form\ReservationType;
 use App\Repository\ReservationRepository;
 use App\Repository\FavoriRepository;
@@ -43,6 +44,56 @@ final class ReservationController extends AbstractController{
         ]);
     }
 
+    #[Route('/formation/front/{id_f}/reservation/new', name: 'app_formation_reservation_new', methods: ['GET', 'POST'])]
+    public function ajouterReservationPourFormation(
+        int $id_f,
+        Request $request,
+        EntityManagerInterface $entityManager
+    ): Response {
+        // Récupérer la formation en fonction de l'ID passé dans l'URL
+        $formation = $entityManager->getRepository(Formation::class)->find($id_f);
+    
+        // Vérifier si la formation existe
+        if (!$formation) {
+            throw $this->createNotFoundException('Formation non trouvée');
+        }
+    
+        // Créer une nouvelle réservation
+        $reservation = new Reservation();
+        $reservation->setFormation($formation); // Associer la formation à la réservation
+    
+        // Créer et gérer le formulaire de réservation
+        $form = $this->createForm(ReservationType::class, $reservation);
+        $form->handleRequest($request);
+    
+        // Si le formulaire est soumis et valide
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Persister la réservation
+            $entityManager->persist($reservation);
+            $entityManager->flush();
+    
+            // Rediriger vers la liste des réservations
+            return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+        }
+    
+        // Rendre la vue du formulaire
+        return $this->render('reservation/new.html.twig', [
+            'reservation' => $reservation,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{id_r}', name: 'app_reservation_delete', methods: ['POST'])]
+    public function delete(Request $request, Reservation $reservation, EntityManagerInterface $entityManager): Response
+    {
+        if ($this->isCsrfTokenValid('delete'.$reservation->getId_r(), $request->getPayload()->getString('_token'))) {
+            $entityManager->remove($reservation);
+            $entityManager->flush();
+        }
+
+        return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+    }
+
     #[Route('/{id_r}', name: 'app_reservation_show', methods: ['GET'])]
     public function show(Reservation $reservation): Response
     {
@@ -68,58 +119,4 @@ final class ReservationController extends AbstractController{
             'form' => $form,
         ]);
     }
-
-    #[Route('/{id_r}', name: 'app_reservation_delete', methods: ['POST'])]
-    public function delete(Request $request, Reservation $reservation, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$reservation->getId_r(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($reservation);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-
-
-
-     // Nouvelle méthode pour ajouter une réservation à une formation spécifique
-     #[Route('/formation/{id_f}/ajouter-reservation', name: 'app_formation_ajouter_reservation', methods: ['GET', 'POST'])]
-     public function ajouterReservation(
-         Request $request,
-         EntityManagerInterface $entityManager,
-         FormationRepository $formationRepository,
-         int $id
-     ): Response {
-         // Récupérer la formation par ID
-         $formation = $formationRepository->find($id);
- 
-         // Vérifier si la formation existe
-         if (!$formation) {
-             throw $this->createNotFoundException('La formation demandée n\'existe pas.');
-         }
- 
-         // Créer une nouvelle réservation
-         $reservation = new Reservation();
-         $reservation->setFormation($formation); // Associer la réservation à la formation
- 
-         // Créer le formulaire de réservation
-         $form = $this->createForm(ReservationType::class, $reservation);
-         $form->handleRequest($request);
- 
-         // Si le formulaire est soumis et valide
-         if ($form->isSubmitted() && $form->isValid()) {
-             $entityManager->persist($reservation);
-             $entityManager->flush();
- 
-             // Rediriger vers la page d'affichage des réservations
-             return $this->redirectToRoute('app_reservation_index');
-         }
- 
-         // Retourner le formulaire à l'utilisateur
-         return $this->render('reservation/ajouter.html.twig', [
-             'form' => $form->createView(),
-             'formation' => $formation, // Passer la formation à la vue
-         ]);
-     }
 }

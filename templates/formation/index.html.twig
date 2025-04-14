@@ -26,13 +26,15 @@
                             <span style="padding: 6px 12px; border-radius: 20px; font-weight: bold; font-size: 0.9rem; color: white; background-color: #4771cb;">
                                 {{ formation.type }}
                             </span>
+
+                            
                         </div>
 
                         <div class="formation-info" style="margin-bottom: 10px;">
                             <p style="margin: 5px 0; color: #555;"><strong>Description :</strong> {{ formation.description }}</p>
                             <p style="margin: 5px 0; color: #555;"><strong>Date :</strong> {{ formation.date ? formation.date|date('Y-m-d') : 'N/A' }}</p>
-                            <p style="margin: 5px 0; color: #555;"><strong>Heure début :</strong> {{ formation.heureDebut ? formation.heureDebut|date('H:i') : 'N/A' }}</p>
-                            <p style="margin: 5px 0; color: #555;"><strong>Heure fin :</strong> {{ formation.heureFin ? formation.heureFin|date('H:i') : 'N/A' }}</p>
+                            <p style="margin: 5px 0; color: #555;"><strong>Langue:</strong> {{ formation.langue }} </p>
+                            <p style="margin: 5px 0; color: #555;"><strong>Certification:</strong>{{ formation.certifie }} </p>
                             <p style="margin: 5px 0; color: #555;"><strong>Places :</strong> {{ formation.nbPlace }}</p>
                         </div>
 

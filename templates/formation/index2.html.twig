@@ -4,70 +4,132 @@
 
 {% block body %}
 <div class="container" style="margin-top: 7%;">
-    <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Liste des Formations</h1>
-    <div class="mb-4">
-        <form method="get" action="{{ path('app_formation_search') }}">
-            <div class="input-group mb-3">
-                <input type="text" name="search" class="form-control" placeholder="Rechercher une formation..." value="{{ app.request.get('search') }}">
-                <button class="btn btn-primary" type="submit" style="background-color:#4771cb; border-color: #4771cb;">
-                    Rechercher
+    <h1 class="text-center mb-5" style="font-weight: 700; color: #2c3e50; text-shadow: 1px 1px 3px rgba(0,0,0,0.1);">Liste des Formations</h1>
+    
+    <!-- Barre de recherche améliorée -->
+    <div class="mb-5">
+        <form method="get" action="{{ path('app_formation_search') }}" class="w-75 mx-auto">
+            <div class="input-group shadow-sm">
+                <input type="text" name="search" class="form-control py-2 border-0" 
+                       placeholder="Rechercher une formation..." 
+                       value="{{ app.request.get('search') }}"
+                       style="border-radius: 30px 0 0 30px;">
+                <button class="btn btn-primary" type="submit" 
+                        style="background-color:#4771cb; border-radius: 0 30px 30px 0; padding-left: 25px; padding-right: 25px;">
+                    <i class="fas fa-search me-2"></i>Rechercher
                 </button>
             </div>
         </form>
     </div>
+
     {% if formations is not empty %}
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for formation in formations %}
                 <div class="col">
-                    <div class="card h-100 shadow-sm" style="border-radius: 10px;">
+                    <div class="card h-100 shadow-sm border-0" 
+                         style="border-radius: 15px; transition: all 0.3s ease; overflow: hidden;">
+                        
+                        <!-- Bouton favori en haut à droite -->
+                        <button class="btn btn-sm position-absolute" 
+                                style="top: 10px; right: 10px; z-index: 1; background-color: #ff4757; color: white; border-radius: 50%; width: 36px; height: 36px; padding: 0;"
+                                title="Ajouter aux favoris">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                        
                         {% if formation.photo %}
-                            <img src="{{ asset(formation.photo) }}" class="card-img-top" alt="Image Formation" style="height: 180px; object-fit: cover; border-top-left-radius: 10px; border-top-right-radius: 10px;">
+                            <img src="{{ asset(formation.photo) }}" class="card-img-top" alt="Image Formation" 
+                                 style="height: 200px; object-fit: cover; transition: transform 0.5s ease;">
                         {% else %}
-                            <div class="d-flex align-items-center justify-content-center bg-light" style="height: 180px; color: #999;">Pas d'image</div>
+                            <div class="d-flex align-items-center justify-content-center" 
+                                 style="height: 200px; background: linear-gradient(135deg, #f5f7fa 0%, #dfe3e8 100%); color: #6c757d;">
+                                <i class="fas fa-image fa-3x opacity-25"></i>
+                            </div>
                         {% endif %}
 
-                        <div class="card-body">
-                            <h5 class="card-title">{{ formation.titre }}</h5>
+                        <div class="card-body pb-0">
+                            <h5 class="card-title mb-3" style="font-weight: 600; color: #2c3e50;">
+                                {{ formation.titre }}
+                            </h5>
+                            
+                            <!-- Commentaire conservé -->
                             <!-- <p class="card-text">{{ formation.description|slice(0, 100) }}{% if formation.description|length > 100 %}...{% endif %}</p> -->
-                            <ul class="list-unstyled mb-3">
-                                <li><strong>Date :</strong> {{ formation.date ? formation.date|date('Y-m-d') : 'N/A' }}</li>
-                                <li><strong>Heure début :</strong> {{ formation.heureDebut ? formation.heureDebut|date('H:i') : 'N/A' }}</li>
-                                <li><strong>Heure fin :</strong> {{ formation.heureFin ? formation.heureFin|date('H:i') : 'N/A' }}</li>
-                                <!-- <li><strong>Places :</strong> {{ formation.nbPlace }}</li>
-                                <li><strong>Type :</strong> {{ formation.type }}</li> -->
+                            
+                            <ul class="list-unstyled mb-4">
+                                <li class="mb-2">
+                                    <i class="fas fa-calendar-day text-primary me-2"></i>
+                                    <strong>Date :</strong> {{ formation.date ? formation.date|date('Y-m-d') : 'N/A' }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-language text-primary me-2"></i>
+                                    <strong>Langue:</strong> {{ formation.langue }}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-certificate text-primary me-2"></i>
+                                    <strong>Certification:</strong> 
+                                    {% if formation.certifie %}
+                                        <span class="badge bg-success">Oui</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Non</span>
+                                    {% endif %}
+                                </li>
+                                <li class="mb-2">
+                                    <i class="fas fa-tag text-primary me-2"></i>
+                                    <strong>Type :</strong> 
+                                    <span class="badge bg-info">{{ formation.type }}</span>
+                                </li>
                             </ul>
-                            <a href="{{ path('app_formation_show2', {'id_f': formation.idF}) }}" class="btn btn-primary" style="background-color: #4771cb; border: none; margin-left: 150px;">Voir Détails</a>
+                        </div>
+                        
+                        <div class="card-footer bg-transparent border-0 pt-0 pb-3 d-flex justify-content-between align-items-center">
+                            <span class="text-muted small">
+                                <i class="fas fa-users me-1"></i>
+                                {{ formation.nbPlace }} places
+                            </span>
+                            <a href="{{ path('app_formation_show2', {'id_f': formation.idF}) }}" 
+                               class="btn btn-sm" 
+                               style="background-color: #4771cb; color: white; border-radius: 20px; padding: 5px 15px;">
+                                Voir Détails <i class="fas fa-arrow-right ms-1"></i>
+                            </a>
                         </div>
                     </div>
                 </div>
             {% endfor %}
         </div>
     {% else %}
-        <div class="text-center mt-4" style="color: #777;">
-            Aucune formation trouvée.
+        <div class="text-center py-5" style="background-color: #f8f9fa; border-radius: 10px;">
+            <i class="fas fa-book-open fa-3x mb-3" style="color: #6c757d;"></i>
+            <h4 style="color: #6c757d;">Aucune formation trouvée</h4>
+            <p class="text-muted">Essayez avec d'autres termes de recherche</p>
         </div>
     {% endif %}
 
-    <div class="text-center mt-5">
-        <a href="{{ path('app_home') }}" class="btn" style="background-color: rgb(51, 204, 197); color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
-            Retour au home
+    <div class="text-center mt-5 mb-4">
+        <a href="{{ path('app_home') }}" class="btn" 
+           style="background-color: #33ccc5; color: white; padding: 10px 25px; border-radius: 30px; text-decoration: none; box-shadow: 0 3px 10px rgba(51, 204, 197, 0.3);">
+            <i class="fas fa-home me-2"></i>Retour à l'accueil
         </a>
     </div>
 </div>
 
 <style>
     .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-        transition: all 0.3s ease-in-out;
+        transform: translateY(-8px);
+        box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
     }
-    .card-title {
-        font-weight: 600;
-        color: #333;
+    .card:hover img {
+        transform: scale(1.05);
     }
-    .card-text {
-        color: #555;
-        font-size: 0.95rem;
+    .badge {
+        font-weight: 500;
+        padding: 4px 8px;
+        font-size: 0.8em;
+    }
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .list-unstyled li {
+        padding: 3px 0;
     }
 </style>
 {% endblock %}
