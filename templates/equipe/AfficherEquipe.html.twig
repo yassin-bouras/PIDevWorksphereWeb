@@ -112,13 +112,12 @@
                                                 <span class="text-muted">Aucun projet</span>
                                             {% endif %}
                                         </td>
-
-                                        <!-- Bouton Voir -->
-                                        <td class="text-end">
-                                            <a href="#" class="btn btn-sm btn-primary rounded-pill px-3">
-                                                Voir <i class="fas fa-chevron-right ms-1"></i>
-                                            </a>
-                                        </td>
+                   <!-- Bouton Voir -->
+             <td class="text-end">
+                 <a href="{{ path('AfficherDetailsEq', {'id': equipe.id}) }}" class="btn btn-sm btn-primary rounded-pill px-3">
+                         Voir <i class="fas fa-chevron-right ms-1"></i>
+                             </a>
+              </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

@@ -51,6 +51,15 @@ final class EquipeController extends AbstractController{
         ]);
     }
 
+        
+    #[Route('/{id}', name: 'AfficherDetailsEq', methods: ['GET'])]
+    public function AfficherDetailsEquipe(Equipe $equipe): Response
+    {
+        return $this->render('equipe/AfficherDetailsEquipe.html.twig', [
+            'equipe' => $equipe,
+        ]);
+    }
+
     /* avec la search ajax #[Route(name: 'app_equipe_index', methods: ['GET'])]
     public function index(EquipeRepository $equipeRepository, Request $request): Response
     {
@@ -127,9 +136,9 @@ final class EquipeController extends AbstractController{
             'form' => $form,
         ]);
     }
+ 
 
 
-   
     #[Route('/{id}', name: 'app_equipe_show', methods: ['GET'])]
     public function show(Equipe $equipe): Response
     {
@@ -137,6 +146,8 @@ final class EquipeController extends AbstractController{
             'equipe' => $equipe,
         ]);
     }
+
+   
 
     #[Route('/{id}/edit', name: 'app_equipe_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Equipe $equipe, EntityManagerInterface $entityManager): Response
