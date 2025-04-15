@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\TextType; // Importez TextType
 
 class EvennementType extends AbstractType
 {
@@ -21,9 +22,17 @@ class EvennementType extends AbstractType
             ])
             ->add('lieuEvent')
             ->add('capaciteEvent')
+            ->add('typeEvent', TextType::class, [ // Ajoutez le champ typeEvent
+                'label' => 'Type d\'événement',
+                'required' => false, // Ou true si le type est obligatoire
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Ex: Conférence, Atelier, Concert...'
+                ],
+            ])
             ->add('user', EntityType::class, [
                 'class' => User::class,
-'choice_label' => 'id',
+                'choice_label' => 'id',
             ])
         ;
     }

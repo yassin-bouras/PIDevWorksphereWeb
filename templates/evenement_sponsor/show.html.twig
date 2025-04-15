@@ -1,35 +1,104 @@
-<!DOCTYPE html>
+{% extends '/dashboard/base.html.twig' %}
 
-<title>EvenementSponsor</title>
+{% block title %}Détails du partenariat{% endblock %}
 
-{% block body %}
-    <h1>EvenementSponsor</h1>
+{% block content %}
+<div class="content container-fluid">
+    <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12">
+            <div class="breadcrumb-path mb-4">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_sponsor_index') }}">Sponsors</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_sponsor_events', {'idSponsor': evenement_sponsor.sponsor.idSponsor}) }}">Événements de {{ evenement_sponsor.sponsor.nomSponso }}</a></li>
+                    <li class="breadcrumb-item active">Détails du partenariat</li>
+                </ul>
+                <h3>Détails du partenariat</h3>
+            </div>
+        </div>
+    </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Événement</th>
-                <td>{{ evenement_sponsor.evenement.nomEvent }}</td>
-            </tr>
-            <tr>
-                <th>Sponsor</th>
-                <td>{{ evenement_sponsor.sponsor.nomSponso }}</td>
-            </tr>
-            <tr>
-                <th>Date de début du contrat</th>
-                <td>{{ evenement_sponsor.datedebutContrat ? evenement_sponsor.datedebutContrat|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Durée</th>
-                <td>{{ evenement_sponsor.duree }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title">Partenariat entre {{ evenement_sponsor.sponsor.nomSponso }} et {{ evenement_sponsor.evenement.nomEvent }}</h4>
+                   
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover table-center mb-0">
+                            <tbody>
+                                <tr>
+                                    <th class="w-30">Événement</th>
+                                    <td>
+                                        <strong>{{ evenement_sponsor.evenement.nomEvent }}</strong><br>
+                                        <small class="text-muted">{{ evenement_sponsor.evenement.lieuEvent }}</small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Sponsor</th>
+                                    <td>
+                                        <strong>{{ evenement_sponsor.sponsor.nomSponso }}</strong><br>
+                                        <small class="text-muted">{{ evenement_sponsor.sponsor.emailSponso }}</small>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Date de début du contrat</th>
+                                    <td>{{ evenement_sponsor.datedebutContrat ? evenement_sponsor.datedebutContrat|date('d/m/Y') : 'Non spécifiée' }}</td>
+                                </tr>
+                                <tr>
+                                    <th>Durée du contrat</th>
+                                    <td>{{ evenement_sponsor.duree }} jours</td>
+                                </tr>
+                                <tr>
+                                    <th>Date de fin estimée</th>
+                                    <td>
+                                        {% if evenement_sponsor.datedebutContrat and evenement_sponsor.duree %}
+                                            {{ evenement_sponsor.datedebutContrat|date_modify('+' ~ evenement_sponsor.duree ~ ' days')|date('d/m/Y') }}
+                                        {% else %}
+                                            Non calculable
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
 
-    <a href="{{ path('app_evenement_sponsor_index') }}">Retour à la liste</a>
-
-    <a href="{{ path('app_evenement_sponsor_edit', {'evenement_id': evenement_sponsor.evenement.idEvent, 'sponsor_id': evenement_sponsor.sponsor.idSponsor}) }}">Modifier</a>
-
-    {{ include('evenement_sponsor/_delete_form.html.twig') }}
+                    <div class="mt-4 d-flex justify-content-between">
+                        
+                        
+                        <div>
+                            {{ include('evenement_sponsor/_delete_form.html.twig') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
 
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .table th {
+        width: 30%;
+        vertical-align: middle;
+    }
+    .table td {
+        vertical-align: middle;
+    }
+    .card-actions {
+        float: right;
+    }
+    .btn-delete {
+        background-color: #f46a6a;
+        color: white;
+    }
+    .btn-delete:hover {
+        background-color: #d62c2c;
+        color: white;
+    }
+</style>
+{% endblock %}

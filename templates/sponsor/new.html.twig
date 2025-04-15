@@ -25,7 +25,7 @@
                 </div>
                 <div class="card-body">
                     {{ form_start(form, {'attr': {'id': 'sponsor-form', 'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
-                    
+
                     <div class="row">
                         <div class="col-xl-6 col-sm-12 col-12">
                             <div class="form-group">
@@ -51,7 +51,7 @@
                                 {% endif %}
                             </div>
                         </div>
-                        
+
                         <div class="col-xl-6 col-sm-12 col-12">
                             <div class="form-group">
                                 {{ form_label(form.prenomSponso, "Prénom") }}
@@ -98,7 +98,7 @@
                                 {% endif %}
                             </div>
                         </div>
-                        
+
                         <div class="col-xl-6 col-sm-12 col-12">
                             <div class="form-group">
                                 {{ form_label(form.classement, "Classement") }}
@@ -125,8 +125,7 @@
                                 {{ form_label(form.budgetSponso, "Budget Initial*") }}
                                 <div class="input-group">
                                     {{ form_widget(form.budgetSponso, {
-                                        'attr': {
-                                            'class': 'form-control' ~ (form.budgetSponso.vars.errors|length ? ' is-invalid' : ''),
+                                        'attr': {'class': 'form-control' ~ (form.budgetSponso.vars.errors|length ? ' is-invalid' : ''),
                                             'required': 'required',
                                             'type': 'number',
                                             'min': '0',
@@ -151,7 +150,7 @@
                                 {% endif %}
                             </div>
                         </div>
-                        
+
                         <div class="col-xl-6 col-sm-12 col-12">
                             <div class="form-group">
                                 {{ form_label(form.BudgetApresReduction, "Budget Après Réduction*") }}
@@ -186,6 +185,27 @@
                     </div>
 
                     <div class="row">
+                        <div class="col-xl-6 col-sm-12 col-12">
+                            <div class="form-group">
+                                {{ form_label(form.secteurSponsor, "Secteur d'activité") }}
+                                {{ form_widget(form.secteurSponsor, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (form.secteurSponsor.vars.errors|length ? ' is-invalid' : ''),
+                                        'placeholder': 'Secteur d\'activité du sponsor'
+                                    }
+                                }) }}
+                                {% if form.secteurSponsor.vars.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.secteurSponsor.vars.errors %}
+                                            {{ error.message }}
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
                         <div class="col-xl-12 col-sm-12 col-12">
                             <div class="form-btn">
                                 <button type="submit" class="btn btn-apply w-auto">
@@ -213,7 +233,7 @@ $(document).ready(function() {
     function validateField(field) {
         const $field = $(field);
         $field.removeClass('is-invalid is-valid');
-        
+
         if (field.checkValidity()) {
             $field.addClass('is-valid');
         } else {
@@ -225,9 +245,9 @@ $(document).ready(function() {
     function validateEmailField(field) {
         const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
         const $field = $(field);
-        
+
         $field.removeClass('is-invalid is-valid');
-        
+
         if (emailRegex.test(field.value)) {
             $field.addClass('is-valid');
             field.setCustomValidity('');
@@ -241,9 +261,9 @@ $(document).ready(function() {
     function validateNumberField(field) {
         const $field = $(field);
         const value = parseFloat(field.value);
-        
+
         $field.removeClass('is-invalid is-valid');
-        
+
         if (!isNaN(value) && value >= 0) {
             $field.addClass('is-valid');
             field.setCustomValidity('');
@@ -293,7 +313,7 @@ $(document).ready(function() {
             e.preventDefault();
             e.stopPropagation();
         }
-        
+
         $(this).addClass('was-validated');
     });
 });
