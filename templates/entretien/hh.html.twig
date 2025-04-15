@@ -1,0 +1,435 @@
+{% extends '/dashboard/base.html.twig' %}
+
+{% block title %}Nouvel Entretien{% endblock %}
+
+{% block content %}
+<div class="content container-fluid">
+    <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12">
+            <div class="breadcrumb-path mb-4">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_entretien_index') }}">Entretiens</a></li>
+                    <li class="breadcrumb-item active">Nouvel Entretien</li>
+                </ul>
+                <h3>Créer un Nouvel Entretien</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-titles">Informations de l'Entretien <span>Remplissez tous les champs obligatoires</span></h2>
+                </div>
+
+                        <div class="alert-danger" id="errorMessages"></div>
+
+                <div class="card-body">
+                    {{ form_start(form, {'attr': {'id': 'entretienForm', 'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
+
+                    <div class="row">
+                        <div class="col-xl-12 col-sm-12 col-12">
+                            <div class="form-group">
+                                {{ form_label(form.titre, "Titre*") }}
+                                {{ form_widget(form.titre, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (form.titre.vars.errors|length ? ' is-invalid' : ''),
+                                        'required': 'required',
+                                        'minlength': '5',
+                                        'placeholder': 'Titre de l\'entretien'
+                                    }
+                                }) }}
+                                {% if form.titre.vars.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.titre.vars.errors %}
+                                            {{ error.message }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="invalid-feedback">
+                                        Le titre doit contenir au moins 5 caractères
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xl-12 col-sm-12 col-12">
+                            <div class="form-group">
+                                {{ form_label(form.description, "Description*") }}
+                                {{ form_widget(form.description, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (form.description.vars.errors|length ? ' is-invalid' : ''),
+                                        'required': 'required',
+                                        'minlength': '10',
+                                        'placeholder': 'Description détaillée',
+                                        'rows': '4'
+                                    }
+                                }) }}
+                                {% if form.description.vars.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.description.vars.errors %}
+                                            {{ error.message }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="invalid-feedback">
+                                        La description doit contenir au moins 10 caractères
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xl-6 col-sm-12 col-12">
+                            <div class="form-group">
+                                {{ form_label(form.date_entretien, "Date de l'entretien*") }}
+                                {{ form_widget(form.date_entretien, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (form.date_entretien.vars.errors|length ? ' is-invalid' : ''),
+                                        'required': 'required',
+                                        'type': 'date'
+                                    }
+                                }) }}
+                                {% if form.date_entretien.vars.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.date_entretien.vars.errors %}
+                                            {{ error.message }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="invalid-feedback">
+                                        La date de l'entretien doit être aujourd'hui ou dans le futur
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-sm-12 col-12">
+                            <div class="form-group">
+                                {{ form_label(form.heureentretien, "Heure de l'entretien*") }}
+                                {{ form_widget(form.heureentretien, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (form.heureentretien.vars.errors|length ? ' is-invalid' : ''),
+                                        'required': 'required',
+                                        'type': 'time'
+                                    }
+                                }) }}
+                                {% if form.heureentretien.vars.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.heureentretien.vars.errors %}
+                                            {{ error.message }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="invalid-feedback">
+                                        L'heure de l'entretien est obligatoire
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xl-12 col-sm-12 col-12">
+                            <div class="form-group">
+                                {{ form_label(form.type_entretien, "Type d'entretien*") }}
+                                {{ form_widget(form.type_entretien, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (form.type_entretien.vars.errors|length ? ' is-invalid' : ''),
+                                        'required': 'required',
+                                        'placeholder': 'Type d\'entretien'
+                                    }
+                                }) }}
+                                {% if form.type_entretien.vars.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.type_entretien.vars.errors %}
+                                            {{ error.message }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="invalid-feedback">
+                                        Le type d'entretien est obligatoire
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xl-6 col-sm-12 col-12">
+                            <div class="form-group">
+                                {{ form_label(form.offre, "Offre*") }}
+                                {{ form_widget(form.offre, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (form.offre.vars.errors|length ? ' is-invalid' : ''),
+                                        'required': 'required'
+                                    }
+                                }) }}
+                                {% if form.offre.vars.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.offre.vars.errors %}
+                                            {{ error.message }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="invalid-feedback">
+                                        L'offre est obligatoire
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-xl-6 col-sm-12 col-12">
+                            <div class="form-group">
+                                {{ form_label(form.candidatId, "Candidat*") }}
+                                {{ form_widget(form.candidatId, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (form.candidatId.vars.errors|length ? ' is-invalid' : ''),
+                                        'required': 'required',
+                                        'type': 'number',
+                                        'min': '1'
+                                    }
+                                }) }}
+                                {% if form.candidatId.vars.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.candidatId.vars.errors %}
+                                            {{ error.message }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="invalid-feedback">
+                                        Le candidat doit être un identifiant valide
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xl-6 col-sm-12 col-12">
+                            <div class="form-group">
+                                {{ form_label(form.user, "Employé*") }}
+                                {{ form_widget(form.user, {
+                                    'attr': {
+                                        'class': 'form-control' ~ (form.user.vars.errors|length ? ' is-invalid' : ''),
+                                        'required': 'required'
+                                    }
+                                }) }}
+                                {% if form.user.vars.errors %}
+                                    <div class="invalid-feedback d-block">
+                                        {% for error in form.user.vars.errors %}
+                                            {{ error.message }}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <div class="invalid-feedback">
+                                        L'employé est obligatoire
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-xl-12 col-sm-12 col-12">
+                            <div class="form-btn">
+                                <button type="submit" class="btn btn-apply w-auto">
+                                    <i class="fas fa-save"></i> Enregistrer
+                                </button>
+                                <a href="{{ path('app_entretien_index') }}" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Annuler
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const offreSelect = document.querySelector('[name="entretien[offre]"]');
+    const candidatInput = document.querySelector('[name="entretien[candidatId]"]');
+
+    offreSelect.addEventListener('change', function () {
+        const selectedOffreId = this.value;
+
+        // Remove any existing temporary select
+        const existingTempSelect = document.getElementById('temp-candidat-select');
+        if (existingTempSelect) {
+            existingTempSelect.remove();
+        }
+
+        if (selectedOffreId) {
+            fetch(`/entretien/candidats/sans-entretien/${selectedOffreId}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error("Erreur lors de la récupération des candidats.");
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('API Response:', data); // Debug
+
+                    // Create a temporary select for UX
+                    const tempSelect = document.createElement('select');
+                    tempSelect.className = 'form-control';
+                    tempSelect.id = 'temp-candidat-select';
+                    tempSelect.name = 'temp-candidat-select'; // Avoid form submission
+
+                    if (data.length === 0) {
+                        const option = document.createElement('option');
+                        option.value = '';
+                        option.textContent = 'Aucun candidat disponible';
+                        tempSelect.appendChild(option);
+                        tempSelect.disabled = true;
+                    } else {
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = 'Choisir un candidat';
+                        defaultOption.disabled = true;
+                        defaultOption.selected = true;
+                        tempSelect.appendChild(defaultOption);
+
+                        data.forEach(candidat => {
+                            const option = document.createElement('option');
+                            option.value = candidat.iduser; // Use 'id' from API
+                            option.textContent = `${candidat.nom} ${candidat.prenom}`;
+                            tempSelect.appendChild(option);
+                        });
+
+                        tempSelect.disabled = false;
+                    }
+
+                    // Hide the number input and show the select
+                    candidatInput.style.display = 'none';
+                    candidatInput.parentNode.insertBefore(tempSelect, candidatInput.nextSibling);
+
+                    // Sync select value to hidden number input
+                    tempSelect.addEventListener('change', function () {
+                        candidatInput.value = this.value;
+                    });
+                })
+                .catch(error => {
+                    console.error('Fetch error:', error);
+                    const tempSelect = document.createElement('select');
+                    tempSelect.className = 'form-control';
+                    tempSelect.id = 'temp-candidat-select';
+                    const option = document.createElement('option');
+                    option.value = '';
+                    option.textContent = 'Erreur de chargement';
+                    tempSelect.appendChild(option);
+                    tempSelect.disabled = true;
+                    candidatInput.style.display = 'none';
+                    candidatInput.parentNode.insertBefore(tempSelect, candidatInput.nextSibling);
+                });
+        } else {
+            candidatInput.style.display = 'block';
+            candidatInput.value = '';
+        }
+    });
+
+    const form = document.getElementById('entretienForm');
+    const errorDiv = document.getElementById('errorMessages');
+
+    form.addEventListener('submit', function (e) {
+        let valid = true;
+        let messages = [];
+
+        errorDiv.style.display = 'none';
+        errorDiv.innerHTML = '';
+        const inputs = form.querySelectorAll('.form-control');
+        inputs.forEach(input => input.classList.remove('is-invalid'));
+
+        const titre = form.querySelector('[name="entretien[titre]"]');
+        if (!titre.value.trim()) {
+            valid = false;
+            messages.push("Le titre est obligatoire.");
+            titre.classList.add('is-invalid');
+        } else if (titre.value.trim().length < 5) {
+            valid = false;
+            messages.push("Le titre doit contenir au moins 5 caractères.");
+            titre.classList.add('is-invalid');
+        }
+
+        const description = form.querySelector('[name="entretien[description]"]');
+        if (!description.value.trim()) {
+            valid = false;
+            messages.push("La description est obligatoire.");
+            description.classList.add('is-invalid');
+        } else if (description.value.trim().length < 10) {
+            valid = false;
+            messages.push("La description doit contenir au moins 10 caractères.");
+            description.classList.add('is-invalid');
+        }
+
+        const dateEntretien = form.querySelector('[name="entretien[date_entretien]"]');
+        if (!dateEntretien.value) {
+            valid = false;
+            messages.push("La date de l'entretien est obligatoire.");
+            dateEntretien.classList.add('is-invalid');
+        } else {
+            const selectedDate = new Date(dateEntretien.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            if (selectedDate < today) {
+                valid = false;
+                messages.push("La date de l'entretien doit être aujourd'hui ou dans le futur.");
+                dateEntretien.classList.add('is-invalid');
+            }
+        }
+
+        const heureEntretien = form.querySelector('[name="entretien[heureentretien]"]');
+        if (!heureEntretien.value) {
+            valid = false;
+            messages.push("L'heure de l'entretien est obligatoire.");
+            heureEntretien.classList.add('is-invalid');
+        }
+
+        const typeEntretien = form.querySelector('[name="entretien[type_entretien]"]');
+        if (!typeEntretien.value.trim()) {
+            valid = false;
+            messages.push("Le type d'entretien est obligatoire.");
+            typeEntretien.classList.add('is-invalid');
+        }
+
+        const candidatId = form.querySelector('[name="entretien[candidatId]"]');
+        if (!candidatId.value || isNaN(candidatId.value) || parseInt(candidatId.value) <= 0) {
+            valid = false;
+            messages.push("Le candidat est obligatoire et doit être un identifiant valide.");
+            candidatId.classList.add('is-invalid');
+            const tempSelect = document.getElementById('temp-candidat-select');
+            if (tempSelect) tempSelect.classList.add('is-invalid');
+        }
+
+        const user = form.querySelector('[name="entretien[user]"]');
+        if (!user.value) {
+            valid = false;
+            messages.push("L'employé est obligatoire.");
+            user.classList.add('is-invalid');
+        }
+
+        const offre = form.querySelector('[name="entretien[offre]"]');
+        if (!offre.value) {
+            valid = false;
+            messages.push("L'offre est obligatoire.");
+            offre.classList.add('is-invalid');
+        }
+
+        if (!valid) {
+            e.preventDefault();
+            errorDiv.innerHTML = '<ul>' + messages.map(msg => `<li>${msg}</li>`).join('') + '</ul>';
+            errorDiv.style.display = 'block';
+            window.scrollTo({ top: errorDiv.offsetTop - 20, behavior: 'smooth' });
+        }
+    });
+});
+</script>
+{% endblock %}

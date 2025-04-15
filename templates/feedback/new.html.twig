@@ -1,207 +1,120 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <title>Créer un Feedback</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends '/dashboard/base.html.twig' %}
+
+{% block title %}Créer un Feedback{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
     <style>
-        :root {
-            --primary-color: #2c5aa0;
-            --secondary-color: #4a90e2;
-            --accent-color: #ff6b35;
-            --light-gray: #f5f7fa;
-            --medium-gray: #e1e5eb;
-            --dark-gray: #6c757d;
-            --text-color: #2d3748;
-            --warning-color: #ffc107; /* Yellow for warning */
-            --warning-bg: #fff3cd; /* Light yellow background */
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            margin: 0;
-            padding: 0;
-            color: var(--text-color);
-            background-image: url('https://www.bgm0726.fr/uploads/lep_content/.thumbs/rh-5f89e-1000x_-90-scale-ffffff-wCopyright.png?1610684035');
-            background-size: cover;
-            background-position: center;
-            background-attachment: fixed;
-            min-height: 100vh;
-            display: flex;
-            align-items: flex-start;
-            justify-content: center;
-        }
-
-        .overlay {
-            background: linear-gradient(135deg, rgba(44, 90, 160, 0.85), rgba(74, 144, 226, 0.85));
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
-        }
-
-        .container {
-            max-width: 800px;
-            margin: 40px auto;
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            position: relative;
-            z-index: 1;
-            animation: fadeIn 0.5s ease-out;
-        }
-
-        h1 {
-            text-align: center;
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            font-size: 1.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
         .form-group {
-            margin-bottom: 15px;
+            margin-bottom: 20px;
+            padding: 10px 0;
+        }
+        .form-btn {
+            margin-top: 30px;
+            padding: 10px 0;
         }
 
-        .form-group label {
-            display: block;
-            margin-bottom: 6px;
-            font-weight: 600;
-            color: var(--primary-color);
-            font-size: 0.95rem;
+        .form-row {
+            margin-bottom: 20px; /* Add spacing below paired fields */
+            padding: 0 10px; /* Add horizontal padding */
         }
-
-        .form-control {
-            width: 80%;
-            padding: 10px 12px;
-            border: 2px solid var(--medium-gray);
-            border-radius: 6px;
-            font-size: 0.95rem;
-            background-color: var(--light-gray);
-            transition: all 0.3s ease;
+        .form-col {
+            padding: 0 15px; /* Add padding inside columns */
         }
-
-        .form-control:focus {
-            border-color: var(--secondary-color);
-            outline: none;
-            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
-            background-color: white;
+        .form-btn {
+            margin-top: 30px; /* Increased spacing above buttons */
+            padding: 10px 0; /* Add padding for balance */
         }
-
-        .form-control.is-invalid {
-            border-color: var(--warning-color);
-            background-color: var(--warning-bg);
-        }
-
-        .btn {
-            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 0.95rem;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s ease;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 15px;
-        }
-
-        .btn:hover {
-            background: linear-gradient(to right, #234a8c, #3d7bc8);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
-        }
-
-        .back-link {
-            display: inline-block;
-            margin-top: 15px;
-            color: var(--secondary-color);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-            font-weight: 500;
-            border: 1px solid var(--secondary-color);
-            padding: 6px 12px;
-            border-radius: 4px;
-        }
-
-        .back-link:hover {
-            color: white;
-            background-color: var(--secondary-color);
-            text-decoration: none;
-        }
-
         .alert-warning {
-            background-color: var(--warning-bg);
-            border: 1px solid var(--warning-color);
-            color: var(--text-color);
+            background-color: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #2d3748;
             padding: 12px;
             border-radius: 6px;
             margin-bottom: 20px;
             display: none;
         }
-
         .alert-warning ul {
             margin: 0;
             padding-left: 20px;
         }
 
+
+        .p {
+            padding: 20px ;   
+        }
         .alert-warning li {
             margin-bottom: 5px;
         }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
     </style>
-</head>
+{% endblock %}
 
-<body>
-<div class="overlay"></div>
-<div class="container">
-    <h1>Créer un Feedback</h1>
-
-    {% if entretien %}
-        <p style="text-align:center; color: var(--dark-gray); margin-bottom: 20px;">
-            Pour l'entretien : <strong>{{ entretien.titre }}</strong>
-        </p>
-    {% endif %}
-
-    <!-- Warning Display Div -->
-    <div class="alert-warning" id="warningMessages"></div>
-
-    {{ form_start(form, {'attr': {'id': 'feedbackForm', 'novalidate': 'novalidate'}}) }}
-
-    <div class="form-group">
-        {{ form_label(form.message) }}
-        {{ form_widget(form.message, {'attr': {'class': 'form-control', 'placeholder': 'Votre message...', 'id': 'message', 'rows': '4'}}) }}
+{% block content %}
+<div class="content container-fluid">
+    <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12">
+            <div class="breadcrumb-path mb-4">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('entretien_by_employee') }}">Feedbacks</a></li>
+                    <li class="breadcrumb-item active">Créer un Feedback</li>
+                </ul>
+                <h3>Créer un Nouveau Feedback</h3>
+            </div>
+        </div>
     </div>
 
-    <div class="form-group">
-        {{ form_label(form.rate) }}
-        {{ form_widget(form.rate, {'attr': {'class': 'form-control', 'id': 'rate'}}) }}
+    <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-titles">Créer un Feedback <span>Ajoutez les informations nécessaires pour le feedback</span></h2>
+                </div>
+                <div class="card-body">
+                    <div class="container">
+                        <h1>Créer un Feedback</h1>
+
+                        {% if entretien %}
+                            <p class="p" color: #6c757d; ">
+                                Pour l'entretien : <strong>{{ entretien.titre }}</strong>
+                            </p>
+                        {% endif %}
+
+                        <div class="alert-warning" id="warningMessages"></div>
+
+                        {{ form_start(form, {'attr': {'id': 'feedbackForm', 'novalidate': 'novalidate'}}) }}
+
+                        <div class="form-group">
+                            {{ form_label(form.message) }}
+                            {{ form_widget(form.message, {'attr': {'class': 'form-control', 'placeholder': 'Votre message...', 'id': 'message', 'rows': '4'}}) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.rate) }}
+                            {{ form_widget(form.rate, {'attr': {'class': 'form-control', 'id': 'rate'}}) }}
+                        </div>
+
+                        {% if entretien %}
+                            <input type="hidden" name="entretien" value="{{ entretien.id }}">
+                        {% else %}
+                            {{ form_widget(form.entretien, {'attr': {'class': 'form-control', 'id': 'entretien'}}) }}
+                        {% endif %}
+
+                        <div class="form-btn">
+                            <button type="submit" class="btn btn-apply w-auto">
+                                <i class="fas fa-save"></i> {{ button_label|default('Enregistrer le Feedback') }}
+                            </button>
+                            <a href="{{ path('entretien_by_employee') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </a>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-
-    {% if entretien %}
-        <input type="hidden" name="entretien" value="{{ entretien.id }}">
-    {% else %}
-        {{ form_widget(form.entretien, {'attr': {'class': 'form-control', 'id': 'entretien'}}) }}
-    {% endif %}
-
-    <button class="btn">{{ button_label|default('Enregistrer le Feedback') }}</button>
-
-    {{ form_end(form) }}
-
-    <a href="{{ path('entretien_by_employee') }}" class="back-link">← Retour à la liste</a>
 </div>
 
 <script>
@@ -256,8 +169,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
-
-
-
-</body>
-</html>
+{% endblock %}
