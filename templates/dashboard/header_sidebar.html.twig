@@ -194,7 +194,12 @@
 </div>
  </div>
 <ul>
-  <li class="active">
+    <li class="active">
+        <a href="/dashboard">
+          <span>📊Dashboard</span>
+        </a>
+      </li>
+  <li>
     <a href="/profile">
       <span>👤 Profile</span>
     </a>
@@ -220,8 +225,13 @@
     </a>
   </li>
   <li>
-    <a href="/formations">
+    <a href="/formation">
       <span>📢 Formations</span>
+    </a>
+  </li>
+  <li>
+    <a href="/cour">
+      <span>🔍Cours</span>
     </a>
   </li>
   <li>
@@ -244,7 +254,7 @@
 </ul>
 <ul class="logout">
   <li>
-    <a href="/logout">
+    <a href="{{ path('app_logout') }}">
       <span>🚪 Log out</span>
     </a>
   </li>

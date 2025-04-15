@@ -106,6 +106,19 @@ class Evennement
         return $this;
     }
 
+
+    #[ORM\Column(name: 'typeEvent', type: 'string', length: 20, nullable: true)]
+    private ?string $typeEvent = null; 
+    public function getTypeEvent(): ?string // Getter pour typeEvent
+    {
+        return $this->typeEvent;
+    }
+
+    public function setTypeEvent(?string $typeEvent): self // Setter pour typeEvent
+    {
+        $this->typeEvent = $typeEvent;
+        return $this;
+    }
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'evennements')]
     #[ORM\JoinColumn(name: 'id_user', referencedColumnName: 'id_user')]
     private ?User $user = null;

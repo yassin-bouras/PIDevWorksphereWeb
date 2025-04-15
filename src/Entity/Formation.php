@@ -17,45 +17,34 @@ class Formation
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id_f = null;
-    #[ORM\Column(type: 'text', nullable: true)]
+   
+    #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message: "Le titre est obligatoire.")]
     private ?string $titre = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    #[Assert\NotBlank(message: "la description est obligatoire.")]
-    #[Assert\Length(max: 500, maxMessage: "La description ne doit pas dépasser 200 caractères.")]
+    #[Assert\NotBlank(message: "La description est obligatoire.")]
+    #[Assert\Length(max: 500, maxMessage: "La description ne doit pas dépasser 500 caractères.")]
     private ?string $description = null;
 
-    #[ORM\Column(type: 'date', nullable: false)]
+    #[ORM\Column(type: 'date')]
     #[Assert\NotNull(message: "La date ne peut pas être vide.")]
-    #[Assert\Type(type: "\DateTimeInterface", message: "Le format de la date est invalide.")]
     #[Assert\GreaterThanOrEqual("today", message: "La date doit être aujourd'hui ou dans le futur.")]
     private ?\DateTimeInterface $date = null;
 
-    #[ORM\Column(type: 'time', nullable: false)]
-    #[Assert\NotNull(message: "L'heure de début est obligatoire.")]
-    #[Assert\Type(type: "\DateTimeInterface", message: "Le format de l'heure est invalide.")]
-    private ?\DateTimeInterface $heure_debut = null;
-
-    #[ORM\Column(type: 'time', nullable: false)]
-    #[Assert\NotNull(message: "L'heure de fin est obligatoire.")]
-    #[Assert\Type(type: "\DateTimeInterface", message: "Le format de l'heure est invalide.")]
-    private ?\DateTimeInterface $heure_fin = null;
-
-    #[ORM\Column(type: 'integer', nullable: false)]
+    #[ORM\Column(type: 'integer')]
     #[Assert\NotBlank(message: "Le nombre de places est obligatoire.")]
     #[Assert\Positive(message: "Le nombre de places doit être supérieur à zéro.")]
-    private ?int $nb_place = null;
+    private ?int $nbPlace = null;
 
-    #[ORM\Column(type: 'string', nullable: true)]
-    #[Assert\Choice(choices: ['présentiel', 'distanciel'], message: "Le type doit être 'présentiel' ou 'en ligne'.")]
+    #[ORM\Column(type: 'string', length: 20)]
+    #[Assert\Choice(choices: ['présentiel', 'distanciel'], message: "Le type doit être 'présentiel' ou 'distanciel'.")]
     private ?string $type = null;
 
     #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $id_user = null;
+    private ?int $idUser = null;
 
     #[ORM\Column(type: 'string', nullable: true)]
-    //#[Assert\NotBlank(message: "Vous devez insérer une image.")]
     #[Assert\Image(
         maxSize: "10M",
         mimeTypes: ["image/jpeg", "image/png", "image/gif", "image/jpg"],
@@ -63,12 +52,21 @@ class Formation
     )]
     private ?string $photo = null;
 
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\NotBlank(message: "La langue est obligatoire.")]
+    private ?string $langue = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\Choice(choices: ['oui', 'non'], message: "Le champ de certification doit être 'oui' ou 'non'.")]
+    private ?string $certifie = null;
+
     #[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'formation')]
     private Collection $reservations;
 
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
+        $this->cours = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -114,42 +112,20 @@ class Formation
         return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $date): self
+public function setDate(?\DateTimeInterface $date): self
+{
+    $this->date = $date;
+    return $this;
+}
+
+    public function getNbPlace(): ?int
     {
-        $this->date = $date;
-        return $this;
+        return $this->nbPlace;
     }
 
-    public function getHeuredebut(): ?\DateTimeInterface
+    public function setNbPlace(int $nbPlace): self
     {
-        return $this->heure_debut;
-    }
-
-    public function setHeuredebut(\DateTimeInterface $heure_debut): self
-    {
-        $this->heure_debut = $heure_debut;
-        return $this;
-    }
-
-    public function getHeurefin(): ?\DateTimeInterface
-    {
-        return $this->heure_fin;
-    }
-
-    public function setHeurefin(\DateTimeInterface $heure_fin): self
-    {
-        $this->heure_fin = $heure_fin;
-        return $this;
-    }
-
-    public function getNbplace(): ?int
-    {
-        return $this->nb_place;
-    }
-
-    public function setNbplace(int $nb_place): self
-    {
-        $this->nb_place = $nb_place;
+        $this->nbPlace = $nbPlace;
         return $this;
     }
 
@@ -164,14 +140,14 @@ class Formation
         return $this;
     }
 
-    public function getIduser(): ?int
+    public function getIdUser(): ?int
     {
-        return $this->id_user;
+        return $this->idUser;
     }
 
-    public function setIduser(?int $id_user): self
+    public function setIdUser(?int $idUser): self
     {
-        $this->id_user = $id_user;
+        $this->idUser = $idUser;
         return $this;
     }
 
@@ -186,9 +162,28 @@ class Formation
         return $this;
     }
 
-    /**
-     * @return Collection<int, Reservation>
-     */
+    public function getLangue(): ?string
+    {
+        return $this->langue;
+    }
+
+    public function setLangue(?string $langue): self
+    {
+        $this->langue = $langue;
+        return $this;
+    }
+
+    public function getCertifie(): ?string
+    {
+        return $this->certifie;
+    }
+
+    public function setCertifie(?string $certifie): self
+    {
+        $this->certifie = $certifie;
+        return $this;
+    }
+
     public function getReservations(): Collection
     {
         return $this->reservations;
@@ -206,11 +201,41 @@ class Formation
     public function removeReservation(Reservation $reservation): self
     {
         if ($this->reservations->removeElement($reservation)) {
-            // Set the owning side to null (unless already changed)
             if ($reservation->getFormation() === $this) {
                 $reservation->setFormation(null);
             }
         }
         return $this;
+    }
+
+
+    #[ORM\OneToMany(mappedBy: 'formation', targetEntity: Cours::class, orphanRemoval: true)]
+    private Collection $cours;
+
+    public function getCours(): Collection
+    {
+        return $this->cours;
+    }
+
+    public function addCours(Cours $cours): static
+    {
+        if (!$this->cours->contains($cours)) {
+            $this->cours[] = $cours;
+            $cours->setFormation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCours(Cours $cours): static
+    {
+        if ($this->cours->removeElement($cours)) {
+            if ($cours->getFormation() === $this) {
+                $cours->setFormation(null);
+            }
+        }
+
+        return $this;
+
     }
 }

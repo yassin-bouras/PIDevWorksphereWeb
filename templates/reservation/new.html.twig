@@ -1,11 +1,14 @@
-<!DOCTYPE html>
+{% extends '/home/index.html.twig' %}
 
-<title>New Reservation</title>
+
+{% block title %}Nouvelle réservation{% endblock %}
 
 {% block body %}
-    <h1>Create new Reservation</h1>
+    <h1 style="text-align: center; margin-top: 7%;">Ajouter Résérvation</h1>
 
-    {{ include('reservation/_form.html.twig') }}
-
-    <a href="{{ path('app_reservation_index') }}">back to list</a>
+       {{ include('reservation/_form.html.twig') }}
+      <div style="display: flex; justify-content: center; gap:10px;">
+     <a class="btn" href="{{ path('app_reservation_index') }}" style="background-color: #4771cb; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Retour à la liste <i data-feather="arrow-left-circle"></i> </a>
+     </div>
+    
 {% endblock %}

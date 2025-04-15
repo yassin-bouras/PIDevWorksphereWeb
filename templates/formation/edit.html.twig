@@ -1,15 +1,17 @@
 
-{% extends 'home/index.html.twig' %}
+{% extends '/dashboard/base.html.twig' %}
 
 {% block title %} Modifier Formation {% endblock %}
 
-{% block body %}
+{% block content %}
     <div style="margin-top:8%;">
-        <h1  style=" text-align: center">Edit Formation</h1>
+        <h1  style=" text-align: center"> Modifier Formation</h1>
+        <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}"></a></li>
 
-        {{ include('formation/_form.html.twig', {'button_label': 'Update'}) }}
+        {{ include('formation/_form.html.twig', {'button_label': 'Modifier'}) }}
 <div style="display: flex; justify-content: center; gap: 10px;">
-    <a href="{{ path('app_formation_index') }}" class="btn btn-primary">Back to list</a>
+    <a class="btn" href="{{ path('app_formation_index') }}" style="background-color: #4771cb; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Retour à la liste <i data-feather="arrow-left-circle"></i> </a>
+
        {{ include('formation/_delete_form.html.twig') }}
 </div>
        

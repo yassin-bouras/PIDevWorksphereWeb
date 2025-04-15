@@ -1,95 +1,106 @@
-{% extends '/home/index.html.twig' %}
+{% extends '/dashboard/base.html.twig' %}
 
 {% block title %}Détails de la Formation{% endblock %}
 
-{% block body %}
-    <div class="container" style="margin-top:7%;">
-        <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Détails de la Formation</h1>
+{% block content %}
+    <div class="container py-5">
+        <h1 class="text-center mb-5" style="font-weight: 600; color: #2c3e50;">Détails de la Formation</h1>
 
-        <div class="formation-details" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 30px; margin-bottom: 30px;">
-            <div class="row">
+        <div class="formation-details" style="background: rgba(255, 255, 255, 0.98); border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); padding: 30px; margin-bottom: 30px; border: 1px solid rgba(0,0,0,0.05);">
+            <div class="row align-items-center">
                 <div class="col-md-4 text-center mb-4">
                     {% if formation.photo %}
-                        <img src="{{ asset(formation.photo) }}" alt="Image Formation" style="max-width: 100%; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+                        <img src="{{ asset(formation.photo) }}" alt="Image Formation" class="img-fluid rounded shadow" style="max-width: 90%; border: 1px solid rgba(0,0,0,0.1);">
                     {% else %}
-                        <div style="background: #f8f9fa; padding: 40px; border-radius: 8px; color: #777;">
-                            Pas d'image disponible
+                        <div style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%); padding: 60px 20px; border-radius: 8px; color: #6c757d; box-shadow: inset 0 0 10px rgba(0,0,0,0.05);">
+                            <i class="fas fa-image" style="font-size: 2rem; opacity: 0.5;"></i>
+                            <p class="mt-2">Pas d'image disponible</p>
                         </div>
                     {% endif %}
                 </div>
+
                 <div class="col-md-8">
-                    <div class="detail-item" style="margin-bottom: 20px;">
-                        <h3 style="color: #4a6fa5; margin-bottom: 5px;">Titre</h3>
-                        <p style="font-size: 1.1rem;">{{ formation.titre }}</p>
-                    </div>
-                    
-                    <div class="detail-item" style="margin-bottom: 20px;">
-                        <h3 style="color: #4a6fa5; margin-bottom: 5px;">Description</h3>
-                        <p style="font-size: 1.1rem; white-space: pre-line;">{{ formation.description }}</p>
-                    </div>
-                    
                     <div class="row">
-                        <div class="col-md-4">
-                            <div class="detail-item" style="margin-bottom: 20px;">
-                                <h3 style="color: #4a6fa5; margin-bottom: 5px;">Date</h3>
-                                <p>{{ formation.date ? formation.date|date('d/m/Y') : 'N/A' }}</p>
+                        {% set infos = {
+                            'Titre': formation.titre,
+                            'Description': formation.description,
+                            'Date de début': formation.date ? formation.date|date('d/m/Y') : 'N/A',
+                            'Certification': formation.certifie ? '<span class="badge bg-success">Oui</span>' : '<span class="badge" style="background-color: #9e9e96;">Non</span>',
+                            'Places disponibles': '<span class="badge" style="background-color: #33ccc5;">' ~ formation.nbPlace ~ '</span>',
+                            'Type': '<span class="badge bg-info">' ~ formation.type ~ '</span>',
+                            'Langue': '<span class="badge" style="background-color: #fafd63;">' ~ formation.langue ~ '</span>',
+                            'Cours': '<a href="' ~ path('app_formation_cours', {'id_f': formation.idF}) ~ '" 
+                            class="btn" 
+                            style="background-color: #e09ec7; color: white; padding: 8px 18px; border-radius: 30px; text-decoration: none; transition: all 0.3s; display: inline-block;">
+                            <i class="fas fa-book-open me-2"></i>Voir les cours
+                         </a>'
+                        } %}
+
+                        {% for label, value in infos %}
+                            <div class="col-md-6 mb-4">
+                                <h5 class="text-primary mb-3" style="font-weight: 600; border-bottom: 2px solid #4771cb; padding-bottom: 5px; display: inline-block;">{{ label }}</h5>
+                                <div style="font-size: 1.1rem; color: #495057; margin-top: 8px;">{{ value|raw }}</div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="detail-item" style="margin-bottom: 20px;">
-                                <h3 style="color: #4a6fa5; margin-bottom: 5px;">Heure début</h3>
-                                <p>{{ formation.heureDebut ? formation.heureDebut|date('H:i') : 'N/A' }}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="detail-item" style="margin-bottom: 20px;">
-                                <h3 style="color: #4a6fa5; margin-bottom: 5px;">Heure fin</h3>
-                                <p>{{ formation.heureFin ? formation.heureFin|date('H:i') : 'N/A' }}</p>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="detail-item" style="margin-bottom: 20px;">
-                                <h3 style="color: #4a6fa5; margin-bottom: 5px;">Places disponibles</h3>
-                                <p>{{ formation.nbPlace }}</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="detail-item" style="margin-bottom: 20px;">
-                                <h3 style="color: #4a6fa5; margin-bottom: 5px;">Type</h3>
-                                <p>{{ formation.type }}</p>
-                            </div>
-                        </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="text-center mt-4">
-            <a href="{{ path('app_formation_index') }}" class="btn" style="background-color: rgb(51, 204, 197); color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px; height:7% ; width:15%">Retour à la liste</a>
-            <a href="{{ path('app_formation_edit', {'id_f': formation.idF}) }}" class="btn" style="background-color: #e67e22; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px; height:7% ; width:10%">Modifier</a>
-            {{ include('formation/_delete_form.html.twig') }}
+            <a href="{{ path('app_formation_index') }}" class="btn" style="background-color: #4771cb; color: white; padding: 7px 25px; border-radius: 8px; text-decoration: none; margin-right: 15px; transition: all 0.3s;">
+                <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+            </a>
+            <a href="{{ path('app_formation_edit', {'id_f': formation.idF}) }}" class="btn" style="background-color: #e67e22; color: white; padding: 7px 25px; border-radius: 8px; text-decoration: none; margin-right: 15px; transition: all 0.3s;">
+                <i class="fas fa-edit me-2"></i>Modifier
+            </a>
+            <div class="mt-3 d-inline-block">
+                {{ include('formation/_delete_form.html.twig') }}
+            </div>
         </div>
     </div>
 
     <style>
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            background-attachment: fixed;
+        }
         .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
             opacity: 0.9;
-            transform: translateY(-1px);
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
         }
         .formation-details {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.4s ease;
         }
         .formation-details:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.12);
         }
-        .detail-item h3 {
-            font-size: 1rem;
-            font-weight: 600;
+        .text-primary {
+            color: #4771cb !important;
+        }
+        .badge {
+            font-weight: 500;
+            padding: 6px 10px;
+        }
+        .delete-form {
+            display: inline-block;
+        }
+        .delete-form button {
+            background-color: #dc3545;
+            color: white;
+            padding: 10px 25px;
+            border-radius: 30px;
+            border: none;
+            transition: all 0.3s;
+        }
+        .delete-form button:hover {
+            background-color: #c82333;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
     </style>
 {% endblock %}
+
+

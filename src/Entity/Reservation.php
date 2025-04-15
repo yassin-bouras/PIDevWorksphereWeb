@@ -5,7 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-
+use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\ReservationRepository;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
@@ -16,6 +16,49 @@ class Reservation
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id_r = null;
+
+    #[ORM\Column(type: 'date', nullable: false)]
+    #[Assert\NotBlank(message: 'La date ne peut pas être vide.')]
+    #[Assert\Type(\DateTimeInterface::class)]
+    private ?\DateTimeInterface $date = null;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $id_f = null;
+
+    #[ORM\Column(type: 'integer', nullable: true)]
+    private ?int $id_user = null;
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: 'Le motif ne peut pas être vide.')]
+    #[Assert\Length(
+        min: 5,
+        max: 255,
+        minMessage: 'Le motif doit contenir au moins {{ limit }} caractères.',
+        maxMessage: 'Le motif ne peut pas dépasser {{ limit }} caractères.'
+    )]
+    private ?string $motif_r = null;
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: 'Le champ attente est requis.')]
+    private ?string $attente = null;
+
+    #[ORM\Column(type: 'string', nullable: false)]
+    #[Assert\NotBlank(message: 'La langue est requise.')]
+    private ?string $langue = null;
+
+    #[ORM\OneToMany(targetEntity: Meeting::class, mappedBy: 'reservation')]
+    private Collection $meetings;
+
+    #[ORM\ManyToOne(targetEntity: Formation::class, inversedBy: 'reservations')]
+    #[ORM\JoinColumn(name: 'id_f', referencedColumnName: 'id_f', nullable: false)]
+    private ?Formation $formation = null;
+
+    public function __construct()
+    {
+        $this->date = new \DateTime(); // Date par défaut : aujourd'hui
+        $this->meetings = new ArrayCollection();
+    }
+
     public function getIdr(): ?int
     {
         return $this->id_r;
@@ -32,9 +75,6 @@ class Reservation
         return $this;
     }
 
-    #[ORM\Column(type: 'date', nullable: false)]
-    private ?\DateTimeInterface $date = null;
-
     public function getDate(): ?\DateTimeInterface
     {
         return $this->date;
@@ -45,9 +85,6 @@ class Reservation
         $this->date = $date;
         return $this;
     }
-
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $id_f = null;
 
     public function getIdf(): ?int
     {
@@ -60,9 +97,6 @@ class Reservation
         return $this;
     }
 
-    #[ORM\Column(type: 'integer', nullable: true)]
-    private ?int $id_user = null;
-
     public function getIduser(): ?int
     {
         return $this->id_user;
@@ -73,9 +107,6 @@ class Reservation
         $this->id_user = $id_user;
         return $this;
     }
-
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $motif_r = null;
 
     public function getMotifr(): ?string
     {
@@ -88,9 +119,6 @@ class Reservation
         return $this;
     }
 
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $attente = null;
-
     public function getAttente(): ?string
     {
         return $this->attente;
@@ -101,9 +129,6 @@ class Reservation
         $this->attente = $attente;
         return $this;
     }
-
-    #[ORM\Column(type: 'string', nullable: false)]
-    private ?string $langue = null;
 
     public function getLangue(): ?string
     {
@@ -116,47 +141,36 @@ class Reservation
         return $this;
     }
 
-    #[ORM\OneToMany(targetEntity: Meeting::class, mappedBy: 'reservation')]
-    private Collection $meetings;
-
     /**
      * @return Collection<int, Meeting>
      */
     public function getMeetings(): Collection
     {
-        if (!$this->meetings instanceof Collection) {
-            $this->meetings = new ArrayCollection();
-        }
         return $this->meetings;
     }
 
     public function addMeeting(Meeting $meeting): self
     {
-        if (!$this->getMeetings()->contains($meeting)) {
-            $this->getMeetings()->add($meeting);
+        if (!$this->meetings->contains($meeting)) {
+            $this->meetings->add($meeting);
         }
         return $this;
     }
 
     public function removeMeeting(Meeting $meeting): self
     {
-        $this->getMeetings()->removeElement($meeting);
+        $this->meetings->removeElement($meeting);
         return $this;
     }
 
-#[ORM\ManyToOne(targetEntity: Formation::class, inversedBy: 'reservations')]
-#[ORM\JoinColumn(name: 'id_f', referencedColumnName: 'id_f', nullable: false)]
-private ?Formation $formation = null;
+    public function getFormation(): ?Formation
+    {
+        return $this->formation;
+    }
 
-public function getFormation(): ?Formation
-{
-    return $this->formation;
-}
-
-public function setFormation(?Formation $formation): self
-{
-    $this->formation = $formation;
-    return $this;
-}
-
+    public function setFormation(?Formation $formation): self
+    {
+        $this->formation = $formation;
+        return $this;
+    }
 }
