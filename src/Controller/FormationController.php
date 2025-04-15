@@ -31,6 +31,23 @@ final class FormationController extends AbstractController
     }
 
 
+    
+    #[Route('/search', name: 'app_formation_search1', methods: ['GET'])]
+    public function search1(Request $request, FormationRepository $formationRepository): Response
+{
+    $searchTerm = $request->query->get('search');
+
+    $formations = $formationRepository->createQueryBuilder('f')
+        ->where('f.titre LIKE :search')
+        ->setParameter('search', '%' . $searchTerm . '%')
+        ->getQuery()
+        ->getResult();
+
+    return $this->render('formation/index.html.twig', [
+        'formations' => $formations,
+    ]);
+}
+
     #[Route('/front/search', name: 'app_formation_search', methods: ['GET'])]
     public function search(Request $request, FormationRepository $formationRepository): Response
 {

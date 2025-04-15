@@ -69,7 +69,22 @@ final class CourController extends AbstractController
             'cour' => $cour,
         ]);
     }
-
+    // #[Route('/search', name: 'app_cour_search1', methods: ['GET'])]
+    // public function search1(Request $request, CoursRepository $coursRepository): Response
+    // {
+    //     $searchTerm = $request->query->get('search');
+    
+    //     $cour = $coursRepository->createQueryBuilder('c')
+    //         ->where('c.titre LIKE :search')
+    //         ->setParameter('search', '%' . $searchTerm . '%')
+    //         ->getQuery()
+    //         ->getResult();
+    
+    //     return $this->render('cour/index.html.twig', [
+    //         'cour' => $cour, // tu peux renommer en 'cours' pour plus de clarté si tu veux
+    //     ]);
+    // }
+    
     #[Route('/{id_c}/edit', name: 'app_cour_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Cours $cour, EntityManagerInterface $entityManager): Response
     {

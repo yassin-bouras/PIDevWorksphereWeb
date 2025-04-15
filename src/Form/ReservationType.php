@@ -28,6 +28,13 @@ class ReservationType extends AbstractType
           
             ->add('motif_r', TextType::class)
             ->add('attente', TextType::class)
+            ->add('motif_r', TextType::class, [
+                'label' => 'Motif de la réservation',
+            ])
+            
+            ->add('attente', TextType::class, [
+                'label' => 'Attentes du participant',
+            ])
                     
             ->add('langue', ChoiceType::class, [
                 'choices' => [

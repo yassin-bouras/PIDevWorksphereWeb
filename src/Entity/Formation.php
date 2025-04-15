@@ -112,11 +112,11 @@ class Formation
         return $this->date;
     }
 
-    public function setDate(\DateTimeInterface $date): self
-    {
-        $this->date = $date;
-        return $this;
-    }
+public function setDate(?\DateTimeInterface $date): self
+{
+    $this->date = $date;
+    return $this;
+}
 
     public function getNbPlace(): ?int
     {
