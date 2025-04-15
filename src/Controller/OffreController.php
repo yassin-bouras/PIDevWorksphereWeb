@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Offre;
 use App\Form\OffreType;
 use App\Repository\OffreRepository;
+use App\Repository\CandidatureRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,7 +31,7 @@ final class OffreController extends AbstractController
         return $this->render('offre/front_index.html.twig', [
             // 'offres' => $offreRepository->findAll(),
             'offres' => $offres,
-            'search' => $search, 
+            'search' => $search,
             'context' => 'front'
         ]);
     }
@@ -93,5 +94,17 @@ final class OffreController extends AbstractController
         }
 
         return $this->redirectToRoute('app_offre_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+
+    #[Route('/{id_offre}/candidatures', name: 'app_offre_candidatures', methods: ['GET'])]
+    public function candidatures(Offre $offre, CandidatureRepository $candidatureRepository): Response
+    {
+        $candidatures = $candidatureRepository->findBy(['offre' => $offre]);
+
+        return $this->render('offre/candidatures.html.twig', [
+            'offre' => $offre,
+            'candidatures' => $candidatures,
+        ]);
     }
 }
