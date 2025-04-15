@@ -30,10 +30,10 @@
                             'Type': '<span class="badge bg-info">' ~ formation.type ~ '</span>',
                             'Langue': '<span class="badge" style="background-color: #fafd63;">' ~ formation.langue ~ '</span>',
                             'Cours': '<a href="' ~ path('app_formation_cours', {'id_f': formation.idF}) ~ '" 
-                                         class="btn" 
-                                         style="background-color: #e09ec7; color: white; padding: 8px 18px; border-radius: 30px; text-decoration: none; transition: all 0.3s; display: inline-block;">
-                                         <i class="fas fa-book-open me-2"></i>Voir les cours
-                                      </a>'
+                            class="btn" 
+                            style="background-color: #e09ec7; color: white; padding: 8px 18px; border-radius: 30px; text-decoration: none; transition: all 0.3s; display: inline-block;">
+                            <i class="fas fa-book-open me-2"></i>Voir les cours
+                         </a>'
                         } %}
 
                         {% for label, value in infos %}
@@ -102,3 +102,5 @@
         }
     </style>
 {% endblock %}
+
+

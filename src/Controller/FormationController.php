@@ -142,7 +142,7 @@ final class FormationController extends AbstractController
     }
 
 
-    #[Route('/{id_f}/cours', name: 'app_formation_cours')]
+#[Route('/{id_f}/cours', name: 'app_formation_cours')]
 public function showCours(int $id_f, FormationRepository $formationRepository): Response
 {
     $formation = $formationRepository->find($id_f);
@@ -154,6 +154,22 @@ public function showCours(int $id_f, FormationRepository $formationRepository): 
     $cours = $formation->getCours(); 
 
     return $this->render('formation/cours.html.twig', [
+        'formation' => $formation,
+        'cours' => $cours,
+    ]);
+}
+#[Route('/front/{id_f}/cours', name: 'app2_formation_cours')]
+public function showCours2(int $id_f, FormationRepository $formationRepository): Response
+{
+    $formation = $formationRepository->find($id_f);
+
+    if (!$formation) {
+        throw $this->createNotFoundException('Formation non trouvée');
+    }
+
+    $cours = $formation->getCours(); 
+
+    return $this->render('formation/cours2.html.twig', [
         'formation' => $formation,
         'cours' => $cours,
     ]);
