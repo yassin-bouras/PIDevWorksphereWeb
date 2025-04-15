@@ -59,7 +59,7 @@
                                         <th>Budget</th>
                                         <th>Budget après réduction</th>
                                         <th>Classement</th>
-                                        <th>Actions</th>
+                                        <th>Secteur</th> <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -70,7 +70,7 @@
                                             <td>{{ sponsor.budgetSponso }} €</td>
                                             <td>{{ sponsor.BudgetApresReduction }} €</td>
                                             <td>{{ sponsor.classement }}</td>
-                                            <td>
+                                            <td>{{ sponsor.secteurSponsor }}</td> <td>
                                                 <div class="d-flex">
                                                     <a href="{{ path('app_sponsor_show', {'idSponsor': sponsor.idSponsor}) }}" class="btn btn-sm btn-outline-primary me-1" title="Voir">
                                                         <i class="far fa-eye"></i>
@@ -95,7 +95,7 @@
                                         </tr>
                                     {% else %}
                                         <tr>
-                                            <td colspan="6" class="text-center">Aucun sponsor trouvé</td>
+                                            <td colspan="7" class="text-center">Aucun sponsor trouvé</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>

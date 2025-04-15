@@ -1,6 +1,6 @@
 {% extends '/dashboard/base.html.twig' %}
 
-{% block title %}Modifier Événement{% endblock %}
+{% block title %}Modifier l'Événement{% endblock %}
 
 {% block content %}
 <div class="content container-fluid">
@@ -10,7 +10,7 @@
                 <ul class="breadcrumb">
                     <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Accueil</a></li>
                     <li class="breadcrumb-item"><a href="{{ path('app_evennement_index') }}">Événements</a></li>
-                    <li class="breadcrumb-item active">Modifier Événement</li>
+                    <li class="breadcrumb-item active">Modifier l'Événement</li>
                 </ul>
                 <h3>Modifier l'Événement</h3>
             </div>
@@ -21,164 +21,79 @@
         <div class="col-xl-12 col-sm-12 col-12">
             <div class="card">
                 <div class="card-header">
-                    <h2 class="card-titles">Modification d'Événement <span>Mettez à jour les informations nécessaires</span></h2>
+                    <h2 class="card-titles">Modification de l'Événement <span>Mettez à jour les informations nécessaires</span></h2>
                 </div>
                 <div class="card-body">
                     {{ form_start(form, {'attr': {'id': 'event-form', 'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
-                    
-                    <div class="row">
-                        <div class="col-xl-6 col-sm-12 col-12">
-                            <div class="form-group">
-                                {{ form_label(form.nomEvent, "Nom de l'événement*") }}
-                                {{ form_widget(form.nomEvent, {
-                                    'attr': {
-                                        'class': 'form-control' ~ (form.nomEvent.vars.errors|length ? ' is-invalid' : ''),
-                                        'required': 'required',
-                                        'minlength': '3'
-                                    }
-                                }) }}
-                                {% if form.nomEvent.vars.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.nomEvent.vars.errors %}
-                                            {{ error.message }}
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <div class="invalid-feedback">
-                                        Le nom doit contenir au moins 3 caractères
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-xl-6 col-sm-12 col-12">
-                            <div class="form-group">
-                                {{ form_label(form.lieuEvent, "Lieu*") }}
-                                {{ form_widget(form.lieuEvent, {
-                                    'attr': {
-                                        'class': 'form-control' ~ (form.lieuEvent.vars.errors|length ? ' is-invalid' : ''),
-                                        'required': 'required',
-                                        'minlength': '3'
-                                    }
-                                }) }}
-                                {% if form.lieuEvent.vars.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.lieuEvent.vars.errors %}
-                                            {{ error.message }}
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <div class="invalid-feedback">
-                                        Le lieu doit contenir au moins 3 caractères
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.nomEvent, "Nom de l'événement*") }}
+                        {{ form_widget(form.nomEvent, { 'attr': { 'class': 'form-control' ~ (form.nomEvent.vars.errors|length ? ' is-invalid' : ''), 'required': 'required', 'minlength': '3' } }) }}
+                        {% if form.nomEvent.vars.errors %}<div class="invalid-feedback d-block">{% for error in form.nomEvent.vars.errors %}{{ error.message }}{% endfor %}</div>{% else %}<div class="invalid-feedback">Le nom doit contenir au moins 3 caractères</div>{% endif %}
+                    </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.descEvent, "Description*") }}
+                        {{ form_widget(form.descEvent, { 'attr': { 'class': 'form-control' ~ (form.descEvent.vars.errors|length ? ' is-invalid' : ''), 'required': 'required', 'minlength': '10', 'rows': '4' } }) }}
+                        {% if form.descEvent.vars.errors %}<div class="invalid-feedback d-block">{% for error in form.descEvent.vars.errors %}{{ error.message }}{% endfor %}</div>{% else %}<div class="invalid-feedback">La description doit contenir au moins 10 caractères</div>{% endif %}
                     </div>
 
                     <div class="row">
-                        <div class="col-xl-6 col-sm-12 col-12">
+                        <div class="col-md-6">
                             <div class="form-group">
-                                {{ form_label(form.dateEvent, "Date et Heure*") }}
-                                <div class="input-group">
-                                    {{ form_widget(form.dateEvent, {
-                                        'attr': {
-                                            'class': 'form-control datetimepicker' ~ (form.dateEvent.vars.errors|length ? ' is-invalid' : ''),
-                                            'required': 'required'
-                                        }
-                                    }) }}
-                                    <div class="input-group-append">
-                                        <span class="input-group-text"><i class="far fa-calendar-alt"></i></span>
-                                    </div>
-                                </div>
-                                {% if form.dateEvent.vars.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.dateEvent.vars.errors %}
-                                            {{ error.message }}
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <div class="invalid-feedback">
-                                        Veuillez sélectionner une date future
-                                    </div>
-                                {% endif %}
+                                {{ form_label(form.dateEvent, "Date*") }}
+                                {{ form_widget(form.dateEvent, { 'attr': { 'class': 'form-control datetimepicker' ~ (form.dateEvent.vars.errors|length ? ' is-invalid' : ''), 'required': 'required' } }) }}
+                                {% if form.dateEvent.vars.errors %}<div class="invalid-feedback d-block">{% for error in form.dateEvent.vars.errors %}{{ error.message }}{% endfor %}</div>{% else %}<div class="invalid-feedback">Veuillez sélectionner une date valide</div>{% endif %}
                             </div>
                         </div>
-                        
-                        <div class="col-xl-6 col-sm-12 col-12">
+                        <div class="col-md-6">
                             <div class="form-group">
                                 {{ form_label(form.capaciteEvent, "Capacité*") }}
-                                {{ form_widget(form.capaciteEvent, {
-                                    'attr': {
-                                        'class': 'form-control' ~ (form.capaciteEvent.vars.errors|length ? ' is-invalid' : ''),
-                                        'required': 'required',
-                                        'min': '1'
-                                    }
-                                }) }}
-                                {% if form.capaciteEvent.vars.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.capaciteEvent.vars.errors %}
-                                            {{ error.message }}
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <div class="invalid-feedback">
-                                        La capacité doit être supérieure à 0
-                                    </div>
-                                {% endif %}
+                                {{ form_widget(form.capaciteEvent, { 'attr': { 'class': 'form-control' ~ (form.capaciteEvent.vars.errors|length ? ' is-invalid' : ''), 'required': 'required', 'min': '1' } }) }}
+                                {% if form.capaciteEvent.vars.errors %}<div class="invalid-feedback d-block">{% for error in form.capaciteEvent.vars.errors %}{{ error.message }}{% endfor %}</div>{% else %}<div class="invalid-feedback">La capacité doit être supérieure à 0</div>{% endif %}
                             </div>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-xl-12 col-sm-12 col-12">
-                            <div class="form-group">
-                                {{ form_label(form.descEvent, "Description*") }}
-                                {{ form_widget(form.descEvent, {
-                                    'attr': {
-                                        'class': 'form-control' ~ (form.descEvent.vars.errors|length ? ' is-invalid' : ''),
-                                        'required': 'required',
-                                        'minlength': '10',
-                                        'rows': '4'
-                                    }
-                                }) }}
-                                {% if form.descEvent.vars.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.descEvent.vars.errors %}
-                                            {{ error.message }}
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <div class="invalid-feedback">
-                                        La description doit contenir au moins 10 caractères
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
+                    <div class="form-group">
+                        {{ form_label(form.lieuEvent, "Lieu*") }}
+                        {{ form_widget(form.lieuEvent, { 'attr': { 'class': 'form-control' ~ (form.lieuEvent.vars.errors|length ? ' is-invalid' : ''), 'required': 'required', 'minlength': '3' } }) }}
+                        {% if form.lieuEvent.vars.errors %}<div class="invalid-feedback d-block">{% for error in form.lieuEvent.vars.errors %}{{ error.message }}{% endfor %}</div>{% else %}<div class="invalid-feedback">Le lieu doit contenir au moins 3 caractères</div>{% endif %}
                     </div>
 
-                    <div class="row">
-                        <div class="col-xl-12 col-sm-12 col-12">
-                            <div class="form-btn">
-                                <button type="submit" class="btn btn-apply w-auto">
-                                    <i class="fas fa-save"></i> Mettre à jour
-                                </button>
-                                <a href="{{ path('app_evennement_index') }}" class="btn btn-secondary">
-                                    <i class="fas fa-times"></i> Annuler
-                                </a>
+                    <div class="form-group">
+                        {{ form_label(form.typeEvent, "Type d'événement") }}
+                        {{ form_widget(form.typeEvent, {
+                            'attr': {
+                                'class': 'form-control' ~ (form.typeEvent.vars.errors|length ? ' is-invalid' : ''),
+                                'placeholder': 'Ex: Conférence, Atelier, Concert...'
+                            }
+                        }) }}
+                        {% if form.typeEvent.vars.errors %}
+                            <div class="invalid-feedback d-block">
+                                {% for error in form.typeEvent.vars.errors %}
+                                    {{ error.message }}
+                                {% endfor %}
                             </div>
-                        </div>
+                        {% endif %}
                     </div>
+
+                    <div class="form-group">
+                        {{ form_label(form.user, "Organisateur") }}
+                        {{ form_widget(form.user, { 'attr': { 'class': 'form-control' ~ (form.user.vars.errors|length ? ' is-invalid' : '') } }) }}
+                        {% if form.user.vars.errors %}<div class <div class="invalid-feedback d-block">{% for error in form.user.vars.errors %}{{ error.message }}{% endfor %}</div>{% endif %}
+                    </div>
+
+                    <div class="form-group text-right">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Enregistrer les modifications
+                        </button>
+                        <a href="{{ path('app_evennement_index') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Retour à la liste
+                        </a>
+                    </div>
+
                     {{ form_end(form) }}
-
-                    <div class="mt-4">
-                        <form method="post" action="{{ path('app_evennement_delete', {'idEvent': evennement.idEvent}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ evennement.idEvent) }}">
-                            <button type="submit" class="btn btn-danger">
-                                <i class="fas fa-trash-alt"></i> Supprimer l'événement
-                            </button>
-                        </form>
-                    </div>
                 </div>
             </div>
         </div>
@@ -215,7 +130,7 @@ $(document).ready(function() {
     function validateField(field) {
         const $field = $(field);
         $field.removeClass('is-invalid is-valid');
-        
+
         if (field.checkValidity()) {
             $field.addClass('is-valid');
         } else {
@@ -228,9 +143,9 @@ $(document).ready(function() {
         const $field = $(field);
         const selectedDate = new Date($field.val());
         const now = new Date();
-        
+
         $field.removeClass('is-invalid is-valid');
-        
+
         if (selectedDate > now) {
             $field.addClass('is-valid');
             field.setCustomValidity('');
@@ -274,7 +189,7 @@ $(document).ready(function() {
             e.preventDefault();
             e.stopPropagation();
         }
-        
+
         $(this).addClass('was-validated');
     });
 });

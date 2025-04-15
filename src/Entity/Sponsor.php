@@ -13,9 +13,9 @@ use App\Repository\SponsorRepository;
 class Sponsor
 {
     #[ORM\Id]
-#[ORM\GeneratedValue]
-#[ORM\Column(name: 'idSponsor', type: 'integer')]
-private ?int $idSponsor = null;
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'idSponsor', type: 'integer')]
+    private ?int $idSponsor = null;
     public function getId(): ?int {
         return $this->idSponsor;
     }
@@ -113,5 +113,18 @@ public function setBudgetApresReduction(?string $BudgetApresReduction): self
     $this->BudgetApresReduction = $BudgetApresReduction;
     return $this;
 }
+
+#[ORM\Column(name: 'secteurSponsor', type: 'string', length: 20, nullable: true)]
+    private ?string $secteurSponsor = null;
+    public function getSecteurSponsor(): ?string // Getter pour secteurSponsor
+    {
+        return $this->secteurSponsor;
+    }
+
+    public function setSecteurSponsor(?string $secteurSponsor): self // Setter pour secteurSponsor
+    {
+        $this->secteurSponsor = $secteurSponsor;
+        return $this;
+    }
 
 }

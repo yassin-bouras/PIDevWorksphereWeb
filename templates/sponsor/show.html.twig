@@ -48,7 +48,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="col-xl-6 col-sm-12 col-12">
                             <div class="card mb-4">
                                 <div class="card-header">
@@ -58,7 +58,6 @@
                                     <div class="table-responsive">
                                         <table class="table">
                                             <tbody>
-                                                
                                                 <tr>
                                                     <td><strong>Email</strong></td>
                                                     <td>{{ sponsor.emailSponso }}</td>
@@ -68,6 +67,10 @@
                                                     <td>
                                                         <span class="badge bg-info-light">{{ sponsor.classement }}</span>
                                                     </td>
+                                                </tr>
+                                                <tr>
+                                                    <td><strong>Secteur d'activité</strong></td>
+                                                    <td>{{ sponsor.secteurSponsor }}</td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -86,7 +89,7 @@
                                 <a href="{{ path('app_sponsor_edit', {'idSponsor': sponsor.idSponsor}) }}" class="btn btn-apply">
                                     <i class="fas fa-edit"></i> Modifier
                                 </a>
-                               
+
                             </div>
                         </div>
                     </div>
@@ -96,7 +99,6 @@
     </div>
 </div>
 
-<!-- Modal de suppression -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
