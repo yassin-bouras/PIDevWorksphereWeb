@@ -3,226 +3,211 @@
 {% block title %}Équipes & Projets{% endblock %}
 
 {% block body %}
-<div class="container-fluid py-6" style="margin-top: 5rem;">
-    <div class="row">
-        <div class="col-xl-12 col-sm-12 col-12">
-            <div class="card mt-5"> 
-                <!-- En-tête avec titre et images des équipes -->
-                <div class="card-header create-formhead">
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div>
-                            <h2 class="card-titles">Liste des Équipes</h2>
-                           
-                        </div>
-                      
-                        <div class="search-bar position-relative" style="width: 300px;">
-                            <form action="{{ path('AfficherEquipeFront') }}" method="get">
-                                <input 
-                                    type="text" 
-                                    class="form-control rounded-pill ps-4" 
-                                    placeholder="Rechercher équipe ou projet..."
-                                    name="search"
-                                    value="{{ searchTerm|default('') }}"
-                                >
-                                <button type="submit" class="btn btn-link position-absolute" style="left: 0px; top: 50%; transform: translateY(-50%); border: none; background: none;">
-                                    <i class="fas fa-search"></i>
-                                </button>
-                            </form>
-                        </div>
-                    </div>
+<div class="container py-5" style="margin-top: 7%;">
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold" style="color: #2c3e50;">Équipes & Projets</h1>
+        <p class="lead text-muted">Découvrez nos équipes et leurs projets</p>
+    </div>
+
+    <div class="card shadow-sm border-0 overflow-hidden">
+        <!-- En-tête avec barre de recherche -->
+        <div class="card-header py-3" style="background-color: #4771cb;">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h2 class="h5 mb-0 text-white"><i class="fas fa-users me-2"></i>Liste des équipes</h2>
                 </div>
-
-                <!-- Tableau principal -->
-                <div class="card-body">
-                    {% if equipes is not empty %}
-                        <div class="table-responsive">
-                            <table class="table team-table">
-                                <thead>
-                                    <tr>
-                                        <th>Équipe</th>
-                                        <th>Membres</th>
-                                        <th>Projets</th>
-                                        <th></th> <!-- Colonne vide pour le bouton Voir -->
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for equipe in equipes %}
-                                
-                                    <tr>
-                                        <!-- Colonne Équipe -->
-                                        <td>
-                                            <div class="d-flex align-items-center">
-                                                {% if equipe.imageEquipe %}
-                                                    <img src="{{ asset(equipe.imageEquipe) }}" class="avatar-img rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;" alt="Logo équipe">
-                                                {% else %}
-                                                    <div  class="avatar-img rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
-                                                        <i class="fas fa-users text-muted"></i>
-                                                    </div>
-                                                {% endif %}
-                                                <div>
-                                                    <h6 class="mb-0 font-weight-bold">{{ equipe.nomEquipe }}</h6>
-                                               
-                                                </div>
-                                            </div>
-                                        </td>
-
-                                        <!-- Colonne Membres -->
-                                        <td>
-                                            <div class="avatar-group">
-                                                {% for user in equipe.users|slice(0, 3) %}
-                                                    <div class="avatar avatar-xs">
-                                                        {% if user.imageprofil  %}
-                                                            <img class="avatar-img rounded-circle" alt="Membre" src="{{ asset(user.imageprofil ) }}" width="35" height="35">
-                                                        {% else %}
-                                                            <div class="avatar-img rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
-                                                                <i class="fas fa-user text-muted"></i>
-                                                            </div>
-                                                        {% endif %}
-                                                    </div>
-                                                {% endfor %}
-                                                <div>
-                                                {% if equipe.users|length > 3 %}
-                                                
-                                                   <!--  <button class="btn btn-sm btn-link text-primary">
-                                                        +{{ equipe.users|length - 3 }} autres
-                                                    </button> -->
-                    
-                                                            <small class="text-muted">+ {{ equipe.users|length - 3 }} autres</small>
-                                                  
-                                                    
-                                                {% endif %}
-                                            </div>
-                                            </div>
-                                        </td>
-
-                                        <!-- Colonne Projets -->
-                                        <td>
-                                            {% if equipe.projets is not empty %}
-                                                <div class="d-flex align-items-center">
-                                                    {% for projet in equipe.projets|slice(0, 1) %}
-                                                        {% if projet.imageProjet %}
-                                                            <img src="{{ asset(projet.imageProjet) }}" class="avatar-img rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
-                                                        {% else %}
-                                                            <div class="avatar-img rounded-circle bg-light d-flex align-items-center justify-content-center" style="width: 35px; height: 35px;">
-                                                                <i class="fas fa-project-diagram text-muted"></i>
-                                                            </div>
-                                                        {% endif %}
-                                                        <div>
-                                                            <h6 class="mb-0">{{ projet.nom }}</h6>
-                                                            {% if equipe.projets|length > 1 %}
-                                                                <small class="text-muted">+ {{ equipe.projets|length - 1 }} autres </small>
-                                                            {% endif %}
-                                                        </div>
-                                                    {% endfor %}
-                                                </div>
-                                            {% else %}
-                                                <span class="text-muted">Aucun projet</span>
-                                            {% endif %}
-                                        </td>
-                   <!-- Bouton Voir -->
-             <td class="text-end">
-                 <a href="{{ path('AfficherDetailsEq', {'id': equipe.id}) }}" class="btn btn-sm btn-primary rounded-pill px-3">
-                         Voir <i class="fas fa-chevron-right ms-1"></i>
-                             </a>
-              </td>
-                                    </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
+                <div class="col-md-6">
+                    <form action="{{ path('AfficherEquipeFront') }}" method="get">
+                        <div class="input-group">
+                            <input 
+                                type="text" 
+                                class="form-control border-0 shadow-none" 
+                                placeholder="Rechercher une équipe ou projet..."
+                                name="search"
+                                value="{{ searchTerm|default('') }}"
+                                style="height: 45px;"
+                            >
+                            <button type="submit" class="btn btn-dark" style="background-color: #2c3e50;">
+                                <i class="fas fa-search"></i>
+                            </button>
                         </div>
-                    {% else %}
-                        <div class="text-center py-5">
-                            <i class="fas fa-users fa-4x text-muted mb-3"></i>
-                            <h5 class="text-muted">Aucune équipe ou projet trouvée</h5>
-                        </div>
-                    {% endif %}
+                    </form>
                 </div>
             </div>
+        </div>
+
+        <!-- Tableau principal -->
+        <div class="card-body p-0">
+            {% if equipes is not empty %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0">
+                        <thead class="bg-light">
+                            <tr>
+                                <th class="ps-4 py-3 text-uppercase text-muted fw-normal fs-7">Équipe</th>
+                                <th class="py-3 text-uppercase text-muted fw-normal fs-7">Membres</th>
+                                <th class="py-3 text-uppercase text-muted fw-normal fs-7">Projets</th>
+                                <th class="pe-4 py-3 text-end text-uppercase text-muted fw-normal fs-7">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for equipe in equipes %}
+                            <tr class="border-top border-light">
+                                <!-- Colonne Équipe -->
+                                <td class="ps-4">
+                                    <div class="d-flex align-items-center">
+                                        <div class="me-3">
+                                            {% if equipe.imageEquipe %}
+                                                <img src="{{ asset(equipe.imageEquipe) }}" class="rounded-circle shadow-sm" style="width: 45px; height: 45px; object-fit: cover;" alt="Logo équipe">
+                                            {% else %}
+                                                <div class="rounded-circle bg-light-blue text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px; background-color: #4771cb;">
+                                                    <i class="fas fa-users"></i>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold" style="color: #2c3e50;">{{ equipe.nomEquipe }}</h6>
+                                           
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- Colonne Membres -->
+                                <td>
+                                    <div class="d-flex flex-wrap align-items-center gap-2">
+                                        {% for user in equipe.users %}
+                                            <div class="position-relative">
+                                                {% if user.imageprofil %}
+                                                    <img class="rounded-circle shadow-sm" alt="Membre" src="{{ asset(user.imageprofil) }}" style="width: 38px; height: 38px; object-fit: cover;">
+                                                {% else %}
+                                                    <div class="rounded-circle bg-light text-muted d-flex align-items-center justify-content-center shadow-sm" style="width: 38px; height: 38px;">
+                                                        <i class="fas fa-user"></i>
+                                                    </div>
+                                                {% endif %}
+                                            </div>
+                                        {% endfor %}
+                                    </div>
+                                </td>
+
+                                <!-- Colonne Projets -->
+                                <td>
+                                    {% if equipe.projets is not empty %}
+                                        <div class="d-flex align-items-center">
+                                            <div class="me-3">
+                                                {% for projet in equipe.projets|slice(0, 1) %}
+                                                    {% if projet.imageProjet %}
+                                                        <img src="{{ asset(projet.imageProjet) }}" class="rounded-circle shadow-sm" style="width: 45px; height: 45px; object-fit: cover;">
+                                                    {% else %}
+                                                        <div class="rounded-circle bg-light-orange text-white d-flex align-items-center justify-content-center shadow-sm" style="width: 45px; height: 45px; background-color: #f5a623;">
+                                                            <i class="fas fa-project-diagram"></i>
+                                                        </div>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            <div>
+                                                {% for projet in equipe.projets|slice(0, 1) %}
+                                                    <h6 class="mb-0 fw-bold" style="color: #2c3e50;">{{ projet.nom }}</h6>
+                                                {% endfor %}
+                                                {% if equipe.projets|length > 1 %}
+                                                    <small class="text-muted">+ {{ equipe.projets|length - 1 }} autres projets</small>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <span class="badge bg-light text-muted rounded-pill py-2 px-3">
+                                            <i class="fas fa-exclamation-circle me-1"></i> Aucun projet
+                                        </span>
+                                    {% endif %}
+                                </td>
+                                
+                                <!-- Bouton Voir -->
+                                <td class="text-end pe-4">
+                                    <a href="{{ path('AfficherDetailsEq', {'id': equipe.id}) }}" class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm" style="background-color: #2c3e50; border: none;">
+                                        Voir <i class="fas fa-chevron-right ms-1"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="text-center py-5">
+                    <div class="empty-state">
+                        <div class="empty-state-icon bg-light rounded-circle mb-3 d-inline-flex align-items-center justify-content-center p-4" style="background-color: rgba(71, 113, 203, 0.1);">
+                            <i class="fas fa-users fa-2x" style="color: #4771cb;"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3" style="color: #2c3e50;">Aucune équipe trouvée</h4>
+                       
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </div>
 </div>
 
 <style>
-    .create-formhead {
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #eee;
-        padding: 5px 5px;
+    body {
+        background-color: #f8fafc;
     }
     
-    .card-titles {
-        font-weight: 200;
-        color: #333;
-        margin-bottom: 0;
-     
+    .card {
+        border-radius: 12px;
     }
     
-    .search-bar input {
-        border: 1px solid #dee2e6;
-        transition: all 0.3s;
+    .card-header {
+        border-bottom: none;
     }
     
-    .search-bar input:focus {
-        border-color: #86b7fe;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    .bg-light-blue {
+        background-color: rgba(71, 113, 203, 0.1);
     }
     
-    .team-table {
-        margin-top: 20px;
-      
+    .bg-light-orange {
+        background-color: rgba(245, 166, 35, 0.1);
     }
     
-    .team-table th {
-        font-weight: 400;
-        text-transform: uppercase;
-        font-size: 0.75rem;
-        letter-spacing: 0.5px;
-        color: #6c757d;
-        border-top: none;
-        padding: 10px 8px;
-        background-color: #f8f9fa;
+    table {
+        border-collapse: separate;
+        border-spacing: 0;
     }
     
-    .team-table td {
-        vertical-align: middle;
-        padding: 20px 10px;
-        border-top: 1px solid #f1f1f1;
+    thead th {
+        position: sticky;
+        top: 0;
+        z-index: 10;
     }
     
-    .team-table tr:hover td {
-        background-color: #f8faff;
+    tbody tr {
+        transition: all 0.2s ease;
     }
     
-    .avatar-group {
-        display: flex;
-        align-items: center;
+    tbody tr:hover {
+        background-color: #f8f9fa !important;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
     }
     
-    .avatar {
-        margin-left: -12px;
-        border: 2px solid #fff;
+    .rounded-circle {
+        transition: transform 0.2s ease;
     }
     
-    .avatar:first-child {
-        margin-left: 0;
+    .rounded-circle:hover {
+        transform: scale(1.1);
     }
     
-    .avatar-sm {
-        width: 40px;
-        height: 40px;
+    .empty-state {
+        max-width: 400px;
+        margin: 0 auto;
     }
     
-    .avatar-xs {
-        width: 35px;
-        height: 35px;
+    .badge {
+        font-weight: 500;
+        padding: 0.35em 0.65em;
     }
     
-    .avatar-img {
-        object-fit: cover;
-    }
-    
-    .btn-primary {
-        background-color: #0d6efd;
-        border-color: #0d6efd;
+    .form-control:focus {
+        border-color: #4771cb;
+        box-shadow: 0 0 0 0.25rem rgba(71, 113, 203, 0.25);
     }
 </style>
 {% endblock %}
