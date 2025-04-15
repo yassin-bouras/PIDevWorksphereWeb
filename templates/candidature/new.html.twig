@@ -172,7 +172,7 @@
         left: 1px;
         right: 1px;
         bottom: 1px;
-        background: #200c95;
+        background: #472fd2;
         border-radius: 9px;
         transition: opacity 0.5s;
         z-index: 0;
@@ -241,29 +241,38 @@
         text-align: left;
     }
     .form-label-offre {
-        width: 150px;
+        width: 235px;
         font-size: 1rem;
         font-weight: bold;
         color: #000000;
         text-transform: uppercase;
         /* Adjust the width as needed */
         font-weight: bold;
-        margin-right: 2rem;
+        margin-right: 0;
         text-align: left;
+        padding: 0.5rem 1rem; /* Add padding to match the Choose File button */
+        white-space: nowrap; /* Prevent the text from wrapping */
+        overflow: hidden; /* Hide overflowing text */
+        text-overflow: ellipsis; /* Add ellipsis (...) for overflowing text */
     }
 
+    
     .offre-value {
-        flex: 1;
-        /* Allow inputs to take up the remaining space */
-
-        font-size: 1.2rem;
-        font-weight: normal;
-        color: #ffffff;
-        background-color: transparent;
-        padding: 0.5rem 1rem;
-        border-radius: 5px;
-        display: inline-block;
-    }
+    flex: 1;
+    margin-top: -10px; /* Keep the current vertical alignment */
+    font-size: 0.9rem; /* Reduce the font size */
+    font-weight: normal; /* Keep the font weight normal */
+    color: #ffffff;
+    background-color: transparent;
+    padding: 0.3rem 0.5rem; /* Reduce padding for a smaller size */
+    border-radius: 5px;
+    display: inline-block;
+    text-align: center;
+    max-width: 325px; /* Limit the width of the Titre d'offre */
+    overflow: hidden; /* Hide overflowing text */
+    text-overflow: ellipsis; /* Add ellipsis (...) for overflowing text */
+    white-space: nowrap; /* Prevent text wrapping */
+}
 
     .form-input {
         flex: 1;
@@ -288,11 +297,28 @@
     }
 
     .form-group-offre {
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
     margin-top: -50px; /* Move the Offre section closer to the line */
+    margin-bottom: 0; /* Remove extra space below the Offre label */
 }
 
 .form-group-labels {
     margin-top: 20px; /* Move the Offre section closer to the line */
+}
+
+.gradient-button.retour-button {
+    background: #ffffff; /* Set the background color to white */
+    color: #000000; /* Set the text color to black */
+    border: 2px solid #000000; /* Optional: Add a black border */
+    transition: all 0.3s ease; /* Smooth transition for hover effects */
+}
+
+.gradient-button.retour-button:hover {
+    background: #f0f0f0; /* Slightly darker white on hover */
+    color: #ffffff; /* Keep the text color black */
+    transform: scale(1.05); /* Slightly enlarge the button on hover */
 }
 </style>
 {% endblock %}
@@ -341,6 +367,7 @@
                 <span>Retour</span>
             </a>
         </div>
+        
     </div>
 </div>
 {% endblock %}
