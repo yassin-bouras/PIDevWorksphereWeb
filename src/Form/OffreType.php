@@ -9,6 +9,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 
 class OffreType extends AbstractType
 {
@@ -47,9 +48,14 @@ class OffreType extends AbstractType
                 ],
                 'label' => 'Lieu de Travail',
             ])
-            ->add('date_publication', null, [
-                'widget' => 'single_text'
-            ])
+            // ->add('date_publication', DateType::class, [
+            //     'widget' => 'single_text',
+            //     'data' => $options['data']->getDatePublication() ?? new \DateTime(), // Default to today if no value exists
+            //     'attr' => [
+            //         'placeholder' => 'Sélectionnez la date de publication',
+            //     ],
+            //     'label' => 'Date de Publication',
+            // ])
             ->add('date_limite', null, [
                 'widget' => 'single_text'
             ])

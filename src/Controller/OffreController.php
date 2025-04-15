@@ -40,6 +40,8 @@ final class OffreController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager, string $context = 'back'): Response
     {
         $offre = new Offre();
+        $offre->setDatePublication(new \DateTime()); // Set the current date
+
         $form = $this->createForm(OffreType::class, $offre);
         $form->handleRequest($request);
 
@@ -69,6 +71,7 @@ final class OffreController extends AbstractController
     #[Route('/{id_offre}/edit', name: 'app_offre_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Offre $offre, EntityManagerInterface $entityManager, string $context = 'back'): Response
     {
+        
         $form = $this->createForm(OffreType::class, $offre);
         $form->handleRequest($request);
 
