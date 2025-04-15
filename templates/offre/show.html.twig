@@ -73,9 +73,23 @@
                     <a href="{{ path('app_offre_edit', {'id_offre': offre.idOffre}) }}" class="btn btn-warning">
                         <i class="far fa-edit"></i> Modifier
                     </a>
+                    <form method="post" action="{{ path('app_offre_delete', {'id_offre': offre.idOffre}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ offre.idOffre) }}">
+                        <button class="btn btn-danger">
+                            <i class="far fa-trash-alt"></i> Supprimer
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<style>
+    .btn-danger:hover {
+        background-color: #980808; /* Dark red color */
+        border-color: #a80000; /* Match the border color */
+        color: white; /* Ensure the text remains visible */
+    }
+</style>
 {% endblock %}

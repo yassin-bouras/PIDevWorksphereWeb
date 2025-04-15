@@ -81,6 +81,12 @@
                                                 <a href="{{ path('app_offre_candidatures', {'id_offre': offre.idOffre}) }}" class="btn btn-sm btn-outline-info" title="Candidatures">
                                                     <i class="fas fa-users"></i>
                                                 </a>
+                                                <form method="post" action="{{ path('app_offre_delete', {'id_offre': offre.idOffre}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ?');">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ offre.idOffre) }}">
+                                                    <button class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                                        <i class="far fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
                                             </div>
                                         </td>
                                     </tr>
