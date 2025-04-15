@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class EquipeController extends AbstractController{
     
    
-    #[Route(name: 'app_equipe_index', methods: ['GET'])]
+    /*#[Route(name: 'app_equipe_index', methods: ['GET'])]
     public function index(EquipeRepository $equipeRepository, Request $request): Response
     {
         $searchTerm = $request->query->get('search');
@@ -32,7 +32,19 @@ final class EquipeController extends AbstractController{
         return $this->render('equipe/index.html.twig', [
             'equipes' => $equipes,
         ]);
-    }
+    }*/
+
+    #[Route(name: 'app_equipe_index', methods: ['GET'])]
+public function index(EquipeRepository $equipeRepository, ProjetRepository $projetRepository, Request $request): Response
+{
+    $searchTerm = $request->query->get('search');
+    $equipes = $searchTerm ? $equipeRepository->findByNomEquipe($searchTerm) : $equipeRepository->findAll();
+    
+    return $this->render('equipe/index.html.twig', [
+        'equipes' => $equipes,
+        'all_projets' => $projetRepository->findAll(), // Ajoutez cette ligne
+    ]);
+}
 
 
     #[Route('/equipefront',name: 'AfficherEquipeFront', methods: ['GET'])]
@@ -197,5 +209,28 @@ final class EquipeController extends AbstractController{
         return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
     }
 
+
+    #[Route('/{id}/assign-project', name: 'app_equipe_assign_project', methods: ['POST'])]
+public function assignProject(Request $request, Equipe $equipe, EntityManagerInterface $entityManager, ProjetRepository $projetRepository): Response
+{
+    $projetId = $request->request->get('projet_id');
+    $projet = $projetRepository->find($projetId);
+
+    if (!$projet) {
+        $this->addFlash('error', 'Projet non trouvé.');
+        return $this->redirectToRoute('app_equipe_index');
+    }
+
+    // Assigner le projet à l'équipe
+    $projet->setEquipe($equipe);
+    
+    // Mettre à jour le nombre de projets de l'équipe
+    $equipe->setNbrProjet($equipe->getProjets()->count());
+
+    $entityManager->flush();
+
+    $this->addFlash('success', 'Projet assigné avec succès à l\'équipe.');
+    return $this->redirectToRoute('app_equipe_index');
+}
    
 }

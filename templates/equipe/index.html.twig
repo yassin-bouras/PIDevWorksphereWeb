@@ -51,7 +51,7 @@
                                     <tr>
                                         <th>Image</th>
                                         <th>Nom</th>
-                                        <th>Nbr projets</th>
+                                     <!--    <th>Nbr projets</th> -->
                                         <th>Actions</th>
                                     </tr>
                                 </thead>
@@ -72,9 +72,9 @@
                                             <label>{{ equipe.nomEquipe }}</label>
                                         </td>
                                         
-                                        <td>
+                                        <!-- <td>
                                             <label>{{ equipe.nbrProjet }}</label>
-                                        </td>
+                                        </td> -->
                                         <td>
                                             <div class="actionset">
                                                 <label>
@@ -93,11 +93,52 @@
                                                     </a>
                                                 </label>
 
-                                                
+                                                <label>
+                                                    <a href="#" style="background-color: #2ecc71; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem; border: none;" 
+                                                       class="action_label5 assign-btn" 
+                                                       data-toggle="modal" 
+                                                       data-target="#assignModal{{ equipe.id }}"
+                                                       data-equipe-id="{{ equipe.id }}">
+                                                        <i class="fas fa-link"></i> Assigner
+                                                    </a>
+                                                </label>
+
                                             </div>
                                         </td>
                                     </tr>
 
+                               <!-- Modal d'assignation -->
+<div class="modal fade" id="assignModal{{ equipe.id }}" tabindex="-1" role="dialog" aria-labelledby="assignModalLabel{{ equipe.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="assignModalLabel{{ equipe.id }}">Assigner un projet à {{ equipe.nomEquipe }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form action="{{ path('app_equipe_assign_project', {'id': equipe.id}) }}" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="projetSelect{{ equipe.id }}">Sélectionnez un projet</label>
+                        <select class="form-control" id="projetSelect{{ equipe.id }}" name="projet_id" required>
+                            <option value="">-- Choisir un projet --</option>
+                            {% for projet in all_projets %}
+                              
+                                    <option value="{{ projet.id }}">{{ projet.nom }}</option>
+                           
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">Assigner</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
                                      <!-- Modal de suppression pour chaque équipe -->
                             <div class="modal fade" id="deleteModal{{ equipe.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ equipe.id }}" aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered" role="document">
@@ -166,4 +207,6 @@ $(document).ready(function() {
     });
 });
 </script>
+
+
 {% endblock %}

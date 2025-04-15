@@ -80,11 +80,18 @@
                                                         {% endif %}
                                                     </div>
                                                 {% endfor %}
+                                                <div>
                                                 {% if equipe.users|length > 3 %}
-                                                    <button class="btn btn-sm btn-link text-primary">
+                                                
+                                                   <!--  <button class="btn btn-sm btn-link text-primary">
                                                         +{{ equipe.users|length - 3 }} autres
-                                                    </button>
+                                                    </button> -->
+                    
+                                                            <small class="text-muted">+ {{ equipe.users|length - 3 }} autres</small>
+                                                  
+                                                    
                                                 {% endif %}
+                                            </div>
                                             </div>
                                         </td>
 
@@ -103,7 +110,7 @@
                                                         <div>
                                                             <h6 class="mb-0">{{ projet.nom }}</h6>
                                                             {% if equipe.projets|length > 1 %}
-                                                                <small class="text-muted">+ {{ equipe.projets|length - 1 }} autres projets</small>
+                                                                <small class="text-muted">+ {{ equipe.projets|length - 1 }} autres </small>
                                                             {% endif %}
                                                         </div>
                                                     {% endfor %}
