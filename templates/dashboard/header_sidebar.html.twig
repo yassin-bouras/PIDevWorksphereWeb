@@ -1,0 +1,143 @@
+{% block stylesheets %}
+<link rel="stylesheet" href="{{ asset('back/css/bootstrap.min.css') }}">
+<link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/fontawesome.min.css') }}">
+<link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/all.min.css') }}">
+<link rel="stylesheet" href="{{ asset('back/css/style.css') }}">
+{% endblock %}
+
+<div class="main-wrapper">
+    <div class="header">
+        <div class="header-left">
+            <a href="base.html.twig" class="logo">
+                <img src="{{ asset('back/img/logo.png') }}" alt="Logo">
+            </a>
+            <a href="base.html.twig" class="logo logo-small">
+                <img src="{{ asset('back/img/logo-small.png') }}" alt="Logo" width="30" height="30">
+            </a>
+            <a href="javascript:void(0);" id="toggle_btn">
+                <span class="bar-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </a>
+        </div>
+        <div class="top-nav-search">
+            <form>
+                <input type="text" class="form-control" placeholder="">
+                <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+        <a class="mobile_btn" id="mobile_btn">
+            <i class="fas fa-bars"></i>
+        </a>
+        <ul class="nav user-menu">
+            <li class="nav-item dropdown">
+                <a href="#" class="dropdown-toggle nav-link pr-0" data-toggle="dropdown">
+                    <i data-feather="bell"></i> <span class="badge badge-pill"></span>
+                </a>
+                <div class="dropdown-menu notifications">
+                    <div class="topnav-dropdown-header">
+                        <span class="notification-title">Notifications</span>
+                        <a href="javascript:void(0)" class="clear-noti"> Clear All</a>
+                    </div>
+                    <div class="noti-content">
+                        <ul class="notification-list">
+                            <li class="notification-message">
+                                <a href="#">
+                                    <div class="media">
+                                        <span class="avatar avatar-sm">
+                                            <img class="avatar-img rounded-circle" alt="Photo de profil" src="{{ asset('back/img/profiles/avatar-02.jpg') }}">
+                                        </span>
+                                        <div class="media-body">
+                                            <p class="noti-details"><span class="noti-title">Brian Johnson</span> paid the invoice <span class="noti-title">#DF65485</span></p>
+                                            <p class="noti-time"><span class="notification-time">4 mins ago</span></p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="topnav-dropdown-footer">
+                        <a href="#">View all Notifications</a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item dropdown has-arrow main-drop">
+                <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+                    <span class="user-img">
+                        <img src="{{ user_data.getImageprofil ? asset(user_data.getImageprofil) : asset('back/img/profile.jpg') }}" alt="">
+                        <span class="status online"></span>
+                    </span>
+                    <span>{{ app.user.getFullName() ?? 'Guest' }}</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="{{ path('app_user_edit', {'iduser': user_data.id}) }}"><i data-feather="user" class="mr-1"></i> Profile</a>
+                    <a class="dropdown-item" href="#"><i data-feather="settings" class="mr-1"></i> Settings</a>
+                    <a class="dropdown-item" href="{{ path('app_logout') }}"><i data-feather="log-out" class="mr-1"></i> Logout</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-inner slimscroll">
+            <div class="sidebar-contents">
+                <div id="sidebar-menu" class="sidebar-menu">
+                    {% if user_data.role == 'rh' %}
+                        <ul>
+                            <li class="active"><a href="/profile"><span>👤 Profile</span></a></li>
+                            <li><a href="/contrat"><span>📜 Contrat</span></a></li>
+                            <li><a href="/sponsor"><span>📢 Gestion Sponsor</span></a></li>
+                            <li><a href="/user"><span>👥 Gestion User</span></a></li>
+                            <li><a href="/evennement"><span>✅ Evenements</span></a></li>
+                            <li><a href="/formations"><span>📢 Formations</span></a></li>
+                            <li><a href="/offres-emploi"><span>🎯 Offres Emploi</span></a></li>
+                            <li><a href="/entretien"><span>🔥 Entretien</span></a></li>
+                            <li><a href="/changer-mot-de-passe"><span>🔄 Mot de Passe</span></a></li>
+                        </ul>
+                    {% elseif user_data.role == 'candidat' %}
+                        <ul>
+                            <li class="active"><a class="sidebar-link" data-url="/goprofile"><span>👤 Profile</span></a></li>
+                            <li><a class="sidebar-link" data-url="/offreemploi"><span>🔄 Offre Emploi</span></a></li>
+                            <li><a class="sidebar-link" data-url="/reclamation"><span>👥 Reclamations</span></a></li>
+                            <li><a class="sidebar-link" data-url="/candidature"><span>👥 Candidature</span></a></li>
+                            <li><a class="sidebar-link" data-url="/changemdp"><span>👤 Changer Mot de Passe</span></a></li>
+                        </ul>
+                    {% elseif user_data.role == 'employe' %}
+                        <ul>
+                            <li class="active"><a class="sidebar-link" data-url="/goprofile"><span>👤 Profile</span></a></li>
+                            <li><a class="sidebar-link" data-url="/Reclamation"><span>🔄 Reclamation</span></a></li>
+                            <li><a class="sidebar-link" data-url="/formation"><span>📢 Formation</span></a></li>
+                            <li><a class="sidebar-link" data-url="/entretienarchive"><span>🚀 Entretien Archive</span></a></li>
+                            <li><a class="sidebar-link" data-url="/entretien"><span>🚀 Entretien</span></a></li>
+                            <li><a class="sidebar-link" data-url="/mesreservastion"><span>🎯 Mes Reservations</span></a></li>
+                            <li><a class="sidebar-link" data-url="/gestionEquipe"><span>👥 Équipe</span></a></li>
+                            <li><a class="sidebar-link" data-url="/gestionProjet"><span>📂 Projet</span></a></li>
+                            <li><a class="sidebar-link" data-url="/changer-mot-de-passe"><span>🔄 Mot de Passe</span></a></li>
+                        </ul>
+                    {% elseif user_data.role == 'manager' %}
+                        <ul>
+                            <li class="active"><a href="/profile"><span>👤 Profile</span></a></li>
+                            <li><a href="/settings"><span>⚙️ Settings</span></a></li>
+                        </ul>
+                    {% endif %}
+                    <ul class="logout">
+                        <li><a href="{{ path('app_logout') }}"><span>🚪 Log out</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block js %}
+<script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
+<script src="{{ asset('back/js/popper.min.js') }}"></script>
+<script src="{{ asset('back/js/bootstrap.min.js') }}"></script>
+<script src="{{ asset('back/js/feather.min.js') }}"></script>
+<script src="{{ asset('back/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
+<script src="{{ asset('back/plugins/apexchart/apexcharts.min.js') }}"></script>
+<script src="{{ asset('back/plugins/apexchart/chart-data.js') }}"></script>
+<script src="{{ asset('back/js/script.js') }}"></script>
+{% endblock %}

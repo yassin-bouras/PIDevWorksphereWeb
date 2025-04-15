@@ -1,13 +1,11 @@
-<!DOCTYPE html>
+{% extends 'dashboard/base2.html.twig' %}
 
-<title>Edit User</title>
 
-{% block body %}
-    <h1>Edit User</h1>
-
-    {{ include('user/_form.html.twig', {'button_label': 'Update'}) }}
-
-    <a href="{{ path('app_user_index') }}">back to list</a>
-
-    {{ include('user/_delete_form.html.twig') }}
+{% block content %}
+    <div class="container mt-4">
+        <h1>Edit User</h1>
+        {{ include('user/_form.html.twig', { 'button_label': 'Update' }) }}
+        <a href="{{ path('app_user_index') }}" class="btn btn-secondary mt-3">Back to list</a>
+        {{ include('user/_delete_form.html.twig') }}
+    </div>
 {% endblock %}

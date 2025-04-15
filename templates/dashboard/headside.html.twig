@@ -1,0 +1,171 @@
+<div class="main-wrapper">
+    <div class="header">
+        <div class="header-left">
+            <a href="/" class="logo">
+                <img src="{{ asset('back/img/logo.png') }}" alt="Logo">
+            </a>
+            <a href="/" class="logo logo-small">
+                <img src="{{ asset('back/img/logo-small.png') }}" alt="Logo" width="30" height="30">
+            </a>
+            <a href="javascript:void(0);" id="toggle_btn">
+                <span class="bar-icon">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+            </a>
+        </div>
+        <div class="top-nav-search">
+            <form>
+                <input type="text" class="form-control" placeholder="Search...">
+                <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+            </form>
+        </div>
+        <a class="mobile_btn" id="mobile_btn">
+            <i class="fas fa-bars"></i>
+        </a>
+        <ul class="nav user-menu">
+            <li class="nav-item dropdown">
+                <a href="#" class="dropdown-toggle nav-link pr-0" data-toggle="dropdown">
+                    <i data-feather="bell"></i> <span class="badge badge-pill"></span>
+                </a>
+                <div class="dropdown-menu notifications">
+                    <div class="topnav-dropdown-header">
+                        <span class="notification-title">Notifications</span>
+                        <a href="javascript:void(0)" class="clear-noti">Clear All</a>
+                    </div>
+                    <div class="noti-content">
+                        <ul class="notification-list">
+                            <li class="notification-message">
+                                <a href="#">
+                                    <div class="media">
+                                        <span class="avatar avatar-sm">
+                                            <img class="avatar-img rounded-circle" alt="Photo de profil" src="{{ asset('back/img/profiles/avatar-02.jpg') }}">
+                                        </span>
+                                        <div class="media-body">
+                                            <p class="noti-details">
+                                                <span class="noti-title">Brian Johnson</span> paid the invoice <span class="noti-title">#DF65485</span>
+                                            </p>
+                                            <p class="noti-time">
+                                                <span class="notification-time">4 mins ago</span>
+                                            </p>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="topnav-dropdown-footer">
+                        <a href="#">View all Notifications</a>
+                    </div>
+                </div>
+            </li>
+            <li class="nav-item dropdown has-arrow main-drop">
+                <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+                    <span class="user-img">
+                        <img id="user-profile-image" src="{{ asset('back/img/profile.jpg') }}" alt="">
+                        <span class="status online"></span>
+                    </span>
+                    <span id="user-full-name">Guest</span>
+                </a>
+                <div class="dropdown-menu">
+                    <a class="dropdown-item" href="#" id="user-profile-link">
+                        <i data-feather="user" class="mr-1"></i> Profile
+                    </a>
+                    <a class="dropdown-item" href="#"><i data-feather="settings" class="mr-1"></i> Settings</a>
+                    <a class="dropdown-item" href="{{ path('app_logout') }}"><i data-feather="log-out" class="mr-1"></i> Logout</a>
+                </div>
+            </li>
+        </ul>
+    </div>
+
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-inner slimscroll">
+            <div class="sidebar-contents">
+                <div id="sidebar-menu" class="sidebar-menu">
+                    <ul id="sidebar-links">
+                        <!-- Sidebar links will be populated here -->
+                    </ul>
+                    <ul class="logout">
+                        <li><a href="{{ path('app_logout') }}"><span>🚪 Log out</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function getCookie(name) {
+            let cookieArray = document.cookie.split('; ');
+            let cookie = cookieArray.find(row => row.startsWith(name + '='));
+            return cookie ? cookie.split('=')[1] : null;
+        }
+
+
+        fetch('/jwt/user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token: getCookie('BEARER') }) // Get the token from cookies
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const user = data.user;
+                document.getElementById('user-profile-image').src = user.imageprofil || '{{ asset('back/img/profile.jpg') }}';
+                document.getElementById('user-full-name').textContent = user.nom + ' ' + user.prenom;
+                document.getElementById('user-profile-link').href = '/user/' + user.iduser;
+
+                const sidebarLinks = document.getElementById('sidebar-links');
+                sidebarLinks.innerHTML = '';
+
+                if (user.role === 'RH') {
+                    sidebarLinks.innerHTML += `
+                        <li><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
+                        <li><a href="/contrat"><span>📜 Contrat</span></a></li>
+                        <li><a href="/sponsor"><span>📢 Gestion Sponsor</span></a></li>
+                        <li><a href="/user"><span>👥 Gestion User</span></a></li>
+                        <li><a href="/event"><span>✅ Evenements</span></a></li>
+                        <li><a href="/formation"><span>📢 Formations</span></a></li>
+                        <li><a href="/offre"><span>🎯 Offres Emploi</span></a></li>
+                        <li><a href="/entretier"><span>🔥 Entretien</span></a></li>
+                        <li><a href="/mdp"><span>🔄 Mot de Passe</span></a></li>
+                    `;
+                } else if (user.role === 'candidat') {
+                    sidebarLinks.innerHTML += `
+                        <li class="active"><a href="/goprofile"><span>👤 Profile</span></a></li>
+                        <li><a href="/"><span>🔄 Offre Emploi</span></a></li>
+                        <li><a href="/reclamtion"><span>👥 Reclamations</span></a></li>
+                        <li><a href="/"><span>👥 Candidature</span></a></li>
+                        <li><a href="/"><span>👤 Changer Mot de Passe</span></a></li>
+                    `;
+                } else if (user.role === 'Employe') {
+                    sidebarLinks.innerHTML += `
+                        <li class="active"><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
+                        <li><a href="/user"><span>🔄 Reclamation</span></a></li>
+                        <li><a href="/formation"><span>📢 Formation</span></a></li>
+                        <li><a href="/"><span>🚀 Entretien Archive</span></a></li>
+                        <li><a href="/"><span>🚀 Entretien</span></a></li>
+                        <li><a href="/"><span>🎯 Mes Reservations</span></a></li>
+                        <li><a href="/"><span>👥 Équipe</span></a></li>
+                        <li><a href="/"><span>📂 Projet</span></a></li>
+                        <li><a href="/"><span>🔄 Mot de Passe</span></a></li>
+                    `;
+                } else if (user.role === 'manager') {
+                    sidebarLinks.innerHTML += `
+                        <li class="active"><a href="/"><span>👤 Profile</span></a></li>
+                        <li><a href="/"><span>⚙️ Settings</span></a></li>
+                    `;
+                }
+            } else {
+                console.error('Failed to fetch user data:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+        });
+    });
+</script>

@@ -138,10 +138,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
 
-    public function getId(): ?int
-    {
-        return $this->iduser;
-    }
+
     public function getIduser(): ?int
     {
         return $this->iduser;
@@ -530,6 +527,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+
     public function getReponses(): Collection
     {
         return $this->reponses;
@@ -591,7 +589,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->equipes->removeElement($equipe);
         return $this;
     }
-
+    public function getId(): ?int
+    {
+        return $this->iduser;
+    }
     public function getUserIdentifier(): string
     {
         return (string) $this->email;

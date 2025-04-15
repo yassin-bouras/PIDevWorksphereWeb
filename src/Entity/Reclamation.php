@@ -25,6 +25,10 @@ class Reclamation
     {
         return $this->id_reclamation;
     }
+    public function getId(): ?int
+    {
+        return $this->id_reclamation;
+    }
 
     public function setId_reclamation(int $id_reclamation): self
     {

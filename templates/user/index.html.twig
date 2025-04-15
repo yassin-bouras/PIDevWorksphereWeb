@@ -1,3 +1,6 @@
+{% extends 'dashboard/base2.html.twig' %}
+
+{% block content %}
 <!DOCTYPE html>
 
 <title>User index</title>
@@ -79,4 +82,5 @@
     </table>
 
     <a href="{{ path('app_user_new') }}">Create new</a>
+{% endblock %}
 {% endblock %}

@@ -17,9 +17,9 @@ class UserType extends AbstractType
             ->add('nom')
             ->add('prenom')
             ->add('email')
-            // Remove 'mdp' from the form; we'll handle it via plainPassword
+
             ->add('plainPassword', PasswordType::class, [
-                'mapped' => false, // This field is not directly linked to the entity
+                'mapped' => false,
                 'required' => $options['is_new'] ?? true, // Required for new users, optional for edits
                 'label' => 'Password',
                 'attr' => ['autocomplete' => 'new-password'], // Improves security

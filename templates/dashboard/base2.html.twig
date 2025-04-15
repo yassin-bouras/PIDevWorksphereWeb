@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}My App{% endblock %}</title>
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('back/css/bootstrap.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/fontawesome.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/all.min.css') }}">
+        <link rel="stylesheet" href="{{ asset('back/css/style.css') }}">
+    {% endblock %}
+</head>
+<body>
+
+    {% include 'dashboard/headside.html.twig' %}
+    <div class="page-wrapper" id="content-wrapper">
+        {% block content %}{% endblock %}
+    </div>
+
+    {% block js %}
+        <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
+        <script src="{{ asset('back/js/popper.min.js') }}"></script>
+        <script src="{{ asset('back/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('back/js/feather.min.js') }}"></script>
+        <script src="{{ asset('back/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
+        <script src="{{ asset('back/plugins/apexchart/apexcharts.min.js') }}"></script>
+        <script src="{{ asset('back/plugins/apexchart/chart-data.js') }}"></script>
+        <script src="{{ asset('back/js/script.js') }}"></script>
+    {% endblock %}
+</body>
+</html>
