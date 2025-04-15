@@ -134,6 +134,20 @@
         box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
     }
 </style>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.querySelector('.needs-validation');
+    
+        form.addEventListener('submit', function (event) {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+    
+            form.classList.add('was-validated');
+        }, false);
+    });
+    </script>
 
 <div class="content container-fluid">
     <div class="row">
@@ -156,8 +170,134 @@
         <div class="card-body">
             {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
             
+            
             <div class="styled-form-wrapper">
-                {{ form_widget(form) }}
+                <div class="form-group">
+                    {{ form_label(form.titre) }}
+                    {{ form_widget(form.titre, {
+                        'attr': {
+                            'class': 'form-control' ~ (form.titre.vars.errors|length ? ' is-invalid' : '')
+                        }
+                    }) }}
+                    {% if form.titre.vars.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.titre.vars.errors %}
+                                {{ error.message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            
+                <div class="form-group">
+                    {{ form_label(form.description) }}
+                    {{ form_widget(form.description, {
+                        'attr': {
+                            'class': 'form-control' ~ (form.description.vars.errors|length ? ' is-invalid' : '')
+                        }
+                    }) }}
+                    {% if form.description.vars.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.description.vars.errors %}
+                                {{ error.message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            
+                <div class="form-group">
+                    {{ form_label(form.type_contrat) }}
+                    {{ form_widget(form.type_contrat, {
+                        'attr': {
+                            'class': 'form-control' ~ (form.type_contrat.vars.errors|length ? ' is-invalid' : '')
+                        }
+                    }) }}
+                    {% if form.type_contrat.vars.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.type_contrat.vars.errors %}
+                                {{ error.message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            
+                <div class="form-group">
+                    {{ form_label(form.salaire) }}
+                    {{ form_widget(form.salaire, {
+                        'attr': {
+                            'class': 'form-control' ~ (form.salaire.vars.errors|length ? ' is-invalid' : '')
+                        }
+                    }) }}
+                    {% if form.salaire.vars.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.salaire.vars.errors %}
+                                {{ error.message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            
+                <div class="form-group">
+                    {{ form_label(form.lieu_travail) }}
+                    {{ form_widget(form.lieu_travail, {
+                        'attr': {
+                            'class': 'form-control' ~ (form.lieu_travail.vars.errors|length ? ' is-invalid' : '')
+                        }
+                    }) }}
+                    {% if form.lieu_travail.vars.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.lieu_travail.vars.errors %}
+                                {{ error.message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            
+                <div class="form-group">
+                    {{ form_label(form.date_limite) }}
+                    {{ form_widget(form.date_limite, {
+                        'attr': {
+                            'class': 'form-control'}
+                    }) }}
+                    {% if form.date_limite.vars.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.date_limite.vars.errors %}
+                                {{ error.message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            
+                <div class="form-group">
+                    {{ form_label(form.statut_offre) }}
+                    {{ form_widget(form.statut_offre, {
+                        'attr': {
+                            'class': 'form-control' ~ (form.statut_offre.vars.errors|length ? ' is-invalid' : '')
+                        }
+                    }) }}
+                    {% if form.statut_offre.vars.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.statut_offre.vars.errors %}
+                                {{ error.message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            
+                <div class="form-group">
+                    {{ form_label(form.experience) }}
+                    {{ form_widget(form.experience, {
+                        'attr': {
+                            'class': 'form-control' ~ (form.experience.vars.errors|length ? ' is-invalid' : '')
+                        }
+                    }) }}
+                    {% if form.experience.vars.errors %}
+                        <div class="invalid-feedback">
+                            {% for error in form.experience.vars.errors %}
+                                {{ error.message }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
             </div>
 
             <div class="form-actions mt-4">

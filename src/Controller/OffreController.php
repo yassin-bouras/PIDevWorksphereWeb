@@ -25,7 +25,7 @@ final class OffreController extends AbstractController
         return $this->render('offre/index.html.twig', [
             // 'offres' => $offreRepository->findAll(),
             'offres' => $offres,
-                ]);
+        ]);
     }
 
     #[Route('/front', name: 'app_offre_front_index', methods: ['GET'])]
@@ -52,6 +52,9 @@ final class OffreController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            if (!$offre->getDateLimite()) {
+                $offre->setDateLimite(new \DateTime()); // Default to the current date
+            }
             $entityManager->persist($offre);
             $entityManager->flush();
 
@@ -77,7 +80,7 @@ final class OffreController extends AbstractController
     #[Route('/{id_offre}/edit', name: 'app_offre_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Offre $offre, EntityManagerInterface $entityManager, string $context = 'back'): Response
     {
-        
+
         $form = $this->createForm(OffreType::class, $offre);
         $form->handleRequest($request);
 

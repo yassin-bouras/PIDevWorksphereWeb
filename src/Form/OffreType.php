@@ -25,7 +25,7 @@ class OffreType extends AbstractType
             // ->add('description')
             ->add('description', TextareaType::class, [
                 'attr' => [
-                    'rows' => 5, // Adjust the number of rows for the textarea
+                    'rows' => 5,
                     'placeholder' => 'Entrez la description de l\'offre...',
                 ],
                 'label' => 'Description',
@@ -56,9 +56,18 @@ class OffreType extends AbstractType
             //     ],
             //     'label' => 'Date de Publication',
             // ])
-            ->add('date_limite', null, [
-                'widget' => 'single_text'
+
+            ->add('date_limite', DateType::class, [
+                'widget' => 'single_text',
+                'attr' => [
+                    'placeholder' => 'Sélectionnez la date limite',
+                ],
+                'label' => 'Date Limite',
+                'required' => true,
             ])
+            // ->add('date_limite', null, [
+            //     'widget' => 'single_text'
+            // ])
             ->add('statut_offre', null, [
                 'attr' => [
                     'placeholder' => 'Entrez le statut de l\'offre (ex: Ouverte, En cours...)',
