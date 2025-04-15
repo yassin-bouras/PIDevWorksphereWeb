@@ -3,6 +3,15 @@
 {% block title %}Offres{% endblock %}
 
 {% block content %}
+<style>
+    .d-flex > * {
+        margin-right: 10px; /* Add spacing between buttons */
+    }
+
+    .d-flex > *:last-child {
+        margin-right: 0; /* Remove margin from the last button */
+    }
+</style>
 <div class="content container-fluid">
     <div class="page-header">
         <div class="row">
@@ -20,7 +29,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <div class="text-end mb-4">
+                    <div class="text-start mb-4">
                         <a href="{{ path('app_offre_new') }}" class="btn btn-primary">
                             <i class="fas fa-plus"></i> Créer une nouvelle offre
                         </a>
@@ -72,13 +81,13 @@
                                         <td>{{ offre.datePublication ? offre.datePublication|date('Y-m-d') : '' }}</td>
                                         <td>
                                             <div class="d-flex">
-                                                <a href="{{ path('app_offre_show', {'id_offre': offre.idOffre}) }}" class="btn btn-sm btn-outline-primary me-1" title="Voir">
+                                                <a href="{{ path('app_offre_show', {'id_offre': offre.idOffre}) }}" class="btn btn-sm btn-outline-primary me-2" title="Voir">
                                                     <i class="far fa-eye"></i>
                                                 </a>
-                                                <a href="{{ path('app_offre_edit', {'id_offre': offre.idOffre}) }}" class="btn btn-sm btn-outline-warning me-1" title="Modifier">
+                                                <a href="{{ path('app_offre_edit', {'id_offre': offre.idOffre}) }}" class="btn btn-sm btn-outline-warning me-2" title="Modifier">
                                                     <i class="far fa-edit"></i>
                                                 </a>
-                                                <a href="{{ path('app_offre_candidatures', {'id_offre': offre.idOffre}) }}" class="btn btn-sm btn-outline-info" title="Candidatures">
+                                                <a href="{{ path('app_offre_candidatures', {'id_offre': offre.idOffre}) }}" class="btn btn-sm btn-outline-info me-2" title="Candidatures">
                                                     <i class="fas fa-users"></i>
                                                 </a>
                                                 <form method="post" action="{{ path('app_offre_delete', {'id_offre': offre.idOffre}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ?');">
