@@ -16,12 +16,18 @@ use Symfony\Component\Routing\Attribute\Route;
 final class OffreController extends AbstractController
 {
     #[Route(name: 'app_offre_index', methods: ['GET'])]
-    public function index(OffreRepository $offreRepository): Response
+    public function index(Request $request, OffreRepository $offreRepository): Response
     {
+        $search = $request->query->get('search', ''); // Get the search query from the request
+        $offres = $offreRepository->findByTitre($search); // Use a custom repository method to filter by title
+
+
         return $this->render('offre/index.html.twig', [
-            'offres' => $offreRepository->findAll(),
-        ]);
+            // 'offres' => $offreRepository->findAll(),
+            'offres' => $offres,
+                ]);
     }
+
     #[Route('/front', name: 'app_offre_front_index', methods: ['GET'])]
     public function frontIndex(Request $request, OffreRepository $offreRepository): Response
     {
