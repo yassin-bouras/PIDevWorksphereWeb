@@ -19,6 +19,19 @@
         <h1 class="text-center mb-5" style="font-weight: 700; color: #333;">LISTE DES OFFRES</h1>
     </div>
 
+    <div class="mb-4">
+        <form method="GET" action="{{ path('app_offre_front_index') }}">
+            <div class="input-group" style="max-width: 1050px; margin: 0 auto;">
+                <input type="text" name="search" class="form-control"
+                    placeholder="Rechercher par titre d'offre..."
+                    value="{{ search|default('') }}"> <!-- Keep the search term in the input -->
+                <div class="input-group-append">
+                    <button class="btn btn-outline-secondary" type="submit">Rechercher</button>
+                </div>
+            </div>
+        </form>
+    </div>
+
     <div class="row" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
         {% for offre in offres %}
         <div class="flip-card" style="margin-top: 30px;">
@@ -305,5 +318,67 @@
         position: relative;
         z-index: 10;
     }
+
+    .form-control {
+        border: 3px solid #33ccc5;
+        /* Set the border color */
+        border-radius: 5px;
+        /* Optional: Add rounded corners */
+        padding: 10px;
+        /* Optional: Add padding for better appearance */
+        font-size: 1.2rem;
+        /* Increase font size */
+        width: 80%;
+        /* Ensure the input takes up the full width of its container */
+        transition: border-color 0.3s ease;
+        /* Smooth transition for hover/focus */
+    }
+
+    .form-control:focus {
+        border-color: #33ccc5;
+        /* Keep the same color on focus */
+        outline: none;
+        /* Remove the default outline */
+        box-shadow: 0 0 5px rgba(51, 204, 197, 0.5);
+        /* Optional: Add a glow effect */
+    }
+
+    .btn-outline-secondary {
+        background-color: transparent; /* Remove the default blue background */
+
+        border: 3px solid #33ccc5;
+        /* Match the border size with the search box */
+        color: #33ccc5;
+        /* Set the text color */
+        padding: 10px 50px;
+        /* Increase padding for a larger button */
+        font-size: 1.2rem;
+        /* Increase font size */
+        border-radius: 5px;
+        /* Match the rounded corners with the search box */
+        
+        transition: all 0.3s ease;
+        
+    }
+
+    .btn-outline-secondary:hover {
+        border: 3px solid #99fffa;
+
+        background-color: #33ccc5;
+        /* Change background color on hover */
+        color: white;
+        /* Change text color on hover */
+        transform: scale(1.05);
+        /* Slightly enlarge the button on hover */
+        transition: all 0.2s ease;
+
+    }
+
+    .input-group {
+    display: flex;
+    align-items: center; /* Ensure vertical alignment */
+    justify-content: center; /* Center the input and button */
+    gap: 0;
+}
 </style>
 {% endblock %}

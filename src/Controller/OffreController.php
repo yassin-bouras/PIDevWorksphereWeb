@@ -12,7 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/offre')]
-final class OffreController extends AbstractController{
+final class OffreController extends AbstractController
+{
     #[Route(name: 'app_offre_index', methods: ['GET'])]
     public function index(OffreRepository $offreRepository): Response
     {
@@ -21,10 +22,15 @@ final class OffreController extends AbstractController{
         ]);
     }
     #[Route('/front', name: 'app_offre_front_index', methods: ['GET'])]
-    public function frontIndex(OffreRepository $offreRepository): Response
+    public function frontIndex(Request $request, OffreRepository $offreRepository): Response
     {
+        $search = $request->query->get('search', ''); // Get the search term from the query string
+        $offres = $offreRepository->findByTitre($search); // Use a custom repository method to filter by title
+
         return $this->render('offre/front_index.html.twig', [
-            'offres' => $offreRepository->findAll(),
+            // 'offres' => $offreRepository->findAll(),
+            'offres' => $offres,
+            'search' => $search, 
             'context' => 'front'
         ]);
     }
@@ -81,7 +87,7 @@ final class OffreController extends AbstractController{
     #[Route('/{id_offre}', name: 'app_offre_delete', methods: ['POST'])]
     public function delete(Request $request, Offre $offre, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$offre->getId_offre(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $offre->getId_offre(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($offre);
             $entityManager->flush();
         }

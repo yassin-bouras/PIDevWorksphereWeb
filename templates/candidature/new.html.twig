@@ -286,6 +286,14 @@
         color: #000000;
         /* Ensure consistent text color */
     }
+
+    .form-group-offre {
+    margin-top: -50px; /* Move the Offre section closer to the line */
+}
+
+.form-group-labels {
+    margin-top: 20px; /* Move the Offre section closer to the line */
+}
 </style>
 {% endblock %}
 
@@ -296,16 +304,16 @@
         <hr style="width: 400px; border: 4px solid #ffffff; margin: 0 auto 5rem auto; border-radius: 5px;">
 
         <!-- Display the Offre label and value -->
-
-
-
-        {{ form_start(form, {'attr': {'class': 'form'}}) }}
-        <div class="form-group">
+        <div class="form-group form-group-offre">
             <label for="offre" class="form-label-offre" >Offre :</label>
             <p class="form-input offre-value">{{ form.offre.vars.data.titre }}</p>
         </div>
         {% do form.offre.setRendered %}
-        <div class="form-group">
+
+
+        {{ form_start(form, {'attr': {'class': 'form'}}) }}
+        
+        <div class="form-group form-group-labels">
             <label for="cv" class="form-label">CV (PDF FILE) :</label>
             {{ form_widget(form.cv, {'attr': {'class': 'form-input'}}) }}
         </div>
