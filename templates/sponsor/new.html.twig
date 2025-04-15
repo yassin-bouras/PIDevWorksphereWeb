@@ -1,301 +1,232 @@
-{% extends '/dashboard/base.html.twig' %}
-
-{% block title %}Nouveau Sponsor{% endblock %}
-
-{% block content %}
-<div class="content container-fluid">
-    <div class="row">
-        <div class="col-xl-12 col-sm-12 col-12">
-            <div class="breadcrumb-path mb-4">
-                <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Accueil</a></li>
-                    <li class="breadcrumb-item"><a href="{{ path('app_sponsor_index') }}">Sponsors</a></li>
-                    <li class="breadcrumb-item active">Nouveau Sponsor</li>
-                </ul>
-                <h3>Créer un Nouveau Sponsor</h3>
-            </div>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nouveau Sponsor</title>
+    <style>
+        :root {
+            --primary-color: #2c5aa0; /* Bleu professionnel */
+            --secondary-color: #4a90e2; /* Bleu plus clair */
+            --accent-color: #ff6b35; /* Orange pour les accents */
+            --light-gray: #f5f7fa;
+            --medium-gray: #e1e5eb;
+            --dark-gray: #6c757d;
+            --text-color: #2d3748;
+            --success-color: #4caf50;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: var(--text-color);
+            background-image: url('https://www.bgm0726.fr/uploads/lep_content/.thumbs/rh-5f89e-1000x_-90-scale-ffffff-wCopyright.png?1610684035');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start; /* Changé de center à flex-start */
+        }
+        
+        .overlay {
+            background: linear-gradient(135deg, rgba(44, 90, 160, 0.85) 0%, rgba(74, 144, 226, 0.85) 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 20px auto; /* Réduit la marge verticale */
+            background: white;
+            padding: 30px; /* Réduit le padding */
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            position: relative;
+            z-index: 1;
+            overflow-y: visible; /* Assure que tout le contenu est visible */
+        }
+        
+        h1 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-bottom: 20px; /* Réduit la marge */
+            font-size: 1.8rem; /* Taille de police réduite */
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 20px; /* Réduit la marge */
+            padding-bottom: 15px; /* Réduit le padding */
+            border-bottom: 2px solid var(--medium-gray);
+        }
+        
+        .form-header h2 {
+            font-size: 1.5rem; /* Taille de police réduite */
+            color: var(--primary-color);
+            margin-bottom: 8px; /* Réduit la marge */
+            font-weight: 500;
+        }
+        
+        .form-header p {
+            color: var(--dark-gray);
+            font-size: 1rem; /* Taille de police réduite */
+            margin: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 15px; /* Réduit la marge */
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 6px; /* Réduit la marge */
+            font-weight: 600;
+            color: var(--primary-color);
+            font-size: 0.9rem; /* Taille de police réduite */
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px 12px; /* Réduit le padding */
+            border: 2px solid var(--medium-gray);
+            border-radius: 6px;
+            font-size: 0.95rem; /* Taille de police réduite */
+            transition: all 0.3s ease;
+            background-color: var(--light-gray);
+        }
+        
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.2);
+            background-color: white;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 15px; /* Réduit l'espacement */
+            margin-bottom: 15px; /* Réduit la marge */
+        }
+        
+        .form-col {
+            flex: 1;
+        }
+        
+        .btn {
+            background: linear-gradient(to right, var(--primary-color), var(--secondary-color));
+            color: white;
+            border: none;
+            padding: 12px 20px; /* Réduit le padding */
+            font-size: 0.95rem; /* Taille de police réduite */
+            border-radius: 6px;
+            cursor: pointer;
+            display: block;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 15px; /* Réduit la marge */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .btn:hover {
+            background: linear-gradient(to right, #234a8c, #3d7bc8);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 15px; /* Réduit la marge */
+            color: var(--secondary-color);
+            text-decoration: none;
+            font-size: 0.9rem; /* Taille de police réduite */
+            transition: all 0.2s ease;
+            font-weight: 500;
+            border: 1px solid var(--secondary-color);
+            padding: 6px 12px; /* Réduit le padding */
+            border-radius: 4px;
+        }
+        
+        .back-link:hover {
+            color: white;
+            background-color: var(--secondary-color);
+            text-decoration: none;
+        }
+        
+        /* Animation subtile */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .container {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
+</head>
+<body>
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="form-header">
+            <h2>Gestion des Sponsors</h2>
+            <p>Ajoutez un nouveau partenaire à votre réseau</p>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-xl-12 col-sm-12 col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-titles">Informations du Sponsor <span>Remplissez tous les champs obligatoires</span></h2>
+        {% block body %}
+            <h1>Nouveau Sponsor</h1>
+
+            {{ form_start(form) }}
+                <div class="form-group">
+                    {{ form_label(form.nomSponso) }}
+                    {{ form_widget(form.nomSponso, {'attr': {'class': 'form-control', 'placeholder': 'Nom du sponsor'}}) }}
                 </div>
-                <div class="card-body">
-                    {{ form_start(form, {'attr': {'id': 'sponsor-form', 'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
-                    
-                    <div class="row">
-                        <div class="col-xl-6 col-sm-12 col-12">
-                            <div class="form-group">
-                                {{ form_label(form.nomSponso, "Nom*") }}
-                                {{ form_widget(form.nomSponso, {
-                                    'attr': {
-                                        'class': 'form-control' ~ (form.nomSponso.vars.errors|length ? ' is-invalid' : ''),
-                                        'required': 'required',
-                                        'minlength': '2',
-                                        'placeholder': 'Nom du sponsor'
-                                    }
-                                }) }}
-                                {% if form.nomSponso.vars.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.nomSponso.vars.errors %}
-                                            {{ error.message }}
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <div class="invalid-feedback">
-                                        Le nom doit contenir au moins 2 caractères
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-xl-6 col-sm-12 col-12">
-                            <div class="form-group">
-                                {{ form_label(form.prenomSponso, "Prénom") }}
-                                {{ form_widget(form.prenomSponso, {
-                                    'attr': {
-                                        'class': 'form-control' ~ (form.prenomSponso.vars.errors|length ? ' is-invalid' : ''),
-                                        'placeholder': 'Prénom du sponsor'
-                                    }
-                                }) }}
-                                {% if form.prenomSponso.vars.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.prenomSponso.vars.errors %}
-                                            {{ error.message }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="row">
-                        <div class="col-xl-6 col-sm-12 col-12">
-                            <div class="form-group">
-                                {{ form_label(form.emailSponso, "Email*") }}
-                                {{ form_widget(form.emailSponso, {
-                                    'attr': {
-                                        'class': 'form-control' ~ (form.emailSponso.vars.errors|length ? ' is-invalid' : ''),
-                                        'required': 'required',
-                                        'type': 'email',
-                                        'pattern': '[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$',
-                                        'placeholder': 'exemple@domaine.com'
-                                    }
-                                }) }}
-                                {% if form.emailSponso.vars.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.emailSponso.vars.errors %}
-                                            {{ error.message }}
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <div class="invalid-feedback">
-                                        Veuillez entrer une adresse email valide
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-xl-6 col-sm-12 col-12">
-                            <div class="form-group">
-                                {{ form_label(form.classement, "Classement") }}
-                                {{ form_widget(form.classement, {
-                                    'attr': {
-                                        'class': 'form-control' ~ (form.classement.vars.errors|length ? ' is-invalid' : ''),
-                                        'placeholder': 'A, B, C...'
-                                    }
-                                }) }}
-                                {% if form.classement.vars.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.classement.vars.errors %}
-                                            {{ error.message }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-xl-6 col-sm-12 col-12">
-                            <div class="form-group">
-                                {{ form_label(form.budgetSponso, "Budget Initial*") }}
-                                <div class="input-group">
-                                    {{ form_widget(form.budgetSponso, {
-                                        'attr': {
-                                            'class': 'form-control' ~ (form.budgetSponso.vars.errors|length ? ' is-invalid' : ''),
-                                            'required': 'required',
-                                            'type': 'number',
-                                            'min': '0',
-                                            'step': '0.01',
-                                            'placeholder': 'Montant en €'
-                                        }
-                                    }) }}
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">€</span>
-                                    </div>
-                                </div>
-                                {% if form.budgetSponso.vars.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.budgetSponso.vars.errors %}
-                                            {{ error.message }}
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <div class="invalid-feedback">
-                                        Le budget doit être un nombre positif
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                        
-                        <div class="col-xl-6 col-sm-12 col-12">
-                            <div class="form-group">
-                                {{ form_label(form.BudgetApresReduction, "Budget Après Réduction*") }}
-                                <div class="input-group">
-                                    {{ form_widget(form.BudgetApresReduction, {
-                                        'attr': {
-                                            'class': 'form-control' ~ (form.BudgetApresReduction.vars.errors|length ? ' is-invalid' : ''),
-                                            'required': 'required',
-                                            'type': 'number',
-                                            'min': '0',
-                                            'step': '0.01',
-                                            'placeholder': 'Montant en €'
-                                        }
-                                    }) }}
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">€</span>
-                                    </div>
-                                </div>
-                                {% if form.BudgetApresReduction.vars.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.BudgetApresReduction.vars.errors %}
-                                            {{ error.message }}
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <div class="invalid-feedback">
-                                        Le budget doit être un nombre positif
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-xl-12 col-sm-12 col-12">
-                            <div class="form-btn">
-                                <button type="submit" class="btn btn-apply w-auto">
-                                    <i class="fas fa-save"></i> Enregistrer
-                                </button>
-                                <a href="{{ path('app_sponsor_index') }}" class="btn btn-secondary">
-                                    <i class="fas fa-times"></i> Annuler
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                    {{ form_end(form) }}
+                <div class="form-group">
+                    {{ form_label(form.prenomSponso) }}
+                    {{ form_widget(form.prenomSponso, {'attr': {'class': 'form-control', 'placeholder': 'Prénom du sponsor'}}) }}
                 </div>
-            </div>
-        </div>
+
+                <div class="form-group">
+                    {{ form_label(form.emailSponso) }}
+                    {{ form_widget(form.emailSponso, {'attr': {'class': 'form-control', 'placeholder': 'Email professionnel'}}) }}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-col">
+                        <div class="form-group">
+                            {{ form_label(form.budgetSponso) }}
+                            {{ form_widget(form.budgetSponso, {'attr': {'class': 'form-control', 'placeholder': 'Budget initial €'}}) }}
+                        </div>
+                    </div>
+                    <div class="form-col">
+                        <div class="form-group">
+                            {{ form_label(form.BudgetApresReduction) }}
+                            {{ form_widget(form.BudgetApresReduction, {'attr': {'class': 'form-control', 'placeholder': 'Budget après réduction €'}}) }}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    {{ form_label(form.classement) }}
+                    {{ form_widget(form.classement, {'attr': {'class': 'form-control', 'placeholder': 'Classement (A, B, C...)'}}) }}
+                </div>
+
+                <button class="btn">{{ button_label|default('Enregistrer le Sponsor') }}</button>
+            {{ form_end(form) }}
+
+            <a href="{{ path('app_sponsor_index') }}" class="back-link">← Retour à la liste</a>
+        {% endblock %}
     </div>
-</div>
-{% endblock %}
-
-{% block javascripts %}
-{{ parent() }}
-<script>
-$(document).ready(function() {
-    // Validation en temps réel
-    function validateField(field) {
-        const $field = $(field);
-        $field.removeClass('is-invalid is-valid');
-        
-        if (field.checkValidity()) {
-            $field.addClass('is-valid');
-        } else {
-            $field.addClass('is-invalid');
-        }
-    }
-
-    // Validation spécifique pour les emails
-    function validateEmailField(field) {
-        const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
-        const $field = $(field);
-        
-        $field.removeClass('is-invalid is-valid');
-        
-        if (emailRegex.test(field.value)) {
-            $field.addClass('is-valid');
-            field.setCustomValidity('');
-        } else {
-            $field.addClass('is-invalid');
-            field.setCustomValidity('Veuillez entrer une adresse email valide');
-        }
-    }
-
-    // Validation spécifique pour les nombres
-    function validateNumberField(field) {
-        const $field = $(field);
-        const value = parseFloat(field.value);
-        
-        $field.removeClass('is-invalid is-valid');
-        
-        if (!isNaN(value) && value >= 0) {
-            $field.addClass('is-valid');
-            field.setCustomValidity('');
-        } else {
-            $field.addClass('is-invalid');
-            field.setCustomValidity('Veuillez entrer un nombre positif');
-        }
-    }
-
-    // Événements de validation
-    $('#sponsor-form').on('blur', 'input, textarea', function() {
-        if ($(this).attr('type') === 'email') {
-            validateEmailField(this);
-        } else if ($(this).attr('type') === 'number') {
-            validateNumberField(this);
-        } else {
-            validateField(this);
-        }
-    });
-
-    $('#sponsor-form').on('input', 'input, textarea', function() {
-        if ($(this).hasClass('is-invalid')) {
-            if ($(this).attr('type') === 'email') {
-                validateEmailField(this);
-            } else if ($(this).attr('type') === 'number') {
-                validateNumberField(this);
-            } else {
-                validateField(this);
-            }
-        }
-    });
-
-    // Validation au submit
-    $('#sponsor-form').on('submit', function(e) {
-        // Valider tous les champs
-        $(this).find('input, textarea').each(function() {
-            if ($(this).attr('type') === 'email') {
-                validateEmailField(this);
-            } else if ($(this).attr('type') === 'number') {
-                validateNumberField(this);
-            } else {
-                validateField(this);
-            }
-        });
-
-        if (!this.checkValidity()) {
-            e.preventDefault();
-            e.stopPropagation();
-        }
-        
-        $(this).addClass('was-validated');
-    });
-});
-</script>
-{% endblock %}
+</body>
+</html>

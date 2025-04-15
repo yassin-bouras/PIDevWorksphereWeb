@@ -51,8 +51,9 @@ final class EquipeController extends AbstractController{
         ]);
     }
 
-        
-    #[Route('/{id}', name: 'AfficherDetailsEq', methods: ['GET'])]
+  
+    
+    #[Route('/equipefront/{id}', name: 'AfficherDetailsEq', methods: ['GET'])]
     public function AfficherDetailsEquipe(Equipe $equipe): Response
     {
         return $this->render('equipe/AfficherDetailsEquipe.html.twig', [

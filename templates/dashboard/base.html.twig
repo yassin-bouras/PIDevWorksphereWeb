@@ -1,91 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-    <title>{% block title %}Dleohr - Dashboard{% endblock %}</title>
-    <link rel="shortcut icon" href="{{ asset('back/img/favicon.png') }}">
-    {% block stylesheets %}
-        <link rel="stylesheet" href="{{ asset('back/css/bootstrap.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/fontawesome.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/all.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('back/css/style.css') }}">
-    {% endblock %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
+  <title>{% block title %}Dleohr - Bootstrap Admin HTML Template{% endblock %}</title>
+
+  <link rel="shortcut icon" href="{{ asset('back/img/favicon.png') }}">
+  {% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('back/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/fontawesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('back/css/style.css') }}">
+  {% endblock %}
 </head>
+
 <body>
-    <div class="main-wrapper">
-        {% include 'dashboard/header_sidebar.html.twig' %}
-        
-        <div class="page-wrapper" id="content-wrapper">
-            {% block content %}{% endblock %}
-        </div>
+  {% block body %}
+  <div class="main-wrapper">
+    <!-- HEADER -->
+    <div class="header">
+      <!-- Header Left -->
+      <div class="header-left">
+        <a href="#" class="logo"><img src="{{ asset('front/images/logo-icon.png') }}" alt="Logo"></a>
+        <a href="#" class="logo logo-small"><img src="{{ asset('front/images/logo-icon.png') }}" alt="Logo" width="30" height="30"></a>
+        <a href="javascript:void(0);" id="toggle_btn"><span class="bar-icon"><span></span><span></span><span></span></span></a>
+      </div>
+
+      <!-- Search -->
+      <div class="top-nav-search">
+        <form><input type="text" class="form-control" placeholder=""><button class="btn" type="submit"><i class="fas fa-search"></i></button></form>
+      </div>
+
+      <a class="mobile_btn" id="mobile_btn"><i class="fas fa-bars"></i></a>
+
+      <ul class="nav user-menu">
+        <li class="nav-item dropdown">
+          <a href="#" class="dropdown-toggle nav-link pr-0" data-toggle="dropdown"><i data-feather="bell"></i><span class="badge badge-pill"></span></a>
+          <div class="dropdown-menu notifications">
+            <div class="topnav-dropdown-header"><span class="notification-title">Notifications</span><a href="#" class="clear-noti"> Clear All</a></div>
+            <div class="noti-content">
+              <ul class="notification-list">
+                <li class="notification-message"><a href="#"><div class="media"><span class="avatar avatar-sm"><img src="{{ asset('back/img/profiles/avatar-02.jpg') }}"></span><div class="media-body"><p class="noti-details"><span class="noti-title">Brian Johnson</span> paid invoice <span class="noti-title">#DF65485</span></p><p class="noti-time">4 mins ago</p></div></div></a></li>
+              </ul>
+            </div>
+            <div class="topnav-dropdown-footer"><a href="#">View all Notifications</a></div>
+          </div>
+        </li>
+
+        <!-- Profile -->
+        <li class="nav-item dropdown has-arrow main-drop">
+          <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
+            <span class="user-img"><img class="avatar-img rounded-circle" src="{{ asset('back/img/profile.jpg') }}"><span class="status online"></span></span>
+            <span>Kavin Hansen</span>
+          </a>
+          <div class="dropdown-menu">
+            <a class="dropdown-item" href="#"><i data-feather="user" class="mr-1"></i> Profile</a>
+            <a class="dropdown-item" href="#"><i data-feather="settings" class="mr-1"></i> Settings</a>
+            <a class="dropdown-item" href="{{ path('app_logout') }}"><i data-feather="log-out" class="mr-1"></i> Logout</a>
+          </div>
+        </li>
+      </ul>
     </div>
 
-    {% block javascripts %}
-        <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
-        <script src="{{ asset('back/js/popper.min.js') }}"></script>
-        <script src="{{ asset('back/js/bootstrap.min.js') }}"></script>
-        <script src="{{ asset('back/js/feather.min.js') }}"></script>
-        <script src="{{ asset('back/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
-        <script src="{{ asset('back/plugins/apexchart/apexcharts.min.js') }}"></script>
-        <script src="{{ asset('back/plugins/apexchart/chart-data.js') }}"></script>
-        <script src="{{ asset('back/js/script.js') }}"></script>
-        <script>
-            $(document).ready(function() {
-                // Handle sidebar navigation
-                $('.sidebar-menu a').on('click', function(e) {
-                    e.preventDefault();
-                    var url = $(this).attr('href');
-                    
-                    $.ajax({
-                        url: url,
-                        method: 'GET',
-                        success: function(response) {
-                            // Extract content from the response
-                            var content = $(response).find('.page-wrapper').html() || 
-                                        $(response).filter('.page-wrapper').html() ||
-                                        $(response).find('#content-wrapper').html();
-                            if (content) {
-                                $('#content-wrapper').html(content);
-                                feather.replace();
-                                $('.sidebar-menu li').removeClass('active');
-                                $(e.target).closest('li').addClass('active');
-                                // Update browser URL without reloading
-                                window.history.pushState({}, document.title, url);
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            console.error('Error loading content:', error);
-                        }
-                    });
-                });
+    <!-- SIDEBAR -->
+    <div class="sidebar" id="sidebar">
+      <div class="sidebar-inner slimscroll">
+        <div class="sidebar-contents">
+          <div id="sidebar-menu" class="sidebar-menu">
+            <ul>
+              <li class="active"><a class="sidebar-link" data-url="/profile"><span>👤 Profile</span></a></li>
+              <li><a class="sidebar-link" data-url="/contrat"><span>📜 Contrat</span></a></li>
+              <li><a class="sidebar-link" data-url="/sponsor"><span>📢 Gestion Sponsor</span></a></li>
+              <li><a class="sidebar-link" data-url="/user"><span>👥 Gestion User</span></a></li>
+              <li><a class="sidebar-link" data-url="/evenements"><span>✅ Evenements</span></a></li>
+              <li><a class="sidebar-link" data-url="/formations"><span>📢 Formations</span></a></li>
+              <li><a class="sidebar-link" data-url="/offres-emploi"><span>🎯 Offres Emploi</span></a></li>
+              <li><a class="sidebar-link" data-url="/entretien"><span>🔥 Entretien</span></a></li>
+              <li><a class="sidebar-link" data-url="/changer-mot-de-passe"><span>🔄 Mot de Passe</span></a></li>
+            </ul>
+            <ul class="logout">
+              <li><a href="{{ path('app_logout') }}"><span>🚪 Log out</span></a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
 
-                // Handle browser back/forward buttons
-                $(window).on('popstate', function() {
-                    $.ajax({
-                        url: window.location.pathname,
-                        method: 'GET',
-                        success: function(response) {
-                            var content = $(response).find('.page-wrapper').html() || 
-                                        $(response).filter('.page-wrapper').html() ||
-                                        $(response).find('#content-wrapper').html();
-                            if (content) {
-                                $('#content-wrapper').html(content);
-                                feather.replace();
-                            }
-                        }
-                    });
-                });
+    <!-- MAIN CONTENT -->
+    <div class="page-wrapper">
+      <div id="dashboard-content">
+        {% block content %}
+          <!-- Initial content if JS fails -->
+          {{ render(path('app_user_index')) }}
+        {% endblock %}
+      </div>
+    </div>
+  </div>
+  {% endblock %}
 
-                // Set initial active state
-                var currentPath = window.location.pathname;
-                $('.sidebar-menu a').each(function() {
-                    if ($(this).attr('href') === currentPath) {
-                        $(this).closest('li').addClass('active');
-                    }
-                });
-            });
-        </script>
-    {% endblock %}
+  {% block js %}
+  <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
+  <script src="{{ asset('back/js/popper.min.js') }}"></script>
+  <script src="{{ asset('back/js/bootstrap.min.js') }}"></script>
+  <script src="{{ asset('back/js/feather.min.js') }}"></script>
+  <script src="{{ asset('back/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
+  <script src="{{ asset('back/plugins/apexchart/apexcharts.min.js') }}"></script>
+  <script src="{{ asset('back/plugins/apexchart/chart-data.js') }}"></script>
+  <script src="{{ asset('back/js/script.js') }}"></script>
+
+  <script>
+    $(document).ready(function() {
+      // Sidebar click
+      $('.sidebar-link').on('click', function(e) {
+        e.preventDefault();
+        var url = $(this).data('url');
+        loadContent(url);
+        $('.sidebar-menu li').removeClass('active');
+        $(this).parent().addClass('active');
+      });
+
+    
+      function loadContent(url) {
+        $.ajax({
+          url: url,
+          method: 'GET',
+          success: function(response) {
+            $('#dashboard-content').html(response);
+          },
+          error: function(xhr) {
+            $('#dashboard-content').html('<div class="alert alert-danger">Error loading content</div>');
+          }
+        });
+      }
+
+	
+      var initialUrl = $('.sidebar-link').first().data('url');
+      if (initialUrl) {
+        loadContent(initialUrl);
+      }
+    });
+  </script>
+  {% endblock %}
 </body>
 </html>
