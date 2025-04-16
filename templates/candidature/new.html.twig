@@ -226,11 +226,13 @@
     .form-group {
         display: flex;
         align-items: center;
+        flex-direction: column;
         margin-bottom: 1.5rem;
+        justify-content: space-between; /* Add space between label and input */
     }
 
     .form-label {
-        width: 200px;
+        width: 400px; /* Adjust the width as needed */
         font-size: 1rem;
         font-weight: bold;
         color: #000000;
@@ -239,6 +241,7 @@
         font-weight: bold;
         margin-right: 2rem;
         text-align: left;
+        margin-bottom: 0.5rem;
     }
     .form-label-offre {
         width: 235px;
@@ -264,14 +267,14 @@
     font-weight: normal; /* Keep the font weight normal */
     color: #ffffff;
     background-color: transparent;
-    padding: 0.3rem 0.5rem; /* Reduce padding for a smaller size */
+    padding: 0.5rem; /* Reduce padding for a smaller size */
     border-radius: 5px;
-    display: inline-block;
+    display: block;
     text-align: center;
-    max-width: 325px; /* Limit the width of the Titre d'offre */
-    overflow: hidden; /* Hide overflowing text */
+    width: 80%;
+    overflow: visible; /* Ensure no text is hidden */
     text-overflow: ellipsis; /* Add ellipsis (...) for overflowing text */
-    white-space: nowrap; /* Prevent text wrapping */
+    white-space: normal; /* Prevent text wrapping */
 }
 
     .form-input {
@@ -298,10 +301,11 @@
 
     .form-group-offre {
     display: flex;
-    justify-content: center; /* Center horizontally */
     align-items: center; /* Center vertically */
+    justify-content: flex-start; /* Center horizontally */
     margin-top: -50px; /* Move the Offre section closer to the line */
-    margin-bottom: 0; /* Remove extra space below the Offre label */
+    width: 90%;
+    margin-bottom: 1rem; /* Remove extra space below the Offre label */
 }
 
 .form-group-labels {
@@ -320,6 +324,24 @@
     color: #ffffff; /* Keep the text color black */
     transform: scale(1.05); /* Slightly enlarge the button on hover */
 }
+
+    .invalid-feedback {
+        /* display: block;  */
+        margin-top: 0.5rem; /* Add a small margin between the input and the error message */
+        font-size: 0.875rem; /* Optional: Adjust font size for better readability */
+        color: #dc3545; /* Red color for error messages */
+    }
+
+    .form-control {
+        flex: 1; /* Allow the input to take up the remaining space */
+        padding: 0.5rem; /* Add padding for better appearance */
+        font-size: 1rem; /* Adjust font size */
+        border: 1px solid #ced4da; /* Add a border */
+        border-radius: 0.375rem; /* Add rounded corners */
+    }
+    .form-control.is-invalid {
+        border-color: #dc3545; /* Red border for invalid inputs */
+    }
 </style>
 {% endblock %}
 
@@ -331,7 +353,7 @@
 
         <!-- Display the Offre label and value -->
         <div class="form-group form-group-offre">
-            <label for="offre" class="form-label-offre" >Offre :</label>
+            <!-- <label for="offre" class="form-label" >Offre :</label> -->
             <p class="form-input offre-value">{{ form.offre.vars.data.titre }}</p>
         </div>
         {% do form.offre.setRendered %}
@@ -339,20 +361,39 @@
 
         {{ form_start(form, {'attr': {'class': 'form'}}) }}
         
-        <div class="form-group form-group-labels">
+        <div class="form-group form-group-labels" style="margin-bottom: 2rem;">
             <label for="cv" class="form-label">CV (PDF FILE) :</label>
-            {{ form_widget(form.cv, {'attr': {'class': 'form-input'}}) }}
+            {{ form_widget(form.cv, {
+                'attr': {
+                    'class': 'form-control' ~ (form.cv.vars.errors|length ? ' is-invalid' : '')
+                }
+            }) }}
+            {% if form.cv.vars.errors %}
+                <div class="invalid-feedback">
+                    {% for error in form.cv.vars.errors %}
+                        {{ error.message }}
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
-
-        <div class="form-group">
+        
+        <div class="form-group" style="margin-bottom: 2rem;">
             <label for="lettre_motivation" class="form-label">Lettre de Motivation :</label>
-            {{ form_widget(form.lettre_motivation, {'attr': {'class': 'form-input'}}) }}
+            {{ form_widget(form.lettre_motivation, {
+                'attr': {
+                    'class': 'form-control' ~ (form.lettre_motivation.vars.errors|length ? ' is-invalid' : '')
+                }
+            }) }}
+            {% if form.lettre_motivation.vars.errors %}
+                <div class="invalid-feedback">
+                    {% for error in form.lettre_motivation.vars.errors %}
+                        {{ error.message }}
+                    {% endfor %}
+                </div>
+            {% endif %}
         </div>
 
-        <div class="form-group">
-            <label for="user" class="form-label">User :</label>
-            {{ form_widget(form.user, {'attr': {'class': 'form-input'}}) }}
-        </div>
+       
 
 
         <div class="btn-container">

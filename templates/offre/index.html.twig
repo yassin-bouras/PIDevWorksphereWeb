@@ -1,4 +1,4 @@
-{% extends '/dashboard/base.html.twig' %}
+{% extends '/dashboard/base2.html.twig' %}
 
 {% block title %}Offres{% endblock %}
 
@@ -122,7 +122,7 @@
         box-shadow: inset 0 0 0 10em rgb(40, 144, 241);
     }
 </style>
-<div class="content container-fluid">
+<div class="content container-fluid" style="margin-top: -58%";>
     <div class="page-header">
         <div class="row">
             <div class="col-sm-12">
@@ -155,7 +155,7 @@
                     </div>
 
                     <div class="mb-4">
-                        <form method="GET" action="{{ path('app_offre_index') }}">
+                        <form method="GET" action="{{ path('app_offre_index') }}" >
                             
                             <div class="input-group" style="max-width: 1050px; margin: 0 auto;">
                                 <input type="text" name="search" class="form-control"

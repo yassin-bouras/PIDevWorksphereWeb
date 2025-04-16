@@ -28,7 +28,7 @@
     <div class="mb-4">
         <form method="GET" action="{{ path('app_candidature_index') }}">
             <div class="input-group" style="max-width: 1050px; margin: 0 auto;">
-                <input type="text" name="search" class="form-control" placeholder="Rechercher par nom d'Offre..."
+                <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Rechercher par nom d'Offre..."
                     value="{{ app.request.query.get('search') }}">
                 <div class="input-group-append">
                     <button class="btn btn-outline-secondary" type="submit">Rechercher</button>

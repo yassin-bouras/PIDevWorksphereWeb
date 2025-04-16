@@ -1,36 +1,46 @@
-{% extends '/dashboard/base.html.twig' %}
+{% extends '/dashboard/base2.html.twig' %}
 
 {% block title %}Candidatures pour {{ offre.titre }}{% endblock %}
 
 {% block content %}
-<div class="container" style="margin-top: 7%;">
+<div class="container" style="margin-top: -53%;">
+    <div class="mb-10">
+        <a href="{{ path('app_offre_index') }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Retour
+        </a>
+    </div>
     <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Candidatures pour l'offre : {{ offre.titre }}</h1>
 
-    <div class="candidature-grid" style="max-width: 1060px; margin: 0 auto;">
+    <div class="candidature-grid row" style="max-width: 1060px; margin: 0 auto;">
         {% for candidature in candidatures %}
-        <div class="candidature-card">
-            <div class="candidature-header" style="margin-bottom: 15px;">
-            </div>
-            <div class="candidature-info" style="margin-bottom: 15px;">
-                <p><strong>CV:</strong>
-                    {% if candidature.cv %}
-                    <a href="{{ asset('uploads/' ~ candidature.cv) }}" target="_blank">Télécharger</a>
-                    {% else %}
-                    Non fourni
-                    {% endif %}
-                </p>
-                <p><strong>Lettre de Motivation:</strong>
-                    {% if candidature.lettreMotivation %}
-                    <a href="{{ asset('uploads/' ~ candidature.lettreMotivation) }}" target="_blank">Télécharger</a>
-                    {% else %}
-                    Non fournie
-                    {% endif %}
-                </p>
+        <div class="col-md-4 mb-4">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Candidature #{{ candidature.id }}</h5>
+                    <p class="card-text">
+                        <strong>CV:</strong>
+                        {% if candidature.cv %}
+                        <a href="{{ asset('uploads/' ~ candidature.cv) }}" target="_blank">Télécharger</a>
+                        {% else %}
+                        Non fourni
+                        {% endif %}
+                    </p>
+                    <p class="card-text">
+                        <strong>Lettre de Motivation:</strong>
+                        {% if candidature.lettreMotivation %}
+                        <a href="{{ asset('uploads/' ~ candidature.lettreMotivation) }}" target="_blank">Télécharger</a>
+                        {% else %}
+                        Non fournie
+                        {% endif %}
+                    </p>
+                </div>
             </div>
         </div>
         {% else %}
-        <div class="no-candidature" style="text-align: center; padding: 40px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-            <p style="font-size: 1.2rem; color: #777;">Aucune candidature trouvée pour cette offre.</p>
+        <div class="col-12">
+            <div class="alert alert-warning text-center">
+                Aucune candidature trouvée pour cette offre.
+            </div>
         </div>
         {% endfor %}
     </div>

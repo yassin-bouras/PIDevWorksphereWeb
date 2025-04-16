@@ -56,10 +56,10 @@ class CandidatureType extends AbstractType
                 'data' => $options['offre_id'] ? $builder->getData()->getOffre() : null,
                 'disabled' => $options['offre_id'] !== null
             ])
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id'
-            ])
+            // ->add('user', EntityType::class, [
+            //     'class' => User::class,
+            //     'choice_label' => 'id'
+            // ])
         ;
     }
 
