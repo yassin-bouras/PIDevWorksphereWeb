@@ -9,7 +9,9 @@ use App\Entity\User;
 use App\Form\EntretienType;
 use App\Repository\CandidatureRepository;
 use App\Repository\EntretienRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,6 +20,23 @@ use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/entretien')]
 final class EntretienController extends AbstractController{
+
+
+    private $jwtEncoder;
+    private $userRepository;
+
+
+    public function __construct(JWTEncoderInterface $jwtEncoder, UserRepository $userRepository)
+    {
+        $this->jwtEncoder = $jwtEncoder;
+        $this->userRepository = $userRepository;
+    }
+
+
+
+
+
+
     #[Route(name: 'app_entretien_index', methods: ['GET'])]
     public function index(EntretienRepository $entretienRepository): Response
     {
@@ -26,16 +45,46 @@ final class EntretienController extends AbstractController{
         ]);
     }
 
-    
+
 
     #[Route('/employee', name: 'entretien_by_employee')]
-    public function showEntretienByEmployee( EntretienRepository $entretienRepository): Response
+    public function showEntretienByEmployee( Request $request, EntretienRepository $entretienRepository): Response
     {
-        $entretiens = $entretienRepository->findByEmployeeId(50);
 
-        return $this->render('entretien/index2.html.twig', [
-            'entretiens' => $entretiens,
-        ]);
+        $token = $request->cookies->get('BEARER');
+
+        if (!$token) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        try {
+            $decodedData = $this->jwtEncoder->decode($token);
+            $email = $decodedData['username'] ?? null;
+
+            if (!$email) {
+                $this->addFlash('error', 'Email non trouvé dans le token.');
+                return $this->redirectToRoute('app_login');
+            }
+
+            $user = $this->userRepository->findOneBy(['email' => $email]);
+
+            if (!$user) {
+                $this->addFlash('error', 'Utilisateur non trouvé.');
+                return $this->redirectToRoute('app_login');
+            }
+
+            $entretiens = $entretienRepository->findByEmployeeId($user->getIduser());
+
+            return $this->render('entretien/index2.html.twig', [
+                'entretiens' => $entretiens,
+            ]);
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Token invalide ou expiré.');
+            return $this->redirectToRoute('app_login');
+        }
+    
+
+       
     }
 
 
