@@ -35,13 +35,13 @@ final class CandidatureController extends AbstractController
     #[Route(name: 'app_candidature_index', methods: ['GET'])]
     public function index(Request $request, CandidatureRepository $candidatureRepository): Response
     {
-        $search = $request->query->get('search', ''); // Get the search term from the query string
+        $search = $request->query->get('search', ''); 
         $candidatures = $candidatureRepository->findByOffreTitre($search);
 
         return $this->render('candidature/index.html.twig', [
-            // 'candidatures' => $candidatureRepository->findAll(),
+           
             'candidatures' => $candidatures,
-            'search' => $search, // Pass the search term back to the template    
+            'search' => $search,    
         ]);
     }
 
@@ -50,7 +50,6 @@ final class CandidatureController extends AbstractController
     {
         
         $candidature = new Candidature();
-        // $candidature->setUser($this->getUser());
         $token = $request->cookies->get('BEARER');
 
         if (!$token) {
@@ -93,7 +92,6 @@ final class CandidatureController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // CV Upload
             $cvFile = $form->get('cv')->getData();
             if ($cvFile) {
                 $originalFilename = pathinfo($cvFile->getClientOriginalName(), PATHINFO_FILENAME);
@@ -106,13 +104,12 @@ final class CandidatureController extends AbstractController
                         $newFilename
                     );
                 } catch (FileException $e) {
-                    // Handle error here
+                   
                 }
 
                 $candidature->setCv($newFilename);
             }
 
-            // Lettre de Motivation Upload
             $lmFile = $form->get('lettre_motivation')->getData();
             if ($lmFile) {
                 $originalFilename = pathinfo($lmFile->getClientOriginalName(), PATHINFO_FILENAME);
@@ -125,7 +122,7 @@ final class CandidatureController extends AbstractController
                         $newFilename
                     );
                 } catch (FileException $e) {
-                    // Handle error here
+                    
                 }
 
                 $candidature->setLettreMotivation($newFilename);

@@ -141,7 +141,6 @@ document.addEventListener('DOMContentLoaded', function () {
     offreSelect.addEventListener('change', function () {
         const selectedOffreId = this.value;
 
-        // Remove any existing temporary select
         const existingTempSelect = document.getElementById('temp-candidat-select');
         if (existingTempSelect) {
             existingTempSelect.remove();
@@ -156,13 +155,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     return response.json();
                 })
                 .then(data => {
-                    console.log('API Response:', data); // Debug
+                    console.log('API Response:', data); 
 
-                    // Create a temporary select for UX
                     const tempSelect = document.createElement('select');
                     tempSelect.className = 'form-control';
                     tempSelect.id = 'temp-candidat-select';
-                    tempSelect.name = 'temp-candidat-select'; // Avoid form submission
+                    tempSelect.name = 'temp-candidat-select'; 
 
                     if (data.length === 0) {
                         const option = document.createElement('option');
@@ -180,25 +178,22 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         data.forEach(candidat => {
                             const option = document.createElement('option');
-                            option.value = candidat.iduser; // Use 'id' from API
+                            option.value = candidat.iduser; 
                             option.textContent = `${candidat.nom} ${candidat.prenom}`;
                             tempSelect.appendChild(option);
                         });
 
-                        tempSelect.disabled = false; // Enable if candidates exist
+                        tempSelect.disabled = false; 
                     }
 
-                    // Hide the number input and show the select
                     candidatInput.style.display = 'none';
                     candidatInput.parentNode.insertBefore(tempSelect, candidatInput.nextSibling);
 
-                    // Sync select value to hidden number input
                     tempSelect.addEventListener('change', function () {
                         candidatInput.value = this.value;
-                        candidatInput.disabled = false; // Enable hidden input for submission
+                        candidatInput.disabled = false; 
                     });
 
-                    // Enable candidatInput if candidates are available
                     if (data.length > 0) {
                         candidatInput.disabled = false;
                     }
@@ -219,7 +214,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             candidatInput.style.display = 'block';
             candidatInput.value = '';
-            candidatInput.disabled = true; // Re-disable if no offre selected
+            candidatInput.disabled = true; 
         }
     });
 

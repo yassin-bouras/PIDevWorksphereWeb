@@ -42,7 +42,7 @@ public function index(EquipeRepository $equipeRepository, ProjetRepository $proj
     
     return $this->render('equipe/index.html.twig', [
         'equipes' => $equipes,
-        'all_projets' => $projetRepository->findAll(), // Ajoutez cette ligne
+        'all_projets' => $projetRepository->findAll(),
     ]);
 }
 
@@ -127,13 +127,10 @@ public function index(EquipeRepository $equipeRepository, ProjetRepository $proj
             if ($imageFile) {
                 $newFilename = uniqid() . '.' . $imageFile->guessExtension();
                 
-                // Répertoire de stockage des images dans le répertoire public
-                $destination = $this->getParameter('image_directory');  // public/img
+                $destination = $this->getParameter('image_directory');  
                 
-                // Déplacer l'image dans le répertoire public
                 $imageFile->move($destination, $newFilename);
                 
-                // Enregistrer le chemin relatif de l'image (cela sera utilisé dans le front-end de Symfony)
                 $equipe->setImageEquipe('img/' . $newFilename);  
             }
 
@@ -169,20 +166,16 @@ public function index(EquipeRepository $equipeRepository, ProjetRepository $proj
         $form->handleRequest($request);
       
     if ($form->isSubmitted() && $form->isValid()) {
-        // Check if a new image has been uploaded
-        $imageFile = $form->get('imageEquipe')->getData(); // Assuming the field name is 'imageProjet'
+        $imageFile = $form->get('imageEquipe')->getData(); 
 
         if ($imageFile) {
-            // Generate a unique filename
             $newFilename = uniqid() . '.' . $imageFile->guessExtension();
 
-            // Move the file to the appropriate directory
             $imageFile->move(
                 $this->getParameter('image_directory'),
                 $newFilename
             );
 
-            // Update the image in the project entity (save only the relative path)
             $equipe->setImageEquipe('img/' . $newFilename);
         }
             $entityManager->flush();
@@ -221,10 +214,8 @@ public function assignProject(Request $request, Equipe $equipe, EntityManagerInt
         return $this->redirectToRoute('app_equipe_index');
     }
 
-    // Assigner le projet à l'équipe
     $projet->setEquipe($equipe);
     
-    // Mettre à jour le nombre de projets de l'équipe
     $equipe->setNbrProjet($equipe->getProjets()->count());
 
     $entityManager->flush();

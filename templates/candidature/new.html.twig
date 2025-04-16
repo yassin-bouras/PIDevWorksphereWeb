@@ -228,16 +228,15 @@
         align-items: center;
         flex-direction: column;
         margin-bottom: 1.5rem;
-        justify-content: space-between; /* Add space between label and input */
+        justify-content: space-between; 
     }
 
     .form-label {
-        width: 400px; /* Adjust the width as needed */
+        width: 400px; 
         font-size: 1rem;
         font-weight: bold;
         color: #000000;
         text-transform: uppercase;
-        /* Adjust the width as needed */
         font-weight: bold;
         margin-right: 2rem;
         text-align: left;
@@ -249,32 +248,31 @@
         font-weight: bold;
         color: #000000;
         text-transform: uppercase;
-        /* Adjust the width as needed */
         font-weight: bold;
         margin-right: 0;
         text-align: left;
-        padding: 0.5rem 1rem; /* Add padding to match the Choose File button */
-        white-space: nowrap; /* Prevent the text from wrapping */
-        overflow: hidden; /* Hide overflowing text */
-        text-overflow: ellipsis; /* Add ellipsis (...) for overflowing text */
+        padding: 0.5rem 1rem; 
+        white-space: nowrap; 
+        overflow: hidden; 
+        text-overflow: ellipsis; 
     }
 
     
     .offre-value {
     flex: 1;
-    margin-top: -10px; /* Keep the current vertical alignment */
-    font-size: 0.9rem; /* Reduce the font size */
-    font-weight: normal; /* Keep the font weight normal */
+    margin-top: -10px; 
+    font-size: 0.9rem; 
+    font-weight: normal; 
     color: #ffffff;
     background-color: transparent;
-    padding: 0.5rem; /* Reduce padding for a smaller size */
+    padding: 0.5rem; 
     border-radius: 5px;
     display: block;
     text-align: center;
     width: 80%;
-    overflow: visible; /* Ensure no text is hidden */
-    text-overflow: ellipsis; /* Add ellipsis (...) for overflowing text */
-    white-space: normal; /* Prevent text wrapping */
+    overflow: visible; 
+    text-overflow: ellipsis; 
+    white-space: normal; 
 }
 
     .form-input {
@@ -288,59 +286,56 @@
     .form-input,
     .offre-value {
         flex: 1;
-        /* Allow inputs and values to take up the remaining space */
         padding: 0.5rem;
         border: 1px solid #ced4da;
         border-radius: 0.375rem;
         font-size: 1rem;
         background-color: #ffffff;
-        /* Ensure consistent background */
         color: #000000;
-        /* Ensure consistent text color */
     }
 
     .form-group-offre {
     display: flex;
-    align-items: center; /* Center vertically */
-    justify-content: flex-start; /* Center horizontally */
-    margin-top: -50px; /* Move the Offre section closer to the line */
+    align-items: center; 
+    justify-content: flex-start; 
+    margin-top: -50px; 
     width: 90%;
-    margin-bottom: 1rem; /* Remove extra space below the Offre label */
+    margin-bottom: 1rem; 
 }
 
 .form-group-labels {
-    margin-top: 20px; /* Move the Offre section closer to the line */
+    margin-top: 20px; 
 }
 
 .gradient-button.retour-button {
-    background: #ffffff; /* Set the background color to white */
-    color: #000000; /* Set the text color to black */
-    border: 2px solid #000000; /* Optional: Add a black border */
-    transition: all 0.3s ease; /* Smooth transition for hover effects */
+    background: #ffffff; 
+    color: #000000; 
+    border: 2px solid #000000; 
+    transition: all 0.3s ease; 
 }
 
 .gradient-button.retour-button:hover {
-    background: #f0f0f0; /* Slightly darker white on hover */
-    color: #ffffff; /* Keep the text color black */
-    transform: scale(1.05); /* Slightly enlarge the button on hover */
+    background: #f0f0f0; 
+    color: #ffffff; 
+    transform: scale(1.05); 
 }
 
     .invalid-feedback {
         /* display: block;  */
-        margin-top: 0.5rem; /* Add a small margin between the input and the error message */
-        font-size: 0.875rem; /* Optional: Adjust font size for better readability */
-        color: #dc3545; /* Red color for error messages */
+        margin-top: 0.5rem; 
+        font-size: 0.875rem; 
+        color: #dc3545; 
     }
 
     .form-control {
-        flex: 1; /* Allow the input to take up the remaining space */
-        padding: 0.5rem; /* Add padding for better appearance */
-        font-size: 1rem; /* Adjust font size */
-        border: 1px solid #ced4da; /* Add a border */
-        border-radius: 0.375rem; /* Add rounded corners */
+        flex: 1; 
+        padding: 0.5rem; 
+        font-size: 1rem; 
+        border: 1px solid #ced4da; 
+        border-radius: 0.375rem; 
     }
     .form-control.is-invalid {
-        border-color: #dc3545; /* Red border for invalid inputs */
+        border-color: #dc3545; 
     }
 </style>
 {% endblock %}
@@ -351,9 +346,7 @@
         <h2>CRÉER UNE NOUVELLE CANDIDATURE</h2>
         <hr style="width: 400px; border: 4px solid #ffffff; margin: 0 auto 5rem auto; border-radius: 5px;">
 
-        <!-- Display the Offre label and value -->
         <div class="form-group form-group-offre">
-            <!-- <label for="offre" class="form-label" >Offre :</label> -->
             <p class="form-input offre-value">{{ form.offre.vars.data.titre }}</p>
         </div>
         {% do form.offre.setRendered %}

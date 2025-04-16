@@ -18,12 +18,11 @@ final class OffreController extends AbstractController
     #[Route(name: 'app_offre_index', methods: ['GET'])]
     public function index(Request $request, OffreRepository $offreRepository): Response
     {
-        $search = $request->query->get('search', ''); // Get the search query from the request
-        $offres = $offreRepository->findByTitre($search); // Use a custom repository method to filter by title
+        $search = $request->query->get('search', ''); 
+        $offres = $offreRepository->findByTitre($search); 
 
 
         return $this->render('offre/index.html.twig', [
-            // 'offres' => $offreRepository->findAll(),
             'offres' => $offres,
         ]);
     }
@@ -31,11 +30,10 @@ final class OffreController extends AbstractController
     #[Route('/front', name: 'app_offre_front_index', methods: ['GET'])]
     public function frontIndex(Request $request, OffreRepository $offreRepository): Response
     {
-        $search = $request->query->get('search', ''); // Get the search term from the query string
-        $offres = $offreRepository->findByTitre($search); // Use a custom repository method to filter by title
+        $search = $request->query->get('search', ''); 
+        $offres = $offreRepository->findByTitre($search); 
 
         return $this->render('offre/front_index.html.twig', [
-            // 'offres' => $offreRepository->findAll(),
             'offres' => $offres,
             'search' => $search,
             'context' => 'front'
@@ -46,14 +44,14 @@ final class OffreController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager, string $context = 'back'): Response
     {
         $offre = new Offre();
-        $offre->setDatePublication(new \DateTime()); // Set the current date
+        $offre->setDatePublication(new \DateTime()); 
 
         $form = $this->createForm(OffreType::class, $offre);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             if (!$offre->getDateLimite()) {
-                $offre->setDateLimite(new \DateTime()); // Default to the current date
+                $offre->setDateLimite(new \DateTime()); 
             }
             $entityManager->persist($offre);
             $entityManager->flush();

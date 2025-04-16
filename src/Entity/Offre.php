@@ -205,7 +205,7 @@ class Offre
         $this->users = new ArrayCollection();
         $this->candidatures = new ArrayCollection();
         $this->entretiens = new ArrayCollection();
-        $this->date_limite = new \DateTime(); // Default to the current date
+        $this->date_limite = new \DateTime(); 
 
     }
 

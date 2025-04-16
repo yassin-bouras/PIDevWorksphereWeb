@@ -87,18 +87,14 @@ final class EvenementSponsorController extends AbstractController
         $evenementSponsor = new EvenementSponsor();
         $sponsorId = $request->query->get('sponsor_id');
     
-        // Si un sponsor est sélectionné, le pré-remplir et filtrer les événements
+        
         if ($sponsorId) {
             $sponsor = $sponsorRepository->find($sponsorId);
             $evenementSponsor->setSponsor($sponsor);
     
-            // Récupérer tous les événements
             $allEvents = $evenementRepository->findAll();
             $availableEvents = [];
     
-            // Filtrer les événements pour ne garder que ceux:
-            // 1. Auxquels le sponsor n'est pas déjà associé
-            // 2. Dont le type d'événement correspond au secteur du sponsor
             foreach ($allEvents as $event) {
                 $existingAssociation = $evenementSponsorRepository->findOneBy(['evenement' => $event, 'sponsor' => $sponsor]);
                 if (!$existingAssociation && $event->getTypeEvent() === $sponsor->getSecteurSponsor()) {
@@ -114,14 +110,13 @@ final class EvenementSponsorController extends AbstractController
                     'placeholder' => 'Sélectionnez un événement',
                     'attr' => [
                         'class' => 'form-control',
-                        'data-secteur' => $sponsor->getSecteurSponsor() // Pour info JS
+                        'data-secteur' => $sponsor->getSecteurSponsor() 
                     ]
                 ])
                 ->add('datedebutContrat')
                 ->add('duree')
                 ->getForm();
         } else {
-            // Sinon, inclure le champ sponsor dans le formulaire et afficher tous les événements
             $form = $this->createForm(EvenementSponsorType::class, $evenementSponsor);
         }
     

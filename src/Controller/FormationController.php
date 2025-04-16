@@ -117,7 +117,6 @@ final class FormationController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $photoFile = $form->get('photo')->getData();
             if ($photoFile) {
-                // Supprimer l'ancienne image si elle existe
                 $oldPhoto = $formation->getPhoto();
                 if ($oldPhoto) {
                     $oldPath = $this->getParameter('kernel.project_dir') . '/public/' . $oldPhoto;

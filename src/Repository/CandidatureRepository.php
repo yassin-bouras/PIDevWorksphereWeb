@@ -56,7 +56,7 @@ class CandidatureRepository extends ServiceEntityRepository
     public function findByOffreTitre(string $search): array
 {
     $qb = $this->createQueryBuilder('c')
-        ->join('c.offre', 'o') // Join the related Offre entity
+        ->join('c.offre', 'o') 
         ->addSelect('o');
 
     if (!empty($search)) {

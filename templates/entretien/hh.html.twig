@@ -276,13 +276,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     return response.json();
                 })
                 .then(data => {
-                    console.log('API Response:', data); // Debug
+                    console.log('API Response:', data); 
 
-                    // Create a temporary select for UX
                     const tempSelect = document.createElement('select');
                     tempSelect.className = 'form-control';
                     tempSelect.id = 'temp-candidat-select';
-                    tempSelect.name = 'temp-candidat-select'; // Avoid form submission
+                    tempSelect.name = 'temp-candidat-select'; 
 
                     if (data.length === 0) {
                         const option = document.createElement('option');
@@ -300,7 +299,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
                         data.forEach(candidat => {
                             const option = document.createElement('option');
-                            option.value = candidat.iduser; // Use 'id' from API
+                            option.value = candidat.iduser; 
                             option.textContent = `${candidat.nom} ${candidat.prenom}`;
                             tempSelect.appendChild(option);
                         });
@@ -308,11 +307,9 @@ document.addEventListener('DOMContentLoaded', function () {
                         tempSelect.disabled = false;
                     }
 
-                    // Hide the number input and show the select
                     candidatInput.style.display = 'none';
                     candidatInput.parentNode.insertBefore(tempSelect, candidatInput.nextSibling);
 
-                    // Sync select value to hidden number input
                     tempSelect.addEventListener('change', function () {
                         candidatInput.value = this.value;
                     });

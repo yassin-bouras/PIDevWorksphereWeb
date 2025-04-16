@@ -349,18 +349,16 @@
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     const form = document.querySelector('.needs-validation');
-    const dateLimiteInput = document.querySelector('#offre_date_limite'); // Adjust ID based on your form's naming convention
+    const dateLimiteInput = document.querySelector('#offre_date_limite'); 
 
-    // Function to validate date_limite is in the future
     function validateDateLimite() {
         const selectedDate = new Date(dateLimiteInput.value);
         const today = new Date();
-        today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+        today.setHours(0, 0, 0, 0); 
 
         if (selectedDate <= today) {
             dateLimiteInput.setCustomValidity('La date limite doit être postérieure à aujourd\'hui.');
             dateLimiteInput.classList.add('is-invalid');
-            // Ensure invalid-feedback element exists
             let feedback = dateLimiteInput.parentElement.querySelector('.invalid-feedback');
             if (!feedback) {
                 feedback = document.createElement('div');
@@ -374,12 +372,10 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
-    // Validate on input change
     dateLimiteInput.addEventListener('change', validateDateLimite);
 
-    // Form submission validation
     form.addEventListener('submit', function (event) {
-        validateDateLimite(); // Check date_limite before submission
+        validateDateLimite(); 
 
         if (!form.checkValidity()) {
             event.preventDefault();
@@ -389,7 +385,6 @@ document.addEventListener('DOMContentLoaded', function () {
         form.classList.add('was-validated');
     }, false);
 
-    // Custom select wrapper for styling
     const selects = document.querySelectorAll('.styled-form-wrapper select');
     selects.forEach(select => {
         const wrapper = document.createElement('div');
