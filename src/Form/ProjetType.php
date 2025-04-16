@@ -23,6 +23,7 @@ class ProjetType extends AbstractType
         
             ->add('dateCreation', DateType::class, [
                 'widget' => 'single_text',
+                'label' => 'date début',
             ])
             ->add('deadline', DateType::class, [
                 'widget' => 'single_text', 
@@ -34,10 +35,9 @@ class ProjetType extends AbstractType
                     'En Cours' => 'EnCours',
                 ],
             ])
-            //->add('imageProjet')
             ->add('imageProjet', FileType::class, [
                 'label' => 'Image du projet',
-                'mapped' => false,  // Pas lié directement à la base de données
+                'mapped' => false, 
                 'required' => false,
                 'constraints' => [
                     new File([

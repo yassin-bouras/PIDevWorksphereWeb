@@ -1,0 +1,18 @@
+{% extends '/dashboard/base.html.twig' %}
+
+{% block title %} Nouveau Cours {% endblock %}
+
+{% block content %}
+  <h1 style="text-align: center; margin-top: 7%;">Ajouter un Cours</h1>
+  <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}"></a></li>
+
+  <div class="container" style="margin-top: 2%; padding: 20px; background-color: #fff; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+      {{ include('cour/_form.html.twig') }}
+      
+      <div style="display: flex; justify-content: center; gap: 10px; margin-top: 20px;">
+          <a class="btn" href="{{ path('app_cour_index') }}" style="background-color: #4771cb; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">
+              Retour à la liste <i data-feather="arrow-left-circle"></i>
+          </a>
+      </div>
+  </div>
+{% endblock %}

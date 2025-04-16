@@ -32,7 +32,7 @@ class EquipeType extends AbstractType
             ]
         ])
          
-    ->add('users', EntityType::class, [
+    /*->add('users', EntityType::class, [
         'class' => User::class,
         'choice_label' => 'nom', 
         'multiple' => true,
@@ -46,7 +46,29 @@ class EquipeType extends AbstractType
             'class' => 'select2', 
         ],
     ])
-;
+;*/
+
+->add('users', EntityType::class, [
+    'label' => 'Employés',
+    'class' => User::class,
+    'choice_label' => function(User $user) {
+        return $user->getNom() . ' ' . $user->getPrenom();
+    },
+    'multiple' => true,
+    'expanded' => false,
+    'query_builder' => function (EntityRepository $er) {
+        return $er->createQueryBuilder('u')
+            ->where('u.role = :role')
+            ->setParameter('role', 'Employe')
+            ->orderBy('u.nom', 'ASC');
+    },
+    'attr' => [
+        'class' => 'select2-enhanced',
+        'data-placeholder' => 'Sélectionnez des employés...'
+    ],
+    'placeholder' => '',
+]);
+
 }
 
     public function configureOptions(OptionsResolver $resolver): void

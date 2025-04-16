@@ -25,7 +25,26 @@ class EquipeRepository extends ServiceEntityRepository
             ->getResult();
     }
 
-    
+    public function findAllWithProjects(): array
+{
+    return $this->createQueryBuilder('e')
+        ->leftJoin('e.projets', 'p')
+        ->addSelect('p')
+        ->getQuery()
+        ->getResult();
+}
+
+public function searchTeamsAndProjects(string $searchTerm): array
+{
+    return $this->createQueryBuilder('e')
+        ->leftJoin('e.projets', 'p')
+        ->addSelect('p')
+        ->where('LOWER(e.nom_equipe) LIKE LOWER(:searchTerm)')
+        ->orWhere('LOWER(p.nom) LIKE LOWER(:searchTerm)')
+        ->setParameter('searchTerm', '%'.$searchTerm.'%')
+        ->getQuery()
+        ->getResult();
+}
 //    /**
 //     * @return Equipe[] Returns an array of Equipe objects
 //     */

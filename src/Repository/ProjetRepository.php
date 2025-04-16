@@ -34,8 +34,8 @@ class ProjetRepository extends ServiceEntityRepository
         }
     
         if (!empty($nomEquipe)) {
-            $qb->andWhere('LOWER(e.nomEquipe) LIKE LOWER(:nomEquipe)')
-               ->setParameter('nomEquipe', '%' . $nomEquipe . '%');
+            $qb->andWhere('LOWER(e.nom_equipe) LIKE LOWER(:nom_equipe)')
+               ->setParameter('nom_equipe', '%' . $nomEquipe . '%');
         }
     
         return $qb->getQuery()->getResult();

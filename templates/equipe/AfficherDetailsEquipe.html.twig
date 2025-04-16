@@ -1,0 +1,153 @@
+{% extends '/home/index.html.twig' %}
+
+{% block title %}Détails de l'équipe {{ equipe.nomEquipe }}{% endblock %}
+
+{% block body %}
+<div class="container py-5" style="margin-top: 5rem;">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <!-- Carte principale -->
+            <div class="card shadow-sm">
+                <!-- En-tête de la carte -->
+                <div class="card-header bg-white border-bottom-0 pb-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <a href="{{ path('AfficherEquipeFront') }}" class="btn btn-outline-secondary btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i> Retour
+                        </a>
+                    
+                        <div style="width: 60px;"></div> 
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <!-- Section info équipe -->
+                    <div class="row mb-5">
+                        <div class="col-md-4 text-center">
+                            {% if equipe.imageEquipe %}
+                                <img src="{{ asset(equipe.imageEquipe) }}" class="img-fluid rounded-circle shadow" style="width: 180px; height: 180px; object-fit: cover;" alt="Logo équipe">
+                            {% else %}
+                                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto" style="width: 180px; height: 180px;">
+                                    <i class="fas fa-users fa-3x text-muted"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <h1 class="display-5">{{ equipe.nomEquipe }}</h1>
+                            <div class="d-flex align-items-center mb-3">
+                                <span class="badge bg-primary rounded-pill px-3 py-2 me-3">
+                                    {{ equipe.projets|length }} projet(s)
+                                </span>
+                                <span class="badge bg-secondary rounded-pill px-3 py-2">
+                                    {{ equipe.users|length }} membre(s)
+                                </span>
+                            </div>
+                           
+                        </div>
+                    </div>
+
+                    <!-- Section membres -->
+                    <div class="mb-5">
+                        <h3 class="border-bottom pb-2 mb-4">
+                            <i class="fas fa-users me-2"></i>Membres de l'équipe
+                        </h3>
+                        <div class="row">
+                            {% for user in equipe.users %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card border-0 shadow-sm h-100">
+                                    <div class="card-body d-flex align-items-center">
+                                        {% if user.imageprofil %}
+                                            <img src="{{ asset(user.imageprofil) }}" class="rounded-circle me-3" style="width: 60px; height: 60px; object-fit: cover;" alt="Photo membre">
+                                        {% else %}
+                                            <div class="rounded-circle bg-light d-flex align-items-center justify-content-center me-3" style="width: 60px; height: 60px;">
+                                                <i class="fas fa-user text-muted"></i>
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <h5 class="mb-1">{{ user.nom }} {{ user.prenom }}</h5>
+                                            <small class="text-muted">{{ user.email|default('email non spécifié') }}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="col-12">
+                                <div class="alert alert-info">
+                                    Aucun membre dans cette équipe.
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Section projets -->
+                    <div class="mb-4">
+                        <h3 class="border-bottom pb-2 mb-4">
+                            <i class="fas fa-project-diagram me-2"></i>Projets de l'équipe
+                        </h3>
+                        {% if equipe.projets is not empty %}
+                            <div class="row">
+                                {% for projet in equipe.projets %}
+                                <div class="col-md-6 mb-4">
+                                    <div class="card h-100 shadow-sm">
+                                        <div class="card-body">
+                                            <div class="d-flex">
+                                                {% if projet.imageProjet %}
+                                                    <img src="{{ asset(projet.imageProjet) }}" class="rounded me-3" style="width: 80px; height: 80px; object-fit: cover;" alt="Image projet">
+                                                {% else %}
+                                                    <div class="rounded bg-light d-flex align-items-center justify-content-center me-3" style="width: 80px; height: 80px;">
+                                                        <i class="fas fa-project-diagram fa-2x text-muted"></i>
+                                                    </div>
+                                                {% endif %}
+                                                <div>
+                                                    <h4>{{ projet.nom }}</h4>
+                                                 
+                                                    
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                Aucun projet associé à cette équipe.
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 10px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+    }
+    
+    .badge {
+        font-weight: 500;
+        padding: 0.5em 0.8em;
+    }
+    
+    .img-fluid {
+        max-width: 100%;
+        height: auto;
+    }
+    
+    .shadow-sm {
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .border-bottom {
+        border-bottom: 1px solid #eee;
+    }
+</style>
+{% endblock %}

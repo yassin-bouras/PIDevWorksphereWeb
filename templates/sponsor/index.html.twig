@@ -59,7 +59,7 @@
                                         <th>Budget</th>
                                         <th>Budget après réduction</th>
                                         <th>Classement</th>
-                                        <th>Actions</th>
+                                        <th>Secteur</th> <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -70,7 +70,7 @@
                                             <td>{{ sponsor.budgetSponso }} €</td>
                                             <td>{{ sponsor.BudgetApresReduction }} €</td>
                                             <td>{{ sponsor.classement }}</td>
-                                            <td>
+                                            <td>{{ sponsor.secteurSponsor }}</td> <td>
                                                 <div class="d-flex">
                                                     <a href="{{ path('app_sponsor_show', {'idSponsor': sponsor.idSponsor}) }}" class="btn btn-sm btn-outline-primary me-1" title="Voir">
                                                         <i class="far fa-eye"></i>
@@ -81,15 +81,21 @@
                                                     <a href="{{ path('app_evenement_sponsor_new') }}?sponsor_id={{ sponsor.idSponsor }}" class="btn btn-sm btn-outline-success me-1" title="Affecter événement">
                                                         <i class="fas fa-calendar-plus"></i>
                                                     </a>
-                                                    <a href="{{ path('app_sponsor_events', {'idSponsor': sponsor.idSponsor}) }}" class="btn btn-sm btn-outline-info" title="Événements">
+                                                    <a href="{{ path('app_sponsor_events', {'idSponsor': sponsor.idSponsor}) }}" class="btn btn-sm btn-outline-info me-1" title="Événements">
                                                         <i class="fas fa-list"></i>
                                                     </a>
+                                                    <form method="post" action="{{ path('app_sponsor_delete', {'idSponsor': sponsor.idSponsor}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce sponsor ?');">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ sponsor.idSponsor) }}">
+                                                        <button class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                                            <i class="far fa-trash-alt"></i>
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </td>
                                         </tr>
                                     {% else %}
                                         <tr>
-                                            <td colspan="6" class="text-center">Aucun sponsor trouvé</td>
+                                            <td colspan="7" class="text-center">Aucun sponsor trouvé</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>

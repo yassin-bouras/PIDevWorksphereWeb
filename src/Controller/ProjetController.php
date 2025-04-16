@@ -75,7 +75,8 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         'form' => $form,
     ]);
 }
-    
+
+
 
 
     #[Route('/{id}', name: 'app_projet_show', methods: ['GET'])]

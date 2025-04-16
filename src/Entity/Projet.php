@@ -63,7 +63,7 @@ class Projet
     }
 
     #[ORM\Column(name: 'datecréation',type: 'date', nullable: true)]
-    #[Assert\NotBlank(message: "La date de création est obligatoire.")]
+    #[Assert\NotBlank(message: "La date de début est obligatoire.")]
     private ?\DateTimeInterface $dateCreation = null;
 
     public function getDateCreation(): ?\DateTimeInterface
@@ -80,7 +80,7 @@ class Projet
 
     #[ORM\Column(type: 'date', nullable: true)]
     #[Assert\NotBlank(message: "Le deadline est obligatoire.")]
-    #[Assert\GreaterThan(propertyPath: "dateCreation", message: "Le deadline doit être postérieur à la date de création.")]
+    #[Assert\GreaterThan(propertyPath: "dateCreation", message: "Le deadline doit être postérieur à la date de début .")]
     private ?\DateTimeInterface $deadline = null;
 
     public function getDeadline(): ?\DateTimeInterface
