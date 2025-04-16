@@ -1,51 +1,235 @@
-<!DOCTYPE html>
+{% extends '/dashboard/base2.html.twig' %}
 
-<title>Offre index</title>
+{% block title %}Offres{% endblock %}
 
-{% block body %}
-    <h1>Offre index</h1>
+{% block content %}
+<style>
+    .d-flex > * {
+        margin-right: 10px; /* Add spacing between buttons */
+    }
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id_offre</th>
-                <th>Titre</th>
-                <th>Description</th>
-                <th>Type_contrat</th>
-                <th>Salaire</th>
-                <th>Lieu_travail</th>
-                <th>Date_publication</th>
-                <th>Date_limite</th>
-                <th>Statut_offre</th>
-                <th>Experience</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for offre in offres %}
-            <tr>
-                <td>{{ offre.idOffre }}</td>
-                <td>{{ offre.titre }}</td>
-                <td>{{ offre.description }}</td>
-                <td>{{ offre.typeContrat }}</td>
-                <td>{{ offre.salaire }}</td>
-                <td>{{ offre.lieuTravail }}</td>
-                <td>{{ offre.datePublication ? offre.datePublication|date('Y-m-d') : '' }}</td>
-                <td>{{ offre.dateLimite ? offre.dateLimite|date('Y-m-d') : '' }}</td>
-                <td>{{ offre.statutOffre }}</td>
-                <td>{{ offre.experience }}</td>
-                <td>
-                    <a href="{{ path('app_offre_show', {'id_offre': offre.id_offre}) }}">show</a>
-                    <a href="{{ path('app_offre_edit', {'id_offre': offre.id_offre}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="11">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    .d-flex > *:last-child {
+        margin-right: 0; /* Remove margin from the last button */
+    }
 
-    <a href="{{ path('app_offre_new') }}">Create new</a>
+
+    .form-control {
+        border: 3px solid #33ccc5;
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 1.2rem;
+        width: 80%;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #33ccc5;
+        outline: none;
+        box-shadow: 0 0 5px rgba(51, 204, 197, 0.5);
+    }
+
+    .btn-outline-secondary {
+        background-color: transparent;
+        border: 3px solid #33ccc5;
+        color: #33ccc5;
+        padding: 10px 50px;
+        font-size: 0.635rem;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+    .btn-outline-secondary span {
+        font-size: 3rem; 
+        font-weight: bold;
+    }
+
+    .btn-outline-secondary:hover {
+        border: 3px solid #99fffa;
+        background-color: #33ccc5;
+        color: white;
+        transform: scale(1.05);
+        transition: all 0.2s ease;
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+    }
+    .btn-primary {
+        background-color: #33ccc5 !important; /* Change the background color */
+        border-color: #33ccc5 !important; /* Change the border color */
+    }
+
+    .btn-primary:hover {
+        background-color: #28a39b !important; /* Slightly darker shade for hover */
+        border-color: #28a39b !important; /* Match the border color on hover */
+    }
+    .btn-create-offer {
+        background-color: #33ccc5; /* Set the background color to #33ccc5 */
+        position: relative;
+        padding: 5px 15px;
+        display: flex;
+        align-items: center;
+        font-size: 17px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: 1px solid #33ccc5; /* Match the border color */
+        border-radius: 25px;
+        outline: none;
+        overflow: hidden;
+        color: white; /* Set the text color to white for contrast */
+        transition: background-color 0.3s ease, color 0.3s ease;
+        text-align: center;
+    }
+
+    .btn-create-offer span {
+        margin: 10px;
+    }
+    .btn-create-offer svg {
+        width: 24px;
+        height: 24px;
+        stroke: white; /* Set the icon color to white */
+    }
+
+    .btn-create-offer::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        content: '';
+        border-radius: 50%;
+        display: block;
+        width: 20em;
+        height: 20em;
+        left: -5em;
+        text-align: center;
+        transition: box-shadow 0.5s ease-out;
+        z-index: -1;
+    }
+
+    .btn-create-offer:hover {
+        background-color: #28a39b; /* Slightly darker shade for hover */
+
+        color: #023d44;
+        border: 1px solid rgb(40, 144, 241);
+    }
+
+    .btn-create-offer:hover::before {
+        box-shadow: inset 0 0 0 10em rgb(40, 144, 241);
+    }
+</style>
+<div class="content container-fluid" style="margin-top: -58%";>
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="page-title">Liste des Offres</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Offres</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <!-- <div class="text-start mb-4">
+                        <a href="{{ path('app_offre_new') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Créer une nouvelle offre
+                        </a>
+                    </div> -->
+                    <div class="text-start mb-4">
+                        <a href="{{ path('app_offre_new') }}" class="btn-create-offer">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24" fill="none" class="svg">
+                                <line y2="19" y1="5" x2="12" x1="12"></line>
+                                <line y2="12" y1="12" x2="19" x1="5"></line>
+                            </svg>
+                            <span>CRÉER UNE NOUVELLE OFFRE</span>
+                        </a>
+                    </div>
+
+                    <div class="mb-4">
+                        <form method="GET" action="{{ path('app_offre_index') }}" >
+                            
+                            <div class="input-group" style="max-width: 1050px; margin: 0 auto;">
+                                <input type="text" name="search" class="form-control"
+                                    placeholder="Rechercher par titre..."
+                                    value="{{ app.request.query.get('search') }}">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="submit"><span>Rechercher</span></button>
+                                </div>
+                            </div>
+                            <!-- <div class="col-md-4 mb-2">
+                                <select name="typeContrat" id="typeContrat" class="form-select">
+                                    <option value="">Tous les types de contrat</option>
+                                    <option value="CDI" {% if app.request.query.get('typeContrat') == 'CDI' %}selected{% endif %}>CDI</option>
+                                    <option value="CDD" {% if app.request.query.get('typeContrat') == 'CDD' %}selected{% endif %}>CDD</option>
+                                    <option value="Stage" {% if app.request.query.get('typeContrat') == 'Stage' %}selected{% endif %}>Stage</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 mb-2">
+                                <button class="btn btn-outline-secondary w-100" type="submit">Filtrer</button>
+                            </div> -->
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Titre</th>
+                                    <th>Type de Contrat</th>
+                                    <th>Lieu</th>
+                                    <th>Salaire</th>
+                                    <th>Date de Publication</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for offre in offres %}
+                                    <tr>
+                                        <td>{{ offre.titre }}</td>
+                                        <td>{{ offre.typeContrat }}</td>
+                                        <td>{{ offre.lieuTravail }}</td>
+                                        <td>{{ offre.salaire }} $</td>
+                                        <td>{{ offre.datePublication ? offre.datePublication|date('Y-m-d') : '' }}</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <a href="{{ path('app_offre_show', {'id_offre': offre.idOffre}) }}" class="btn btn-sm btn-outline-primary me-2" title="Voir">
+                                                    <i class="far fa-eye"></i>
+                                                </a>
+                                                <a href="{{ path('app_offre_edit', {'id_offre': offre.idOffre}) }}" class="btn btn-sm btn-outline-warning me-2" title="Modifier">
+                                                    <i class="far fa-edit"></i>
+                                                </a>
+                                                <a href="{{ path('app_offre_candidatures', {'id_offre': offre.idOffre}) }}" class="btn btn-sm btn-outline-info me-2" title="Candidatures">
+                                                    <i class="fas fa-users"></i>
+                                                </a>
+                                                <form method="post" action="{{ path('app_offre_delete', {'id_offre': offre.idOffre}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ?');">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ offre.idOffre) }}">
+                                                    <button class="btn btn-sm btn-outline-danger" title="Supprimer">
+                                                        <i class="far fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="text-center">Aucune offre trouvée</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -5,6 +5,7 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Validator\Constraints as Assert;
 
 use App\Repository\OffreRepository;
 
@@ -36,6 +37,19 @@ class Offre
         return $this;
     }
 
+
+    // #[Assert\NotBlank(message: "Le titre est obligatoire !")]
+    // #[Assert\Length(
+    //     max: 25,
+    //     maxMessage: "Le titre ne peut pas dépasser {{ limit }} caractères."
+    // )]
+    // private ?string $titre = null;
+
+    #[Assert\NotBlank(message: "Le champ titre est obligatoire.")]
+    #[Assert\Length(
+        max: 25,
+        maxMessage: "Le titre ne doit pas dépasser {{ limit }} caractères."
+    )]
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $titre = null;
 
@@ -50,8 +64,15 @@ class Offre
         return $this;
     }
 
+
+    #[Assert\NotBlank(message: "La description est obligatoire !")]
+    #[Assert\Length(
+        min: 10,
+        minMessage: "La description doit contenir au moins {{ limit }} caractères."
+    )]
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $description = null;
+    // private ?string $description = null;
 
     public function getDescription(): ?string
     {
@@ -64,6 +85,7 @@ class Offre
         return $this;
     }
 
+    #[Assert\NotBlank(message: "Le type de contrat est obligatoire !")]
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $type_contrat = null;
 
@@ -78,8 +100,10 @@ class Offre
         return $this;
     }
 
+    #[Assert\NotBlank(message: "Le salaire est obligatoire !")]
+    #[Assert\Positive(message: "Le salaire doit être un nombre positif !")]
     #[ORM\Column(type: 'integer', nullable: false)]
-    private ?int $salaire = null;
+    private ?float $salaire = null;
 
     public function getSalaire(): ?int
     {
@@ -92,6 +116,7 @@ class Offre
         return $this;
     }
 
+    #[Assert\NotBlank(message: "Le lieu de travail est obligatoire.")]
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $lieu_travail = null;
 
@@ -121,7 +146,17 @@ class Offre
     }
 
     #[ORM\Column(type: 'date', nullable: false)]
+    // #[Assert\NotBlank(message: "La date limite est obligatoire !")]
+    // #[Assert\Date(message: "La date limite doit être une date valide.")]
+    // #[Assert\GreaterThanOrEqual(
+    //     value: "today",
+    //     message: "La date limite ne peut pas être une date antérieure à aujourd'hui !"
+    // )]
     private ?\DateTimeInterface $date_limite = null;
+    // #[ORM\Column(type: 'datetime')]
+    // #[Assert\NotBlank(message: "La date limite est obligatoire !")]
+    // #[Assert\Date(message: "La date limite doit être une date valide.")]
+    // private ?\DateTimeInterface $date_limite = null;
 
     public function getDatelimite(): ?\DateTimeInterface
     {
@@ -134,6 +169,7 @@ class Offre
         return $this;
     }
 
+    #[Assert\NotBlank(message: "Le statut de l'offre est obligatoire !")]
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $statut_offre = null;
 
@@ -148,6 +184,7 @@ class Offre
         return $this;
     }
 
+    #[Assert\NotBlank(message: "L'expérience requise est obligatoire !")]
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $experience = null;
 
@@ -166,6 +203,8 @@ class Offre
         $this->users = new ArrayCollection();
         $this->candidatures = new ArrayCollection();
         $this->entretiens = new ArrayCollection();
+        $this->date_limite = new \DateTime(); // Default to the current date
+
     }
 
     #[ORM\OneToMany(targetEntity: Candidature::class, mappedBy: 'offre')]

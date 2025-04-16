@@ -1,4 +1,12 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_start(form, {'attr': {'class': 'form'}}) }}
+
+    {{ form_row(form.cv) }}
+    {{ form_row(form.lettre_motivation) }}
+    {{ form_row(form.offre) }}
+    {{ form_row(form.user) }}
+
+    <div class="btn">
+        <button type="submit" class="button">Postuler</button>
+    </div>
+
 {{ form_end(form) }}

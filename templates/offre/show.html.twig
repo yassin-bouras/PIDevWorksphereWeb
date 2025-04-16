@@ -1,58 +1,95 @@
-<!DOCTYPE html>
+{% extends '/dashboard/base2.html.twig' %}
 
-<title>Offre</title>
+{% block title %}Détails de l'Offre{% endblock %}
 
-{% block body %}
-    <h1>Offre</h1>
+{% block content %}
+<div class="content container-fluid" style="margin-top: -58%;">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="page-title">Détails de l'Offre</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_offre_index') }}">Offres</a></li>
+                    <li class="breadcrumb-item active">Détails</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id_offre</th>
-                <td>{{ offre.idOffre }}</td>
-            </tr>
-            <tr>
-                <th>Titre</th>
-                <td>{{ offre.titre }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ offre.description }}</td>
-            </tr>
-            <tr>
-                <th>Type_contrat</th>
-                <td>{{ offre.typeContrat }}</td>
-            </tr>
-            <tr>
-                <th>Salaire</th>
-                <td>{{ offre.salaire }}</td>
-            </tr>
-            <tr>
-                <th>Lieu_travail</th>
-                <td>{{ offre.lieuTravail }}</td>
-            </tr>
-            <tr>
-                <th>Date_publication</th>
-                <td>{{ offre.datePublication ? offre.datePublication|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Date_limite</th>
-                <td>{{ offre.dateLimite ? offre.dateLimite|date('Y-m-d') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Statut_offre</th>
-                <td>{{ offre.statutOffre }}</td>
-            </tr>
-            <tr>
-                <th>Experience</th>
-                <td>{{ offre.experience }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title text-center">{{ offre.titre }}</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>Titre</th>
+                                <td>{{ offre.titre }}</td>
+                            </tr>
+                            <tr>
+                                <th>Description</th>
+                                <td>
+                                    <p style="white-space: pre-wrap;">{{ offre.description }}</p>
+                                </td>                            </tr>
+                            <tr>
+                                <th>Type de Contrat</th>
+                                <td>{{ offre.typeContrat }}</td>
+                            </tr>
+                            <tr>
+                                <th>Salaire</th>
+                                <td>{{ offre.salaire }} €</td>
+                            </tr>
+                            <tr>
+                                <th>Lieu de Travail</th>
+                                <td>{{ offre.lieuTravail }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date de Publication</th>
+                                <td>{{ offre.datePublication ? offre.datePublication|date('Y-m-d') : '' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date Limite</th>
+                                <td>{{ offre.dateLimite ? offre.dateLimite|date('Y-m-d') : '' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Statut</th>
+                                <td>{{ offre.statutOffre }}</td>
+                            </tr>
+                            <tr>
+                                <th>Expérience Requise</th>
+                                <td>{{ offre.experience }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ path('app_offre_index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour à la liste
+                    </a>
+                    <a href="{{ path('app_offre_edit', {'id_offre': offre.idOffre}) }}" class="btn btn-warning">
+                        <i class="far fa-edit"></i> Modifier
+                    </a>
+                    <form method="post" action="{{ path('app_offre_delete', {'id_offre': offre.idOffre}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette offre ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ offre.idOffre) }}">
+                        <button class="btn btn-danger">
+                            <i class="far fa-trash-alt"></i> Supprimer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <a href="{{ path('app_offre_index') }}">back to list</a>
-
-    <a href="{{ path('app_offre_edit', {'id_offre': offre.id_offre}) }}">edit</a>
-
-    {{ include('offre/_delete_form.html.twig') }}
+<style>
+    .btn-danger:hover {
+        background-color: #980808; /* Dark red color */
+        border-color: #a80000; /* Match the border color */
+        color: white; /* Ensure the text remains visible */
+    }
+</style>
 {% endblock %}
