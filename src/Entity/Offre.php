@@ -146,6 +146,8 @@ class Offre
     }
 
     #[ORM\Column(type: 'date', nullable: false)]
+    #[Assert\NotNull(message: 'La date est obligatoire.')]
+    #[Assert\GreaterThanOrEqual('today', message: 'La date de l\'entretien doit être aujourd\'hui ou dans le futur.')]
     // #[Assert\NotBlank(message: "La date limite est obligatoire !")]
     // #[Assert\Date(message: "La date limite doit être une date valide.")]
     // #[Assert\GreaterThanOrEqual(

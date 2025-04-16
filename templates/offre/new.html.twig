@@ -90,8 +90,8 @@
         display: block;
     }
     
-  /* Boutons */
-  .btn-primary {
+    /* Boutons */
+    .btn-primary {
         background-color: #4a90e2;
         border: none;
         padding: 0.75rem 1.5rem;
@@ -125,6 +125,7 @@
     .form-control.is-invalid ~ .invalid-feedback {
         display: block;
     }
+    
     /* Effets de focus */
     .styled-form-wrapper input:focus,
     .styled-form-wrapper select:focus,
@@ -134,20 +135,60 @@
         box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
     }
 </style>
+
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.querySelector('.needs-validation');
-    
-        form.addEventListener('submit', function (event) {
-            if (!form.checkValidity()) {
-                event.preventDefault();
-                event.stopPropagation();
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.querySelector('.needs-validation');
+    const dateLimiteInput = document.querySelector('#offre_date_limite'); // Adjust ID based on your form's naming convention
+
+    // Function to validate date_limite is in the future
+    function validateDateLimite() {
+        const selectedDate = new Date(dateLimiteInput.value);
+        const today = new Date();
+        today.setHours(0, 0, 0, 0); // Reset time to start of day for comparison
+
+        if (selectedDate <= today) {
+            dateLimiteInput.setCustomValidity('La date limite doit être postérieure à aujourd\'hui.');
+            dateLimiteInput.classList.add('is-invalid');
+            // Ensure invalid-feedback element exists
+            let feedback = dateLimiteInput.parentElement.querySelector('.invalid-feedback');
+            if (!feedback) {
+                feedback = document.createElement('div');
+                feedback.className = 'invalid-feedback';
+                dateLimiteInput.parentElement.appendChild(feedback);
             }
-    
-            form.classList.add('was-validated');
-        }, false);
+            feedback.textContent = 'La date limite doit être postérieure à aujourd\'hui.';
+        } else {
+            dateLimiteInput.setCustomValidity('');
+            dateLimiteInput.classList.remove('is-invalid');
+        }
+    }
+
+    // Validate on input change
+    dateLimiteInput.addEventListener('change', validateDateLimite);
+
+    // Form submission validation
+    form.addEventListener('submit', function (event) {
+        validateDateLimite(); // Check date_limite before submission
+
+        if (!form.checkValidity()) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+
+        form.classList.add('was-validated');
+    }, false);
+
+    // Custom select wrapper for styling
+    const selects = document.querySelectorAll('.styled-form-wrapper select');
+    selects.forEach(select => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'custom-select-wrapper';
+        select.parentNode.insertBefore(wrapper, select);
+        wrapper.appendChild(select);
     });
-    </script>
+});
+</script>
 
 <div class="content container-fluid" style="margin-top: -58%;">
     <div class="row">
@@ -169,7 +210,6 @@
         </div>
         <div class="card-body">
             {{ form_start(form, {'attr': {'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
-            
             
             <div class="styled-form-wrapper">
                 <div class="form-group">
@@ -256,7 +296,8 @@
                     {{ form_label(form.date_limite) }}
                     {{ form_widget(form.date_limite, {
                         'attr': {
-                            'class': 'form-control'}
+                            'class': 'form-control' ~ (form.date_limite.vars.errors|length ? ' is-invalid' : '')
+                        }
                     }) }}
                     {% if form.date_limite.vars.errors %}
                         <div class="invalid-feedback">
@@ -265,6 +306,9 @@
                             {% endfor %}
                         </div>
                     {% endif %}
+                    <div class="invalid-feedback" style="display: none;">
+                        La date limite doit être postérieure à aujourd'hui.
+                    </div>
                 </div>
             
                 <div class="form-group">
@@ -319,17 +363,5 @@
         </div>
     </div>
 </div>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const selects = document.querySelectorAll('.styled-form-wrapper select');
-    selects.forEach(select => {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'custom-select-wrapper';
-        select.parentNode.insertBefore(wrapper, select);
-        wrapper.appendChild(select);
-    });
-});
-</script>
 
 {% endblock %}
