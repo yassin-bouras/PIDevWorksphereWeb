@@ -1,34 +1,84 @@
-<!DOCTYPE html>
+{% extends '/dashboard/base2.html.twig' %}
 
-<title>Reponse</title>
+{% block title %}Détails de la Réponse{% endblock %}
 
-{% block body %}
-    <h1>Reponse</h1>
+{% block content %}
+<div class="content container-fluid" style="margin-top: -58%;">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="page-title">Détails de la Réponse</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_reponse_index') }}">Réponses</a></li>
+                    <li class="breadcrumb-item active">Détails</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id_reponse</th>
-                <td>{{ reponse.idReponse }}</td>
-            </tr>
-            <tr>
-                <th>Message</th>
-                <td>{{ reponse.message }}</td>
-            </tr>
-            <tr>
-                <th>Datedepot</th>
-                <td>{{ reponse.datedepot ? reponse.datedepot|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Status</th>
-                <td>{{ reponse.status }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title text-center">Réponse #{{ reponse.idReponse }}</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>ID Réponse</th>
+                                <td>{{ reponse.idReponse }}</td>
+                            </tr>
+                            <tr>
+                                <th>Message</th>
+                                <td>
+                                    <p style="white-space: pre-wrap;">{{ reponse.message }}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Date de Dépôt</th>
+                                <td>{{ reponse.datedepot ? reponse.datedepot|date('Y-m-d H:i:s') : '' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Statut</th>
+                                <td>{{ reponse.status }}</td>
+                            </tr>
+                            <tr>
+                                <th>Réclamation Associée</th>
+                                <td>{{ reponse.reclamation ? reponse.reclamation.titre : 'Non spécifiée' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Utilisateur</th>
+                                <td>{{ reponse.user ? reponse.user.nom ~ ' ' ~ reponse.user.prenom : 'Non spécifié' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ path('app_reponse_index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour à la liste
+                    </a>
+                    <a href="{{ path('app_reponse_edit', {'id_reponse': reponse.idReponse}) }}" class="btn btn-warning">
+                        <i class="far fa-edit"></i> Modifier
+                    </a>
+                    <form method="post" action="{{ path('app_reponse_delete', {'id_reponse': reponse.idReponse}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette réponse ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reponse.idReponse) }}">
+                        <button class="btn btn-danger">
+                            <i class="far fa-trash-alt"></i> Supprimer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <a href="{{ path('app_reponse_index') }}">back to list</a>
-
-    <a href="{{ path('app_reponse_edit', {'id_reponse': reponse.id_reponse}) }}">edit</a>
-
-    {{ include('reponse/_delete_form.html.twig') }}
+<style>
+    .btn-danger:hover {
+        background-color: #980808; /* Dark red color */
+        border-color: #a80000; /* Match the border color */
+        color: white; /* Ensure the text remains visible */
+    }
+</style>
 {% endblock %}

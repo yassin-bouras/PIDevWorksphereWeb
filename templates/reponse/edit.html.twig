@@ -1,13 +1,10 @@
-<!DOCTYPE html>
-
-<title>Edit Reponse</title>
 
 {% block body %}
     <h1>Edit Reponse</h1>
 
     {{ include('reponse/_form.html.twig', {'button_label': 'Update'}) }}
 
-    <a href="{{ path('app_reponse_index') }}">back to list</a>
+    <a href="{{ path('reclamations_by_user', {'id': id_user}) }}">Retour à mes réclamations</a>
 
     {{ include('reponse/_delete_form.html.twig') }}
 {% endblock %}

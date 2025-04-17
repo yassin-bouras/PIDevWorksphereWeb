@@ -52,7 +52,11 @@ class FormationType extends AbstractType
                 'multiple' => false,
                 'required' => true,
             ])
-            ->add('langue', TextType::class)
+            ->add('langue', ChoiceType::class, [
+                'choices'  => [
+                    'Français' => 'fr',
+                    'Anglais' => 'en',
+                ]])
             ->add('date', DateType::class, [
                 'label' => 'Date de début',
                 'widget' => 'single_text',

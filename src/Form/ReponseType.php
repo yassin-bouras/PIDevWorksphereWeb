@@ -2,10 +2,7 @@
 
 namespace App\Form;
 
-use App\Entity\Reclamation;
 use App\Entity\Reponse;
-use App\Entity\User;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -16,19 +13,7 @@ class ReponseType extends AbstractType
     {
         $builder
             ->add('message')
-            ->add('datedepot', null, [
-                'widget' => 'single_text'
-            ])
-            ->add('status')
-            ->add('reclamation', EntityType::class, [
-                'class' => Reclamation::class,
-'choice_label' => 'id',
-            ])
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-'choice_label' => 'id',
-            ])
-        ;
+            ->add('status');
     }
 
     public function configureOptions(OptionsResolver $resolver): void

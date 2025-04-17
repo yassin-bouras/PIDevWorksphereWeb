@@ -1,11 +1,226 @@
-<!DOCTYPE html>
+{% extends '/dashboard/base2.html.twig' %}
 
-<title>New User</title>
+{% block title %}Nouvel Utilisateur{% endblock %}
 
-{% block body %}
-    <h1>Create new User</h1>
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .form-group {
+            margin-bottom: 20px; /* Increased from 12px */
+            padding: 10px 0; /* Add padding for spacing */
+        }
+        .form-row {
+            margin-bottom: 20px; /* Add spacing below paired fields */
+            padding: 0 10px; /* Add horizontal padding */
+        }
+        .form-col {
+            padding: 0 15px; /* Add padding inside columns */
+        }
+        .form-btn {
+            margin-top: 30px; /* Increased spacing above buttons */
+            padding: 10px 0; /* Add padding for balance */
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .alert-danger ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .alert-danger li {
+            margin-bottom: 5px;
+        }
+    </style>
+{% endblock %}
 
-    {{ include('user/_form.html.twig') }}
+{% block content %}
+<div class="content container-fluid">
+    <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12">
+            <div class="breadcrumb-path mb-4">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_user_index') }}">Utilisateurs</a></li>
+                    <li class="breadcrumb-item active">Nouvel Utilisateur</li>
+                </ul>
+                <h3>Créer un Nouvel Utilisateur</h3>
+            </div>
+        </div>
+    </div>
 
-    <a href="{{ path('app_user_index') }}">back to list</a>
+    <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-titles">Créer un Utilisateur <span>Ajoutez les informations nécessaires pour créer un utilisateur</span></h2>
+                </div>
+                <div class="card-body">
+                    <div class="container">
+                        <div class="form-header">
+                            <h2>Créer un Utilisateur</h2>
+                            <p>Ajoutez les informations nécessaires pour créer un utilisateur</p>
+                        </div>
+
+                        <div class="alert-danger" id="errorMessages"></div>
+
+                        {{ form_start(form, {'attr': {'id': 'userForm'}}) }}
+
+                        <div class="form-group">
+                            {{ form_label(form.nom) }}
+                            {{ form_widget(form.nom, {'attr': {'class': 'form-control', 'placeholder': 'Nom de l\'utilisateur'}}) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.prenom) }}
+                            {{ form_widget(form.prenom, {'attr': {'class': 'form-control', 'placeholder': 'Prénom de l\'utilisateur'}}) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.email) }}
+                            {{ form_widget(form.email, {'attr': {'class': 'form-control', 'placeholder': 'Adresse e-mail'}}) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.plainPassword) }}
+                            {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control', 'placeholder': 'Mot de passe'}}) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.role) }}
+                            {{ form_widget(form.role, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.adresse) }}
+                            {{ form_widget(form.adresse, {'attr': {'class': 'form-control', 'placeholder': 'Adresse complète', 'rows': 4}}) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.sexe) }}
+                            {{ form_widget(form.sexe, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+
+                        <div class="form-btn">
+                            <button type="submit" class="btn btn-apply w-auto">
+                                <i class="fas fa-save"></i> {{ button_label|default('Créer l\'Utilisateur') }}
+                            </button>
+                            <a href="{{ path('app_user_index') }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </a>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('userForm');
+    const errorDiv = document.getElementById('errorMessages');
+
+    form.addEventListener('submit', function (e) {
+        let valid = true;
+        let messages = [];
+
+        errorDiv.style.display = 'none';
+        errorDiv.innerHTML = '';
+        const inputs = form.querySelectorAll('.form-control');
+        inputs.forEach(input => input.classList.remove('is-invalid'));
+
+        const nom = form.querySelector('[name="user[nom]"]');
+        if (!nom.value.trim()) {
+            valid = false;
+            messages.push("Le nom est obligatoire.");
+            nom.classList.add('is-invalid');
+        } else if (nom.value.trim().length < 2) {
+            valid = false;
+            messages.push("Le nom doit contenir au moins 2 caractères.");
+            nom.classList.add('is-invalid');
+        }
+
+        const prenom = form.querySelector('[name="user[prenom]"]');
+        if (!prenom.value.trim()) {
+            valid = false;
+            messages.push("Le prénom est obligatoire.");
+            prenom.classList.add('is-invalid');
+        } else if (prenom.value.trim().length < 2) {
+            valid = false;
+            messages.push("Le prénom doit contenir au moins 2 caractères.");
+            prenom.classList.add('is-invalid');
+        }
+
+        const email = form.querySelector('[name="user[email]"]');
+        if (!email.value.trim()) {
+            valid = false;
+            messages.push("L'email est obligatoire.");
+            email.classList.add('is-invalid');
+        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim())) {
+            valid = false;
+            messages.push("L'email n'est pas valide.");
+            email.classList.add('is-invalid');
+        }
+
+        const mdp = form.querySelector('[name="user[mdp]"]');
+        if (!mdp.value.trim()) {
+            valid = false;
+            messages.push("Le mot de passe est obligatoire.");
+            mdp.classList.add('is-invalid');
+        } else if (mdp.value.trim().length < 6) {
+            valid = false;
+            messages.push("Le mot de passe doit contenir au moins 6 caractères.");
+            mdp.classList.add('is-invalid');
+        }
+
+        const role = form.querySelector('[name="user[role]"]');
+        if (!role.value.trim()) {
+            valid = false;
+            messages.push("Le rôle est obligatoire.");
+            role.classList.add('is-invalid');
+        } else if (!['ROLE_USER', 'ROLE_ADMIN', 'ROLE_EMPLOYEE', 'ROLE_MANAGER'].includes(role.value.trim())) {
+            valid = false;
+            messages.push("Le rôle doit être l'un des suivants : ROLE_USER, ROLE_ADMIN, ROLE_EMPLOYEE, ROLE_MANAGER.");
+            role.classList.add('is-invalid');
+        }
+
+        const adresse = form.querySelector('[name="user[adresse]"]');
+        if (!adresse.value.trim()) {
+            valid = false;
+            messages.push("L'adresse est obligatoire.");
+            adresse.classList.add('is-invalid');
+        } else if (adresse.value.trim().length < 10) {
+            valid = false;
+            messages.push("L'adresse doit contenir au moins 10 caractères.");
+            adresse.classList.add('is-invalid');
+        }
+
+        const sexe = form.querySelector('[name="user[sexe]"]');
+        if (!sexe.value.trim()) {
+            valid = false;
+            messages.push("Le sexe est obligatoire.");
+            sexe.classList.add('is-invalid');
+        } else if (!['M', 'F'].includes(sexe.value.trim())) {
+            valid = false;
+            messages.push("Le sexe doit être M ou F.");
+            sexe.classList.add('is-invalid');
+        }
+
+        if (!valid) {
+            e.preventDefault();
+            errorDiv.innerHTML = '<ul>' + messages.map(msg => `<li>${msg}</li>`).join('') + '</ul>';
+            errorDiv.style.display = 'block';
+            window.scrollTo({ top: errorDiv.offsetTop - 20, behavior: 'smooth' });
+        }
+    });
+});
+</script>
 {% endblock %}

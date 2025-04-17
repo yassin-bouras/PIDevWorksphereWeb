@@ -1,11 +1,190 @@
-<!DOCTYPE html>
+{% extends '/dashboard/base2.html.twig' %}
 
-<title>New Reponse</title>
+{% block title %}Nouvelle Réponse{% endblock %}
 
-{% block body %}
-    <h1>Create new Reponse</h1>
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .form-group {
+            margin-bottom: 20px; /* Increased from 12px */
+            padding: 10px 0; /* Add padding for spacing */
+        }
+        .form-row {
+            margin-bottom: 20px; /* Add spacing below paired fields */
+            padding: 0 10px; /* Add horizontal padding */
+        }
+        .form-col {
+            padding: 0 15px; /* Add padding inside columns */
+        }
+        .form-btn {
+            margin-top: 30px; /* Increased spacing above buttons */
+            padding: 10px 0; /* Add padding for balance */
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            border: 1px solid #dc3545;
+            color: #dc3545;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .alert-danger ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .alert-danger li {
+            margin-bottom: 5px;
+        }
+    </style>
+{% endblock %}
 
-    {{ include('reponse/_form.html.twig') }}
+{% block content %}
+<div class="content container-fluid">
+    <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12">
+            <div class="breadcrumb-path mb-4">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Accueil</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('reclamations_by_user', {'id': id_user}) }}">Mes Réclamations</a></li>
+                    <li class="breadcrumb-item active">Nouvelle Réponse</li>
+                </ul>
+                <h3>Créer une Nouvelle Réponse</h3>
+            </div>
+        </div>
+    </div>
 
-    <a href="{{ path('app_reponse_index') }}">back to list</a>
+    <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-titles">Créer une Réponse <span>Ajoutez les informations nécessaires pour répondre à une réclamation</span></h2>
+                </div>
+                <div class="card-body">
+                    <div class="container">
+                        <div class="form-header">
+                            <h2>Créer une Réponse</h2>
+                            <p>Ajoutez les informations nécessaires pour répondre à une réclamation</p>
+                        </div>
+
+                        <div class="alert-danger" id="errorMessages"></div>
+
+                        {{ form_start(form, {'attr': {'id': 'reponseForm'}}) }}
+
+                        <div class="form-group">
+                            {{ form_label(form.message) }}
+                            {{ form_widget(form.message, {'attr': {'class': 'form-control', 'placeholder': 'Message de la réponse', 'rows': 4}}) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.datedepot) }}
+                            {{ form_widget(form.datedepot, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.status) }}
+                            {{ form_widget(form.status, {'attr': {'class': 'form-control'}}) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.reclamation) }}
+                            {{ form_widget(form.reclamation, {'attr': {'class': 'form-control', 'disabled': 'disabled'}}) }}
+                        </div>
+
+                        <div class="form-group">
+                            {{ form_label(form.user) }}
+                            {{ form_widget(form.user, {'attr': {'class': 'form-control', 'disabled': 'disabled'}}) }}
+                        </div>
+
+                        <div class="form-btn">
+                            <button type="submit" class="btn btn-apply w-auto">
+                                <i class="fas fa-save"></i> {{ button_label|default('Créer la Réponse') }}
+                            </button>
+                            <a href="{{ path('reclamations_by_user', {'id': id_user}) }}" class="btn btn-secondary">
+                                <i class="fas fa-times"></i> Annuler
+                            </a>
+                        </div>
+
+                        {{ form_end(form) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('reponseForm');
+    const errorDiv = document.getElementById('errorMessages');
+
+    form.addEventListener('submit', function (e) {
+        let valid = true;
+        let messages = [];
+
+        errorDiv.style.display = 'none';
+        errorDiv.innerHTML = '';
+        const inputs = form.querySelectorAll('.form-controlenzel');
+        inputs.forEach(input => input.classList.remove('is-invalid'));
+
+        const message = form.querySelector('[name="reponse[message]"]');
+        if (!message.value.trim()) {
+            valid = false;
+            messages.push("Le message est obligatoire.");
+            message.classList.add('is-invalid');
+        } else if (message.value.trim().length < 10) {
+            valid = false;
+            messages.push("Le message doit contenir au moins 10 caractères.");
+            message.classList.add('is-invalid');
+        }
+
+        const datedepot = form.querySelector('[name="reponse[datedepot]"]');
+        if (!datedepot.value) {
+            valid = false;
+            messages.push("La date de dépôt est obligatoire.");
+            datedepot.classList.add('is-invalid');
+        } else {
+            const selectedDate = new Date(datedepot.value);
+            const now = new Date();
+            if (selectedDate > now) {
+                valid = false;
+                messages.push("La date de dépôt ne peut pas être dans le futur.");
+                datedepot.classList.add('is-invalid');
+            }
+        }
+
+        const status = form.querySelector('[name="reponse[status]"]');
+        if (!status.value.trim()) {
+            valid = false;
+            messages.push("Le statut est obligatoire.");
+            status.classList.add('is-invalid');
+        } else if (!['en_attente', 'traitée', 'rejetée'].includes(status.value.trim())) {
+            valid = false;
+            messages.push("Le statut doit être l'un des suivants : en_attente, traitée, rejetée.");
+            status.classList.add('is-invalid');
+        }
+
+        const reclamation = form.querySelector('[name="reponse[reclamation]"]');
+        if (!reclamation.value || isNaN(reclamation.value) || parseInt(reclamation.value) <= 0) {
+            valid = false;
+            messages.push("La réclamation est obligatoire et doit être un identifiant valide.");
+            reclamation.classList.add('is-invalid');
+        }
+
+        const user = form.querySelector('[name="reponse[user]"]');
+        if (!user.value || isNaN(user.value) || parseInt(user.value) <= 0) {
+            valid = false;
+            messages.push("L'utilisateur est obligatoire et doit être un identifiant valide.");
+            user.classList.add('is-invalid');
+        }
+
+        if (!valid) {
+            e.preventDefault();
+            errorDiv.innerHTML = '<ul>' + messages.map(msg => `<li>${msg}</li>`).join('') + '</ul>';
+            errorDiv.style.display = 'block';
+            window.scrollTo({ top: errorDiv.offsetTop - 20, behavior: 'smooth' });
+        }
+    });
+});
+</script>
 {% endblock %}
