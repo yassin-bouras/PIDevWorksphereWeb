@@ -35,23 +35,48 @@
                                 <tr>
                                     <th>Événement</th>
                                     <th>Date début contrat</th>
-                                    <th>Durée (jours)</th>
+                                    <th>Date fin contrat</th>
+                                    <th>Durée</th>
                                     <th class="text-end">Actions</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 {% for evenement_sponsor in evenement_sponsors %}
-                                    <tr>
+                                    {% set dateFin = null %}
+                                    {% if evenement_sponsor.datedebutContrat and evenement_sponsor.duree %}
+                                        {% set dateFin = evenement_sponsor.datedebutContrat|date_modify(
+                                            evenement_sponsor.duree == 'troisMois' ? '+3 months' :
+                                            evenement_sponsor.duree == 'sixMois' ? '+6 months' : '+1 year'
+                                        ) %}
+                                    {% endif %}
+                                    
+                                    <tr class="{{ dateFin and dateFin < date() ? 'table-danger' : '' }}">
                                         <td>
                                             <h6 class="mb-0">{{ evenement_sponsor.evenement.nomEvent }}</h6>
                                             <small class="text-muted">{{ evenement_sponsor.evenement.lieuEvent }}</small>
                                         </td>
                                         <td>{{ evenement_sponsor.datedebutContrat ? evenement_sponsor.datedebutContrat|date('d/m/Y') : 'N/A' }}</td>
-                                        <td>{{ evenement_sponsor.duree }} jours</td>
+                                        <td>
+                                            {{ dateFin ? dateFin|date('d/m/Y') : 'N/A' }}
+                                            {% if dateFin and dateFin < date() %}
+                                                <span class="badge bg-danger ms-2">Expiré</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% if evenement_sponsor.duree == 'troisMois' %}
+                                                3 Mois
+                                            {% elseif evenement_sponsor.duree == 'sixMois' %}
+                                                6 Mois
+                                            {% elseif evenement_sponsor.duree == 'unAns' %}
+                                                1 An
+                                            {% else %}
+                                                {{ evenement_sponsor.duree ?? 'N/A' }}
+                                            {% endif %}
+                                        </td>
                                         <td class="text-end">
                                             <div class="actions">
                                                 <a href="{{ path('app_evenement_sponsor_show', {'evenement_id': evenement_sponsor.evenement.idEvent, 'sponsor_id': sponsor.idSponsor}) }}" 
-                                                   class="btn btn-sm bg-info-light me-2"
+                                                   class="btn btn-sm {{ dateFin and dateFin < date() ? 'bg-danger-light' : 'bg-info-light' }} me-2"
                                                    data-bs-toggle="tooltip" title="Voir détails">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
@@ -69,7 +94,7 @@
                                     </tr>
                                 {% else %}
                                     <tr>
-                                        <td colspan="4" class="text-center py-4">
+                                        <td colspan="5" class="text-center py-4">
                                             <div class="empty-table">
                                                 <i class="fas fa-calendar-times fa-2x text-muted mb-3"></i>
                                                 <p class="mb-0">Aucun événement trouvé pour ce sponsor</p>
@@ -96,6 +121,20 @@
 {% block stylesheets %}
 {{ parent() }}
 <style>
+    .table-danger {
+        background-color: rgba(220, 53, 69, 0.1) !important;
+    }
+    .table-danger td {
+        border-color: #f1aeb5 !important;
+    }
+    .bg-danger-light {
+        background-color: #f8d7da;
+        color: #b02a37;
+    }
+    .bg-danger-light:hover {
+        background-color: #f1aeb5;
+        color: #fff;
+    }
     .actions .btn {
         min-width: 30px;
         padding: 0.25rem 0.5rem;
