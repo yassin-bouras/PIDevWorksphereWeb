@@ -26,99 +26,24 @@ final class EvenementSponsorController extends AbstractController
         ]);
     }
 
-
-    // #[Route('/new', name: 'app_evenement_sponsor_new', methods: ['GET', 'POST'])]
-    // public function new(Request $request, EntityManagerInterface $entityManager, SponsorRepository $sponsorRepository, EvenementSponsorRepository $evenementSponsorRepository,
-    // EvennementRepository $evenementRepository): Response
-    // {
-    //     $evenementSponsor = new EvenementSponsor();
-    //     $sponsorId = $request->query->get('sponsor_id');
-
-    //     // Si un sponsor est sélectionné, le pré-remplir et filtrer les événements
-    //     if ($sponsorId) {
-    //         $sponsor = $sponsorRepository->find($sponsorId);
-    //         $evenementSponsor->setSponsor($sponsor);
-
-    //         // Récupérer tous les événements
-    //         $allEvents = $evenementRepository->findAll();
-    //         $availableEvents = [];
-
-    //         // Filtrer les événements pour ne garder que ceux auxquels le sponsor n'est pas déjà associé
-    //         foreach ($allEvents as $event) {
-    //             $existingAssociation = $evenementSponsorRepository->findOneBy(['evenement' => $event, 'sponsor' => $sponsor]);
-    //             if (!$existingAssociation) {
-    //                 $availableEvents[] = $event;
-    //             }
-    //         }
-
-    //         $form = $this->createFormBuilder($evenementSponsor)
-    //             ->add('evenement', null, [
-    //                 'choices' => $availableEvents,
-    //                 'choice_label' => 'nomEvent', // Assurez-vous que votre entité Evenement a une propriété 'nomEvent'
-    //                 'placeholder' => 'Sélectionnez un événement',
-    //             ])
-    //             ->add('datedebutContrat')
-    //             ->add('duree')
-    //             ->getForm();
-    //     } else {
-    //         // Sinon, inclure le champ sponsor dans le formulaire et afficher tous les événements
-    //         $form = $this->createForm(EvenementSponsorType::class, $evenementSponsor);
-    //     }
-
-    //     $form->handleRequest($request);
-
-    //     if ($form->isSubmitted() && $form->isValid()) {
-    //         $entityManager->persist($evenementSponsor);
-    //         $entityManager->flush();
-
-    //         return $this->redirectToRoute('app_sponsor_index', [], Response::HTTP_SEE_OTHER);
-    //     }
-
-    //     return $this->render('evenement_sponsor/new.html.twig', [
-    //         'evenement_sponsor' => $evenementSponsor,
-    //         'form' => $form->createView(),
-    //         'sponsorId' => $sponsorId,
-    //     ]);
-    // }
     #[Route('/new', name: 'app_evenement_sponsor_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, SponsorRepository $sponsorRepository, EvenementSponsorRepository $evenementSponsorRepository,
-    EvennementRepository $evenementRepository): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, 
+                       SponsorRepository $sponsorRepository, 
+                       EvenementSponsorRepository $evenementSponsorRepository,
+                       EvennementRepository $evenementRepository): Response
     {
         $evenementSponsor = new EvenementSponsor();
         $sponsorId = $request->query->get('sponsor_id');
+        $sponsor = $sponsorId ? $sponsorRepository->find($sponsorId) : null;
     
-        
-        if ($sponsorId) {
-            $sponsor = $sponsorRepository->find($sponsorId);
+        if ($sponsor) {
             $evenementSponsor->setSponsor($sponsor);
-    
-            $allEvents = $evenementRepository->findAll();
-            $availableEvents = [];
-    
-            foreach ($allEvents as $event) {
-                $existingAssociation = $evenementSponsorRepository->findOneBy(['evenement' => $event, 'sponsor' => $sponsor]);
-                if (!$existingAssociation && $event->getTypeEvent() === $sponsor->getSecteurSponsor()) {
-                    $availableEvents[] = $event;
-                }
-            }
-    
-            $form = $this->createFormBuilder($evenementSponsor)
-                ->add('evenement', EntityType::class, [
-                    'class' => Evennement::class,
-                    'choices' => $availableEvents,
-                    'choice_label' => 'nomEvent',
-                    'placeholder' => 'Sélectionnez un événement',
-                    'attr' => [
-                        'class' => 'form-control',
-                        'data-secteur' => $sponsor->getSecteurSponsor() 
-                    ]
-                ])
-                ->add('datedebutContrat')
-                ->add('duree')
-                ->getForm();
-        } else {
-            $form = $this->createForm(EvenementSponsorType::class, $evenementSponsor);
         }
+    
+        // Créez le formulaire avec des options personnalisées
+        $form = $this->createForm(EvenementSponsorType::class, $evenementSponsor, [
+            'sponsor' => $sponsor,
+        ]);
     
         $form->handleRequest($request);
     
@@ -133,9 +58,66 @@ final class EvenementSponsorController extends AbstractController
             'evenement_sponsor' => $evenementSponsor,
             'form' => $form->createView(),
             'sponsorId' => $sponsorId,
-            'sponsorSecteur' => $sponsorId ? $sponsor->getSecteurSponsor() : null,
+            'sponsorSecteur' => $sponsor ? $sponsor->getSecteurSponsor() : null,
         ]);
     }
+    
+    // #[Route('/new', name: 'app_evenement_sponsor_new', methods: ['GET', 'POST'])]
+    // public function new(Request $request, EntityManagerInterface $entityManager, SponsorRepository $sponsorRepository, EvenementSponsorRepository $evenementSponsorRepository,
+    // EvennementRepository $evenementRepository): Response
+    // {
+    //     $evenementSponsor = new EvenementSponsor();
+    //     $sponsorId = $request->query->get('sponsor_id');
+    
+        
+    //     if ($sponsorId) {
+    //         $sponsor = $sponsorRepository->find($sponsorId);
+    //         $evenementSponsor->setSponsor($sponsor);
+    
+    //         $allEvents = $evenementRepository->findAll();
+    //         $availableEvents = [];
+    
+    //         foreach ($allEvents as $event) {
+    //             $existingAssociation = $evenementSponsorRepository->findOneBy(['evenement' => $event, 'sponsor' => $sponsor]);
+    //             if (!$existingAssociation && $event->getTypeEvent() === $sponsor->getSecteurSponsor()) {
+    //                 $availableEvents[] = $event;
+    //             }
+    //         }
+    
+    //         $form = $this->createFormBuilder($evenementSponsor)
+    //             ->add('evenement', EntityType::class, [
+    //                 'class' => Evennement::class,
+    //                 'choices' => $availableEvents,
+    //                 'choice_label' => 'nomEvent',
+    //                 'placeholder' => 'Sélectionnez un événement',
+    //                 'attr' => [
+    //                     'class' => 'form-control',
+    //                     'data-secteur' => $sponsor->getSecteurSponsor() 
+    //                 ]
+    //             ])
+    //             ->add('datedebutContrat')
+    //             ->add('duree')
+    //             ->getForm();
+    //     } else {
+    //         $form = $this->createForm(EvenementSponsorType::class, $evenementSponsor);
+    //     }
+    
+    //     $form->handleRequest($request);
+    
+    //     if ($form->isSubmitted() && $form->isValid()) {
+    //         $entityManager->persist($evenementSponsor);
+    //         $entityManager->flush();
+    
+    //         return $this->redirectToRoute('app_sponsor_index', [], Response::HTTP_SEE_OTHER);
+    //     }
+    
+    //     return $this->render('evenement_sponsor/new.html.twig', [
+    //         'evenement_sponsor' => $evenementSponsor,
+    //         'form' => $form->createView(),
+    //         'sponsorId' => $sponsorId,
+    //         'sponsorSecteur' => $sponsorId ? $sponsor->getSecteurSponsor() : null,
+    //     ]);
+    // }
     #[Route('/{evenement_id}/{sponsor_id}', name: 'app_evenement_sponsor_show', methods: ['GET'])]
     public function show(
         #[MapEntity(mapping: ['evenement_id' => 'evenement', 'sponsor_id' => 'sponsor'])]
