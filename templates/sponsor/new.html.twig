@@ -25,7 +25,7 @@
                 </div>
                 <div class="card-body">
                     {{ form_start(form, {'attr': {'id': 'sponsor-form', 'class': 'needs-validation', 'novalidate': 'novalidate'}}) }}
-
+                    
                     <div class="row">
                         <div class="col-xl-6 col-sm-12 col-12">
                             <div class="form-group">
@@ -51,7 +51,7 @@
                                 {% endif %}
                             </div>
                         </div>
-
+                        
                         <div class="col-xl-6 col-sm-12 col-12">
                             <div class="form-group">
                                 {{ form_label(form.prenomSponso, "Prénom") }}
@@ -98,7 +98,7 @@
                                 {% endif %}
                             </div>
                         </div>
-
+                        
                         <div class="col-xl-6 col-sm-12 col-12">
                             <div class="form-group">
                                 {{ form_label(form.classement, "Classement") }}
@@ -125,7 +125,8 @@
                                 {{ form_label(form.budgetSponso, "Budget Initial*") }}
                                 <div class="input-group">
                                     {{ form_widget(form.budgetSponso, {
-                                        'attr': {'class': 'form-control' ~ (form.budgetSponso.vars.errors|length ? ' is-invalid' : ''),
+                                        'attr': {
+                                            'class': 'form-control' ~ (form.budgetSponso.vars.errors|length ? ' is-invalid' : ''),
                                             'required': 'required',
                                             'type': 'number',
                                             'min': '0',
@@ -150,7 +151,7 @@
                                 {% endif %}
                             </div>
                         </div>
-
+                        
                         <div class="col-xl-6 col-sm-12 col-12">
                             <div class="form-group">
                                 {{ form_label(form.BudgetApresReduction, "Budget Après Réduction*") }}
@@ -184,27 +185,38 @@
                         </div>
                     </div>
 
+                    {# Secteur d'activité et suggestions #}
                     <div class="row">
                         <div class="col-xl-6 col-sm-12 col-12">
                             <div class="form-group">
-                                {{ form_label(form.secteurSponsor, "Secteur d'activité") }}
-                                {{ form_widget(form.secteurSponsor, {
-                                    'attr': {
-                                        'class': 'form-control' ~ (form.secteurSponsor.vars.errors|length ? ' is-invalid' : ''),
-                                        'placeholder': 'Secteur d\'activité du sponsor'
-                                    }
-                                }) }}
-                                {% if form.secteurSponsor.vars.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.secteurSponsor.vars.errors %}
-                                            {{ error.message }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                                <label for="sponsor_sector">Secteur d'activité</label>
+                                <input type="text" id="sponsor_sector" class="form-control" 
+                                       placeholder="Ex: Sport, Technologie, Alimentation...">
+                                <button type="button" id="get-suggestions" class="btn btn-info mt-2">
+                                    <i class="fas fa-lightbulb"></i> Obtenir des suggestions
+                                </button>
+                                <small class="form-text text-muted">
+                                    Entrez un secteur pour obtenir des idées de sponsors potentiels
+                                </small>
                             </div>
                         </div>
                     </div>
 
+                    {# Zone d'affichage des suggestions #}
+                    <div class="row mt-3">
+                        <div class="col-xl-12">
+                            <div id="suggestions-container" class="card bg-light" style="display:none;">
+                                <div class="card-header">
+                                    <h5><i class="fas fa-bolt"></i> Suggestions de sponsors</h5>
+                                </div>
+                                <div class="card-body" id="suggestions-content">
+                                    <!-- Les suggestions seront chargées ici -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {# Boutons de soumission #}
                     <div class="row">
                         <div class="col-xl-12 col-sm-12 col-12">
                             <div class="form-btn">
@@ -233,7 +245,7 @@ $(document).ready(function() {
     function validateField(field) {
         const $field = $(field);
         $field.removeClass('is-invalid is-valid');
-
+        
         if (field.checkValidity()) {
             $field.addClass('is-valid');
         } else {
@@ -245,9 +257,9 @@ $(document).ready(function() {
     function validateEmailField(field) {
         const emailRegex = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
         const $field = $(field);
-
+        
         $field.removeClass('is-invalid is-valid');
-
+        
         if (emailRegex.test(field.value)) {
             $field.addClass('is-valid');
             field.setCustomValidity('');
@@ -261,9 +273,9 @@ $(document).ready(function() {
     function validateNumberField(field) {
         const $field = $(field);
         const value = parseFloat(field.value);
-
+        
         $field.removeClass('is-invalid is-valid');
-
+        
         if (!isNaN(value) && value >= 0) {
             $field.addClass('is-valid');
             field.setCustomValidity('');
@@ -298,7 +310,6 @@ $(document).ready(function() {
 
     // Validation au submit
     $('#sponsor-form').on('submit', function(e) {
-        // Valider tous les champs
         $(this).find('input, textarea').each(function() {
             if ($(this).attr('type') === 'email') {
                 validateEmailField(this);
@@ -313,9 +324,115 @@ $(document).ready(function() {
             e.preventDefault();
             e.stopPropagation();
         }
-
+        
         $(this).addClass('was-validated');
+    });
+
+    // Gestion des suggestions de sponsors
+    $('#get-suggestions').click(function() {
+        const sector = $('#sponsor_sector').val().trim();
+        
+        if (!sector) {
+            alert('Veuillez entrer un secteur d\'activité pour obtenir des suggestions');
+            return;
+        }
+
+        // Afficher le loader
+        $('#suggestions-content').html(`
+            <div class="text-center py-4">
+                <i class="fas fa-spinner fa-spin fa-2x"></i>
+                <p>Recherche des sponsors dans le secteur ${sector}...</p>
+            </div>
+        `);
+        $('#suggestions-container').show();
+
+        // Appel AJAX au contrôleur
+        $.ajax({
+            url: '{{ path('app_sponsor_suggestions') }}',
+            method: 'POST',
+            data: { sector: sector },
+            success: function(response) {
+                $('#suggestions-content').html(response);
+                
+                // Ajouter des boutons pour utiliser les suggestions
+                $('.suggestion-item').each(function() {
+                    const name = $(this).data('name');
+                    const budget = $(this).data('budget');
+                    
+                    if (name && budget) {
+                        $(this).append(`
+                            <button class="btn btn-sm btn-primary use-suggestion mt-2" 
+                                    data-name="${name}" data-budget="${budget}">
+                                <i class="fas fa-check"></i> Utiliser cette suggestion
+                            </button>
+                        `);
+                    }
+                });
+            },
+            error: function(xhr) {
+                $('#suggestions-content').html(`
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Une erreur est survenue lors de la récupération des suggestions.
+                        ${xhr.responseText || ''}
+                    </div>
+                `);
+            }
+        });
+    });
+
+    // Utiliser une suggestion
+    $(document).on('click', '.use-suggestion', function() {
+        const name = $(this).data('name');
+        const budget = $(this).data('budget');
+        
+        $('#sponsor_nomSponso').val(name).trigger('blur');
+        $('#sponsor_budgetSponso').val(budget).trigger('blur');
+        $('#sponsor_BudgetApresReduction').val(budget).trigger('blur');
+        
+        // Faire défiler jusqu'au formulaire
+        $('html, body').animate({
+            scrollTop: $('#sponsor-form').offset().top - 20
+        }, 500);
+        
+        // Highlight les champs remplis
+        $('#sponsor_nomSponso').addClass('highlight-field');
+        $('#sponsor_budgetSponso').addClass('highlight-field');
+        $('#sponsor_BudgetApresReduction').addClass('highlight-field');
+        
+        setTimeout(() => {
+            $('.highlight-field').removeClass('highlight-field');
+        }, 2000);
     });
 });
 </script>
+
+<style>
+.highlight-field {
+    background-color: #fffde7 !important;
+    transition: background-color 0.5s ease;
+}
+
+.suggestion-item {
+    border-left: 4px solid #4e73df;
+    padding: 15px;
+    margin-bottom: 15px;
+    background-color: white;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.suggestion-item h5 {
+    color: #2c3e50;
+    margin-top: 0;
+}
+
+.use-suggestion {
+    transition: all 0.3s ease;
+}
+
+.use-suggestion:hover {
+    transform: translateY(-2px);
+}
+</style>
 {% endblock %}

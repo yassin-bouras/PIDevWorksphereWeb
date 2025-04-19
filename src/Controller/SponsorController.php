@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Sponsor;
 use App\Form\SponsorType;
 use App\Repository\EvenementSponsorRepository;
+use App\Service\GeminiAIService;
 use App\Repository\SponsorRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -73,7 +74,7 @@ final class SponsorController extends AbstractController{
         ]);
     }
 
-    #[Route('/{idSponsor}', name: 'app_sponsor_delete', methods: ['POST'])]
+    #[Route('/{idSponsor}/delete', name: 'app_sponsor_delete', methods: ['POST'])]
     public function delete(Request $request, Sponsor $sponsor, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$sponsor->getIdSponsor(), $request->getPayload()->getString('_token'))) {
@@ -96,4 +97,39 @@ final class SponsorController extends AbstractController{
             'evenement_sponsors' => $evenementSponsors,
         ]);
     }
+
+    #[Route('/suggestions', name: 'app_sponsor_suggestions', methods: ['POST'])]
+public function getSuggestions(Request $request, GeminiAIService $geminiAiService): Response
+{
+    $sector = $request->request->get('sector');
+    
+    try {
+        $prompt = "Génère une liste de 5 sponsors potentiels dans le secteur $sector. 
+        Pour chaque sponsor, fournis:
+        - Nom complet (data-name)
+        - Domaine d'activité
+        - Budget moyen estimé en euros (data-budget)
+        
+        Format de sortie EXCLUSIVEMENT:
+        <div class='suggestion-item' data-name='NOM_DU_SPONSOR' data-budget='BUDGET'>
+            <h5>NOM_DU_SPONSOR</h5>
+            <p><strong>Domaine:</strong> DOMAINE_ACTIVITE</p>
+            <p><strong>Budget moyen:</strong> BUDGET €</p>
+        </div>
+        
+        Ne donne aucune explication, commentaire ou texte supplémentaire. Juste les 5 divs comme dans l'exemple.";
+        
+        $response = $geminiAiService->generateContent($prompt);
+        
+        // Nettoyer la réponse si nécessaire
+        $cleanResponse = strip_tags($response['text'], '<div><h5><p><strong><em><br>');
+        
+        return new Response($cleanResponse);
+    } catch (\Exception $e) {
+        return new Response(
+            '<div class="alert alert-danger">Erreur lors de la génération des suggestions: '.$e->getMessage().'</div>',
+            Response::HTTP_INTERNAL_SERVER_ERROR
+        );
+    }
+}
 }
