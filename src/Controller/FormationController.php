@@ -3,9 +3,12 @@
 namespace App\Controller;
 
 use App\Entity\Formation;
+use App\Entity\Cours;
+use App\Entity\FormationCours;
 use App\Form\FormationType;
 use App\Repository\FormationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -156,7 +159,32 @@ final class FormationController extends AbstractController
 
         return $this->redirectToRoute('app_formation_index', [], Response::HTTP_SEE_OTHER);
     }
-
+    #[Route('/formation/{id_f}/assign', name: 'app_formation_assign_cours')]
+    public function assignCours(Request $request, ManagerRegistry $doctrine, int $id_f): Response
+    {
+        $entityManager = $doctrine->getManager();
+        $formation = $entityManager->getRepository(Formation::class)->find($id_f);
+        $coursList = $entityManager->getRepository(Cours::class)->findAll();
+    
+        if ($request->isMethod('POST')) {
+            $coursId = $request->request->get('cours_id');
+            $coursChoisi = $entityManager->getRepository(Cours::class)->find($coursId);
+    
+            $formationCours = new FormationCours();
+            $formationCours->setFormation($formation);
+            $formationCours->setCours($coursChoisi);
+    
+            $entityManager->persist($formationCours);
+            $entityManager->flush();
+    
+            return $this->redirectToRoute('app_formation_index');
+        }
+    
+        return $this->render('formation/assign.html.twig', [
+            'formation' => $formation,
+            'cours' => $coursList,
+        ]);
+    }
 
 #[Route('/{id_f}/cours', name: 'app_formation_cours')]
 public function showCours(int $id_f, FormationRepository $formationRepository): Response
