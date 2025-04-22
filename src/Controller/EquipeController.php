@@ -12,29 +12,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-
+use App\Service\PdfGeneratorService;
 
 #[Route('/equipe')]
 final class EquipeController extends AbstractController{
     
    
-    /*#[Route(name: 'app_equipe_index', methods: ['GET'])]
-    public function index(EquipeRepository $equipeRepository, Request $request): Response
-    {
-        $searchTerm = $request->query->get('search');
-
-        if ($searchTerm) {
-            $equipes = $equipeRepository->findByNomEquipe($searchTerm);
-        } else {
-            $equipes = $equipeRepository->findAll();
-        }
-
-        return $this->render('equipe/index.html.twig', [
-            'equipes' => $equipes,
-        ]);
-    }*/
-
-    #[Route(name: 'app_equipe_index', methods: ['GET'])]
+#[Route(name: 'app_equipe_index', methods: ['GET'])]
 public function index(EquipeRepository $equipeRepository, ProjetRepository $projetRepository, Request $request): Response
 {
     $searchTerm = $request->query->get('search');
@@ -121,6 +105,7 @@ public function index(EquipeRepository $equipeRepository, ProjetRepository $proj
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            
 
             $imageFile = $form->get('imageEquipe')->getData();
         
@@ -133,6 +118,8 @@ public function index(EquipeRepository $equipeRepository, ProjetRepository $proj
                 
                 $equipe->setImageEquipe('img/' . $newFilename);  
             }
+
+    
 
             
             $entityManager->persist($equipe);
@@ -203,7 +190,7 @@ public function index(EquipeRepository $equipeRepository, ProjetRepository $proj
     }
 
 
-    #[Route('/{id}/assign-project', name: 'app_equipe_assign_project', methods: ['POST'])]
+ #[Route('/{id}/assign-project', name: 'app_equipe_assign_project', methods: ['POST'])]
 public function assignProject(Request $request, Equipe $equipe, EntityManagerInterface $entityManager, ProjetRepository $projetRepository): Response
 {
     $projetId = $request->request->get('projet_id');
@@ -223,5 +210,30 @@ public function assignProject(Request $request, Equipe $equipe, EntityManagerInt
     $this->addFlash('success', 'Projet assigné avec succès à l\'équipe.');
     return $this->redirectToRoute('app_equipe_index');
 }
-   
+
+
+/*#[Route('/{id}/assign-project', name: 'app_equipe_assign_project', methods: ['POST'])]
+public function assignProject(Request $request, Equipe $equipe, EntityManagerInterface $entityManager, ProjetRepository $projetRepository): Response
+{
+    $projetId = $request->request->get('projet_id');
+    $projet = $projetRepository->find($projetId);
+
+    if (!$projet) {
+        $this->addFlash('error', 'Projet non trouvé.');
+        return $this->redirectToRoute('app_equipe_index');
+    }
+
+    // Ajoute le projet à l'équipe (relation ManyToMany)
+    if (!$equipe->getProjets()->contains($projet)) {
+        $equipe->addProjet($projet);
+        $entityManager->flush();
+        $this->addFlash('success', 'Projet assigné avec succès à l\'équipe.');
+    } else {
+        $this->addFlash('warning', 'Ce projet est déjà assigné à cette équipe.');
+    }
+
+    return $this->redirectToRoute('app_equipe_index');
+}
+   */
+
 }

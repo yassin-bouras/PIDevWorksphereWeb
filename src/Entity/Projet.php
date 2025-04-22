@@ -5,6 +5,8 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\ProjetRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
 #[ORM\Table(name: 'projet')]
@@ -109,6 +111,7 @@ class Projet
         return $this;
     }
 
+
     
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $etat = null;
@@ -146,6 +149,39 @@ class Projet
         return $this;
     }
 
+    /*#[ORM\ManyToMany(targetEntity: Equipe::class, inversedBy: 'projets')]
+    #[ORM\JoinTable(name: 'equipe_projet')]
+    private Collection $equipe;
 
+    public function __construct()
+    {
+        $this->equipe = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection<int, Equipe>
+     */
     
+    /*public function getEquipes(): Collection
+    {
+        return $this->equipe;
+    }
+
+    public function addEquipe(Equipe $equipe): self
+    {
+        if (!$this->equipe->contains($equipe)) {
+            $this->equipe->add($equipe);
+            $equipe->addProjet($this);
+        }
+        return $this;
+    }
+
+    public function removeEquipe(Equipe $equipe): self
+    {
+        if ($this->equipe->removeElement($equipe)) {
+            $equipe->removeProjet($this);
+        }
+        return $this;
+    }
+    */
 }

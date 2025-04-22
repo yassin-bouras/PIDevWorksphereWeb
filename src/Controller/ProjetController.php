@@ -10,30 +10,24 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use App\Service\PdfGeneratorService;
 
 #[Route('/projet')]
 final class ProjetController extends AbstractController{
 
-   /* #[Route(name: 'app_projet_index', methods: ['GET'])]
-    public function index(ProjetRepository $projetRepository): Response
-    {
-        return $this->render('projet/index.html.twig', [
-            'projets' => $projetRepository->findAll(),
-        ]);
-    }*/
-
+ 
     #[Route(name: 'app_projet_index', methods: ['GET'])]
     public function index(ProjetRepository $projetRepository, Request $request): Response
      {
-    // Récupérer les paramètres de recherche
+  
     $nom = $request->query->get('search');
     $etat = $request->query->get('etat');
     $nomEquipe = $request->query->get('nomEquipe');
 
-    // Appeler la méthode de recherche
+
     $projets = $projetRepository->searchProjects($nom, $etat, $nomEquipe);
 
-    // Retourner la vue avec les résultats
+
     return $this->render('projet/index.html.twig', [
         'projets' => $projets,
     ]);
@@ -56,7 +50,7 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
             $projet->setImageProjet('img/' . $newFilename);  
         }
 
-        // Mettre à jour le nombre de projets de l'équipe
+      
         $equipe = $projet->getEquipe();
         if ($equipe) {
             $currentCount = $equipe->getNbrProjet() ?? 0;
@@ -107,16 +101,16 @@ public function edit(Request $request, Projet $projet, EntityManagerInterface $e
 
         $nouvelleEquipe = $projet->getEquipe();
         
-        // Logique de mise à jour du nombre de projets
+      
         if ($ancienneEquipe !== $nouvelleEquipe) {
-            // Décrémenter l'ancienne équipe
+       
             if ($ancienneEquipe) {
                 $ancienCount = $ancienneEquipe->getNbrProjet() ?? 0;
                 $ancienneEquipe->setNbrProjet(max(0, $ancienCount - 1));
                 $entityManager->persist($ancienneEquipe);
             }
             
-            // Incrémenter la nouvelle équipe
+   
             if ($nouvelleEquipe) {
                 $nouveauCount = $nouvelleEquipe->getNbrProjet() ?? 0;
                 $nouvelleEquipe->setNbrProjet($nouveauCount + 1);
@@ -140,11 +134,11 @@ public function edit(Request $request, Projet $projet, EntityManagerInterface $e
 public function delete(Request $request, Projet $projet, EntityManagerInterface $entityManager): Response
 {
     if ($this->isCsrfTokenValid('delete'.$projet->getId(), $request->getPayload()->getString('_token'))) {
-        // Mettre à jour le nombre de projets de l'équipe avant suppression
+   
         $equipe = $projet->getEquipe();
         if ($equipe) {
             $currentCount = $equipe->getNbrProjet() ?? 0;
-            $newCount = max(0, $currentCount - 1); // Empêche les valeurs négatives
+            $newCount = max(0, $currentCount - 1);
             $equipe->setNbrProjet($newCount);
             $entityManager->persist($equipe);
         }
@@ -155,4 +149,14 @@ public function delete(Request $request, Projet $projet, EntityManagerInterface 
 
     return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
 }
+
+#[Route('/{id}/pdf', name: 'app_projet_pdf', methods: ['GET'])]
+public function generatePdf(Projet $projet, PdfGeneratorService $pdfGenerator, EntityManagerInterface $em): Response
+{
+   
+    $equipe = $projet->getEquipe();
+    
+    return $pdfGenerator->generateProjetPdf($projet, $equipe);
+}
+
 }

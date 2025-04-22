@@ -86,6 +86,10 @@
                                Supprimer
                             </a>
                             <!--  {{ include('projet/_delete_form.html.twig') }} -->
+
+                            <a href="{{ path('app_projet_pdf', {'id': projet.id}) }}" class="btn btn-primary">
+                                <i class="fas fa-file-pdf"></i> Générer PDF
+                            </a>
                         </div>
                     </div>
                 </div>

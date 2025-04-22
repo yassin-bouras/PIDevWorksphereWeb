@@ -92,6 +92,9 @@ class Equipe
     #[ORM\OneToMany(targetEntity: Projet::class, mappedBy: 'equipe')]
     private Collection $projets;
 
+    /*#[ORM\ManyToMany(targetEntity: Projet::class, mappedBy: 'equipe')]
+    private Collection $projets;*/
+
     /**
      * @return Collection<int, Projet>
      */
@@ -119,6 +122,27 @@ class Equipe
 
 
 
+/*public function getProjets(): Collection
+{
+    return $this->projets;
+}
+
+public function addProjet(Projet $projet): self
+{
+    if (!$this->projets->contains($projet)) {
+        $this->projets->add($projet);
+        $projet->addEquipe($this);
+    }
+    return $this;
+}
+
+public function removeProjet(Projet $projet): self
+{
+    if ($this->projets->removeElement($projet)) {
+        $projet->removeEquipe($this);
+    }
+    return $this;
+}*/
 
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'equipes')]
@@ -161,4 +185,20 @@ class Equipe
     }
 
     
-}
+
+    
+    #[ORM\Column(name: 'id_user' ,type: 'integer', nullable: true)]
+    private ?int $idUser = null;
+    public function getIdUser(): ?int
+    {
+        return $this->idUser;
+    }
+
+    public function setIdUser(?int $idUser): self
+    {
+        $this->idUser = $idUser;
+        return $this;
+    }
+
+    
+}    
