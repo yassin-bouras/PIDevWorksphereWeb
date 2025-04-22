@@ -77,4 +77,12 @@ final class MeetingController extends AbstractController{
 
         return $this->redirectToRoute('app_meeting_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/meeting/{roomName}', name: 'app_meeting')]
+    public function index2(string $roomName): Response
+    {
+        return $this->render('meeting/index.html.twig', [
+            'roomName' => $roomName,
+        ]);
+    }
 }

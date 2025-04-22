@@ -1,37 +1,43 @@
-<!DOCTYPE html>
+{% extends '/home/index.html.twig' %}
 
-<title>Favori index</title>
+{% block title %}Favori{% endblock %}
 
 {% block body %}
-    <h1>Favori index</h1>
+<div class="container mt-4">
+    <h2 class="mb-4" style="margin-top: 10%;margin-left: 35%;">Mes formations favorites ❤️</h2>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id_favori</th>
-                <th>Id_user</th>
-                <th>Id_f</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for favori in favoris %}
-            <tr>
-                <td>{{ favori.idFavori }}</td>
-                <td>{{ favori.idUser }}</td>
-                <td>{{ favori.idF }}</td>
-                <td>
-                    <a href="{{ path('app_favori_show', {'id_favori': favori.id_favori}) }}">show</a>
-                    <a href="{{ path('app_favori_edit', {'id_favori': favori.id_favori}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_favori_new') }}">Create new</a>
+    <div class="card shadow-sm">
+        <div class="card-body p-0">
+            <table class="table table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="ps-4 py-3">Titre</th>
+                        <th class="py-3">Description</th>
+                        <th class="pe-4 py-3 text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for formation in formations %}
+                    <tr>
+                        <td class="ps-4 align-middle">{{ formation.titre }}</td>
+                        <td class="align-middle">{{ formation.description|slice(0, 100) }}...</td>
+                        <td class="pe-4 align-middle text-end">
+                            <a href="{{ path('app_favori_remove', {'id': favoris[loop.index0].idFavori }) }}" 
+                               class="btn btn-sm btn-danger">
+                                Retirer des favoris ❌
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="3" class="text-center py-4">
+                            Aucune formation en favoris
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
 {% endblock %}

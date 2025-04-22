@@ -7,8 +7,8 @@
     <h1 class="text-center mb-5" style="font-weight: 700; color: #2c3e50; text-shadow: 1px 1px 3px rgba(0,0,0,0.1);">Liste des Formations</h1>
     
     <!-- Barre de recherche améliorée -->
-    <div class="mb-5">
-        <form method="get" action="{{ path('app_formation_search') }}" class="w-75 mx-auto">
+    <div class="mb-5" style>
+        <form method="get" action="{{ path('app_formation_search') }}" class="d-flex justify-content-center w-75 mx-auto">
             <div class="input-group shadow-sm">
                 <input type="text" name="search" class="form-control py-2 border-0" 
                        placeholder="Rechercher une formation..." 
@@ -20,7 +20,16 @@
                 </button>
             </div>
         </form>
+    
+        <!-- Bouton Mes favoris à côté du bouton Recherche -->
+        <a href="{{ path('app_favori_list') }}" class="ms-3">
+            <button class="btn ms-3" type="button"
+                    style="background-color: #ff4757; color: white; border-radius: 30px; padding-left: 20px; padding-right: 25px; width: 200px;">
+                <i class="fas fa-heart"></i> Mes favoris
+            </button>
+        </a>
     </div>
+    
 
     {% if formations is not empty %}
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
@@ -30,11 +39,43 @@
                          style="border-radius: 15px; transition: all 0.3s ease; overflow: hidden;">
                         
                         <!-- Bouton favori en haut à droite -->
-                        <button class="btn btn-sm position-absolute" 
-                                style="top: 10px; right: 10px; z-index: 1; background-color: #ff4757; color: white; border-radius: 50%; width: 36px; height: 36px; padding: 0;"
-                                title="Ajouter aux favoris">
-                            <i class="fas fa-heart"></i>
-                        </button>
+                        <a href="{{ path('app_favori_add', {'formation_id': formation.id}) }}"
+                        style="position: absolute; top: 10px; right: 10px; z-index: 1;">
+                         <button class="btn btn-sm" 
+                                 style="background-color: #ff4757; color: white; border-radius: 50%; width: 36px; height: 36px; padding: 0;"
+                                 title="Ajouter aux favoris">
+                             <i class="fas fa-heart"></i>
+                         </button>
+                     </a>
+
+                     {% for label, messages in app.flashes %}
+                     {% for message in messages %}
+                         {% set modalId = 'flashModal_' ~ loop.index %}
+                         <div class="modal fade" id="{{ modalId }}" tabindex="-1" aria-labelledby="{{ modalId }}Label" aria-hidden="true">
+                             <div class="modal-dialog">
+                                 <div class="modal-content border-{{ label == 'success' ? 'success' : 'warning' }}">
+                                     <div class="modal-header">
+                                         <h5 class="modal-title" id="{{ modalId }}Label">
+                                             {{ label == 'success' ? 'Succès' : 'Avertissement' }}
+                                         </h5>
+                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                     </div>
+                                     <div class="modal-body">
+                                         {{ message }}
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                 
+                         <script>
+                             const flashModal = new bootstrap.Modal(document.getElementById('{{ modalId }}'));
+                             window.addEventListener('load', () => {
+                                 flashModal.show();
+                             });
+                         </script>
+                     {% endfor %}
+                 {% endfor %}
+
                         
                         {% if formation.photo %}
                             <img src="{{ asset(formation.photo) }}" class="card-img-top" alt="Image Formation" 

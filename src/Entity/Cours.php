@@ -49,7 +49,7 @@ class Cours
     )]
     private ?string $photo = null;
 
-    // 👇 Relation avec FormationCours
+
     #[ORM\OneToMany(mappedBy: 'cours', targetEntity: FormationCours::class, cascade: ['persist', 'remove'])]
     private Collection $formationCours;
 
@@ -57,8 +57,6 @@ class Cours
     {
         $this->formationCours = new ArrayCollection();
     }
-
-    // ✅ GETTERS & SETTERS
 
     public function getIdC(): ?int
     {
@@ -136,7 +134,7 @@ class Cours
         return $this;
     }
 
-    // ✅ Gestion de la relation FormationCours
+ 
 
     public function getFormationCours(): Collection
     {
