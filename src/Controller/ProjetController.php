@@ -11,6 +11,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Service\PdfGeneratorService;
+use App\Service\CloudinaryUploader;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 #[Route('/projet')]
 final class ProjetController extends AbstractController{
@@ -150,13 +152,52 @@ public function delete(Request $request, Projet $projet, EntityManagerInterface 
     return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
 }
 
-#[Route('/{id}/pdf', name: 'app_projet_pdf', methods: ['GET'])]
+/*#[Route('/{id}/pdf', name: 'app_projet_pdf', methods: ['GET'])]
 public function generatePdf(Projet $projet, PdfGeneratorService $pdfGenerator, EntityManagerInterface $em): Response
 {
    
     $equipe = $projet->getEquipe();
     
     return $pdfGenerator->generateProjetPdf($projet, $equipe);
+}*/
+
+#[Route('/projet/{id}/generate-pdf', name: 'app_projet_pdf', methods: ['POST'])]
+public function generatePdf(
+    Projet $projet, 
+    Request $request,
+    PdfGeneratorService $pdfGenerator,
+    CloudinaryUploader $cloudinaryUploader
+): Response {
+    try {
+  
+        $pdfContent = $pdfGenerator->generateProjetPdf($projet, $projet->getEquipe());
+        
+  
+        $localPath = $this->getParameter('kernel.project_dir').'/public/pdfs/';
+        if (!file_exists($localPath)) {
+            mkdir($localPath, 0777, true);
+        }
+        
+        $pdfFileName = str_replace(' ', '_', $projet->getNom()).'.pdf';
+        $fullLocalPath = $localPath.$pdfFileName;
+        file_put_contents($fullLocalPath, $pdfContent);
+        
+      
+        $cloudinaryUrl = $cloudinaryUploader->uploadPdfToCloudinary($pdfContent);
+        
+       
+        $response = new Response($pdfContent);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-Disposition', 'attachment; filename="'.$pdfFileName.'"');
+        
+        $this->addFlash('success', 'PDF généré et uploadé avec succès vers Cloudinary');
+        
+        return $response;
+
+    } catch (\Exception $e) {
+        $this->addFlash('error', 'Erreur: '.$e->getMessage());
+        return $this->redirectToRoute('app_projet_show', ['id' => $projet->getId()]);
+    }
 }
 
 }
