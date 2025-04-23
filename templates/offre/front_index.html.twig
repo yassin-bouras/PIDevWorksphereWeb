@@ -421,6 +421,8 @@
         font-size: 1.1rem;
         transition: border-color 0.3s ease;
         background-color: white;
+        width: 400px; /* Set a specific width */
+    max-width: 100%; /* Allow it to be responsive */
     }
 
     .form-select:focus {
@@ -430,12 +432,12 @@
     }
     .custom-select-wrapper::after {
         content: "▼";
-        font-size: 12px;
+        font-size: 20px;
         color: #33ccc5;
         position: absolute;
-        right: 15px;
+        right: 13px;
         top: 50%;
-        transform: translateY(-50%);
+        transform: translateY(-40%);
         pointer-events: none; /* Make sure this doesn't block clicks */
     }
 </style>
