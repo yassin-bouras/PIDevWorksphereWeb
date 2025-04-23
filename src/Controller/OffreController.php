@@ -30,12 +30,15 @@ final class OffreController extends AbstractController
     #[Route('/front', name: 'app_offre_front_index', methods: ['GET'])]
     public function frontIndex(Request $request, OffreRepository $offreRepository): Response
     {
-        $search = $request->query->get('search', ''); 
-        $offres = $offreRepository->findByTitre($search); 
+        $search = $request->query->get('search', '');
+        $contractType = $request->query->get('contract_type', '');
+        $offres = $offreRepository->findByTitre($search);
+        $offres = $offreRepository->findBySearchAndContractType($search, $contractType);
 
         return $this->render('offre/front_index.html.twig', [
             'offres' => $offres,
             'search' => $search,
+            'contract_type' => $contractType,
             'context' => 'front'
         ]);
     }

@@ -53,4 +53,24 @@ class OffreRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+
+    public function findBySearchAndContractType(string $search = '', string $contractType = ''): array
+    {
+        $qb = $this->createQueryBuilder('o')
+            ->orderBy('o.date_publication', 'DESC');
+
+        // Apply search filter if provided
+        if (!empty($search)) {
+            $qb->andWhere('o.titre LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
+
+        // Apply contract type filter if provided
+        if (!empty($contractType)) {
+            $qb->andWhere('o.type_contrat = :contractType')
+                ->setParameter('contractType', $contractType);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
 }
