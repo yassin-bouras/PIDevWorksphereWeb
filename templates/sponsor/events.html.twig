@@ -26,6 +26,9 @@
                         <a href="{{ path('app_evenement_sponsor_new', {'sponsor_id': sponsor.idSponsor}) }}" class="btn btn-primary">
                             <i class="fas fa-plus me-2"></i>Ajouter un partenariat
                         </a>
+                        <a href="{{ path('app_sponsor_events_pdf', {'idSponsor': sponsor.idSponsor}) }}" class="btn btn-outline-secondary ms-2" target="_blank">
+                            <i class="fas fa-file-pdf me-2"></i>Générer PDF
+                        </a>
                     </div>
                 </div>
                 <div class="card-body">
@@ -49,7 +52,7 @@
                                             evenement_sponsor.duree == 'sixMois' ? '+6 months' : '+1 year'
                                         ) %}
                                     {% endif %}
-                                    
+
                                     <tr class="{{ dateFin and dateFin < date() ? 'table-danger' : '' }}">
                                         <td>
                                             <h6 class="mb-0">{{ evenement_sponsor.evenement.nomEvent }}</h6>
@@ -75,15 +78,16 @@
                                         </td>
                                         <td class="text-end">
                                             <div class="actions">
-                                                <a href="{{ path('app_evenement_sponsor_show', {'evenement_id': evenement_sponsor.evenement.idEvent, 'sponsor_id': sponsor.idSponsor}) }}" 
+                                                <a href="{{ path('app_evenement_sponsor_show', {'evenement_id': evenement_sponsor.evenement.idEvent, 'sponsor_id': sponsor.idSponsor}) }}"
                                                    class="btn btn-sm {{ dateFin and dateFin < date() ? 'bg-danger-light' : 'bg-info-light' }} me-2"
                                                    data-bs-toggle="tooltip" title="Voir détails">
                                                     <i class="fas fa-eye"></i>
                                                 </a>
-                                               
+
+
                                                 <form method="post" action="{{ path('app_evenement_sponsor_delete', {'evenement_id': evenement_sponsor.evenement.idEvent, 'sponsor_id': sponsor.idSponsor}) }}" class="d-inline">
                                                     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ evenement_sponsor.evenement.idEvent ~ evenement_sponsor.sponsor.idSponsor) }}">
-                                                    <button type="submit" class="btn btn-sm bg-danger-light" 
+                                                    <button type="submit" class="btn btn-sm bg-danger-light"
                                                             data-bs-toggle="tooltip" title="Supprimer la liaison"
                                                             onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette liaison entre le sponsor et l\'événement ?');">
                                                         <i class="fas fa-unlink"></i>

@@ -12,6 +12,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use TCPDF;
+use App\Repository\EvennementRepository;
 
 #[Route('/sponsor')]
 final class SponsorController extends AbstractController{
@@ -132,4 +135,92 @@ public function getSuggestions(Request $request, GeminiAIService $geminiAiServic
         );
     }
 }
+#[Route('/{idSponsor}/events/pdf', name: 'app_sponsor_events_pdf', methods: ['GET'])]
+    public function generateSponsorEventsPdf(
+        #[MapEntity(id: 'idSponsor')] Sponsor $sponsor,
+        EvenementSponsorRepository $evenementSponsorRepository,
+        EvennementRepository $evennementRepository
+    ): Response {
+        // Récupérez les événements sponsorisés pour ce sponsor
+        $evenementSponsors = $evenementSponsorRepository->findBy(['sponsor' => $sponsor]);
+
+        // Créez un nouveau document PDF avec TCPDF
+        $pdf = new TCPDF(PDF_PAGE_ORIENTATION, PDF_UNIT, PDF_PAGE_FORMAT, true, 'UTF-8', false);
+
+        // Définissez les informations du document
+        $pdf->SetCreator(PDF_CREATOR);
+        $pdf->SetAuthor('Votre Nom/Organisation');
+        $pdf->SetTitle('Liste des Événements Sponsorisés par ' . $sponsor->getNomSponso() . ' ' . $sponsor->getPrenomSponso());
+        $pdf->SetSubject('Événements Sponsorisés');
+
+        // En-tête et pied de page par défaut
+        $pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE . ' 001', PDF_HEADER_STRING, [0, 64, 255], [0, 64, 128]);
+       
+        $pdf->setHeaderFont([PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN]);
+        $pdf->setFooterFont([PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA]);
+
+        // Marges
+        $pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+        $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
+        $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
+
+        // Saut de page automatique
+        $pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);
+
+        // Police par défaut
+        $pdf->SetFont('helvetica', '', 12);
+
+        // Ajoutez une page
+        $pdf->AddPage();
+
+        // Contenu du PDF
+        $html = '<h1>Liste des Événements Sponsorisés par ' . $sponsor->getNomSponso() . ' ' . $sponsor->getPrenomSponso() . '</h1>';
+
+        if (!empty($evenementSponsors)) {
+            $html .= '<table border="1" cellpadding="5">';
+            $html .= '<thead><tr><th>Événement</th><th>Date Début Contrat</th><th>Date Fin Contrat</th><th>Durée</th></tr></thead><tbody>';
+            foreach ($evenementSponsors as $evenementSponsor) {
+                $dateFin = null;
+                if ($evenementSponsor->getDatedebutContrat() && $evenementSponsor->getDuree()) {
+                    $dateDebut = $evenementSponsor->getDatedebutContrat();
+                    if ($evenementSponsor->getDuree() === 'troisMois') {
+                        $dateFin = $dateDebut->modify('+3 months');
+                    } elseif ($evenementSponsor->getDuree() === 'sixMois') {
+                        $dateFin = $dateDebut->modify('+6 months');
+                    } elseif ($evenementSponsor->getDuree() === 'unAns') {
+                        $dateFin = $dateDebut->modify('+1 year');
+                    }
+                }
+
+                $html .= '<tr>';
+                $html .= '<td>' . $evenementSponsor->getEvenement()->getNomEvent() . '</td>';
+                $html .= '<td>' . ($evenementSponsor->getDatedebutContrat() ? $evenementSponsor->getDatedebutContrat()->format('d/m/Y') : 'N/A') . '</td>';
+                $html .= '<td>' . ($dateFin ? $dateFin->format('d/m/Y') : 'N/A') . '</td>';
+                $html .= '<td>';
+                if ($evenementSponsor->getDuree() === 'troisMois') {
+                    $html .= '3 Mois';
+                } elseif ($evenementSponsor->getDuree() === 'sixMois') {
+                    $html .= '6 Mois';
+                } elseif ($evenementSponsor->getDuree() === 'unAns') {
+                    $html .= '1 An';
+                } else {
+                    $html .= 'N/A';
+                }
+                $html .= '</td>';
+                $html .= '</tr>';
+            }
+            $html .= '</tbody></table>';
+        } else {
+            $html .= '<p>Aucun événement sponsorisé trouvé pour ce sponsor.</p>';
+        }
+
+        // Output the HTML content
+        $pdf->writeHTML($html, true, false, true, false, '');
+
+        // Output the PDF to the browser
+        $pdf->Output('evenements_sponsorises_' . $sponsor->getNomSponso() . '.pdf', 'I');
+
+        // Vous devez retourner une Response, même si TCPDF envoie déjà les headers
+        return new Response();
+    }
 }
