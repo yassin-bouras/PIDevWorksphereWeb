@@ -18,12 +18,16 @@ final class OffreController extends AbstractController
     #[Route(name: 'app_offre_index', methods: ['GET'])]
     public function index(Request $request, OffreRepository $offreRepository): Response
     {
-        $search = $request->query->get('search', ''); 
-        $offres = $offreRepository->findByTitre($search); 
+        $search = $request->query->get('search', '');
+        $contractType = $request->query->get('contract_type', '');
+        $offres = $offreRepository->findByTitre($search);
+        $offres = $offreRepository->findBySearchAndContractType($search, $contractType);
 
 
         return $this->render('offre/index.html.twig', [
             'offres' => $offres,
+            'search' => $search,
+            'contract_type' => $contractType,
         ]);
     }
 
@@ -47,14 +51,14 @@ final class OffreController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager, string $context = 'back'): Response
     {
         $offre = new Offre();
-        $offre->setDatePublication(new \DateTime()); 
+        $offre->setDatePublication(new \DateTime());
 
         $form = $this->createForm(OffreType::class, $offre);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             if (!$offre->getDateLimite()) {
-                $offre->setDateLimite(new \DateTime()); 
+                $offre->setDateLimite(new \DateTime());
             }
             $entityManager->persist($offre);
             $entityManager->flush();

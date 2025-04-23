@@ -121,7 +121,64 @@
     .btn-create-offer:hover::before {
         box-shadow: inset 0 0 0 10em rgb(40, 144, 241);
     }
+    .filter-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.custom-select-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
+.form-select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    border: 3px solid #33ccc5;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 1.1rem;
+    background-color: white;
+    transition: all 0.2s ease;
+    width: 400px; /* Set a specific width */
+    max-width: 100%; /* Allow it to be responsive */
+}
+
+.form-select:focus {
+    box-shadow: 0 0 5px rgba(51, 204, 197, 0.5);
+    outline: none;
+}
+
+.custom-select-wrapper::after {
+    content: "▼";
+    font-size: 20px;
+    color: #33ccc5;
+    position: absolute;
+    right: 13px;
+    top: 50%;
+    transform: translateY(-40%);
+    pointer-events: none;
+}
 </style>
+<script>
+    // Ensure dropdown functions properly
+    document.addEventListener('DOMContentLoaded', function() {
+        const selectElement = document.getElementById('contract_type');
+        
+        // Force the dropdown to be clickable
+        selectElement.addEventListener('mousedown', function(e) {
+            e.stopPropagation();
+        });
+        
+        // Automatically submit form when selection changes
+        selectElement.addEventListener('change', function() {
+            this.form.submit();
+        });
+    });
+</script>
 <div class="content container-fluid" style="margin-top: -58%";>
     <div class="page-header">
         <div class="row">
@@ -156,7 +213,19 @@
 
                     <div class="mb-4">
                         <form method="GET" action="{{ path('app_offre_index') }}" >
-                            
+                            <div class="filter-container" style="max-width: 1050px; margin: 0 auto 15px auto;">
+                                <label for="contract_type" style="font-weight: 600; color: #333; margin-right: 10px;">Filtrer par type de contrat:</label>
+                                <div class="custom-select-wrapper">
+                                    <select name="contract_type" id="contract_type" class="form-select" style="max-width: 300px; display: inline-block;">
+                                        <option value="">Tous les types</option>
+                                        <option value="CDI" {% if contract_type is defined and contract_type == 'CDI' %}selected{% endif %}>CDI</option>
+                                        <option value="CDD" {% if contract_type is defined and contract_type == 'CDD' %}selected{% endif %}>CDD</option>
+                                        <option value="Stage" {% if contract_type is defined and contract_type == 'Stage' %}selected{% endif %}>Stage</option>
+                                        <option value="Freelance" {% if contract_type is defined and contract_type == 'Freelance' %}selected{% endif %}>Freelance</option>
+                                        <option value="Alternance" {% if contract_type is defined and contract_type == 'Alternance' %}selected{% endif %}>Alternance</option>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="input-group" style="max-width: 1050px; margin: 0 auto;">
                                 <input type="text" name="search" class="form-control"
                                     placeholder="Rechercher par titre..."
