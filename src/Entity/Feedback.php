@@ -51,10 +51,9 @@ class Feedback
     }
 
     #[ORM\Column(type: 'integer', nullable: false)]
-    #[Assert\NotNull(message: 'Le rate ne doit pas être vide.')]
     #[Assert\Range(
         min: 1,
-        max: 5,
+        max: 10,
         notInRangeMessage: 'La note doit être comprise entre {{ min }} et {{ max }}.'
     )]
     private ?int $rate = null;

@@ -24,26 +24,6 @@
                     
                     <div class="event-actions" style="display: flex; gap: 10px;">
                         <a class="btn" href="{{ path('app_entretien_show', {'id': entretien.id}) }}" style="background-color: #4a6fa5; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Voir details entretien</a>
-                        {% if entretien.feedback is  null %}
-                        <a class="btn" href="{{ path('app_feedback_news', {'id': entretien.id}) }}" style="background-color: #FF8C00; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Ajouter Feedback</a>
-                        {% else %}
-                        <a class="btn" href="{{ path('app_feedback_edit', {'id': entretien.feedback.id}) }}" style="background-color: #FF8C00; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">modifier   Feedback</a>
-                        {% endif %}
-                        {% if not entretien.status %}
-                            <form method="post" action="{{ path('entretien_change_status', {'id': entretien.id}) }}" style="display: inline;">
-                            <button type="submit" class="btn" style="background-color: #28a745; color: white; padding: 8px 15px; border-radius: 5px; font-size: 0.9rem; border: none; cursor: pointer;">
-                                Marquer comme terminé
-                            </button>
-                            </form>
-                        {% else %}
-                            <span style="background-color: #e0ffe0; color: #28a745; padding: 8px 15px; border-radius: 5px; font-size: 0.9rem;">Entretien terminé</span>
-                        {% endif %}
-                        <a href="{{ path('entretien_calendar') }}" 
-                       class="btn btn-info">
-                       <i class="fas fa-calendar-day"></i> Visualiser dans le calendrier
-                    </a>
-
-
                     </div>
                 </div>
             {% else %}

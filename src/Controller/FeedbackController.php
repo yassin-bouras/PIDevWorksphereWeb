@@ -64,6 +64,24 @@ final class FeedbackController extends AbstractController{
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            $feedback1 = $form->getData();
+
+            $values = [
+                $form->get('q1')->getData(),
+                $form->get('q2')->getData(),
+                $form->get('q3')->getData(),
+                $form->get('q4')->getData(),
+                $form->get('q5')->getData(),
+            ];
+            $average = array_sum($values) / count($values);
+            $rate = round($average * 5, 2); 
+        
+            $feedback->setRate($rate);
+
+
+
+
             $feedback->setEntretien($entretien);
             $entretien->setFeedback($feedback);
 
@@ -107,6 +125,10 @@ final class FeedbackController extends AbstractController{
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
+            
+
+
             $entityManager->flush();
 
             $this->addFlash('success', 'Feedback ajouté avec succès !');

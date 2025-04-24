@@ -10,6 +10,40 @@
             <a href="{{ path('app_entretien_new') }}" class="btn" style="background-color: #4a6fa5; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Créer un nouvel entretien</a>
         </div>
 
+       <form method="get" action="{{ path('filtrer_entretiens') }}" class="mb-5" style="max-width: 800px; margin: 0 auto;">
+    <input type="hidden" name="page" value="1"> {# Réinitialise à la page 1 lors d'un nouveau filtre #}
+    
+    <div class="filter-container" style="display: flex; align-items: center; gap: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <div class="filter-group" style="flex: 1; display: flex; align-items: center; gap: 10px;">
+            <label for="start_date" style="min-width: 80px; font-weight: 500; color: #495057;">Date début</label>
+            <input type="date" id="start_date" name="start_date" 
+                   value="{{ app.request.query.get('start_date') }}" 
+                   class="form-control" 
+                   style="flex: 1; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; background-color: white;" 
+                   required>
+        </div>
+        
+        <div class="filter-group" style="flex: 1; display: flex; align-items: center; gap: 10px;">
+            <label for="end_date" style="min-width: 80px; font-weight: 500; color: #495057;">Date fin</label>
+            <input type="date" id="end_date" name="end_date" 
+                   value="{{ app.request.query.get('end_date') }}" 
+                   class="form-control" 
+                   style="flex: 1; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; background-color: white;" 
+                   required>
+        </div>
+        
+        <button type="submit" class="btn" style="background-color: #4a6fa5; color: white; padding: 8px 20px; border-radius: 4px; border: none; cursor: pointer; transition: all 0.3s ease;">
+            <i class="fas fa-filter"></i> Filtrer
+        </button>
+    </div>
+</form>
+
+
+
+
+        
+
+
         <div class="event-grid" style="max-width: 1060px; margin: 0 auto;">
             {% for entretien in entretiens %}
                 <div class="event-card" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 25px;">
@@ -57,6 +91,44 @@
         </div>
     </div>
 
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if entretiens.currentPageNumber != 1 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': entretiens.currentPageNumber-1})) }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&laquo;</span>
+            </li>
+        {% endif %}
+
+        {% for page in 1..entretiens.pageCount %}
+            <li class="page-item {% if page == entretiens.currentPageNumber %}active{% endif %}">
+                <a class="page-link" href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': page})) }}">
+                    {{ page }}
+                </a>
+            </li>
+        {% endfor %}
+
+        {% if entretiens.currentPageNumber != entretiens.pageCount %}
+            <li class="page-item">
+                <a class="page-link" href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': entretiens.currentPageNumber+1})) }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&raquo;</span>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+   
+
     <style>
         .btn:hover {
             opacity: 0.9;
@@ -69,7 +141,95 @@
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
+
+         .pagination {
+        gap: 8px;
+    }
+    
+    .page-item .page-link {
+        min-width: 40px;
+        height: 40px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #4a6fa5;
+        border: 1px solid #dee2e6;
+        border-radius: 4px !important;
+        font-weight: 500;
+    }
+    
+    .page-item.active .page-link {
+        background-color: #4a6fa5;
+        border-color: #4a6fa5;
+        color: white;
+    }
+    
+    .page-item.disabled .page-link {
+        color: #6c757d;
+        pointer-events: none;
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+    }
+    
+    .page-link:hover {
+        background-color: #e9ecef;
+    }
+
+        
+
+      
     </style>
+
+
+    <script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('search');
+    const form = document.getElementById('search-form');
+    const entretienList = document.getElementById('entretien-list');
+
+    searchInput.addEventListener('input', function () {
+        const query = searchInput.value.trim();
+
+        if (query.length > 0) {
+            fetch(`/entretien/entretienssss/filtrers?search=${encodeURIComponent(query)}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Clear previous results
+                entretienList.innerHTML = '';
+                
+                // Render new results
+                data.forEach(entretien => {
+                    const p = document.createElement('p');
+                    p.textContent = entretien.titreEntretien;
+                    entretienList.appendChild(p);
+                });
+            })
+            .catch(error => console.error('Error:', error));
+        } else {
+            // Reset results when input is cleared
+            entretienList.innerHTML = '';
+        }
+    });
+});
+
+
+
+
+
+
+    </script>
+
+
+
+
+
 {% endblock %}
 
 

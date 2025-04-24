@@ -26,6 +26,43 @@ class EntretienRepository extends ServiceEntityRepository
         ->getResult();
 }
 
+
+public function findByEmployeeIdWithStatusTrue(int $employeeId): array
+{
+    return $this->createQueryBuilder('e')
+        ->andWhere('e.user = :id')
+        ->andWhere('e.status = :status')
+        ->setParameter('id', $employeeId)
+        ->setParameter('status', true)
+        ->orderBy('e.date_entretien', 'DESC')
+        ->getQuery()
+        ->getResult();
+}
+
+public function findEntretiensBetweenDates(\DateTimeInterface $startDate, \DateTimeInterface $endDate): array
+{
+    return $this->createQueryBuilder('e')
+        ->where('e.date_entretien BETWEEN :start AND :end')
+        ->setParameter('start', $startDate->format('Y-m-d'))
+        ->setParameter('end', $endDate->format('Y-m-d'))
+        ->orderBy('e.date_entretien', 'ASC')
+        ->getQuery()
+        ->getResult();
+}
+
+
+public function findByKeyword(string $keyword)
+{
+    $qb = $this->createQueryBuilder('e')
+               ->where('e.titre LIKE :keyword')
+               ->setParameter('keyword', '%'.$keyword.'%')
+               ->getQuery();
+
+    return $qb->getResult();
+}
+
+
+
 //    /**
 //     * @return Entretien[] Returns an array of Entretien objects
 //     */
