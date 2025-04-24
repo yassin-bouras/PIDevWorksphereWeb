@@ -1,8 +1,8 @@
-{% extends '/home/index.html.twig' %}
+{% extends '/dashboard/base2.html.twig' %}
 
 {% block title %}Détails de la Réservation{% endblock %}
 
-{% block body %}
+{% block content %}
     <div class="container" style="margin-top:7%;">
         <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Détails de la Réservation</h1>
 
@@ -44,7 +44,7 @@
         </div>
 
         <div class="text-center mt-4">
-            <a href="{{ path('app_reservation_index') }}" class="btn" style="background-color: rgb(51, 204, 197); color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px;">Retour à la liste</a>
+            <a href="{{ path('app_reservation_index') }}" class="btn" style="background-color: #4771cb; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px;">Retour à la liste</a>
             <!-- <a href="{{ path('app_reservation_edit', {'id_r': reservation.idR}) }}" class="btn" style="background-color: #e67e22; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px;">Modifier</a> -->
          <div style="margin-top: 10px;">{{ include('reservation/_delete_form.html.twig') }}</div>   
         </div>

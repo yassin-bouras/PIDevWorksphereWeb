@@ -1,8 +1,8 @@
-{% extends '/home/index.html.twig' %}
+{% extends '/dashboard/base2.html.twig' %}
 
 {% block title %}Favori{% endblock %}
 
-{% block body %}
+{% block content %}
 <div class="container mt-4">
     <h2 class="mb-4" style="margin-top: 10%;margin-left: 35%;">Mes formations favorites ❤️</h2>
 
@@ -37,6 +37,10 @@
                 {% endfor %}
                 </tbody>
             </table>
+         
+        </div>
+        <div style="margin-top: 10px;margin-left:35%;">
+            <a href="{{ path('app_formation_index2') }}" class="btn" style="background-color: #4771cb; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none; margin-right: 10px;">Retour à la liste des formations</a> 
         </div>
     </div>
 </div>

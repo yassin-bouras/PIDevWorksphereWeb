@@ -25,7 +25,7 @@ final class FormationController extends AbstractController
         ]);
     }
 
-    #[Route('/front', name:'app_formation_index2', methods: ['GET'])]
+    #[Route('/employe', name:'app_formation_index2', methods: ['GET'])]
     public function index2(FormationRepository $formationRepository): Response
     {
         return $this->render('formation/index2.html.twig', [
@@ -51,7 +51,7 @@ final class FormationController extends AbstractController
     ]);
 }
 
-    #[Route('/front/search', name: 'app_formation_search', methods: ['GET'])]
+    #[Route('/employe/search', name: 'app_formation_search', methods: ['GET'])]
     public function search(Request $request, FormationRepository $formationRepository): Response
 {
     $searchTerm = $request->query->get('search');
@@ -104,7 +104,7 @@ final class FormationController extends AbstractController
             'formation' => $formation,
         ]);
     }
-    #[Route('/front/{id_f}', name: 'app_formation_show2', methods: ['GET'])]
+    #[Route('/employe/{id_f}', name: 'app_formation_show2', methods: ['GET'])]
     public function show2(Formation $formation): Response
     {
         return $this->render('formation/show2.html.twig', [
@@ -202,7 +202,7 @@ public function showCours(int $id_f, FormationRepository $formationRepository): 
         'cours' => $cours,
     ]);
 }
-#[Route('/front/{id_f}/cours', name: 'app2_formation_cours')]
+#[Route('/employe/{id_f}/cours', name: 'app2_formation_cours')]
 public function showCours2(int $id_f, FormationRepository $formationRepository): Response
 {
     $formation = $formationRepository->find($id_f);
