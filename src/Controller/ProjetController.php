@@ -13,13 +13,14 @@ use Symfony\Component\Routing\Attribute\Route;
 use App\Service\PdfGeneratorService;
 use App\Service\CloudinaryUploader;
 use Doctrine\Common\Collections\ArrayCollection;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/projet')]
 final class ProjetController extends AbstractController{
 
  
     #[Route(name: 'app_projet_index', methods: ['GET'])]
-    public function index(ProjetRepository $projetRepository, Request $request): Response
+    public function index(ProjetRepository $projetRepository, Request $request, PaginatorInterface $paginator): Response
      {
   
     $nom = $request->query->get('search');
@@ -27,8 +28,15 @@ final class ProjetController extends AbstractController{
     $nomEquipe = $request->query->get('nomEquipe');
 
 
-    $projets = $projetRepository->searchProjects($nom, $etat, $nomEquipe);
+    //$projets = $projetRepository->searchProjects($nom, $etat, $nomEquipe);
 
+    $query = $projetRepository->searchProjectsQuery($nom, $etat, $nomEquipe);
+
+ 
+    $projets = $paginator->paginate(
+        $query,
+        $request->query->getInt('page', 1),2
+    );
 
     return $this->render('projet/index.html.twig', [
         'projets' => $projets,

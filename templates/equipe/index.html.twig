@@ -1,7 +1,61 @@
 {% extends '/dashboard/manager.html.twig' %}
 
 {% block content %}
-
+<style>
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    .pagination ul {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .pagination li {
+        margin: 0 3px;
+    }
+    .pagination a, 
+    .pagination span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .pagination a {
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+        background-color: white;
+    }
+    .pagination a:hover {
+        background-color: #f8f9fa;
+        color: #4e73df;
+        border-color: #4e73df;
+    }
+    .pagination .active span {
+        background-color: #4e73df;
+        color: white;
+        border: 1px solid #4e73df;
+        box-shadow: 0 2px 5px rgba(78, 115, 223, 0.3);
+    }
+    .pagination .disabled span {
+        color: #adb5bd;
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+        cursor: not-allowed;
+    }
+    .pagination .page-item:first-child a,
+    .pagination .page-item:last-child a {
+        border-radius: 50%;
+    }
+</style>
             
             <div class="content container-fluid">
                 <div class="page-header">
@@ -169,6 +223,17 @@
                                     {% endfor %}
                                 </tbody>
                             </table>
+
+                            <div class="card-footer">
+                                <div class="pagination">
+                                    {{ knp_pagination_render(equipes, null, {}, {
+                                        'align': 'center',
+                                        'size': 'small',
+                                        'style': 'rounded',
+                                    }) }}
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                 </div>
@@ -184,7 +249,7 @@
 <script>
 
 $(document).ready(function() {
-    // Initialisation de Select2 avec recherche
+ 
     $('.select2-multiple').select2({
         placeholder: "Rechercher et sélectionner des projets",
         allowClear: true,
@@ -192,14 +257,14 @@ $(document).ready(function() {
         dropdownParent: $('.modal')
     });
 
-    // Lorsqu'un modal s'ouvre, réinitialiser Select2 pour s'assurer qu'il fonctionne correctement
+   
     $('.modal').on('shown.bs.modal', function() {
         $(this).find('.select2-multiple').select2({
             dropdownParent: $(this)
         });
     });
 
-    // Confirmation avant de supprimer
+   
     $('[data-toggle="confirmation"]').confirmation({
         btnOkLabel: 'Oui',
         btnCancelLabel: 'Non'

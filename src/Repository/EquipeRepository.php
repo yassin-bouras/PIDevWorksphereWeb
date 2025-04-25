@@ -45,6 +45,15 @@ public function searchTeamsAndProjects(string $searchTerm): array
         ->getQuery()
         ->getResult();
 }
+
+public function findByNomEquipeQuery(string $nom)
+{
+    return $this->createQueryBuilder('e')
+        ->where('LOWER(e.nom_equipe) LIKE LOWER(:nom)')
+        ->setParameter('nom', '%'.$nom.'%')
+        ->getQuery();
+}
+
 //    /**
 //     * @return Equipe[] Returns an array of Equipe objects
 //     */

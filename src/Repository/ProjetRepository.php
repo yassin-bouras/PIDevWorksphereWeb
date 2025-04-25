@@ -17,7 +17,7 @@ class ProjetRepository extends ServiceEntityRepository
     }
 
 
-    public function searchProjects(?string $nom, ?string $etat, ?string $nomEquipe): array
+    /*public function searchProjects(?string $nom, ?string $etat, ?string $nomEquipe): array
     {
         $qb = $this->createQueryBuilder('p')
             ->leftJoin('p.equipes', 'e') 
@@ -39,7 +39,31 @@ class ProjetRepository extends ServiceEntityRepository
         }
     
         return $qb->getQuery()->getResult();
+    }*/
+
+    public function searchProjectsQuery(?string $nom, ?string $etat, ?string $nomEquipe)
+{
+    $qb = $this->createQueryBuilder('p')
+        ->leftJoin('p.equipes', 'e')
+        ->addSelect('e');
+
+    if (!empty($nom)) {
+        $qb->andWhere('LOWER(p.nom) LIKE LOWER(:nom)')
+           ->setParameter('nom', '%' . $nom . '%');
     }
+
+    if (!empty($etat)) {
+        $qb->andWhere('p.etat = :etat')
+           ->setParameter('etat', $etat);
+    }
+
+    if (!empty($nomEquipe)) {
+        $qb->andWhere('LOWER(e.nom_equipe) LIKE LOWER(:nom_equipe)')
+           ->setParameter('nom_equipe', '%' . $nomEquipe . '%');
+    }
+
+    return $qb->getQuery();
+}
     
 //    /**
 //     * @return Projet[] Returns an array of Projet objects

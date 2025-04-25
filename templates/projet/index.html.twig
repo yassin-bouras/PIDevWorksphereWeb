@@ -97,10 +97,13 @@
 
 
                         </div>
+
+                      
+
                     </div>
                 </div>
 
-                
+             
                                      <!-- Modal de suppression pour chaque équipe -->
                                      <div class="modal fade" id="deleteModal{{ projet.id }}" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel{{ projet.id }}" aria-hidden="true">
                                         <div class="modal-dialog modal-dialog-centered" role="document">
@@ -128,7 +131,16 @@
                     <p style="font-size: 1.2rem; color: #777;">Aucun projet trouvé</p>
                 </div>
             {% endfor %}
+
+            <div class="card-footer">
+                <div class="pagination">
+                    {{ knp_pagination_render(projets) }}
+                </div>
+            </div> 
+            
         </div>
+
+       
     </div>
 
     <style>
@@ -147,5 +159,55 @@
         .chip-Terminé { background-color: #28a745; }
         .chip-EnCours { background-color: #007bff; }
         .chip-Annulé { background-color: #dc3545; }
+
+        .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    .pagination ul {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .pagination li {
+        margin: 0 3px;
+    }
+    .pagination a, 
+    .pagination span {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        text-decoration: none;
+        font-size: 14px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .pagination a {
+        color: #6c757d;
+        border: 1px solid #dee2e6;
+        background-color: white;
+    }
+    .pagination a:hover {
+        background-color: #f8f9fa;
+        color: #4e73df;
+        border-color: #4e73df;
+    }
+    .pagination .active span {
+        background-color: #4e73df;
+        color: white;
+        border: 1px solid #4e73df;
+        box-shadow: 0 2px 5px rgba(78, 115, 223, 0.3);
+    }
+    .pagination .disabled span {
+        color: #adb5bd;
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+        cursor: not-allowed;
+    }
     </style>
 {% endblock %}

@@ -12,17 +12,35 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/equipe')]
 final class EquipeController extends AbstractController{
     
    
 #[Route(name: 'app_equipe_index', methods: ['GET'])]
-public function index(EquipeRepository $equipeRepository, ProjetRepository $projetRepository, Request $request): Response
+public function index(EquipeRepository $equipeRepository, ProjetRepository $projetRepository, Request $request,PaginatorInterface $paginator): Response
 {
     $searchTerm = $request->query->get('search');
-    $equipes = $searchTerm ? $equipeRepository->findByNomEquipe($searchTerm) : $equipeRepository->findAll();
+    //$equipes = $searchTerm ? $equipeRepository->findByNomEquipe($searchTerm) : $equipeRepository->findAll();
+
+    $queryBuilder = $equipeRepository->createQueryBuilder('e')
+    ->leftJoin('e.projets', 'p')
+    ->addSelect('p');
+
+if ($searchTerm) {
+    $queryBuilder
+        ->where('LOWER(e.nom_equipe) LIKE LOWER(:searchTerm)')
+        ->orWhere('LOWER(p.nom) LIKE LOWER(:searchTerm)')
+        ->setParameter('searchTerm', '%'.$searchTerm.'%');
+}
+
+$equipes = $paginator->paginate(
+    $queryBuilder->getQuery(),
+    $request->query->getInt('page', 1),
+  2
+);
+
     
     return $this->render('equipe/index.html.twig', [
         'equipes' => $equipes,
