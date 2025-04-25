@@ -135,6 +135,8 @@
                     `;
                 } else if (user.role === 'Candidat') {
                     sidebarLinks.innerHTML += `
+                                            <li><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
+
                         <li><a href="/"><span>🔄 Offre Emploi</span></a></li>
                         <li><a href="/reclamation/user/${user.iduser}"><span>🔄 Reclamation</span></a></li>
                         <li><a href="/"><span>👥 Candidature</span></a></li>

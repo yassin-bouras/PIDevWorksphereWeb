@@ -27,7 +27,7 @@ final class DashboardController extends AbstractController
     #[Route('/dashboardmanager', name: 'app_dashboard_manager')]
     public function manager(): Response
     {
-        return $this->render('dashboard/manager.html.twig', [
+        return $this->render('dashboard/base2.html.twig', [
             'controller_name' => 'DashboardController',
         ]);
     }

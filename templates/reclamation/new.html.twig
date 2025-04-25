@@ -86,15 +86,7 @@
                             {{ form_widget(form.type, {'attr': {'class': 'form-control'}}) }}
                         </div>
 
-                        <div class="form-group">
-                            {{ form_label(form.datedepot) }}
-                            {{ form_widget(form.datedepot, {'attr': {'class': 'form-control'}}) }}
-                        </div>
 
-                        <div class="form-group">
-                            {{ form_label(form.user) }}
-                            {{ form_widget(form.user, {'attr': {'class': 'form-control', 'disabled': 'disabled'}}) }}
-                        </div>
 
                         <div class="form-group">
                             {{ form_label(form.receiver) }}
@@ -118,89 +110,5 @@
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    const form = document.getElementById('reclamationForm');
-    const errorDiv = document.getElementById('errorMessages');
 
-    form.addEventListener('submit', function (e) {
-        let valid = true;
-        let messages = [];
-
-        errorDiv.style.display = 'none';
-        errorDiv.innerHTML = '';
-        const inputs = form.querySelectorAll('.form-control');
-        inputs.forEach(input => input.classList.remove('is-invalid'));
-
-        const titre = form.querySelector('[name="reclamation[titre]"]');
-        if (!titre.value.trim()) {
-            valid = false;
-            messages.push("Le titre est obligatoire.");
-            titre.classList.add('is-invalid');
-        } else if (titre.value.trim().length < 5) {
-            valid = false;
-            messages.push("Le titre doit contenir au moins 5 caractères.");
-            titre.classList.add('is-invalid');
-        }
-
-        const description = form.querySelector('[name="reclamation[description]"]');
-        if (!description.value.trim()) {
-            valid = false;
-            messages.push("La description est obligatoire.");
-            description.classList.add('is-invalid');
-        } else if (description.value.trim().length < 10) {
-            valid = false;
-            messages.push("La description doit contenir au moins 10 caractères.");
-            description.classList.add('is-invalid');
-        }
-
-        const type = form.querySelector('[name="reclamation[type]"]');
-        if (!type.value.trim()) {
-            valid = false;
-            messages.push("Le type est obligatoire.");
-            type.classList.add('is-invalid');
-        } else if (!['technique', 'administratif', 'autre'].includes(type.value.trim())) {
-            valid = false;
-            messages.push("Le type doit être l'un des suivants : technique, administratif, autre.");
-            type.classList.add('is-invalid');
-        }
-
-        const datedepot = form.querySelector('[name="reclamation[datedepot]"]');
-        if (!datedepot.value) {
-            valid = false;
-            messages.push("La date de dépôt est obligatoire.");
-            datedepot.classList.add('is-invalid');
-        } else {
-            const selectedDate = new Date(datedepot.value);
-            const now = new Date();
-            if (selectedDate > now) {
-                valid = false;
-                messages.push("La date de dépôt ne peut pas être dans le futur.");
-                datedepot.classList.add('is-invalid');
-            }
-        }
-
-        const user = form.querySelector('[name="reclamation[user]"]');
-        if (!user.value || isNaN(user.value) || parseInt(user.value) <= 0) {
-            valid = false;
-            messages.push("L'utilisateur est obligatoire et doit être un identifiant valide.");
-            user.classList.add('is-invalid');
-        }
-
-        const receiver = form.querySelector('[name="reclamation[receiver]"]');
-        if (!receiver.value || isNaN(receiver.value) || parseInt(receiver.value) <= 0) {
-            valid = false;
-            messages.push("Le destinataire est obligatoire et doit être un identifiant valide.");
-            receiver.classList.add('is-invalid');
-        }
-
-        if (!valid) {
-            e.preventDefault();
-            errorDiv.innerHTML = '<ul>' + messages.map(msg => `<li>${msg}</li>`).join('') + '</ul>';
-            errorDiv.style.display = 'block';
-            window.scrollTo({ top: errorDiv.offsetTop - 20, behavior: 'smooth' });
-        }
-    });
-});
-</script>
 {% endblock %}

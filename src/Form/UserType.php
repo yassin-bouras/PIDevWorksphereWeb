@@ -22,7 +22,6 @@ class UserType extends AbstractType
             ->add('email')
             ->add('plainPassword', PasswordType::class, [
                 'mapped' => false,
-                'required' => $options['is_new'] ?? true,
                 'label' => 'Mot de passe',
             ])
             ->add('adresse')
@@ -33,7 +32,6 @@ class UserType extends AbstractType
                 ],
             ])
             ->add('salaireattendu', NumberType::class, [
-                'required' => true,
                 'html5' => true,
                 'attr' => ['step' => '0.01'],
             ])

@@ -7,6 +7,8 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -17,12 +19,19 @@ class ReclamationType extends AbstractType
     {
         $builder
             ->add('titre', TextType::class)
-            ->add('description', TextType::class)
-            ->add('type', TextType::class)
+            ->add('description', TextareaType::class)
+            ->add('type', ChoiceType::class, [
+                'choices' => [
+                    'Technique' => 'technique',
+                    'Administratif' => 'administratif',
+                    'Autre' => 'autre',
+                ],
+                'placeholder' => 'Choisir un type',
+            ])
             ->add('receiver', EntityType::class, [
                 'class' => User::class,
-                'choice_label' => 'email', // or 'username', 'email', etc. — use what fits best
-                'placeholder' => 'Choose an employee',
+                'choice_label' => 'email',
+                'placeholder' => 'Choisir un employé',
                 'query_builder' => fn(UserRepository $ur) =>
                 $ur->createQueryBuilder('u')
                     ->where('u.role = :role')

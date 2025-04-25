@@ -37,7 +37,6 @@ class Offre
         return $this;
     }
 
-
     // #[Assert\NotBlank(message: "Le titre est obligatoire !")]
     // #[Assert\Length(
     //     max: 25,
@@ -205,8 +204,7 @@ class Offre
         $this->users = new ArrayCollection();
         $this->candidatures = new ArrayCollection();
         $this->entretiens = new ArrayCollection();
-        $this->date_limite = new \DateTime(); 
-
+        $this->date_limite = new \DateTime();
     }
 
     #[ORM\OneToMany(targetEntity: Candidature::class, mappedBy: 'offre')]

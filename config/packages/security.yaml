@@ -3,15 +3,18 @@ security:
   password_hashers:
     App\Entity\User:
       algorithm: auto
+
   providers:
     app_user_provider:
       entity:
         class: App\Entity\User
         property: email
+
   firewalls:
     dev:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
+
     login:
       pattern: ^/login
       stateless: true
@@ -21,15 +24,26 @@ security:
         password_path: password
         success_handler: lexik_jwt_authentication.handler.authentication_success
         failure_handler: lexik_jwt_authentication.handler.authentication_failure
+
+    connect_google:
+      pattern: ^/connect/google
+      custom_authenticator: App\Services\GoogleAuthenticator
+      provider: app_user_provider
+      stateless: false
+      lazy: true
+
     api:
       pattern: ^/api
       stateless: true
       jwt: ~
+
     dashboard:
       pattern: ^/dashboard
       stateless: true
       jwt: ~
+
   access_control:
     - { path: ^/login, roles: PUBLIC_ACCESS }
+    - { path: ^/connect/google, roles: PUBLIC_ACCESS }
     - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
     - { path: ^/dashboard, roles: IS_AUTHENTICATED_FULLY }

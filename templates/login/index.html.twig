@@ -9,6 +9,43 @@
     <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/all.min.css') }}">
     <link rel="stylesheet" href="{{ asset('back/css/style.css') }}">
+    <style>
+        .modal-custom {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1050;
+        }
+        .modal-content-custom {
+            background: #fff;
+            padding: 20px 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+        }
+        .modal-content-custom h5 {
+            margin-top: 0;
+            color: #c0392b;
+        }
+        .modal-content-custom textarea {
+            width: 100%;
+            height: 100px;
+            margin: 15px 0;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            resize: none;
+        }
+        .modal-content-custom .btn {
+            margin: 5px;
+        }
+    </style>
 </head>
 <body>
     <div class="main-wrapper login-body">
@@ -42,7 +79,12 @@
                                             </div>
                                         </div>
                                         <div class="col-6 text-right">
-                                            <a class="forgot-link" href="/user/new">don't have an accout?</a>
+                                            <a class="forgot-link" href="/user/new">don't have an account?</a>
+                                            <a class="forgot-link" href="/forgot">Forgot password?</a>
+                                            <a href="{{ path('connect_google') }}" class="btn btn-danger">
+    <i class="fab fa-google"></i> Login with Google
+</a>
+
                                         </div>
                                     </div>
                                 </div>
@@ -55,10 +97,23 @@
         </div>
     </div>
 
+    <!-- Reclamation Modal -->
+    <div id="reclamationModal" class="modal-custom">
+        <div class="modal-content-custom">
+            <h5>You are banned</h5>
+            <p>Please write your reclamation message:</p>
+            <textarea id="reclamationMessage" placeholder="Enter your message..."></textarea>
+            <div>
+                <button id="submitReclamation" class="btn btn-success">Submit</button>
+                <button id="cancelReclamation" class="btn btn-danger">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
     <script>
-        $(document).ready(function() {
-            $('#loginForm').on('submit', function(e) {
+        $(document).ready(function () {
+            $('#loginForm').on('submit', function (e) {
                 e.preventDefault();
 
                 const email = $('input[name="email"]').val();
@@ -70,47 +125,88 @@
                     method: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(data),
-                    success: function(response) {
+                    success: function (response) {
                         if (response.token) {
-                            // Store the token
-                            document.cookie = `BEARER=${response.token}; Path=/; Secure; SameSite=Strict`;
-
-                            // Decode the token to extract the roles
                             const token = response.token;
+                            document.cookie = `BEARER=${token}; Path=/; Secure; SameSite=Strict`;
+
                             const payload = JSON.parse(atob(token.split('.')[1]));
                             const userRole = payload.roles && payload.roles.length > 0 ? payload.roles[0].toLowerCase() : null;
 
-                            console.log('Token:', token);
-                            console.log('User Role:', userRole);
+                            $.ajax({
+                                url: '/jwt/user',
+                                method: 'POST',
+                                contentType: 'application/json',
+                                data: JSON.stringify({ token: token }),
+                                success: function (res) {
+                                    const user = res.user;
 
-                            // Redirect based on role
-                            switch(userRole) {
-                                case 'candidat':
-                                    window.location.href = '/dashboardcandidat';
-                                    break;
-                                case 'rh':
-                                    window.location.href = '/dashboard';
-                                    break;
-                                case 'employe':
-                                    window.location.href = '/dashboardemploye';
-                                    break;
-                                case 'manager':
-                                    window.location.href = '/dashboardmanager';
-                                    break;
-                                default:
-                                    console.error('Unknown role:', userRole);
-                                    $('.login-right-wrap').prepend('<div class="alert alert-danger">Unknown role</div>');
-                            }
+                                    if (user.banned) {
+                                        if (user.messageReclamation) {
+                                            $('.login-right-wrap').prepend('<div class="alert alert-danger">You are banned. Reclamation already submitted.</div>');
+                                        } else {
+                                            $('#reclamationModal').fadeIn();
+
+                                            $('#submitReclamation').one('click', function () {
+                                                const msg = $('#reclamationMessage').val().trim();
+                                                if (msg) {
+                                                    $.ajax({
+                                                        url: '/user/reclamation',
+                                                        method: 'POST',
+                                                        contentType: 'application/json',
+                                                        data: JSON.stringify({
+                                                            email: user.email,
+                                                            message: msg
+                                                        }),
+                                                        success: function () {
+                                                            $('#reclamationModal').fadeOut();
+                                                            $('.login-right-wrap').prepend('<div class="alert alert-success">Reclamation submitted successfully.</div>');
+                                                        },
+                                                        error: function (xhr) {
+                                                            const err = xhr.responseJSON?.error || "Error saving reclamation.";
+                                                            $('.login-right-wrap').prepend(`<div class="alert alert-danger">${err}</div>`);
+                                                        }
+                                                    });
+                                                } else {
+                                                    alert("Please write a message before submitting.");
+                                                }
+                                            });
+
+                                            $('#cancelReclamation').one('click', function () {
+                                                $('#reclamationModal').fadeOut();
+                                            });
+                                        }
+                                        return;
+                                    }
+
+                                    switch (userRole) {
+                                        case 'candidat':
+                                            window.location.href = '/dashboardcandidat';
+                                            break;
+                                        case 'rh':
+                                            window.location.href = '/dashboard';
+                                            break;
+                                        case 'employe':
+                                            window.location.href = '/dashboardemploye';
+                                            break;
+                                        case 'manager':
+                                            window.location.href = '/dashboardmanager';
+                                            break;
+                                        default:
+                                            $('.login-right-wrap').prepend('<div class="alert alert-danger">Unknown role</div>');
+                                    }
+                                }
+                            });
                         }
                     },
-                    error: function(xhr) {
+                    error: function (xhr) {
                         const errorMessage = xhr.responseJSON?.message || 'Login failed';
                         $('.login-right-wrap').prepend(`<div class="alert alert-danger">${errorMessage}</div>`);
                     }
                 });
             });
 
-            $('.toggle-password').click(function() {
+            $('.toggle-password').click(function () {
                 const input = $(this).siblings('.pass-input');
                 input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
                 $(this).toggleClass('fa-eye fa-eye-slash');

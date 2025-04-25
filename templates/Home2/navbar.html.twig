@@ -1,0 +1,111 @@
+<header class="header-area header-sticky wow slideInDown" data-wow-duration="0.75s" data-wow-delay="0s">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <nav class="main-nav d-flex align-items-center justify-content-between">
+                    <!-- ***** Logo Start ***** -->
+                    <a href="{{ path('app_home') }}" class="logo">
+                        <h4>Worksphere <img src="{{ asset('front/images/logo-icon.png') }}" alt=""></h4>
+                    </a>
+                    <!-- ***** Logo End ***** -->
+
+                    <!-- ***** Menu Start ***** -->
+                    <ul class="nav align-items-center" id="sidebar-links">
+                        <!-- Dynamic content will be injected here -->
+                        <li class="scroll-to-section" id="default-login-button">
+                            <div class="main-blue-button">
+                                <a href="/login">Se connecter</a>
+                            </div>
+                        </li>
+                    </ul>
+                    <a class="menu-trigger">
+                        <span>Menu</span>
+                    </a>
+                    <!-- ***** Menu End ***** -->
+                </nav>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            function getCookie(name) {
+                let cookieArray = document.cookie.split('; ');
+                let cookie = cookieArray.find(row => row.startsWith(name + '='));
+                return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
+            }
+
+            const token = getCookie('BEARER');
+
+            if (!token) {
+                console.warn('No BEARER token found.');
+                return;
+            }
+
+            fetch('/jwt/user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token: token })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const user = data.user;
+                    const sidebarLinks = document.getElementById('sidebar-links');
+                    const loginButton = document.getElementById('default-login-button');
+                    if (loginButton) loginButton.remove();
+
+                    sidebarLinks.innerHTML = ''; // Clear old items
+
+                    const commonItems = [
+                        `<li class="scroll-to-section"><a href="/user/${user.iduser}">👤 Profile</a></li>`,
+                        `<li class="scroll-to-section"><a href="/formation">📢 Formations</a></li>`
+                    ];
+
+                    const candidatItems = [
+                        `<li class="scroll-to-section"><a href="/contrat">📜 Contrat</a></li>`,
+                        `<li class="scroll-to-section"><a href="/sponsor">📢 Gestion Sponsor</a></li>`,
+                        `<li class="scroll-to-section"><a href="/user">👥 Gestion User</a></li>`,
+                        `<li class="scroll-to-section"><a href="/event">✅ Evenements</a></li>`,
+                        `<li class="scroll-to-section"><a href="/offre">🎯 Offres Emploi</a></li>`,
+                        `<li class="scroll-to-section"><a href="/entretien">🔥 Entretien</a></li>`,
+                        `<li class="scroll-to-section"><a href="/mdp">🔄 Mot de Passe</a></li>`
+                    ];
+
+                    const employeItems = [
+                        `<li class="scroll-to-section"><a href="/reclamation/user/${user.iduser}">🔄 Reclamation</a></li>`,
+                        `<li class="scroll-to-section"><a href="/entretien/employee">🚀 Entretien</a></li>`,
+                        `<li class="scroll-to-section"><a href="#">🎯 Mes Reservations</a></li>`,
+                        `<li class="scroll-to-section"><a href="#">👥 Équipe</a></li>`,
+                        `<li class="scroll-to-section"><a href="#">📂 Projet</a></li>`,
+                        `<li class="scroll-to-section"><a href="#">🔄 Mot de Passe</a></li>`
+                    ];
+
+                    const logoutBtn = `
+                        <li class="scroll-to-section">
+                            <div class="main-red-button">
+                                <a href="/logout">Se déconnecter</a>
+                            </div>
+                        </li>
+                    `;
+
+                    // Append items
+                    sidebarLinks.innerHTML += commonItems.join('');
+                    if (user.role === 'Candidat') {
+                        sidebarLinks.innerHTML += candidatItems.join('');
+                    } else if (user.role === 'Employe') {
+                        sidebarLinks.innerHTML += employeItems.join('');
+                    }
+                    sidebarLinks.innerHTML += logoutBtn;
+                } else {
+                    console.error('Failed to fetch user:', data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Fetch error:', error);
+            });
+        });
+    </script>
+</header>

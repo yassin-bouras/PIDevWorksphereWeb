@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use App\Service\MailService;
 
 final class LoginController extends AbstractController
 {
@@ -34,7 +35,7 @@ final class LoginController extends AbstractController
         return $this->render('login/index.html.twig');
     }
 
-    #[Route('/forget', name: 'app_forgot_password', methods: ['GET'])]
+    #[Route('/forgot', name: 'app_forgot_password', methods: ['GET'])]
     public function forgotPassword(): Response
     {
         return $this->render('login/forgot_password.html.twig');
@@ -72,7 +73,23 @@ final class LoginController extends AbstractController
             ], 401);
         }
     }
+    #[Route('/api/send-email', name: 'api_send_email', methods: ['POST'])]
+    public function sendEmail(Request $request, MailService $mailService): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
 
+        if (!isset($data['recipient'], $data['subject'], $data['content'])) {
+            return new JsonResponse(['error' => 'Missing required fields'], 400);
+        }
+
+        $mailService->sendMail(
+            $data['recipient'],
+            $data['subject'],
+            $data['content']
+        );
+
+        return new JsonResponse(['message' => 'Email sent successfully']);
+    }
     #[Route('/jwt/user', name: 'api_decode_token_user', methods: ['POST'])]
     public function decodeTokenReturnUser(Request $request): JsonResponse
     {
@@ -110,6 +127,8 @@ final class LoginController extends AbstractController
                     'role' => $user->getRole(),
                     'poste' => $user->getPoste(),
                     'adresse' => $user->getAdresse(),
+                    'banned' => $user->isBanned(),
+                    'reclamation' => $user->getMessagereclamation(),
 
                 ],
             ]);
