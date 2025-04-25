@@ -87,11 +87,8 @@
                             </a>
 
 
-                           <!--  <a href="{{ path('app_projet_pdf', {'id': projet.id}) }}" class="btn btn-primary">
-                                <i class="fas fa-file-pdf"></i> Générer PDF
-                            </a> -->
+                   
 
-<!-- templates/projet/show.html.twig -->
 <form action="{{ path('app_projet_pdf', {id: projet.id}) }}" method="post">
     <button type="submit" class="btn btn-primary">
         <i class="fas fa-file-pdf"></i> Générer PDF

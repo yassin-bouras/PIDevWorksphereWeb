@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use App\Service\PdfGeneratorService;
 use App\Service\CloudinaryUploader;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[Route('/projet')]
 final class ProjetController extends AbstractController{
@@ -53,8 +53,7 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         }
 
       
-        $equipe = $projet->getEquipe();
-        if ($equipe) {
+        foreach ($projet->getEquipes() as $equipe) {
             $currentCount = $equipe->getNbrProjet() ?? 0;
             $equipe->setNbrProjet($currentCount + 1);
             $entityManager->persist($equipe);
@@ -87,7 +86,11 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
 #[Route('/{id}/edit', name: 'app_projet_edit', methods: ['GET', 'POST'])]
 public function edit(Request $request, Projet $projet, EntityManagerInterface $entityManager): Response
 {
-    $ancienneEquipe = $projet->getEquipe(); 
+   
+    $originalEquipes = new ArrayCollection();
+    foreach ($projet->getEquipes() as $equipe) {
+        $originalEquipes->add($equipe);
+    }
     
     $form = $this->createForm(ProjetType::class, $projet);
     $form->handleRequest($request);
@@ -101,24 +104,23 @@ public function edit(Request $request, Projet $projet, EntityManagerInterface $e
             $projet->setImageProjet('img/' . $newFilename);
         }
 
-        $nouvelleEquipe = $projet->getEquipe();
-        
-      
-        if ($ancienneEquipe !== $nouvelleEquipe) {
-       
-            if ($ancienneEquipe) {
-                $ancienCount = $ancienneEquipe->getNbrProjet() ?? 0;
-                $ancienneEquipe->setNbrProjet(max(0, $ancienCount - 1));
-                $entityManager->persist($ancienneEquipe);
-            }
-            
-   
-            if ($nouvelleEquipe) {
-                $nouveauCount = $nouvelleEquipe->getNbrProjet() ?? 0;
-                $nouvelleEquipe->setNbrProjet($nouveauCount + 1);
-                $entityManager->persist($nouvelleEquipe);
-            }
+     
+       foreach ($originalEquipes as $equipe) {
+        if (false === $projet->getEquipes()->contains($equipe)) {
+           
+            $currentCount = $equipe->getNbrProjet() ?? 0;
+            $equipe->setNbrProjet(max(0, $currentCount - 1));
+            $entityManager->persist($equipe);
         }
+    }
+
+    foreach ($projet->getEquipes() as $equipe) {
+        if (false === $originalEquipes->contains($equipe)) {
+            $currentCount = $equipe->getNbrProjet() ?? 0;
+            $equipe->setNbrProjet($currentCount + 1);
+            $entityManager->persist($equipe);
+        }
+    }
 
         $entityManager->flush();
         return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
@@ -137,8 +139,7 @@ public function delete(Request $request, Projet $projet, EntityManagerInterface 
 {
     if ($this->isCsrfTokenValid('delete'.$projet->getId(), $request->getPayload()->getString('_token'))) {
    
-        $equipe = $projet->getEquipe();
-        if ($equipe) {
+        foreach ($projet->getEquipes() as $equipe) {
             $currentCount = $equipe->getNbrProjet() ?? 0;
             $newCount = max(0, $currentCount - 1);
             $equipe->setNbrProjet($newCount);
@@ -152,14 +153,6 @@ public function delete(Request $request, Projet $projet, EntityManagerInterface 
     return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
 }
 
-/*#[Route('/{id}/pdf', name: 'app_projet_pdf', methods: ['GET'])]
-public function generatePdf(Projet $projet, PdfGeneratorService $pdfGenerator, EntityManagerInterface $em): Response
-{
-   
-    $equipe = $projet->getEquipe();
-    
-    return $pdfGenerator->generateProjetPdf($projet, $equipe);
-}*/
 
 #[Route('/projet/{id}/generate-pdf', name: 'app_projet_pdf', methods: ['POST'])]
 public function generatePdf(
@@ -170,7 +163,7 @@ public function generatePdf(
 ): Response {
     try {
   
-        $pdfContent = $pdfGenerator->generateProjetPdf($projet, $projet->getEquipe());
+        $pdfContent = $pdfGenerator->generateProjetPdf($projet, $projet->getEquipes());
         
   
         $localPath = $this->getParameter('kernel.project_dir').'/public/pdfs/';
@@ -196,8 +189,9 @@ public function generatePdf(
 
     } catch (\Exception $e) {
         $this->addFlash('error', 'Erreur: '.$e->getMessage());
-        return $this->redirectToRoute('app_projet_show', ['id' => $projet->getId()]);
+        return $this->redirectToRoute('app_projet_index', ['id' => $projet->getId()]);
     }
 }
+
 
 }

@@ -20,7 +20,7 @@ class ProjetRepository extends ServiceEntityRepository
     public function searchProjects(?string $nom, ?string $etat, ?string $nomEquipe): array
     {
         $qb = $this->createQueryBuilder('p')
-            ->leftJoin('p.equipe', 'e') 
+            ->leftJoin('p.equipes', 'e') 
             ->addSelect('e');
     
         if (!empty($nom)) {

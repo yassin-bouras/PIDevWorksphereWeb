@@ -96,7 +96,7 @@ class Projet
         return $this;
     }
 
-    #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: 'projets')]
+    /*#[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: 'projets')]
     #[ORM\JoinColumn(name: 'equipe_id', referencedColumnName: 'id')]
     private ?Equipe $equipe = null;
 
@@ -109,7 +109,7 @@ class Projet
     {
         $this->equipe = $equipe;
         return $this;
-    }
+    }*/
 
 
     
@@ -149,28 +149,28 @@ class Projet
         return $this;
     }
 
-    /*#[ORM\ManyToMany(targetEntity: Equipe::class, inversedBy: 'projets')]
+    #[ORM\ManyToMany(targetEntity: Equipe::class, inversedBy: 'projets')]
     #[ORM\JoinTable(name: 'equipe_projet')]
-    private Collection $equipe;
+    private Collection $equipes;
 
     public function __construct()
     {
-        $this->equipe = new ArrayCollection();
+        $this->equipes = new ArrayCollection();
     }
 
     /**
      * @return Collection<int, Equipe>
      */
     
-    /*public function getEquipes(): Collection
+    public function getEquipes(): Collection
     {
-        return $this->equipe;
+        return $this->equipes;
     }
 
     public function addEquipe(Equipe $equipe): self
     {
-        if (!$this->equipe->contains($equipe)) {
-            $this->equipe->add($equipe);
+        if (!$this->equipes->contains($equipe)) {
+            $this->equipes->add($equipe);
             $equipe->addProjet($this);
         }
         return $this;
@@ -178,10 +178,10 @@ class Projet
 
     public function removeEquipe(Equipe $equipe): self
     {
-        if ($this->equipe->removeElement($equipe)) {
+        if ($this->equipes->removeElement($equipe)) {
             $equipe->removeProjet($this);
         }
         return $this;
     }
-    */
+    
 }

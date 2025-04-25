@@ -12,7 +12,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use App\Service\PdfGeneratorService;
+
 
 #[Route('/equipe')]
 final class EquipeController extends AbstractController{
@@ -56,46 +56,6 @@ public function index(EquipeRepository $equipeRepository, ProjetRepository $proj
             'equipe' => $equipe,
         ]);
     }
-
-    /* avec la search ajax #[Route(name: 'app_equipe_index', methods: ['GET'])]
-    public function index(EquipeRepository $equipeRepository, Request $request): Response
-    {
-        $searchTerm = $request->query->get('search');
-        
-        if ($request->isXmlHttpRequest()) {
-            $equipes = $equipeRepository->findByNomEquipe($searchTerm);
-            $data = [];
-            
-            foreach ($equipes as $equipe) {
-                $imagePath = $equipe->getImageEquipe() ? 
-                    $this->getParameter('kernel.project_dir').'/public'.$equipe->getImageEquipe() : 
-                    null;
-                
-                $data[] = [
-                    'id' => $equipe->getId(),
-                    'nomEquipe' => $equipe->getNomEquipe(),
-                    'nbrProjet' => $equipe->getNbrProjet(),
-                    'imageEquipe' => $equipe->getImageEquipe(), // Stockez seulement le chemin relatif
-                    'showUrl' => $this->generateUrl('app_equipe_show', ['id' => $equipe->getId()]),
-                    'editUrl' => $this->generateUrl('app_equipe_edit', ['id' => $equipe->getId()]),
-                    'deleteUrl' => $this->generateUrl('app_equipe_delete', ['id' => $equipe->getId()]),
-                ];
-            }
-            
-            return $this->json($data);
-        }
-        
-        $equipes = $searchTerm ? $equipeRepository->findByNomEquipe($searchTerm) : $equipeRepository->findAll();
-        
-        return $this->render('equipe/index.html.twig', [
-            'equipes' => $equipes,
-        ]);
-    }*/
-
-   
-
-
-
 
     #[Route('/new', name: 'app_equipe_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
@@ -190,7 +150,8 @@ public function index(EquipeRepository $equipeRepository, ProjetRepository $proj
     }
 
 
- #[Route('/{id}/assign-project', name: 'app_equipe_assign_project', methods: ['POST'])]
+
+#[Route('/{id}/assign-project', name: 'app_equipe_assign_project', methods: ['POST'])]
 public function assignProject(Request $request, Equipe $equipe, EntityManagerInterface $entityManager, ProjetRepository $projetRepository): Response
 {
     $projetId = $request->request->get('projet_id');
@@ -201,29 +162,7 @@ public function assignProject(Request $request, Equipe $equipe, EntityManagerInt
         return $this->redirectToRoute('app_equipe_index');
     }
 
-    $projet->setEquipe($equipe);
-    
-    $equipe->setNbrProjet($equipe->getProjets()->count());
-
-    $entityManager->flush();
-
-    $this->addFlash('success', 'Projet assigné avec succès à l\'équipe.');
-    return $this->redirectToRoute('app_equipe_index');
-}
-
-
-/*#[Route('/{id}/assign-project', name: 'app_equipe_assign_project', methods: ['POST'])]
-public function assignProject(Request $request, Equipe $equipe, EntityManagerInterface $entityManager, ProjetRepository $projetRepository): Response
-{
-    $projetId = $request->request->get('projet_id');
-    $projet = $projetRepository->find($projetId);
-
-    if (!$projet) {
-        $this->addFlash('error', 'Projet non trouvé.');
-        return $this->redirectToRoute('app_equipe_index');
-    }
-
-    // Ajoute le projet à l'équipe (relation ManyToMany)
+ 
     if (!$equipe->getProjets()->contains($projet)) {
         $equipe->addProjet($projet);
         $entityManager->flush();
@@ -234,6 +173,6 @@ public function assignProject(Request $request, Equipe $equipe, EntityManagerInt
 
     return $this->redirectToRoute('app_equipe_index');
 }
-   */
+   
 
 }

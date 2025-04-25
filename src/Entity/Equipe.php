@@ -89,16 +89,17 @@ class Equipe
         return $this;
     }
 
-    #[ORM\OneToMany(targetEntity: Projet::class, mappedBy: 'equipe')]
-    private Collection $projets;
-
-    /*#[ORM\ManyToMany(targetEntity: Projet::class, mappedBy: 'equipe')]
+    /*#[ORM\OneToMany(targetEntity: Projet::class, mappedBy: 'equipe')]
     private Collection $projets;*/
+
+    #[ORM\ManyToMany(targetEntity: Projet::class, mappedBy: 'equipes')]
+    private Collection $projets;
 
     /**
      * @return Collection<int, Projet>
      */
-    public function getProjets(): Collection
+    
+     /*public function getProjets(): Collection
     {
         if (!$this->projets instanceof Collection) {
             $this->projets = new ArrayCollection();
@@ -118,11 +119,11 @@ class Equipe
     {
         $this->getProjets()->removeElement($projet);
         return $this;
-    }
+    }*/
 
 
 
-/*public function getProjets(): Collection
+public function getProjets(): Collection
 {
     return $this->projets;
 }
@@ -142,7 +143,7 @@ public function removeProjet(Projet $projet): self
         $projet->removeEquipe($this);
     }
     return $this;
-}*/
+}
 
 
     #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'equipes')]

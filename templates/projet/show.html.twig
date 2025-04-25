@@ -61,34 +61,36 @@
                 <p>{{ projet.description }}</p>
             </div>
 
-            {# Équipe assignée #}
+            {# Équipe(s) assignée(s) #}
             <div class="section-title mb-3">
-                <h4>Équipe assignée</h4>
+                <h4>Équipe(s) assignée(s)</h4>
             </div>
             <div class="assigned-team">
-                {% if projet.equipe %}
-                    <div class="team-card d-flex align-items-center p-3 bg-light rounded">
-                        {% if projet.equipe.imageEquipe %}
-                            <img src="{{ asset(projet.equipe.imageEquipe) }}" alt="Image de l'équipe" class="team-image">
-                        {% else %}
-                            <div class="team-image-placeholder">
-                                <i class="fas fa-users"></i>
-                            </div>
-                        {% endif %}
-                        <div class="team-details ml-4">
-                            <h5>{{ projet.equipe.nomEquipe }}</h5>
-                            <div class="team-stats">
-                                <span class="stat-item">
-                                    <i class="fas fa-project-diagram"></i> 
-                                    {{ projet.equipe.nbrProjet }} Projets
-                                </span>
-                                <span class="stat-item">
-                                    <i class="fas fa-users"></i> 
-                                    {{ projet.equipe.users|length }} Membres
-                                </span>
+                {% if projet.equipes is not empty %}
+                    {% for equipe in projet.equipes %}
+                        <div class="team-card d-flex align-items-center p-3 bg-light rounded mb-3">
+                            {% if equipe.imageEquipe %}
+                                <img src="{{ asset(equipe.imageEquipe) }}" alt="Image de l'équipe" class="team-image">
+                            {% else %}
+                                <div class="team-image-placeholder">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            {% endif %}
+                            <div class="team-details ml-4">
+                                <h5>{{ equipe.nomEquipe }}</h5>
+                                <div class="team-stats">
+                                    <span class="stat-item">
+                                        <i class="fas fa-project-diagram"></i> 
+                                        {{ equipe.nbrProjet }} Projets
+                                    </span>
+                                    <span class="stat-item">
+                                        <i class="fas fa-users"></i> 
+                                        {{ equipe.users|length }} Membres
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    {% endfor %}
                 {% else %}
                     <div class="empty-state">
                         <i class="fas fa-users"></i>
@@ -96,7 +98,6 @@
                     </div>
                 {% endif %}
             </div>
-
             
         </div>
         

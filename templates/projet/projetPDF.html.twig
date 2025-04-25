@@ -24,7 +24,11 @@
             padding: 15px; 
             border-radius: 5px; 
             margin-top: 20px;
+            margin-bottom: 30px;
             border-left: 4px solid #3498db;
+        }
+        .team-section {
+            margin-bottom: 40px;
         }
     </style>
 </head>
@@ -36,7 +40,6 @@
     {% if projet.imageProjet %}
     <div class="center">
         <img src="{{ asset(projet.imageProjet) }}" class="project-image" alt="Image du projet">
-        
     </div>
     {% endif %}
 
@@ -47,48 +50,49 @@
     <p class="content">État: {{ projet.etat }}</p>
 
     <div class="section-title">
-        <h2>Membres de l'équipe</h2>
+        <h2>Équipes assignées</h2>
     </div>
 
     <div class="member-list">
-        {% if equipe and equipe.users is not empty %}
-            <ul class="list-group">
-                {% for user in equipe.users %}
-                    <li class="list-group-item">
-                        <div style="display: flex; align-items: center;">
-                            <div class="member-avatar" style="margin-right: 15px;">
-                                {% if user.imageprofil %}
-                                    <img src="{{ asset(user.imageprofil) }}" class="member-img" alt="Photo profil">
-                                {% else %}
-                                    <div style="width:50px;height:50px;background:#eee;border-radius:50%;"></div>
-                                {% endif %}
-                            </div>
-                            <div>
-                                <strong>{{ user.nom }} {{ user.prenom }}</strong>
-                                <div style="color: #666;">{{ user.email }}</div>
-                            </div>
-                        </div>
-                    </li>
-                {% endfor %}
-            </ul>
+        {% if projet.equipes is not empty %}
+            {% for equipe in projet.equipes %}
+                <div class="team-section">
+                    <div class="team-summary">
+                        <h3 style="margin-top: 0;">Équipe: {{ equipe.nomEquipe }}</h3>
+                        <p>Nombre de membres: {{ equipe.users|length }}</p>
+                        {% if equipe.nbrProjet %}
+                        <p>Nombre de projets: {{ equipe.nbrProjet }}</p>
+                        {% endif %}
+                    </div>
 
-            <!-- Section Nom de l'équipe ajoutée ici -->
-            <div class="team-summary">
-                <h3 style="margin-top: 0;">Équipe: {{ equipe.nomEquipe }}</h3>
-                <p>Nombre de membres: {{ equipe.users|length }}</p>
-                {% if equipe.nbrProjet %}
-                <p>Nombre de projets: {{ equipe.nbrProjet }}</p>
-                {% endif %}
-            </div>
-
+                    {% if equipe.users is not empty %}
+                        <h4>Membres :</h4>
+                        <ul class="list-group">
+                            {% for user in equipe.users %}
+                                <li class="list-group-item">
+                                    <div style="display: flex; align-items: center;">
+                                        <div class="member-avatar" style="margin-right: 15px;">
+                                            {% if user.imageprofil %}
+                                                <img src="{{ asset(user.imageprofil) }}" class="member-img" alt="Photo profil">
+                                            {% else %}
+                                                <div style="width:50px;height:50px;background:#eee;border-radius:50%;"></div>
+                                            {% endif %}
+                                        </div>
+                                        <div>
+                                            <strong>{{ user.nom }} {{ user.prenom }}</strong>
+                                            <div style="color: #666;">{{ user.email }}</div>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p style="color: #666; font-style: italic;">Aucun membre dans cette équipe</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
         {% else %}
-            <p style="color: #666; font-style: italic;">Aucun membre dans cette équipe</p>
-            {% if equipe %}
-            <div class="team-summary">
-                <h3 style="margin-top: 0;">Équipe: {{ equipe.nomEquipe }}</h3>
-                <p>Cette équipe ne contient actuellement aucun membre.</p>
-            </div>
-            {% endif %}
+            <p style="color: #666; font-style: italic;">Aucune équipe assignée à ce projet</p>
         {% endif %}
     </div>
 </body>

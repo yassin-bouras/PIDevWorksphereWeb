@@ -17,7 +17,7 @@ class PdfGeneratorService
     }
 
     
-    public function generateProjetPdf($projet, $equipe = null): Response
+    public function generateProjetPdf($projet, $equipes = null): Response
     {
         $pdfOptions = new Options();
     $pdfOptions->set('defaultFont', 'Arial');
@@ -27,7 +27,7 @@ class PdfGeneratorService
     
     $html = $this->twig->render('projet/projetPDF.html.twig', [
         'projet' => $projet,
-        'equipe' => $equipe, 
+        'equipes' => $equipes, 
         'date' => new \DateTime()
     ]);
         
