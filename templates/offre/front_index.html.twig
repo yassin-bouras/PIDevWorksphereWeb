@@ -21,6 +21,7 @@
 
     <div class="mb-4">
         <form method="GET" action="{{ path('app_offre_front_index') }}">
+            <div class="filters-wrapper" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center; margin-bottom: 15px;">
             <!-- Contract Type Filter -->
             <div class="filter-container" style="max-width: 1050px; margin: 0 auto 15px auto;">
                 <label for="contract_type" style="font-weight: 600; color: #333; margin-right: 10px;">Filtrer par type
@@ -42,6 +43,23 @@
                     </select>
                 </div>
             </div>
+            <div class="filter-container" style="max-width: 1050px; margin: 0 auto 15px auto;">
+                <label for="sort_by" style="font-weight: 600; color: #333; margin-right: 10px;">Trier par:</label>
+                <div class="custom-select-wrapper">
+                    <select name="sort_by" id="sort_by" class="form-select"
+                        style="max-width: 300px; display: inline-block;">
+                        <option value="">Par défaut</option>
+                        <option value="date_pub_asc" {% if sort_by is defined and sort_by=='date_pub_asc' %}selected{%
+                            endif %}>Date de publication (croissant)</option>
+                        <option value="date_pub_desc" {% if sort_by is defined and sort_by=='date_pub_desc' %}selected{%
+                            endif %}>Date de publication (décroissant)</option>
+                        <option value="date_lim_asc" {% if sort_by is defined and sort_by=='date_lim_asc' %}selected{%
+                            endif %}>Date limite (croissant)</option>
+                        <option value="date_lim_desc" {% if sort_by is defined and sort_by=='date_lim_desc' %}selected{%
+                            endif %}>Date limite (décroissant)</option>
+                    </select>
+                </div>
+            </div>
             <div class="input-group" style="max-width: 1050px; margin: 0 auto;">
                 <input type="text" name="search" class="form-control" placeholder="Rechercher par titre d'offre..."
                     value="{{ search|default('') }}"> <!-- Keep the search term in the input -->
@@ -54,9 +72,10 @@
 
     <div class="row" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
         {% for offre in offres %}
+        {% set hasApplied = userApplications[offre.idOffre] ?? false %}
         <div class="flip-card" style="margin-top: 30px;">
-            <div class="flip-card-inner"
-                onclick="window.location.href='{{ path('app_candidature_new', {'offre_id': offre.idOffre}) }}'">
+            <div class="flip-card-inner {% if hasApplied %}already-applied{% endif %}"
+                {% if not hasApplied %}onclick="window.location.href='{{ path('app_candidature_new', {'offre_id': offre.idOffre}) }}'"{% endif %}>
                 <div class="flip-card-front">
                     <p class="title">{{ offre.titre }}</p>
                     <p><strong>Type:</strong> {{ offre.typeContrat }}</p>
@@ -67,19 +86,19 @@
                         offre.datePublication|date('Y-m-d') : '' }}</p>
                     <p><strong>Date Limite:</strong> {{ offre.dateLimite ? offre.dateLimite|date('Y-m-d') : '' }}</p>
                     <p><strong>Status:</strong> {{ offre.statutOffre }}</p>
-                    <!-- <p>{{ offre.lieuTravail }}</p> -->
+                    {% if hasApplied %}
+                    <p class="applied-badge">Déjà postulé</p>
+                    {% endif %}
                 </div>
                 <div class="flip-card-back">
-                    <!-- <p><strong>Exp:</strong> {{ offre.description }}</p> -->
                     <p style="max-height: 320px; overflow-y: auto; text-align: justify;">
                         <strong>DESC : </strong> {{ offre.description }}
                     </p>
 
                     <div style="margin-top: 10px;">
-                        <!-- <a class="btn btn-sm" href="{{ path('app_offre_show', {'id_offre': offre.idOffre}) }}"
-                            style="background-color: #4a6fa5; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none;">Voir</a>
-                        <a class="btn btn-sm" href="{{ path('app_offre_edit', {'id_offre': offre.idOffre}) }}"
-                            style="background-color: #e67e22; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none;">Modifier</a> -->
+                        {% if hasApplied %}
+                        <span class="already-applied-text">Vous avez déjà postulé à cette offre</span>
+                        {% endif %}
                     </div>
                 </div>
             </div>
@@ -157,9 +176,6 @@
                 rgba(var(--color-card), 0.9) 100%);
     }
 
-
-
-
     .flip-card {
         position: relative;
         background-color: transparent;
@@ -216,7 +232,6 @@
         /* ou plus selon l'espace que tu veux */
     }
 
-
     .flip-card-inner {
         position: relative;
         width: 100%;
@@ -225,11 +240,40 @@
         transition: transform 0.8s;
         transform-style: preserve-3d;
         border-radius: 10px;
+        cursor: pointer;
     }
 
     .flip-card:hover .flip-card-inner {
         transform: rotateY(180deg) scaleY(1.07);
-        ;
+    }
+
+    /* Styles pour les offres déjà postulées */
+    .flip-card-inner.already-applied {
+        opacity: 0.8;
+        cursor: default;
+    }
+
+    .applied-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #ff5252;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 14px;
+        z-index: 10;
+    }
+
+    .already-applied-text {
+        display: inline-block;
+        background-color: #ff5252;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 5px;
+        font-weight: bold;
+        margin-top: 15px;
     }
 
     .flip-card-front,
@@ -409,6 +453,7 @@
         align-items: center;
         margin-bottom: 15px;
     }
+
     .custom-select-wrapper {
         position: relative;
         display: inline-block;
@@ -421,8 +466,10 @@
         font-size: 1.1rem;
         transition: border-color 0.3s ease;
         background-color: white;
-        width: 400px; /* Set a specific width */
-    max-width: 100%; /* Allow it to be responsive */
+        width: 400px;
+        /* Set a specific width */
+        max-width: 100%;
+        /* Allow it to be responsive */
     }
 
     .form-select:focus {
@@ -430,6 +477,7 @@
         outline: none;
         box-shadow: 0 0 5px rgba(51, 204, 197, 0.5);
     }
+
     .custom-select-wrapper::after {
         content: "▼";
         font-size: 20px;
@@ -438,21 +486,27 @@
         right: 13px;
         top: 50%;
         transform: translateY(-40%);
-        pointer-events: none; /* Make sure this doesn't block clicks */
+        pointer-events: none;
+        /* Make sure this doesn't block clicks */
     }
 </style>
 <script>
     // Ensure dropdown functions properly
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const selectElement = document.getElementById('contract_type');
-        
+
         // Force the dropdown to be clickable
-        selectElement.addEventListener('mousedown', function(e) {
+        selectElement.addEventListener('mousedown', function (e) {
             e.stopPropagation();
         });
-        
+
         // Automatically submit form when selection changes
-        selectElement.addEventListener('change', function() {
+        selectElement.addEventListener('change', function () {
+            this.form.submit();
+        });
+        // Add event listener for sort_by dropdown
+        const sortByElement = document.getElementById('sort_by');
+        sortByElement.addEventListener('change', function () {
             this.form.submit();
         });
     });

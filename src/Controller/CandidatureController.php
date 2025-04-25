@@ -32,21 +32,47 @@ final class CandidatureController extends AbstractController
         $this->userRepository = $userRepository;
     }
 
-    #[Route(name: 'app_candidature_index', methods: ['GET'])]
+    #[Route('/', name: 'app_candidature_index', methods: ['GET'])]
     public function index(Request $request, CandidatureRepository $candidatureRepository): Response
     {
-        $search = $request->query->get('search', ''); 
-        $candidatures = $candidatureRepository->findByOffreTitre($search);
-
-        return $this->render('candidature/index.html.twig', [
-           
-            'candidatures' => $candidatures,
-            'search' => $search,    
-        ]);
+        $token = $request->cookies->get('BEARER');
+        
+        if (!$token) {
+            return $this->redirectToRoute('app_login');
+        }
+        
+        try {
+            $decodedData = $this->jwtEncoder->decode($token);
+            $email = $decodedData['username'] ?? null;
+            
+            if (!$email) {
+                $this->addFlash('error', 'Email non trouvé dans le token.');
+                return $this->redirectToRoute('app_login');
+            }
+            
+            $user = $this->userRepository->findOneBy(['email' => $email]);
+            
+            if (!$user) {
+                $this->addFlash('error', 'Utilisateur non trouvé.');
+                return $this->redirectToRoute('app_login');
+            }
+            
+            $search = $request->query->get('search', '');
+            $candidatures = $candidatureRepository->findByUserAndOffreTitre($user, $search);
+            
+            return $this->render('candidature/index.html.twig', [
+                'candidatures' => $candidatures,
+                'search' => $search,    
+            ]);
+            
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur lors du décodage du token.');
+            return $this->redirectToRoute('app_login');
+        }
     }
 
     #[Route('/new/{offre_id}', name: 'app_candidature_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, ?int $offre_id = null): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, CandidatureRepository $candidatureRepository, ?int $offre_id = null): Response
     {
         
         $candidature = new Candidature();
@@ -70,6 +96,12 @@ final class CandidatureController extends AbstractController
             if (!$user) {
                 $this->addFlash('error', 'Utilisateur non trouvé.');
                 return $this->redirectToRoute('app_login');
+            }
+
+            // Vérifier si l'utilisateur a déjà postulé à cette offre
+            if ($offre_id && $candidatureRepository->hasUserAppliedToOffer($user, $offre_id)) {
+                $this->addFlash('error', 'Vous avez déjà postulé à cette offre.');
+                return $this->redirectToRoute('app_offre_front_index');
             }
 
             $candidature->setUser($user);

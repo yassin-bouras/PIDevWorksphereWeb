@@ -6,15 +6,26 @@ use App\Entity\Offre;
 use App\Form\OffreType;
 use App\Repository\OffreRepository;
 use App\Repository\CandidatureRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 
 #[Route('/offre')]
 final class OffreController extends AbstractController
 {
+    private $jwtEncoder;
+    private $userRepository;
+
+    public function __construct(JWTEncoderInterface $jwtEncoder = null, UserRepository $userRepository = null)
+    {
+        $this->jwtEncoder = $jwtEncoder;
+        $this->userRepository = $userRepository;
+    }
+
     #[Route(name: 'app_offre_index', methods: ['GET'])]
     public function index(Request $request, OffreRepository $offreRepository): Response
     {
@@ -22,7 +33,6 @@ final class OffreController extends AbstractController
         $contractType = $request->query->get('contract_type', '');
         $offres = $offreRepository->findByTitre($search);
         $offres = $offreRepository->findBySearchAndContractType($search, $contractType);
-
 
         return $this->render('offre/index.html.twig', [
             'offres' => $offres,
@@ -32,18 +42,49 @@ final class OffreController extends AbstractController
     }
 
     #[Route('/front', name: 'app_offre_front_index', methods: ['GET'])]
-    public function frontIndex(Request $request, OffreRepository $offreRepository): Response
+    public function frontIndex(Request $request, OffreRepository $offreRepository, CandidatureRepository $candidatureRepository): Response
     {
         $search = $request->query->get('search', '');
         $contractType = $request->query->get('contract_type', '');
+        $sortBy = $request->query->get('sort_by', '');
         $offres = $offreRepository->findByTitre($search);
         $offres = $offreRepository->findBySearchAndContractType($search, $contractType);
+        $offres = $offreRepository->findBySearchContractTypeAndSort($search, $contractType, $sortBy);
+
+        // Récupérer l'utilisateur actuel
+        $currentUser = null;
+        $userApplications = [];
+        
+        $token = $request->cookies->get('BEARER');
+        if ($token && $this->jwtEncoder && $this->userRepository) {
+            try {
+                $decodedData = $this->jwtEncoder->decode($token);
+                $email = $decodedData['username'] ?? null;
+                
+                if ($email) {
+                    $currentUser = $this->userRepository->findOneBy(['email' => $email]);
+                    
+                    // Pour chaque offre, vérifier si l'utilisateur a déjà postulé
+                    if ($currentUser) {
+                        foreach ($offres as $offre) {
+                            $userApplications[$offre->getId_offre()] = 
+                                $candidatureRepository->hasUserAppliedToOffer($currentUser, $offre->getId_offre());
+                        }
+                    }
+                }
+            } catch (\Exception $e) {
+                // Gérer l'erreur silencieusement
+            }
+        }
 
         return $this->render('offre/front_index.html.twig', [
             'offres' => $offres,
             'search' => $search,
             'contract_type' => $contractType,
-            'context' => 'front'
+            'sort_by' => $sortBy,
+            'context' => 'front',
+            'currentUser' => $currentUser,
+            'userApplications' => $userApplications
         ]);
     }
 
@@ -85,7 +126,6 @@ final class OffreController extends AbstractController
     #[Route('/{id_offre}/edit', name: 'app_offre_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Offre $offre, EntityManagerInterface $entityManager, string $context = 'back'): Response
     {
-
         $form = $this->createForm(OffreType::class, $offre);
         $form->handleRequest($request);
 
@@ -112,7 +152,6 @@ final class OffreController extends AbstractController
 
         return $this->redirectToRoute('app_offre_index', [], Response::HTTP_SEE_OTHER);
     }
-
 
     #[Route('/{id_offre}/candidatures', name: 'app_offre_candidatures', methods: ['GET'])]
     public function candidatures(Offre $offre, CandidatureRepository $candidatureRepository): Response
