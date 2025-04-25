@@ -20,8 +20,8 @@ final class OffreController extends AbstractController
     private $jwtEncoder;
     private $userRepository;
 
-    public function __construct(JWTEncoderInterface $jwtEncoder = null, UserRepository $userRepository = null)
-    {
+
+    public function __construct(JWTEncoderInterface $jwtEncoder, UserRepository $userRepository){
         $this->jwtEncoder = $jwtEncoder;
         $this->userRepository = $userRepository;
     }
@@ -31,13 +31,17 @@ final class OffreController extends AbstractController
     {
         $search = $request->query->get('search', '');
         $contractType = $request->query->get('contract_type', '');
+        $sortBy = $request->query->get('sort_by', '');
         $offres = $offreRepository->findByTitre($search);
         $offres = $offreRepository->findBySearchAndContractType($search, $contractType);
+        $offres = $offreRepository->findBySearchContractTypeAndSort($search, $contractType, $sortBy);
+
 
         return $this->render('offre/index.html.twig', [
             'offres' => $offres,
             'search' => $search,
             'contract_type' => $contractType,
+            'sort_by' => $sortBy,
         ]);
     }
 

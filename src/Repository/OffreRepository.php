@@ -77,7 +77,8 @@ class OffreRepository extends ServiceEntityRepository
 
     public function findBySearchContractTypeAndSort(string $search = '', string $contractType = '', string $sortBy = ''): array
     {
-        $qb = $this->createQueryBuilder('o');
+        $qb = $this->createQueryBuilder('o')
+            ->orderBy('o.idOffre', 'DESC');
 
         // Apply search filter if provided
         if (!empty($search)) {
@@ -104,6 +105,12 @@ class OffreRepository extends ServiceEntityRepository
                 break;
             case 'date_lim_desc':
                 $qb->orderBy('o.date_limite', 'DESC');
+                break;
+            case 'salaire_asc':
+                $qb->orderBy('o.salaire', 'ASC');
+                break;
+            case 'salaire_desc':
+                $qb->orderBy('o.salaire', 'DESC');
                 break;
             default:
                 $qb->orderBy('o.date_publication', 'DESC'); // Default sort
