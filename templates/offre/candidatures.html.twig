@@ -33,6 +33,12 @@
                         Non fournie
                         {% endif %}
                     </p>
+                    <form method="post" action="{{ path('app_candidature_delete', {'id_candidature': candidature.id_candidature}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette candidature?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ candidature.id_candidature) }}">
+                        <button class="btn btn-danger btn-sm mt-2">
+                            <i class="fas fa-trash-alt"></i> Supprimer
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>

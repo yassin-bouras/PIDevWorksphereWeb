@@ -201,11 +201,23 @@ final class CandidatureController extends AbstractController
     public function delete(Request $request, Candidature $candidature, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete' . $candidature->getId_candidature(), $request->getPayload()->getString('_token'))) {
+            // Get the offer ID before removing the candidature
+            $offreId = null;
+            if ($candidature->getOffre()) {
+                $offreId = $candidature->getOffre()->getId_offre(); // Use getId_offre instead of getId
+            }
+            
             $entityManager->remove($candidature);
             $entityManager->flush();
+            
+            // If we have the offer ID, redirect back to the candidatures page for that offer
+            if ($offreId) {
+                $this->addFlash('success', 'Candidature supprimée avec succès.');
+                return $this->redirectToRoute('app_offre_candidatures', ['id_offre' => $offreId]); // Use id_offre instead of id
+            }
         }
 
-        return $this->redirectToRoute('app_candidature_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_offre_index', [], Response::HTTP_SEE_OTHER);
     }
 
 }
