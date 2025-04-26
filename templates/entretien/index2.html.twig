@@ -38,6 +38,13 @@
                         {% else %}
                             <span style="background-color: #e0ffe0; color: #28a745; padding: 8px 15px; border-radius: 5px; font-size: 0.9rem;">Entretien terminé</span>
                         {% endif %}
+
+                        <a href="{{ path('app_entretien_generate_questions', {'id': entretien.id}) }}" 
+                            class="btn btn-info"
+                            target="_blank">
+                                <i class="fas fa-file-pdf"></i> Générer des questions (PDF)
+                            </a>
+
                         <a href="{{ path('entretien_calendar') }}" 
                        class="btn btn-info">
                        <i class="fas fa-calendar-day"></i> Visualiser dans le calendrier

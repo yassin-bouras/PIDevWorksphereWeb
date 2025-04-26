@@ -10,6 +10,7 @@ use App\Form\EntretienType;
 use App\Repository\CandidatureRepository;
 use App\Repository\EntretienRepository;
 use App\Repository\UserRepository;
+use App\Service\GeminiService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
@@ -18,6 +19,10 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Knp\Snappy\Pdf;
+use Symfony\Component\HttpKernel\KernelInterface; 
+
+
 
 #[Route('/entretien')]
 final class EntretienController extends AbstractController
@@ -27,11 +32,20 @@ final class EntretienController extends AbstractController
     private $jwtEncoder;
     private $userRepository;
 
+    private KernelInterface $kernel;
 
-    public function __construct(JWTEncoderInterface $jwtEncoder, UserRepository $userRepository)
+
+    private $pdfGenerator;
+
+
+    public function __construct(JWTEncoderInterface $jwtEncoder, UserRepository $userRepository , Pdf $pdfGenerator , KernelInterface $kernel)
     {
         $this->jwtEncoder = $jwtEncoder;
         $this->userRepository = $userRepository;
+        $this->pdfGenerator = $pdfGenerator;
+        $this->kernel = $kernel;
+
+
     }
 
     #[Route(name: 'app_entretien_index', methods: ['GET'])]
@@ -435,6 +449,82 @@ public function filtrerParDate(
         }
     }
 
+    #[Route('/generate-questions/{id}', name: 'app_entretien_generate_questions', requirements: ['id' => '\d+'], methods: ['GET'])]
+public function generateQuestions(
+    int $id,
+    GeminiService $geminiService,
+    EntretienRepository $entretienRepository
+): Response {
+    $entretien = $entretienRepository->find($id);
+
+    if (!$entretien) {
+        $this->addFlash('error', 'Entretien non trouvé');
+        return $this->redirectToRoute('app_entretien_index');
+    }
+
+    $questions = $geminiService->generateInterviewQuestions($entretien->getTitre());
+
+    if (!$questions) {
+        $this->addFlash('error', "Impossible de générer les questions");
+        return $this->redirectToRoute('app_entretien_show', ['id' => $id]);
+    }
+
+    // Pas de try-catch ici pour voir directement l'erreur
+    $filename = 'questions_entretien_'.$id.'.pdf';
+    $pdfPath = $geminiService->generatePdfFromQuestions($questions, $filename);
+
+    // Ajoute un contrôle d'existence de fichier
+    $fullPath = $this->getParameter('kernel.project_dir').'/public'.$pdfPath;
+
+    if (!file_exists($fullPath)) {
+        throw new \Exception('Le fichier PDF n\'a pas été généré: '.$fullPath);
+    }
+
+    $pdfContent = file_get_contents($fullPath);
+
+    if ($pdfContent === false) {
+        throw new \Exception('Impossible de lire le contenu du fichier PDF généré.');
+    }
+
+    return new Response(
+        $pdfContent,
+        Response::HTTP_OK,
+        [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => sprintf('inline; filename="%s"', $filename)
+        ]
+    );
+}
+
+
+
+   
+
+
+
+#[Route('/test/generate-questions', name: 'test_generate_questions', methods: ['GET'])]
+public function testGenerateQuestions(Request $request, GeminiService $geminiService): Response
+{
+    $poste = $request->query->get('poste', 'Développeur');
+
+    $questions = $geminiService->generateInterviewQuestions($poste);
+
+    if (!$questions) {
+        return $this->json(['error' => 'Impossible de générer les questions'], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+
+    return $this->json([
+        'poste' => $poste,
+        'questions' => $questions,
+    ]);
+}
+}
+
+
+
+
+
+
 
 
 
@@ -481,4 +571,4 @@ public function filtrerParDate(
 
 
 
-}
+
