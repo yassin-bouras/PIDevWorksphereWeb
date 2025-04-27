@@ -662,16 +662,14 @@ public function filtrerParDate(
 
                 $events[] = [
                     'title' => 'Entretien ' . $entretien->getTitre(),
-                    'start' => $dateEntretien->format('Y-m-d H:i:s'),
-                    'end' => (clone $dateEntretien)->modify('+1 hour')->format('Y-m-d H:i:s'),
+                    'start' => $dateEntretien->format('Y-m-d') . 'T' . $heureDebut->format('H:i:s'),
+                    'end' => $dateEntretien->format('Y-m-d') . 'T' . $heureFin->format('H:i:s'),
                     'url' => $this->generateUrl('app_entretien_show', ['id' => $entretien->getId()]),
                     'backgroundColor' => $entretien->isStatus() ? '#28a745' : '#007bff',
                     'borderColor' => $entretien->isStatus() ? '#28a745' : '#007bff',
                     'extendedProps' => [
                         'description' => $entretien->getDescription(),
                         'offre' => $entretien->getOffre()->getTitre(),
-                        'heure' => $entretien->getHeureentretien(),
-                        'status' => $entretien->isStatus() ? 'Terminé' : 'Planifié'
                     ]
                 ];
             }
