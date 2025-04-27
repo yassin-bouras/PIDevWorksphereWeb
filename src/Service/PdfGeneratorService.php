@@ -2,45 +2,47 @@
 
 namespace App\Service;
 
-use Dompdf\Dompdf;
-use Dompdf\Options;
+use Knp\Snappy\Pdf;
 use Symfony\Component\HttpFoundation\Response;
 use Twig\Environment;
 
 class PdfGeneratorService
 {
     private $twig;
+    private $pdf;
 
-    public function __construct(Environment $twig)
+    public function __construct(Environment $twig, Pdf $pdf)
     {
         $this->twig = $twig;
+        $this->pdf = $pdf;
     }
 
-    
-    public function generateProjetPdf($projet, $equipes = null): Response
+    public function generateProjetPdf($projet, $equipes = null): string
     {
-        $pdfOptions = new Options();
-    $pdfOptions->set('defaultFont', 'Arial');
-    $pdfOptions->set('isRemoteEnabled', true);
-    
-    $dompdf = new Dompdf($pdfOptions);
-    
-    $html = $this->twig->render('projet/projetPDF.html.twig', [
-        'projet' => $projet,
-        'equipes' => $equipes, 
-        'date' => new \DateTime()
-    ]);
+        $html = $this->twig->render('projet/projetPDF.html.twig', [
+            'projet' => $projet,
+            'equipes' => $equipes, 
+            'date' => new \DateTime()
+        ]);
         
-        $dompdf->loadHtml($html);
-        $dompdf->setPaper('A4', 'portrait');
-        $dompdf->render();
-
-        $output = $dompdf->output();
-        
-        $response = new Response($output);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-Disposition', 'attachment; filename="projet_'.$projet->getId().'.pdf"');
-        
-        return $response;
+        // Génère le PDF et retourne le contenu binaire
+        return $this->pdf->getOutputFromHtml($html, [
+            'encoding' => 'utf-8',
+            'enable-javascript' => true,
+            'javascript-delay' => 1000,
+            'no-stop-slow-scripts' => true,
+            'no-background' => false,
+            'lowquality' => false,
+            'page-size' => 'A4',
+            'margin-top' => 10,
+            'margin-right' => 10,
+            'margin-bottom' => 10,
+            'margin-left' => 10,
+            'dpi' => 300,
+            'image-dpi' => 300,
+            'enable-external-links' => true,
+            'enable-internal-links' => true,
+            
+        ]);
     }
 }

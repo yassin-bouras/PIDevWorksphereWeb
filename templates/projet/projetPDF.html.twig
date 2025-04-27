@@ -4,25 +4,83 @@
     <meta charset="UTF-8">
     <title>Projet {{ projet.nom }}</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        .header { text-align: right; font-size: 10px; color: #666; margin-bottom: 30px; }
-        .title { text-align: center; font-size: 24pt; font-weight: bold; margin-bottom: 20px; }
-        .section-title { font-size: 16pt; font-weight: bold; margin-top: 30px; margin-bottom: 10px; }
-        .subtitle { font-size: 14pt; font-weight: bold; margin-bottom: 5px; }
-        .content { font-size: 12pt; margin-bottom: 15px; }
-        table { width: 100%; border-collapse: collapse; margin: 20px 0; }
-        th { background-color: #f2f2f2; text-align: left; padding: 10px; border: 1px solid #ddd; }
-        td { padding: 10px; border: 1px solid #ddd; }
-        .logo { width: 100px; margin-bottom: 20px; }
-        .member-img { width: 50px; height: 50px; border-radius: 50%; object-fit: cover; }
-        .center { text-align: center; margin: 20px 0; }
-        .project-image { max-width: 200px; max-height: 150px; margin: 0 auto; display: block; }
-        .list-group { list-style: none; padding: 0; }
-        .list-group-item { padding: 10px; border-bottom: 1px solid #eee; }
-        .team-summary { 
-            background-color: #f8f9fa; 
-            padding: 15px; 
-            border-radius: 5px; 
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .page-border {
+            border: 3px solid black;
+            padding: 30px;
+            margin: 20px;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            width: 100px;
+        }
+        .header {
+            font-size: 10px;
+            color: #666;
+            text-align: right;
+        }
+        .title {
+            text-align: center;
+            font-size: 24pt;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 16pt;
+            font-weight: bold;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 14pt;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .content {
+            font-size: 12pt;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .member-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .center {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .list-group {
+            list-style: none;
+            padding: 0;
+        }
+        .list-group-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .team-summary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
             margin-top: 20px;
             margin-bottom: 30px;
             border-left: 4px solid #3498db;
@@ -33,13 +91,17 @@
     </style>
 </head>
 <body>
-    <div class="header">Date: {{ date|date('d/m/Y H:i') }}</div>
+<div class="page-border">
+    <div class="top-bar">
+        <img src="{{ absolute_url(asset('back/img/workspherelogo.PNG')) }}" alt="Logo" class="logo">
+        <div class="header">Date: {{ date|date('d/m/Y H:i') }}</div>
+    </div>
 
     <h1 class="title">Détails du Projet</h1>
 
     {% if projet.imageProjet %}
     <div class="center">
-        <img src="{{ asset(projet.imageProjet) }}" class="project-image" alt="Image du projet">
+     <!--   <img src="{{ absolute_url(projet.imageProjet) }}" class="project-image" alt="Image du projet">  -->
     </div>
     {% endif %}
 
@@ -71,13 +133,6 @@
                             {% for user in equipe.users %}
                                 <li class="list-group-item">
                                     <div style="display: flex; align-items: center;">
-                                        <div class="member-avatar" style="margin-right: 15px;">
-                                            {% if user.imageprofil %}
-                                                <img src="{{ asset(user.imageprofil) }}" class="member-img" alt="Photo profil">
-                                            {% else %}
-                                                <div style="width:50px;height:50px;background:#eee;border-radius:50%;"></div>
-                                            {% endif %}
-                                        </div>
                                         <div>
                                             <strong>{{ user.nom }} {{ user.prenom }}</strong>
                                             <div style="color: #666;">{{ user.email }}</div>
@@ -95,5 +150,6 @@
             <p style="color: #666; font-style: italic;">Aucune équipe assignée à ce projet</p>
         {% endif %}
     </div>
+</div>
 </body>
 </html>

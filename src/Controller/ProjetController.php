@@ -16,6 +16,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Knp\Component\Pager\PaginatorInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use App\Repository\UserRepository;
+use Knp\Snappy\Pdf;
+use Symfony\Component\HttpKernel\KernelInterface; 
 
 #[Route('/projet')]
 final class ProjetController extends AbstractController{
@@ -226,7 +228,7 @@ public function delete(Request $request, Projet $projet, EntityManagerInterface 
 }
 
 
-#[Route('/projet/{id}/generate-pdf', name: 'app_projet_pdf', methods: ['POST'])]
+/*#[Route('/projet/{id}/generate-pdf', name: 'app_projet_pdf', methods: ['POST'])]
 public function generatePdf(
     Projet $projet, 
     Request $request,
@@ -258,6 +260,49 @@ public function generatePdf(
         $this->addFlash('success', 'PDF généré et uploadé avec succès vers Cloudinary');
         
         return $response;
+
+    } catch (\Exception $e) {
+        $this->addFlash('error', 'Erreur: '.$e->getMessage());
+        return $this->redirectToRoute('app_projet_index', ['id' => $projet->getId()]);
+    }
+}
+
+*/
+
+
+#[Route('/projet/{id}/generate-pdf', name: 'app_projet_pdf', methods: ['POST'])]
+public function generatePdf(
+    Projet $projet, 
+    Request $request,
+    PdfGeneratorService $pdfGenerator,
+    CloudinaryUploader $cloudinaryUploader
+): Response {
+    try {
+        // Générer le contenu PDF
+        $pdfContent = $pdfGenerator->generateProjetPdf($projet, $projet->getEquipes());
+        
+        // Sauvegarder localement (optionnel)
+        $localPath = $this->getParameter('kernel.project_dir').'/public/pdfs/';
+        if (!file_exists($localPath)) {
+            mkdir($localPath, 0777, true);
+        }
+        
+        $pdfFileName = str_replace(' ', '_', $projet->getNom()).'.pdf';
+        $fullLocalPath = $localPath.$pdfFileName;
+        file_put_contents($fullLocalPath, $pdfContent);
+        
+        // Upload vers Cloudinary (optionnel)
+        $cloudinaryUrl = $cloudinaryUploader->uploadPdfToCloudinary($pdfContent);
+        
+        // Retourner la réponse PDF
+        return new Response(
+            $pdfContent,
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => sprintf('attachment; filename="%s"', $pdfFileName),
+            ]
+        );
 
     } catch (\Exception $e) {
         $this->addFlash('error', 'Erreur: '.$e->getMessage());
