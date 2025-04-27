@@ -31,25 +31,28 @@ final class SponsorController extends AbstractController{
         ]);
     }
 
-    #[Route('/new', name: 'app_sponsor_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $sponsor = new Sponsor();
-        $form = $this->createForm(SponsorType::class, $sponsor);
-        $form->handleRequest($request);
+    // Dans SponsorController.php
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($sponsor);
-            $entityManager->flush();
+#[Route('/new', name: 'app_sponsor_new', methods: ['GET', 'POST'])]
+public function new(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $sponsor = new Sponsor();
+    $form = $this->createForm(SponsorType::class, $sponsor);
+    $form->handleRequest($request);
 
-            return $this->redirectToRoute('app_sponsor_index', [], Response::HTTP_SEE_OTHER);
-        }
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Les méthodes getBudgetApresReduction() et getClassement() seront appelées automatiquement
+        $entityManager->persist($sponsor);
+        $entityManager->flush();
 
-        return $this->render('sponsor/new.html.twig', [
-            'sponsor' => $sponsor,
-            'form' => $form,
-        ]);
+        return $this->redirectToRoute('app_sponsor_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    return $this->render('sponsor/new.html.twig', [
+        'sponsor' => $sponsor,
+        'form' => $form,
+    ]);
+}
 
     #[Route('/{idSponsor}', name: 'app_sponsor_show', methods: ['GET'])]
     public function show(Sponsor $sponsor): Response
