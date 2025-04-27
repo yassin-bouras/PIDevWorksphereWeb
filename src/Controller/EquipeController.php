@@ -242,4 +242,25 @@ public function assignProject(Request $request, Equipe $equipe, EntityManagerInt
     return $this->redirectToRoute('app_equipe_index');
 }
 
+
+#[Route('/{id}/remove-project/{projetId}', name: 'app_equipe_remove_project', methods: ['POST'])]
+public function removeProject(Request $request, Equipe $equipe, int $projetId, EntityManagerInterface $entityManager): Response
+{
+    $projet = $entityManager->getRepository(Projet::class)->find($projetId);
+    
+    if (!$projet) {
+        $this->addFlash('error', 'Projet non trouvé.');
+        return $this->redirectToRoute('app_equipe_show', ['id' => $equipe->getId()]);
+    }
+
+    if ($this->isCsrfTokenValid('remove_project_'.$equipe->getId().'_'.$projetId, $request->request->get('_token'))) {
+        $equipe->removeProjet($projet);
+        $entityManager->flush();
+        $this->addFlash('success', 'Projet retiré avec succès de l\'équipe.');
+    } else {
+        $this->addFlash('error', 'Token CSRF invalide.');
+    }
+
+    return $this->redirectToRoute('app_equipe_show', ['id' => $equipe->getId()]);
+}
 }
