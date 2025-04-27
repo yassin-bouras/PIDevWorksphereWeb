@@ -1,0 +1,102 @@
+{% extends '/dashboard/manager.html.twig' %}
+
+{% block title %}Statistiques des Projets{% endblock %}
+
+{% block content %}
+<div class="content container-fluid">
+
+    <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12">
+            <div class="breadcrumb-path mb-4">
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard_manager') }}">Accueil</a></li>
+                    <li class="breadcrumb-item active">Statistiques des Projets</li>
+                </ul>
+                <h3>Statistiques des Projets</h3>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-6 col-sm-12 col-12">
+            <div class="card board1 fill4">
+                <div class="card-body">
+                    <div class="card_widget_header">
+                        <label> Projets </label>
+                        <h4>{{ totalProjets }}</h4>
+                    </div>
+                    <div class="card_widget_img">
+                        <img src="{{ asset('back/img/dash2.png') }}" alt="Projets">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-xl-6 col-sm-12 col-12">
+            <div class="card board1 fill3">
+                <div class="card-body">
+                    <div class="card_widget_header">
+                        <label>Équipes</label>
+                        <h4>{{ totalEquipes }}</h4>
+                    </div>
+                    <div class="card_widget_img">
+                        <img src="{{ asset('back/img/dash1.png') }}" alt="Équipes">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Graphique #}
+    <div class="card mt-4">
+        <div class="card-header">
+            <h2 class="card-titles">Graphique des Projets</h2>
+        </div>
+        <div class="card-body">
+            <div class="chart-container" style="position: relative; height:40vh; width:80vw">
+                <canvas id="projectChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch("{{ path('app_projet_stats_api') }}")
+                .then(response => response.json())
+                .then(data => {
+                    new Chart(document.getElementById('projectChart'), {
+                        type: 'bar',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Projets par statut',
+                                data: data.data,
+                                backgroundColor: data.colors,
+                                borderWidth: 1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            maintainAspectRatio: false,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    ticks: {
+                                        stepSize: 1
+                                    }
+                                }
+                            }
+                        }
+                    });
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+    </script>
+{% endblock %}

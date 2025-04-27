@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Projet;
 use App\Form\ProjetType;
 use App\Repository\ProjetRepository;
+use App\Repository\EquipeRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,7 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Knp\Component\Pager\PaginatorInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use App\Repository\UserRepository;
-use Knp\Snappy\Pdf;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\KernelInterface; 
 
 #[Route('/projet')]
@@ -227,49 +228,6 @@ public function delete(Request $request, Projet $projet, EntityManagerInterface 
     return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
 }
 
-
-/*#[Route('/projet/{id}/generate-pdf', name: 'app_projet_pdf', methods: ['POST'])]
-public function generatePdf(
-    Projet $projet, 
-    Request $request,
-    PdfGeneratorService $pdfGenerator,
-    CloudinaryUploader $cloudinaryUploader
-): Response {
-    try {
-  
-        $pdfContent = $pdfGenerator->generateProjetPdf($projet, $projet->getEquipes());
-        
-  
-        $localPath = $this->getParameter('kernel.project_dir').'/public/pdfs/';
-        if (!file_exists($localPath)) {
-            mkdir($localPath, 0777, true);
-        }
-        
-        $pdfFileName = str_replace(' ', '_', $projet->getNom()).'.pdf';
-        $fullLocalPath = $localPath.$pdfFileName;
-        file_put_contents($fullLocalPath, $pdfContent);
-        
-      
-        $cloudinaryUrl = $cloudinaryUploader->uploadPdfToCloudinary($pdfContent);
-        
-       
-        $response = new Response($pdfContent);
-        $response->headers->set('Content-Type', 'application/pdf');
-        $response->headers->set('Content-Disposition', 'attachment; filename="'.$pdfFileName.'"');
-        
-        $this->addFlash('success', 'PDF généré et uploadé avec succès vers Cloudinary');
-        
-        return $response;
-
-    } catch (\Exception $e) {
-        $this->addFlash('error', 'Erreur: '.$e->getMessage());
-        return $this->redirectToRoute('app_projet_index', ['id' => $projet->getId()]);
-    }
-}
-
-*/
-
-
 #[Route('/projet/{id}/generate-pdf', name: 'app_projet_pdf', methods: ['POST'])]
 public function generatePdf(
     Projet $projet, 
@@ -308,6 +266,45 @@ public function generatePdf(
         $this->addFlash('error', 'Erreur: '.$e->getMessage());
         return $this->redirectToRoute('app_projet_index', ['id' => $projet->getId()]);
     }
+}
+
+
+#[Route('/projet/ap/stats', name: 'app_projet_stats_page')]
+public function projectStatsPage(ProjetRepository $projetRepository, EquipeRepository $equipeRepository): Response
+{
+    $totalProjets = $projetRepository->count([]);
+    $totalEquipes = $equipeRepository->count([]);
+
+    return $this->render('projet/stats_test.html.twig', [
+        'totalProjets' => $totalProjets,
+        'totalEquipes' => $totalEquipes,
+    ]);
+}
+
+
+#[Route('/projet/api/stats', name: 'app_projet_stats_api')]
+public function projectStatsApi(ProjetRepository $projetRepository): JsonResponse
+{
+    $stats = $projetRepository->createQueryBuilder('p')
+        ->select('p.etat as label, COUNT(p.id) as count')
+        ->groupBy('p.etat')
+        ->getQuery()
+        ->getResult();
+
+    $labels = [];
+    $data = [];
+    $colors = ['#36a2eb', '#4bc0c0', '#ffcd56', '#ff6384'];
+
+    foreach ($stats as $key => $item) {
+        $labels[] = $item['label'];
+        $data[] = $item['count'];
+    }
+
+    return new JsonResponse([
+        'labels' => $labels,
+        'data' => $data,
+        'colors' => $colors,
+    ]);
 }
 
 

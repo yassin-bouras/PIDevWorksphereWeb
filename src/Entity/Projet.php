@@ -183,7 +183,6 @@ class Projet
 
 
 
-// Dans Projet.php
 #[ORM\OneToMany(targetEntity: Tache::class, mappedBy: 'projet')]
 private Collection $taches;
 
