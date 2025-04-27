@@ -89,8 +89,7 @@ class Equipe
         return $this;
     }
 
-    /*#[ORM\OneToMany(targetEntity: Projet::class, mappedBy: 'equipe')]
-    private Collection $projets;*/
+ 
 
     #[ORM\ManyToMany(targetEntity: Projet::class, mappedBy: 'equipes')]
     private Collection $projets;
@@ -99,30 +98,7 @@ class Equipe
      * @return Collection<int, Projet>
      */
     
-     /*public function getProjets(): Collection
-    {
-        if (!$this->projets instanceof Collection) {
-            $this->projets = new ArrayCollection();
-        }
-        return $this->projets;
-    }
-
-    public function addProjet(Projet $projet): self
-    {
-        if (!$this->getProjets()->contains($projet)) {
-            $this->getProjets()->add($projet);
-        }
-        return $this;
-    }
-
-    public function removeProjet(Projet $projet): self
-    {
-        $this->getProjets()->removeElement($projet);
-        return $this;
-    }*/
-
-
-
+  
 public function getProjets(): Collection
 {
     return $this->projets;

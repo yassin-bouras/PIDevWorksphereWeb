@@ -107,9 +107,21 @@
                 <a href="{{ path('app_projet_index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Retour
                 </a>
-               <!--  <a href="{{ path('app_projet_edit', {'id': projet.id}) }}" class="btn btn-primary">
-                    <i class="fas fa-edit"></i> Modifier
-                </a> -->
+            
+
+                <a href="#" class="btn btn-primary" onclick="document.getElementById('pdf-form').submit();">
+                    <i class="fas fa-file-pdf"></i> Générer PDF
+                </a>
+                
+                <form id="pdf-form" action="{{ path('app_projet_pdf', {id: projet.id}) }}" method="post" style="display: none;">
+                </form>
+                
+               <!--  <form action="{{ path('app_projet_pdf', {id: projet.id}) }}" method="post">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-file-pdf"></i> Générer PDF
+                    </button>
+                </form> -->
+                
             </div>
         </div>
     </div>

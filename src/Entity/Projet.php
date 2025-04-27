@@ -96,23 +96,6 @@ class Projet
         return $this;
     }
 
-    /*#[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: 'projets')]
-    #[ORM\JoinColumn(name: 'equipe_id', referencedColumnName: 'id')]
-    private ?Equipe $equipe = null;
-
-    public function getEquipe(): ?Equipe
-    {
-        return $this->equipe;
-    }
-
-    public function setEquipe(?Equipe $equipe): self
-    {
-        $this->equipe = $equipe;
-        return $this;
-    }*/
-
-
-    
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $etat = null;
 
@@ -156,6 +139,7 @@ class Projet
     public function __construct()
     {
         $this->equipes = new ArrayCollection();
+        $this->taches = new ArrayCollection();
     }
 
     /**
@@ -183,5 +167,51 @@ class Projet
         }
         return $this;
     }
-    
+   
+    #[ORM\Column(name: 'id_user' ,type: 'integer', nullable: true)]
+    private ?int $idUser = null;
+    public function getIdUser(): ?int
+    {
+        return $this->idUser;
+    }
+
+    public function setIdUser(?int $idUser): self
+    {
+        $this->idUser = $idUser;
+        return $this;
+    }
+
+
+
+// Dans Projet.php
+#[ORM\OneToMany(targetEntity: Tache::class, mappedBy: 'projet')]
+private Collection $taches;
+
+
+/**
+ * @return Collection<int, Tache>
+ */
+public function getTaches(): Collection
+{
+    return $this->taches;
+}
+
+public function addTache(Tache $tache): self
+{
+    if (!$this->taches->contains($tache)) {
+        $this->taches->add($tache);
+        $tache->setProjet($this);
+    }
+    return $this;
+}
+
+public function removeTache(Tache $tache): self
+{
+    if ($this->taches->removeElement($tache)) {
+        if ($tache->getProjet() === $this) {
+            $tache->setProjet(null);
+        }
+    }
+    return $this;
+}
 }

@@ -14,72 +14,136 @@ use App\Service\PdfGeneratorService;
 use App\Service\CloudinaryUploader;
 use Doctrine\Common\Collections\ArrayCollection;
 use Knp\Component\Pager\PaginatorInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use App\Repository\UserRepository;
 
 #[Route('/projet')]
 final class ProjetController extends AbstractController{
 
+    private $jwtEncoder;
+    private $userRepository;
+
+    public function __construct(JWTEncoderInterface $jwtEncoder, UserRepository $userRepository)
+    {
+        $this->jwtEncoder = $jwtEncoder;
+        $this->userRepository = $userRepository;
+     
+
+    }
  
+
     #[Route(name: 'app_projet_index', methods: ['GET'])]
     public function index(ProjetRepository $projetRepository, Request $request, PaginatorInterface $paginator): Response
-     {
-  
-    $nom = $request->query->get('search');
-    $etat = $request->query->get('etat');
-    $nomEquipe = $request->query->get('nomEquipe');
-
-
-    //$projets = $projetRepository->searchProjects($nom, $etat, $nomEquipe);
-
-    $query = $projetRepository->searchProjectsQuery($nom, $etat, $nomEquipe);
-
- 
-    $projets = $paginator->paginate(
-        $query,
-        $request->query->getInt('page', 1),2
-    );
-
-    return $this->render('projet/index.html.twig', [
-        'projets' => $projets,
-    ]);
+    {
+        $token = $request->cookies->get('BEARER');
+    
+        if (!$token) {
+            return $this->redirectToRoute('app_login');
+        }
+    
+        try {
+            $decodedData = $this->jwtEncoder->decode($token);
+            $email = $decodedData['username'] ?? null;
+            $user = $this->userRepository->findOneBy(['email' => $email]);
+    
+            if (!$user) {
+                return $this->redirectToRoute('app_login');
+            }
+    
+            $nom = $request->query->get('search');
+            $etat = $request->query->get('etat');
+            $nomEquipe = $request->query->get('nomEquipe');
+    
+            // Utiliser le repository
+            $query = $projetRepository->findProjectsByUser($user->getIduser(), $nom, $etat, $nomEquipe);
+    
+            $projets = $paginator->paginate(
+                $query,
+                $request->query->getInt('page', 1),
+                2
+            );
+    
+            return $this->render('projet/index.html.twig', [
+                'projets' => $projets,
+            ]);
+    
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Token invalide ou expiré.');
+            return $this->redirectToRoute('app_login');
+        }
     }
+    
+
 
 #[Route('/new', name: 'app_projet_new', methods: ['GET', 'POST'])]
 public function new(Request $request, EntityManagerInterface $entityManager): Response
 {
-    $projet = new Projet();
-    $form = $this->createForm(ProjetType::class, $projet);
-    $form->handleRequest($request);
+    // Récupérer le token JWT depuis les cookies
+    $token = $request->cookies->get('BEARER');
     
-    if ($form->isSubmitted() && $form->isValid()) {
-        $imageFile = $form->get('imageProjet')->getData();
-        
-        if ($imageFile) {
-            $newFilename = uniqid() . '.' . $imageFile->guessExtension();
-            $destination = $this->getParameter('image_directory');
-            $imageFile->move($destination, $newFilename);
-            $projet->setImageProjet('img/' . $newFilename);  
-        }
-
-      
-        foreach ($projet->getEquipes() as $equipe) {
-            $currentCount = $equipe->getNbrProjet() ?? 0;
-            $equipe->setNbrProjet($currentCount + 1);
-            $entityManager->persist($equipe);
-        }
-
-        $entityManager->persist($projet);
-        $entityManager->flush();
-
-        return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
+    if (!$token) {
+        return $this->redirectToRoute('app_login');
     }
 
-    return $this->render('projet/new.html.twig', [
-        'projet' => $projet,
-        'form' => $form,
-    ]);
+    try {
+        // Décoder le token pour obtenir l'email de l'utilisateur
+        $decodedData = $this->jwtEncoder->decode($token);
+        $email = $decodedData['username'] ?? null;
+
+        if (!$email) {
+            $this->addFlash('error', 'Email non trouvé dans le token.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        // Récupérer l'utilisateur depuis la base de données
+        $user = $this->userRepository->findOneBy(['email' => $email]);
+
+        if (!$user) {
+            $this->addFlash('error', 'Utilisateur non trouvé.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        $projet = new Projet();
+        $form = $this->createForm(ProjetType::class, $projet);
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Assigner l'ID de l'utilisateur au projet
+            $projet->setIdUser($user->getIduser());
+            
+            // Gestion de l'image
+            $imageFile = $form->get('imageProjet')->getData();
+            
+            if ($imageFile) {
+                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+                $destination = $this->getParameter('image_directory');
+                $imageFile->move($destination, $newFilename);
+                $projet->setImageProjet('img/' . $newFilename);  
+            }
+
+            // Mise à jour du nombre de projets pour chaque équipe
+            foreach ($projet->getEquipes() as $equipe) {
+                $currentCount = $equipe->getNbrProjet() ?? 0;
+                $equipe->setNbrProjet($currentCount + 1);
+                $entityManager->persist($equipe);
+            }
+
+            $entityManager->persist($projet);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_projet_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('projet/new.html.twig', [
+            'projet' => $projet,
+            'form' => $form,
+        ]);
+
+    } catch (\Exception $e) {
+        $this->addFlash('error', 'Token invalide ou expiré: '.$e->getMessage());
+        return $this->redirectToRoute('app_login');
+    }
 }
-
-
 
 
     #[Route('/{id}', name: 'app_projet_show', methods: ['GET'])]

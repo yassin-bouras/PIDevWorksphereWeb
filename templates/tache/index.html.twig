@@ -1,0 +1,332 @@
+{% extends '/dashboard/manager.html.twig' %}
+
+{% block content %}
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="page-title">Tableau Kanban des Tâches</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard_manager') }}">Accueil</a></li>
+                    <li class="breadcrumb-item active">Tâches</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12 mb-4">
+            <div class="head-link-set">
+                <a class="btn-add" href="{{ path('app_tache_new') }}">
+                    <i class="fas fa-plus"></i> Créer une nouvelle tâche
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-titles">Visualisation Kanban</h2>
+                </div>
+                
+                <div class="card-body">
+                    <div class="kanban-board">
+                        {% for statut, taches in groupedTaches %}
+                            <div class="kanban-column">
+                                <div class="kanban-column-header">
+                                    <h3>{{ statut }}</h3>
+                                    <span class="badge bg-primary">{{ taches|length }}</span>
+                                </div>
+                                
+                                <div class="kanban-column-body">
+                                    {% for tache in taches %}
+                                        <div class="kanban-card" data-id="{{ tache.id }}">
+                                            <div class="kanban-card-header">
+                                                <h4>{{ tache.titre }}</h4>
+                                                <span class="priority-badge priority-{{ tache.priorite }}">{{ tache.priorite }}</span>
+                                            </div>
+                                            
+                                            <div class="kanban-card-content">
+                                                <p>{{ tache.description|slice(0, 80) }}{% if tache.description|length > 80 %}...{% endif %}</p>
+                                            </div>
+                                            
+                                            <div class="kanban-card-footer">
+                                                <div class="deadline">
+                                                    <i class="far fa-calendar-alt"></i>
+                                                    {{ tache.deadline ? tache.deadline|date('d/m/Y') : 'Non définie' }}
+                                                </div>
+                                                
+                                                <div class="actions">
+                                                    <a href="{{ path('app_tache_show', {'id': tache.id}) }}" class="btn-edit" title="Voir détails">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <a href="{{ path('app_tache_edit', {'id': tache.id}) }}" class="btn-edit" title="Modifier">
+                                                        <i class="fas fa-pencil-alt"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <div class="kanban-empty">
+                                            <i class="far fa-check-circle"></i>
+                                            <p>Aucune tâche</p>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .kanban-board {
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        padding-bottom: 15px;
+    }
+    
+    .kanban-column {
+        flex: 1;
+        min-width: 300px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #e0e0e0;
+    }
+    
+    .kanban-column-header {
+        padding: 15px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8f9fa;
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .kanban-column-header h3 {
+        margin: 0;
+        font-size: 16px;
+        font-weight: 600;
+    }
+    
+    .kanban-column-body {
+        padding: 15px;
+        min-height: 100px;
+    }
+    
+    .kanban-card {
+        background: #fff;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border-left: 4px solid #4e73df;
+        transition: all 0.3s ease;
+        cursor: move;
+    }
+    
+    .kanban-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .kanban-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    
+    .kanban-card-header h4 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 500;
+        color: #333;
+    }
+    
+    .priority-badge {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 24px;
+        font-size: 12px;
+        font-weight: 600;
+        color: white;
+    }
+    
+    .priority-1 { background: #28a745; }
+    .priority-2 { background: #17a2b8; }
+    .priority-3 { background: #ffc107; color: #212529; }
+    .priority-4 { background: #fd7e14; }
+    .priority-5 { background: #dc3545; }
+    
+    .kanban-card-content p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 14px;
+    }
+    
+    .kanban-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+        font-size: 13px;
+    }
+    
+    .deadline {
+        color: #6c757d;
+    }
+    
+    .deadline i {
+        margin-right: 5px;
+    }
+    
+    .actions a {
+        color: #6c757d;
+        margin-left: 10px;
+        transition: color 0.3s;
+    }
+    
+    .actions a:hover {
+        color: #4e73df;
+    }
+    
+    .kanban-empty {
+        text-align: center;
+        padding: 20px;
+        color: #adb5bd;
+    }
+    
+    .kanban-empty i {
+        font-size: 24px;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .kanban-column-hover {
+    background-color: #f0f7ff;
+    border: 1px dashed #4e73df;
+}
+
+.ui-draggable-dragging {
+    transform: rotate(2deg);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.2) !important;
+    z-index: 9999 !important;
+}
+
+.kanban-board {
+    min-height: 500px;
+}
+/* Ajoutez ceci à votre section style */
+.kanban-card.ui-draggable-dragging {
+    transform: rotate(2deg) scale(1.02);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    z-index: 9999;
+    opacity: 0.9;
+}
+
+.kanban-column.ui-droppable-active {
+    background-color: #f8f9fa;
+}
+
+.kanban-column-hover {
+    border: 2px dashed #4e73df;
+    background-color: #f0f7ff !important;
+}
+
+.ui-draggable-handle {
+    cursor: move;
+}
+</style>
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const kanbanBoard = document.querySelector('.kanban-board');
+            const updateUrl = "{{ path('app_tache_update_status', {id: 'ID'}) }}";
+            const csrfToken = "{{ csrf_token('update-status') }}";
+            
+      
+            document.querySelectorAll('.kanban-column-body').forEach(column => {
+                new Sortable(column, {
+                    group: {
+                        name: 'kanban',
+                        pull: true,
+                        put: true
+                    },
+                    animation: 150,
+                    ghostClass: 'kanban-ghost',
+                    chosenClass: 'kanban-chosen',
+                    dragClass: 'kanban-drag',
+                    onEnd: async (evt) => {
+                        if (!evt.to || !evt.item) return;
+                        
+                        const taskId = evt.item.dataset.id;
+                        const newStatus = evt.to.closest('.kanban-column')
+                                            .querySelector('.kanban-column-header h3')
+                                            .textContent.trim();
+                        
+                        try {
+                            const formData = new FormData();
+                            formData.append('status', newStatus);
+                            formData.append('_token', csrfToken);
+                            
+                            const response = await fetch(updateUrl.replace('ID', taskId), {
+                                method: 'POST',
+                                body: formData
+                            });
+                            
+                            const data = await response.json();
+                            
+                            if (!response.ok || data.status !== 'success') {
+                                throw new Error(data.message || 'Erreur serveur');
+                            }
+                            
+                         
+                            updateTaskCounters();
+                            
+                         
+                            evt.to.closest('.kanban-column').classList.add('updated');
+                            setTimeout(() => {
+                                evt.to.closest('.kanban-column').classList.remove('updated');
+                            }, 500);
+                            
+                        } catch (error) {
+                            console.error('Erreur de mise à jour:', error);
+                       
+                            if (evt.from && evt.item) {
+                                evt.from.insertBefore(evt.item, evt.oldIndex >= 0 
+                                    ? evt.from.children[evt.oldIndex] || null 
+                                    : null);
+                            }
+                            alert('Erreur: ' + (error.message || 'Impossible de mettre à jour le statut'));
+                        }
+                    }
+                });
+            });
+            
+            function updateTaskCounters() {
+                document.querySelectorAll('.kanban-column').forEach(column => {
+                    const count = column.querySelectorAll('.kanban-card').length;
+                    const badge = column.querySelector('.badge');
+                    if (badge) {
+                        badge.textContent = count;
+                    }
+                });
+            }
+        });
+    </script>
+{% endblock %}
+{% endblock %}

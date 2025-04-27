@@ -54,6 +54,16 @@ public function findByNomEquipeQuery(string $nom)
         ->getQuery();
 }
 
+public function countTeamsWithProjects(): int
+{
+    return $this->createQueryBuilder('e')
+        ->select('COUNT(DISTINCT e.id)')
+        ->innerJoin('e.projets', 'p')
+        ->getQuery()
+        ->getSingleScalarResult();
+}
+
+
 //    /**
 //     * @return Equipe[] Returns an array of Equipe objects
 //     */

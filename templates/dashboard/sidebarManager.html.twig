@@ -141,7 +141,8 @@
 <img src="{{ asset('back/img/profile.jpg') }}" alt="">
 <span class="status online"></span>
 </span>
-<span>Kavin Hansen</span>
+<span id="user-name"></span>
+
 </a>
 <div class="dropdown-menu">
 <a class="dropdown-item" href="profile.html"><i data-feather="user" class="mr-1"></i> Profile</a>
@@ -209,7 +210,13 @@
           <span>📢 Projet</span>
         </a>
       </li>
-      
+
+      <li>
+        <a href="/tache">
+          <span>📊 Kanban</span>
+        </a>
+      </li>
+
       <li>
         <a href="/changer-mot-de-passe">
           <span>🔄 Mot de Passe</span>
@@ -226,7 +233,82 @@
     </div>
     </div>
     </div>
+    
     </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+          function getCookie(name) {
+              let cookieArray = document.cookie.split('; ');
+              let cookie = cookieArray.find(row => row.startsWith(name + '='));
+              return cookie ? cookie.split('=')[1] : null;
+          }
+  
+  
+          fetch('/jwt/user', {
+              method: 'POST',
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ token: getCookie('BEARER') }) // Get the token from cookies
+          })
+          .then(response => response.json())
+          .then(data => {
+              if (data.success) {
+                  const user = data.user;
+                  document.getElementById('user-profile-image').src = user.imageprofil || "{{ asset('back/img/profile.jpg') }}";
+                  document.getElementById('user-full-name').textContent = user.nom + ' ' + user.prenom;
+                  document.getElementById('user-profile-link').href = '/user/' + user.iduser;
+  
+                  const sidebarLinks = document.getElementById('sidebar-links');
+                  sidebarLinks.innerHTML = '';
+  
+                  if (user.role === 'RH') {
+                      sidebarLinks.innerHTML += `
+                          <li><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
+                          <li><a href="/contrat"><span>📜 Contrat</span></a></li>
+                          <li><a href="/sponsor"><span>📢 Gestion Sponsor</span></a></li>
+                          <li><a href="/user"><span>👥 Gestion User</span></a></li>
+                          <li><a href="/event"><span>✅ Evenements</span></a></li>
+                          <li><a href="/formation"><span>📢 Formations</span></a></li>
+                          <li><a href="/offre"><span>🎯 Offres Emploi</span></a></li>
+                          <li><a href="/entretien"><span>🔥 Entretien</span></a></li>
+                          <li><a href="/mdp"><span>🔄 Mot de Passe</span></a></li>
+                      `;
+                  } else if (user.role === 'Candidat') {
+                      sidebarLinks.innerHTML += `
+                          <li><a href="/"><span>🔄 Offre Emploi</span></a></li>
+                          <li><a href="/reclamation/user/${user.iduser}"><span>🔄 Reclamation</span></a></li>
+                          <li><a href="/"><span>👥 Candidature</span></a></li>
+                          <li><a href="/"><span>👤 Changer Mot de Passe</span></a></li>
+                      `;
+                  } else if (user.role === 'Employe') {
+                      sidebarLinks.innerHTML += `
+                          <li class="active"><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
+                          <li><a href="/reclamation/user/${user.iduser}"><span>🔄 Reclamation</span></a></li>
+                          <li><a href="/formation"><span>📢 Formation</span></a></li>
+                          <li><a href="/entretien/employees"><span>🚀 Entretien Archive</span></a></li>
+                          <li><a href="/entretien/employee"><span>🚀 Entretien</span></a></li>
+                          <li><a href="/"><span>🎯 Mes Reservations</span></a></li>
+                          <li><a href="/"><span>👥 Équipe</span></a></li>
+                          <li><a href="/"><span>📂 Projet</span></a></li>
+                          <li><a href="/"><span>🔄 Mot de Passe</span></a></li>
+                      `;
+                  } else if (user.role === 'manager') {
+                      sidebarLinks.innerHTML += `
+                          <li class="active"><a href="/"><span>👤 Profile</span></a></li>
+                          <li><a href="/"><span>⚙️ Settings</span></a></li>
+                      `;
+                  }
+              } else {
+                  console.error('Failed to fetch user data:', data.error);
+              }
+          })
+          .catch(error => {
+              console.error('Error fetching user data:', error);
+          });
+      });
+  </script>
     
     {% block js %}
     <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
