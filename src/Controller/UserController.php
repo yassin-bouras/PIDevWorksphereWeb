@@ -5,8 +5,10 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use App\Service\MailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -100,4 +102,26 @@ final class UserController extends AbstractController
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
+
+
+    #[Route('/api/send-email', name: 'api_send_email', methods: ['POST'])]
+    public function sendEmail(Request $request, MailService $mailService): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['recipient'], $data['subject'], $data['content'])) {
+            return new JsonResponse(['error' => 'Missing required fields'], 400);
+        }
+
+        $mailService->sendMail(
+            $data['recipient'],
+            $data['subject'],
+            $data['content']
+        );
+
+        return new JsonResponse(['message' => 'Email sent successfully']);
+    }
+
+
+
 }

@@ -7,6 +7,7 @@ parameters:
   image_directory: "%kernel.project_dir%/public/img"
   uploads_directory: '%kernel.project_dir%/public/uploads'
 services:
+  Symfony\Contracts\HttpClient\HttpClientInterface: '@http_client'
   App\Service\GeminiService:
         arguments:
             $pdfGenerator: '@knp_snappy.pdf'

@@ -11,6 +11,7 @@ use App\Repository\CandidatureRepository;
 use App\Repository\EntretienRepository;
 use App\Repository\UserRepository;
 use App\Service\GeminiService;
+use App\Service\MailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
@@ -20,9 +21,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Knp\Snappy\Pdf;
-use Symfony\Component\HttpKernel\KernelInterface; 
-
-
+use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route('/entretien')]
 final class EntretienController extends AbstractController
@@ -139,7 +139,7 @@ final class EntretienController extends AbstractController
                 return $this->redirectToRoute('app_login');
             }
 
-            $entretiens = $entretienRepository->findByEmployeeId($user->getIduser());
+            $entretiens = $entretienRepository->findByEmployeeIdWithStatusTrue($user->getIduser());
 
             return $this->render('entretien/entretienArchive.html.twig', [
                 'entretiens' => $entretiens,
@@ -153,53 +153,280 @@ final class EntretienController extends AbstractController
 
 
 
-    #[Route('/new', name: 'app_entretien_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager, CandidatureRepository $candidatureRepo): Response
-    {
-        $entretien = new Entretien();
-        $candidature = new Candidature();
+    // #[Route('/new', name: 'app_entretien_new', methods: ['GET', 'POST'])]
+    // public function new(Request $request, EntityManagerInterface $entityManager, CandidatureRepository $candidatureRepo, MailService $mailService, EntityManagerInterface $em): Response
+    // {
+    //     $entretien = new Entretien();
+    //     $entretien->setStatus(false);
+    
+    //     $form = $this->createForm(EntretienType::class, $entretien);
+    //     $form->handleRequest($request);
+    
+    //     if ($form->isSubmitted() && $form->isValid()) {
+    //         $entityManager->persist($entretien);
+    //         $entityManager->flush();
+    
+    //         $offre = $entretien->getOffre();
+    //         $candidatId = $entretien->getCandidatId();
+    //         $employe = $entretien->getUser();
+    
+    //         $candidat = null;
+    //         if ($candidatId !== null) {
+    //             $candidat = $em->getRepository(User::class)->find($candidatId);
+    //         }
+    
+    //         if (!$offre || !$candidatId) {
+    //             $this->addFlash('warning', '⚠ Offre ou Candidat non défini pour cet entretien.');
+    //             return $this->render('entretien/new.html.twig', [
+    //                 'entretien' => $entretien,
+    //                 'form' => $form,
+    //             ]);
+    //         }
+    
+    //         $candidature = $candidatureRepo->findOneBy([
+    //             'offre' => $offre,
+    //             'user' => $candidatId
+    //         ]);
+    
+    //         if (!$candidature) {
+    //             $this->addFlash('warning', '⚠ Aucune candidature trouvée pour cette offre et ce candidat !');
+    //             return $this->render('entretien/new.html.twig', [
+    //                 'entretien' => $entretien,
+    //                 'form' => $form,
+    //             ]);
+    //         }
+    
+    //         $entretien->setCandidature($candidature);
+    //         $entityManager->persist($entretien);
+    //         $entityManager->flush();
+    
+    //         try {
+    //             if ($candidat) {
+    //                 $mailService->sendMail(
+    //                     $candidat->getEmail(),
+    //                     'Nouvel Entretien Planifié',
+    //                     "Bonjour {$candidat->getNom()}, un entretien a été planifié pour vous concernant l'offre \"{$offre->getTitre()}\"."
+    //                 );
+    //             } else {
+    //                 throw new \Exception('Candidat introuvable pour l\'envoi du mail.');
+    //             }
+    
+    //             if ($employe) {
+    //                 $mailService->sendMail(
+    //                     $employe->getEmail(),
+    //                     'Nouvel Entretien Planifié',
+    //                     "Bonjour {$employe->getNom()}, vous avez un entretien planifié avec {$candidat->getNom()} pour l'offre \"{$offre->getTitre()}\"."
+    //                 );
+    //             } else {
+    //                 throw new \Exception('Employé introuvable pour l\'envoi du mail.');
+    //             }
+    //         } catch (\Exception $e) {
+    //             $this->addFlash('danger', 'Erreur lors de l\'envoi de l\'email : ' . $e->getMessage());
+    //             return $this->render('entretien/new.html.twig', [
+    //                 'entretien' => $entretien,
+    //                 'form' => $form,
+    //             ]);
+    //         }
+    
+    //         $this->addFlash('success', '✅ Entretien ajouté avec succès et mails envoyés !');
+    //         return $this->redirectToRoute('app_entretien_index', [], Response::HTTP_SEE_OTHER);
+    //     }
+    
+    //     return $this->render('entretien/new.html.twig', [
+    //         'entretien' => $entretien,
+    //         'form' => $form,
+    //     ]);
+    // }
 
-        $entretien->setStatus(false);
 
-        $form = $this->createForm(EntretienType::class, $entretien);
-        $form->handleRequest($request);
+//     #[Route('/new', name: 'app_entretien_new', methods: ['GET', 'POST'])]
+// public function new(Request $request, EntityManagerInterface $entityManager, CandidatureRepository $candidatureRepo, MailService $mailService, EntityManagerInterface $em): Response
+// {
+//     $entretien = new Entretien();
+//     $entretien->setStatus(false);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+//     $form = $this->createForm(EntretienType::class, $entretien);
+//     $form->handleRequest($request);
 
-            $entityManager->persist($entretien);
-            $entityManager->flush();
+//     if ($form->isSubmitted() && $form->isValid()) {
+//         try {
+//             // 1. Sauvegarder l'entretien
+//             $entityManager->persist($entretien);
+//             $entityManager->flush();
 
-            $offre = $entretien->getOffre();
-            $candidatId = $entretien->getCandidatId();
+//             $offre = $entretien->getOffre();
+//             $candidatId = $entretien->getCandidatId();
+//             $employe = $entretien->getUser();
 
-            if (!$offre || !$candidatId) {
-                $this->addFlash('warning', '⚠ Offre ou Candidat non défini pour cet entretien.');
-            }
+//             if (!$offre || !$candidatId) {
+//                 $this->addFlash('warning', '⚠ Offre ou Candidat non défini pour cet entretien.');
+//                 return $this->render('entretien/new.html.twig', [
+//                     'entretien' => $entretien,
+//                     'form' => $form,
+//                 ]);
+//             }
 
-            $candidature = $candidatureRepo->findOneBy([
-                'offre' => $offre,
-                'user' => $candidatId
-            ]);
+//             $candidat = $em->getRepository(User::class)->find($candidatId);
+//             if (!$candidat) {
+//                 $this->addFlash('danger', '⚠ Candidat introuvable.');
+//                 return $this->render('entretien/new.html.twig', [
+//                     'entretien' => $entretien,
+//                     'form' => $form,
+//                 ]);
+//             }
 
-            if (!$candidature) {
-                $this->addFlash('warning', '⚠ Aucune candidature trouvée pour cette offre et ce candidat !');
-            }
+//             // 2. Trouver la candidature
+//             $candidature = $candidatureRepo->findOneBy([
+//                 'offre' => $offre,
+//                 'user' => $candidatId
+//             ]);
+//             if (!$candidature) {
+//                 $this->addFlash('danger', '⚠ Aucune candidature trouvée pour cette offre et ce candidat.');
+//                 return $this->render('entretien/new.html.twig', [
+//                     'entretien' => $entretien,
+//                     'form' => $form,
+//                 ]);
+//             }
 
-            $entretien->setCandidature($candidature);
+//             // 3. Associer l'entretien à la candidature
+//             $entretien->setCandidature($candidature);
+//             $entityManager->persist($entretien);
+//             $entityManager->flush();
 
-            $entityManager->persist($entretien);
-            $entityManager->flush();
+//             // 4. Envoyer les mails
+//             // Envoyer au candidat
+//             $mailService->sendMail(
+//                 $candidat->getEmail(),
+//                 'Nouvel Entretien Planifié',
+//                 "Bonjour {$candidat->getNom()}, un entretien a été planifié pour vous concernant l'offre \"{$offre->getTitre()}\"."
+//             );
+
+//             // Envoyer à l'employé
+//             if ($employe) {
+//                 $mailService->sendMail(
+//                     $employe->getEmail(),
+//                     'Nouvel Entretien Planifié',
+//                     "Bonjour {$employe->getNom()}, vous avez un entretien planifié avec {$candidat->getNom()} pour l'offre \"{$offre->getTitre()}\"."
+//                 );
+//             } else {
+//                 $this->addFlash('warning', '⚠ Employé non défini pour cet entretien.');
+//             }
+
+//             // 5. Tout est bon, on redirige
+//             $this->addFlash('success', '✅ Entretien ajouté avec succès et mails envoyés !');
+//             return $this->redirectToRoute('app_entretien_index', [], Response::HTTP_SEE_OTHER);
+
+//         } catch (\Exception $e) {
+//             // Si n'importe quelle erreur arrive, on reste sur la page
+//             $this->addFlash('danger', 'Erreur : ' . $e->getMessage());
+//             return $this->render('entretien/new.html.twig', [
+//                 'entretien' => $entretien,
+//                 'form' => $form,
+//             ]);
+//         }
+//     }
+
+//     return $this->render('entretien/new.html.twig', [
+//         'entretien' => $entretien,
+//         'form' => $form,
+//     ]);
+// }
 
 
-            $this->addFlash('success', '✅ Entretien ajouté avec succès !');
-            return $this->redirectToRoute('app_entretien_index', [], Response::HTTP_SEE_OTHER);
+#[Route('/new', name: 'app_entretien_new', methods: ['GET', 'POST'])]
+public function new(Request $request, EntityManagerInterface $entityManager, CandidatureRepository $candidatureRepo , MailService $mailService , EntityManagerInterface $em): Response
+{
+    $entretien = new Entretien();
+    $candidature = new Candidature();
+
+    $entretien->setStatus(false);
+
+    $form = $this->createForm(EntretienType::class, $entretien);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+
+        $entityManager->persist($entretien);
+        $entityManager->flush();
+
+        $offre = $entretien->getOffre();
+        $candidatId = $entretien->getCandidatId();
+        $employe = $entretien->getUser();
+
+        if ($candidatId !== null) {
+            $candidat = $em->getRepository(User::class)->find($candidatId);
         }
 
-        return $this->render('entretien/new.html.twig', [
-            'entretien' => $entretien,
-            'form' => $form,
+        if (!$offre || !$candidatId) {
+            $this->addFlash('warning', '⚠ Offre ou Candidat non défini pour cet entretien.');
+        }
+
+        $candidature = $candidatureRepo->findOneBy([
+            'offre' => $offre,
+            'user' => $candidatId
         ]);
+
+        if (!$candidature) {
+            $this->addFlash('warning', '⚠ Aucune candidature trouvée pour cette offre et ce candidat !');
+        }
+
+        $entretien->setCandidature($candidature);
+        $entityManager->persist($entretien);
+        $entityManager->flush();
+
+        try {
+            $mailService->sendMail(
+                $candidat->getEmail(),
+                'Nouvel Entretien Planifié',
+                "Bonjour {$candidat->getNom()}, un entretien a été planifié pour vous concernant l'offre \"{$offre->getTitre()}\"."
+            );
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur lors de l\'envoi du mail au candidat : ' . $e->getMessage());
+        }
+
+        try {
+            $mailService->sendMail(
+                $employe->getEmail(),
+                'Nouvel Entretien Planifié',
+                "Bonjour {$employe->getNom()}, vous avez un entretien planifié avec {$candidat->getNom()} pour l'offre \"{$offre->getTitre()}\"."
+            );
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur lors de l\'envoi du mail à l\'employé : ' . $e->getMessage());
+        }
+
+        $this->addFlash('success', '✅ Entretien ajouté avec succès !');
+        
+        return $this->redirectToRoute('app_entretien_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    return $this->render('entretien/new.html.twig', [
+        'entretien' => $entretien,
+        'form' => $form,
+    ]);
+}
+
+
+
+
+
+#[Route('/test-mail', name: 'app_test_mail', methods: ['GET'])]
+public function testMail(MailService $mailService): Response
+{
+    try {
+        $mailService->sendMail(
+            'hbaieb.houssem999@gmail.com',
+            'Test d\'envoi de mail',
+            'Ceci est un mail de test envoyé depuis ton application Symfony.'
+        );
+
+        return new Response('✅ Mail envoyé avec succès à hbaieb.houssem999@gmail.com.');
+    } catch (\Exception $e) {
+        return new Response('❌ Erreur lors de l\'envoi du mail : ' . $e->getMessage());
+    }
+}
+
+
+    
 
 
 
@@ -300,6 +527,11 @@ final class EntretienController extends AbstractController
 
         if (!$entretien) {
             return new JsonResponse(['error' => 'Entretien non trouvé.'], 404);
+        }
+
+        if ($entretien->getFeedback() === null) {
+            $this->addFlash('error', 'Vous ne pouvez pas marquer l\'entretien comme terminé. Vous devez d\'abord fournir un feedback.');
+            return $this->redirectToRoute('entretien_by_employee');
         }
 
         $entretien->setStatus(true);
