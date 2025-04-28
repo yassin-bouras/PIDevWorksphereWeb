@@ -1,0 +1,41 @@
+{% extends '/dashboard/base.html.twig' %}
+
+{% block title %}Recommandations{% endblock %}
+
+{% block content %}
+    <h1 style="text-align: center;">Obtenir des recommandations de cours</h1>
+
+    {# Affichage des messages flash #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label == 'error' ? 'danger' : (label == 'warning' ? 'warning' : 'info') }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <form method="post" style="margin-top: 20px;">
+        <div class="form-group mb-3">
+            <label for="formation">Nom de la formation :</label>
+            <input 
+                type="text" 
+                id="formation" 
+                name="formation" 
+                class="form-control" 
+                placeholder="Ex : Développement web, Réseaux..." 
+                value="{{ formationName ?? '' }}" 
+                required
+            >
+        </div>
+        <button type="submit" class="btn btn-primary" style="margin-left: 35%;">Obtenir des recommandations</button>
+    </form>
+
+    {% if recommendations %}
+        <h2 class="mt-5">Cours recommandés pour "{{ formationName }}" :</h2>
+        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 10px; margin-top: 10px;">
+            <pre>{{ recommendations }}</pre>
+        </div>
+    {% endif %}
+
+    <a href="{{ path('app_formation_index') }}" class="btn btn-secondary mt-3" style="margin-left: 40%;">Retour à l'accueil</a>
+{% endblock %}

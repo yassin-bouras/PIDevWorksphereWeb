@@ -78,11 +78,27 @@ final class MeetingController extends AbstractController{
         return $this->redirectToRoute('app_meeting_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/meeting/{roomName}', name: 'app_meeting')]
-    public function index2(string $roomName): Response
+    #[Route('/meet/{roomName}', name: 'app_meeting', methods: ['GET', 'POST'])]
+    public function joinRoom(Request $request, string $roomName): Response
     {
+        if ($request->isMethod('POST')) {
+            $username = $request->request->get('username');
+    
+            // Ici tu peux soit :
+            // - Rediriger vers un service de visio en ligne
+            // - Générer une page qui intègre un iframe pour la visio
+    
+            return $this->render('meeting/room.html.twig', [
+                'roomName' => $roomName,
+                'username' => $username,
+            ]);
+        }
+    
         return $this->render('meeting/index.html.twig', [
             'roomName' => $roomName,
         ]);
     }
+  
+
+
 }

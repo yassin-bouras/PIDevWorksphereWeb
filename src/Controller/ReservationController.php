@@ -15,9 +15,20 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+
 
 #[Route('/reservation')]
 final class ReservationController extends AbstractController{
+    private $jwtEncoder;
+    private $userRepository;
+
+    public function __construct(JWTEncoderInterface $jwtEncoder, UserRepository $userRepository)
+    {
+        $this->jwtEncoder = $jwtEncoder;
+        $this->userRepository = $userRepository;
+    }
+
       
     
     #[Route(name: 'app_reservation_index', methods: ['GET'])]
@@ -31,23 +42,55 @@ final class ReservationController extends AbstractController{
     #[Route('/new', name: 'app_reservation_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $reservation = new Reservation();
-        
-        $form = $this->createForm(ReservationType::class, $reservation);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($reservation);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+        // Récupérer le token dans les cookies
+        $token = $request->cookies->get('BEARER');
+    
+        if (!$token) {
+            return $this->redirectToRoute('app_login');
         }
-
-        return $this->render('reservation/new.html.twig', [
-            'reservation' => $reservation,
-            'form' => $form,
-        ]);
+    
+        try {
+            $decodedData = $this->jwtEncoder->decode($token);
+            $email = $decodedData['username'] ?? null;
+    
+            if (!$email) {
+                $this->addFlash('error', 'Email non trouvé dans le token.');
+                return $this->redirectToRoute('app_login');
+            }
+    
+            $user = $this->userRepository->findOneBy(['email' => $email]);
+    
+            if (!$user) {
+                $this->addFlash('error', 'Utilisateur non trouvé.');
+                return $this->redirectToRoute('app_login');
+            }
+    
+            $reservation = new Reservation();
+            $form = $this->createForm(ReservationType::class, $reservation);
+            $form->handleRequest($request);
+    
+            if ($form->isSubmitted() && $form->isValid()) {
+                // Lier l'utilisateur connecté à la réservation
+                $reservation->setIdUser($user->getIduser());
+    
+                $entityManager->persist($reservation);
+                $entityManager->flush();
+    
+                return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+            }
+    
+            return $this->render('reservation/new.html.twig', [
+                'reservation' => $reservation,
+                'form' => $form,
+            ]);
+    
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Token invalide ou expiré.');
+            return $this->redirectToRoute('app_login');
+        }
     }
+    
+    
 
     #[Route('/formation/employe/{id_f}/reservation/new', name: 'app_formation_reservation_new', methods: ['GET', 'POST'])]
     public function ajouterReservationPourFormation(

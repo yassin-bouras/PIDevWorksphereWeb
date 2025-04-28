@@ -29,6 +29,30 @@
         </button>
     </a>
 </div>
+
+<div class="filters mb-4 text-center">
+    <form method="get" action="{{ path('app_formation_filter2') }}" class="d-flex justify-content-center flex-wrap gap-3">
+        <select name="certifie" class="form-select w-auto">
+            <option value="">Avec ou sans certificat</option>
+            <option value="oui" {% if app.request.get('certifie') == 'oui' %}selected{% endif %}>Avec certificat</option>
+            <option value="non" {% if app.request.get('certifie') == 'non' %}selected{% endif %}>Sans certificat</option>
+        </select>
+
+        <select name="type" class="form-select w-auto">
+            <option value="">Type</option>
+            <option value="présentiel" {% if app.request.get('type') == 'présentiel' %}selected{% endif %}>Présentiel</option>
+            <option value="distanciel" {% if app.request.get('type') == 'distanciel' %}selected{% endif %}>Distanciel</option>
+        </select>
+
+        <select name="langue" class="form-select w-auto">
+            <option value="">Langue</option>
+            <option value="français" {% if app.request.get('langue') == 'français' %}selected{% endif %}>Français</option>
+            <option value="anglais" {% if app.request.get('langue') == 'anglais' %}selected{% endif %}>Anglais</option>
+        </select>
+
+        <button class="btn btn-primary" type="submit" style="background-color:#4771cb; border: none;width: 70px;">Filtrer</button>
+    </form>
+</div>
     
 
     {% if formations is not empty %}
@@ -48,33 +72,36 @@
                          </button>
                      </a>
 
+                     {% set flashIndex = 0 %}
                      {% for label, messages in app.flashes %}
-                     {% for message in messages %}
-                         {% set modalId = 'flashModal_' ~ loop.index %}
-                         <div class="modal fade" id="{{ modalId }}" tabindex="-1" aria-labelledby="{{ modalId }}Label" aria-hidden="true">
-                             <div class="modal-dialog">
-                                 <div class="modal-content border-{{ label == 'success' ? 'success' : 'warning' }}">
-                                     <div class="modal-header">
-                                         <h5 class="modal-title" id="{{ modalId }}Label">
-                                             {{ label == 'success' ? 'Succès' : 'Avertissement' }}
-                                         </h5>
-                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-                                     </div>
-                                     <div class="modal-body">
-                                         {{ message }}
+                         {% for message in messages %}
+                             {% set flashIndex = flashIndex + 1 %}
+                             {% set modalId = 'flashModal_' ~ flashIndex %}
+                             <div class="modal fade" id="{{ modalId }}" tabindex="-1" aria-labelledby="{{ modalId }}Label" aria-hidden="true">
+                                 <div class="modal-dialog">
+                                     <div class="modal-content border-{{ label == 'success' ? 'success' : 'warning' }}">
+                                         <div class="modal-header">
+                                             <h5 class="modal-title" id="{{ modalId }}Label">
+                                                 {{ label == 'success' ? 'Succès' : 'Avertissement' }}
+                                             </h5>
+                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                                         </div>
+                                         <div class="modal-body">
+                                             {{ message }}
+                                         </div>
                                      </div>
                                  </div>
                              </div>
-                         </div>
-                 
-                         <script>
-                             const flashModal = new bootstrap.Modal(document.getElementById('{{ modalId }}'));
-                             window.addEventListener('load', () => {
-                                 flashModal.show();
-                             });
-                         </script>
+                     
+                             <script>
+                                 window.addEventListener('load', () => {
+                                     const flashModal = new bootstrap.Modal(document.getElementById('{{ modalId }}'));
+                                     flashModal.show();
+                                 });
+                             </script>
+                         {% endfor %}
                      {% endfor %}
-                 {% endfor %}
+                     
 
                         
                         {% if formation.photo %}

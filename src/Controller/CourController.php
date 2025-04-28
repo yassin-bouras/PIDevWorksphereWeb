@@ -69,21 +69,65 @@ final class CourController extends AbstractController
             'cour' => $cour,
         ]);
     }
-    // #[Route('/search', name: 'app_cour_search1', methods: ['GET'])]
-    // public function search1(Request $request, CoursRepository $coursRepository): Response
-    // {
-    //     $searchTerm = $request->query->get('search');
+
     
-    //     $cour = $coursRepository->createQueryBuilder('c')
-    //         ->where('c.titre LIKE :search')
-    //         ->setParameter('search', '%' . $searchTerm . '%')
-    //         ->getQuery()
-    //         ->getResult();
+
+    #[Route('/search', name: 'app_cour_search', methods: ['GET'])]
+    public function search(Request $request, CoursRepository $coursRepository): Response
+    {
+        $searchTerm = $request->query->get('search');
     
-    //     return $this->render('cour/index.html.twig', [
-    //         'cour' => $cour, // tu peux renommer en 'cours' pour plus de clarté si tu veux
-    //     ]);
-    // }
+        $cours = $coursRepository->createQueryBuilder('c')
+            ->where('c.nomC LIKE :search')
+            ->setParameter('search', '%' . $searchTerm . '%')
+            ->getQuery()
+            ->getResult();
+    
+        return $this->render('cour/index.html.twig', [
+            'cours' => $cours,
+        ]);
+    }
+    
+    #[Route('/cour/filter', name: 'app_cour_filter', methods: ['GET'])]
+    public function filter(Request $request, CoursRepository $coursRepository): Response
+    {
+        $search = $request->query->get('search');
+        $date = $request->query->get('date');
+        $heureDebut = $request->query->get('heureDebut');
+        $heureFin = $request->query->get('heureFin');
+    
+        $queryBuilder = $coursRepository->createQueryBuilder('c');
+    
+        if ($search) {
+            $queryBuilder
+                ->andWhere('c.nomC LIKE :search OR c.descriptionC LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
+    
+        if ($date) {
+            $queryBuilder
+                ->andWhere('c.date = :date')
+                ->setParameter('date', new \DateTime($date));
+        }
+    
+        if ($heureDebut) {
+            $queryBuilder
+                ->andWhere('c.heureDebut = :heureDebut')
+                ->setParameter('heureDebut', new \DateTime($heureDebut));
+        }
+    
+        if ($heureFin) {
+            $queryBuilder
+                ->andWhere('c.heureFin = :heureFin')
+                ->setParameter('heureFin', new \DateTime($heureFin));
+        }
+    
+        $cours = $queryBuilder->getQuery()->getResult();
+    
+        return $this->render('cour/index.html.twig', [
+            'cours' => $cours,
+        ]);
+    }
     
     #[Route('/{id_c}/edit', name: 'app_cour_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Cours $cour, EntityManagerInterface $entityManager): Response

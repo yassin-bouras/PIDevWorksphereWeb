@@ -5,9 +5,21 @@
         <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Liste des Formations</h1>
         <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}"></a></li>
         <div class="text-center mb-4">
-            <a href="{{ path('app_formation_new') }}" class="btn " style="background-color:#00882E;color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
-                Créer une formation
-                <i data-feather="plus-circle"></i> </a>
+            <a href="{{ path('app_formation_new') }}" class="btn" style="background-color: #00882E; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
+                <i data-feather="plus-circle" class="me-1"></i> Créer une formation
+            </a>
+            <!-- <a href="{{ path('app_recommendation') }}" 
+            class="btn" 
+            style="background-color: #FFD700; color: black; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
+             <i data-feather="star" class="me-1"></i> Recommandation
+         </a> -->
+
+         <a href="{{ path('app_certificate') }}" 
+         class="btn" 
+         style="background-color: #ff8800; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">
+          <i data-feather="award" class="me-1"></i> Certification
+      </a>
+      
         </div>
 
         <div class="formation-grid" style="max-width: 1060px; margin: 0 auto;">
@@ -24,6 +36,32 @@
                     </div>
                 </form>
             </div>
+
+
+            <div class="filters mb-4 text-center">
+                <form method="get" action="{{ path('app_formation_filter1') }}" class="d-flex justify-content-center flex-wrap gap-3">
+                    <select name="certifie" class="form-select w-auto">
+                        <option value="">Avec ou sans certificat</option>
+                        <option value="oui" {% if app.request.get('certifie') == 'oui' %}selected{% endif %}>Avec certificat</option>
+                        <option value="non" {% if app.request.get('certifie') == 'non' %}selected{% endif %}>Sans certificat</option>
+                    </select>
+            
+                    <select name="type" class="form-select w-auto">
+                        <option value="">Type</option>
+                        <option value="présentiel" {% if app.request.get('type') == 'présentiel' %}selected{% endif %}>Présentiel</option>
+                        <option value="distanciel" {% if app.request.get('type') == 'distanciel' %}selected{% endif %}>Distanciel</option>
+                    </select>
+            
+                    <select name="langue" class="form-select w-auto">
+                        <option value="">Langue</option>
+                        <option value="français" {% if app.request.get('langue') == 'français' %}selected{% endif %}>Français</option>
+                        <option value="anglais" {% if app.request.get('langue') == 'anglais' %}selected{% endif %}>Anglais</option>
+                    </select>
+            
+                    <button class="btn btn-primary" type="submit" style="background-color:#4771cb; border: none; width: 70px;">Filtrer</button>
+                </form>
+            </div>
+            
         
             {% for formation in formations %}
                 <div class="formation-card" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 25px; display: flex; align-items: center;">
@@ -58,9 +96,9 @@
                             <a class="btn" href="{{ path('app_formation_assign_cours', {'id_f': formation.idF}) }}" style="background-color: #00882E; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;"> Assigner <i data-feather="plus-square"></i></a>
                             {% if formation.type == 'distanciel' %}
                             <a class="btn" href="{{ path('app_meeting', {'roomName': 'formation-' ~ formation.idF}) }}"
-                               style="background-color: #007BFF; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">
-                                Meet <i data-feather="video"></i>
-                            </a>
+                            style="background-color: #007BFF; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">
+                             Meet <i data-feather="video"></i>
+                         </a>
                         {% endif %}
                         </div>
                     </div>

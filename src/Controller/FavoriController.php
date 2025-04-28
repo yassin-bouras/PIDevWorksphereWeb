@@ -20,6 +20,7 @@ class FavoriController extends AbstractController
     #[Route('/add/{formation_id}', name: 'app_favori_add')]
     public function addToFavori(
         int $formation_id,
+        
         EntityManagerInterface $em,
         FavoriRepository $favoriRepository
     ): RedirectResponse {
@@ -29,6 +30,7 @@ class FavoriController extends AbstractController
         if (!$existing) {
             $favori = new Favori();
             $favori->setIdF($formation_id);
+            $favori->setIduser(39);
             $em->persist($favori);
             $em->flush();
 

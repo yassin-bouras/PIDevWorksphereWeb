@@ -13,8 +13,8 @@ class Cours
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id_c = null;
+    #[ORM\Column(name: "id_c", type: "integer")]
+     private ?int $id_c = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\NotBlank(message: "Le nom du cours est obligatoire.")]
@@ -161,4 +161,21 @@ class Cours
 
         return $this;
     }
+
+
+    #[ORM\ManyToOne(targetEntity: Formation::class, inversedBy: 'cours')]
+    #[ORM\JoinColumn(name: 'id_f', referencedColumnName: 'id_f', nullable: false, onDelete: 'CASCADE')]
+    private ?Formation $formation = null;
+
+    public function getFormation(): ?Formation
+    {
+        return $this->formation;
+    }
+
+    public function setFormation(?Formation $formation): static
+    {
+        $this->formation = $formation;
+        return $this;
+    }
+
 }

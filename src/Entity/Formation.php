@@ -233,7 +233,35 @@ public function setDate(?\DateTimeInterface $date): self
     //     return $this;
     // }
 
+    #[ORM\OneToMany(mappedBy: 'formation', targetEntity: Cours::class, orphanRemoval: true)]
+    private Collection $cours;
 
+    public function getCours(): Collection
+    {
+        return $this->cours;
+    }
+
+    public function addCours(Cours $cours): static
+    {
+        if (!$this->cours->contains($cours)) {
+            $this->cours[] = $cours;
+            $cours->setFormation($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCours(Cours $cours): static
+    {
+        if ($this->cours->removeElement($cours)) {
+            if ($cours->getFormation() === $this) {
+                $cours->setFormation(null);
+            }
+        }
+
+        return $this;
+
+    }
 
     #[ORM\OneToMany(mappedBy: 'formation', targetEntity: FormationCours::class, cascade: ['persist', 'remove'])]
      private Collection $formationCours;

@@ -24,7 +24,7 @@
                         'Titre': formation.titre,
                         'Description': formation.description,
                         'Date de début': formation.date ? formation.date|date('d/m/Y') : 'N/A',
-                        'Certification': formation.certifie ? '<span class="badge bg-success">Oui</span>' : '<span class="badge" style="background-color: #9e9e96;" >Non</span>',
+                        'Certification': formation.certifie ? '<span class="badge" style="color: white; background-color: rgb(38, 227, 38)">Oui</span>' : '<span class="badge" style="background-color: #9e9e96;" >Non</span>',
                         'Places disponibles': '<span class="badge" style="background-color: #33ccc5;">' ~ formation.nbPlace ~ '</span>',
                         'Type': '<span class="badge bg-info">' ~ formation.type ~ '</span>',
                         'Langue': '<span class="badge text-dark" style="background-color: #fafd63;">' ~ formation.langue ~ '</span>',
