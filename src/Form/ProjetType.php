@@ -47,11 +47,7 @@ class ProjetType extends AbstractType
                     ])
                 ]
             ])
-            /*->add('equipe', EntityType::class, [
-                'class' => Equipe::class,
-'choice_label' => 'nom_equipe',
-            ])*/
-
+      
             ->add('equipes', EntityType::class, [
                 'class' => Equipe::class,
                 'choice_label' => 'nom_equipe',

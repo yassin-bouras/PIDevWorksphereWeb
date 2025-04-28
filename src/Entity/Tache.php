@@ -21,16 +21,20 @@ class Tache
     private ?string $titre = null;
 
     #[ORM\Column(type: 'text', nullable: true)]
+    #[Assert\NotBlank(message: "La description du projet est obligatoire.")]
     private ?string $description = null;
 
     #[ORM\Column(type: 'date')]
+    #[Assert\NotBlank(message: "La date de début est obligatoire.")]
     private ?\DateTimeInterface $dateCreation = null;
 
     #[ORM\Column(type: 'date', nullable: true)]
+    #[Assert\NotBlank(message: "Le deadline est obligatoire.")]
+    #[Assert\GreaterThan(propertyPath: "dateCreation", message: "Le deadline doit être postérieur à la date de début .")]
     private ?\DateTimeInterface $deadline = null;
 
     #[ORM\Column(type: 'string', length: 50)]
-    private ?string $statut = 'À faire'; // 'À faire', 'En cours', 'Terminé'
+    private ?string $statut = 'À faire'; 
 
     #[ORM\ManyToOne(targetEntity: Projet::class, inversedBy: 'taches')]
     #[ORM\JoinColumn(name: 'projet_id', referencedColumnName: 'id')]
@@ -41,14 +45,14 @@ class Tache
     private ?User $assignee = null;
 
     #[ORM\Column(type: 'integer')]
-    private ?int $priorite = 1; // 1-5 où 5 est le plus important
+    private ?int $priorite = 1; 
 
     public function __construct()
     {
         $this->dateCreation = new \DateTime();
     }
 
-    // Getters et Setters complets
+
     public function getId(): ?int
     {
         return $this->id;

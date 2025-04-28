@@ -3,8 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
-    <title>{% block title %}Dleohr - Dashboard{% endblock %}</title>
-    <link rel="shortcut icon" href="{{ asset('back/img/favicon.png') }}">
+ 
+
     {% block stylesheets %}
         <link rel="stylesheet" href="{{ asset('back/css/bootstrap.min.css') }}">
         <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/fontawesome.min.css') }}">
@@ -109,8 +109,7 @@
         .then(data => {
             if (data.success) {
                 const user = data.user;
-                document.getElementById('user-profile-image').src = user.imageprofil || "{{ asset('back/img/profile.jpg') }}";
-
+        
                 document.getElementById('user-full-name').textContent = user.nom + ' ' + user.prenom;
                 document.getElementById('user-profile-link').href = '/user/' + user.iduser;
 
@@ -152,8 +151,11 @@
                     `;
                 } else if (user.role === 'manager') {
                     sidebarLinks.innerHTML += `
-                        <li class="active"><a href="/"><span>👤 Profile</span></a></li>
-                        <li><a href="/"><span>⚙️ Settings</span></a></li>
+                         <li><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
+                    <li><a href="/equipe"><span>👥 Équipe</span></a></li>
+                    <li><a href="/projet"><span>📂 Projet</span></a></li>
+                     <li><a href="/tache"><span>📊 Kanban</span></a></li>
+                     <li><a href="/mdp"><span>🔄 Mot de Passe</span></a></li>
                     `;
                 }
             } else {
