@@ -6,7 +6,7 @@ use App\Entity\Candidature;
 use App\Entity\Offre;  // Add this import
 use App\Form\CandidatureType;
 use App\Entity\User;
-
+use App\Entity\Notification;
 use App\Repository\UserRepository;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use App\Repository\CandidatureRepository;
@@ -36,35 +36,34 @@ final class CandidatureController extends AbstractController
     public function index(Request $request, CandidatureRepository $candidatureRepository): Response
     {
         $token = $request->cookies->get('BEARER');
-        
+
         if (!$token) {
             return $this->redirectToRoute('app_login');
         }
-        
+
         try {
             $decodedData = $this->jwtEncoder->decode($token);
             $email = $decodedData['username'] ?? null;
-            
+
             if (!$email) {
                 $this->addFlash('error', 'Email non trouvé dans le token.');
                 return $this->redirectToRoute('app_login');
             }
-            
+
             $user = $this->userRepository->findOneBy(['email' => $email]);
-            
+
             if (!$user) {
                 $this->addFlash('error', 'Utilisateur non trouvé.');
                 return $this->redirectToRoute('app_login');
             }
-            
+
             $search = $request->query->get('search', '');
             $candidatures = $candidatureRepository->findByUserAndOffreTitre($user, $search);
-            
+
             return $this->render('candidature/index.html.twig', [
                 'candidatures' => $candidatures,
-                'search' => $search,    
+                'search' => $search,
             ]);
-            
         } catch (\Exception $e) {
             $this->addFlash('error', 'Erreur lors du décodage du token.');
             return $this->redirectToRoute('app_login');
@@ -74,7 +73,7 @@ final class CandidatureController extends AbstractController
     #[Route('/new/{offre_id}', name: 'app_candidature_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, CandidatureRepository $candidatureRepository, ?int $offre_id = null): Response
     {
-        
+
         $candidature = new Candidature();
         $token = $request->cookies->get('BEARER');
 
@@ -136,7 +135,6 @@ final class CandidatureController extends AbstractController
                         $newFilename
                     );
                 } catch (FileException $e) {
-                   
                 }
 
                 $candidature->setCv($newFilename);
@@ -154,7 +152,6 @@ final class CandidatureController extends AbstractController
                         $newFilename
                     );
                 } catch (FileException $e) {
-                    
                 }
 
                 $candidature->setLettreMotivation($newFilename);
@@ -203,13 +200,29 @@ final class CandidatureController extends AbstractController
         if ($this->isCsrfTokenValid('delete' . $candidature->getId_candidature(), $request->getPayload()->getString('_token'))) {
             // Get the offer ID before removing the candidature
             $offreId = null;
+            $user = $candidature->getUser();
+            $offreTitre = $candidature->getOffre() ? $candidature->getOffre()->getTitre() : 'N/A';
             if ($candidature->getOffre()) {
                 $offreId = $candidature->getOffre()->getId_offre(); // Use getId_offre instead of getId
+                $offreTitre = $candidature->getOffre()->getTitre();
+
             }
-            
+            // Create notification for the candidate
+            if ($user) {
+                $notification = new Notification();
+                $notification->setUser($user);
+                $notification->setMessage("Votre candidature pour l'offre \"$offreTitre\" a été supprimée par le recruteur, à cause du fait qu'elle ne respectait pas nos condidtions.\n\nCordialement,\nLe Service Recrutement.");
+                $notification->setCreatedAt(new \DateTime());
+                $notification->setIsRead(false);
+                $notification->setNotificationType('candidature_deleted');
+
+                // Persist notification
+                $entityManager->persist($notification);
+            }
+
             $entityManager->remove($candidature);
             $entityManager->flush();
-            
+
             // If we have the offer ID, redirect back to the candidatures page for that offer
             if ($offreId) {
                 $this->addFlash('success', 'Candidature supprimée avec succès.');
@@ -219,5 +232,4 @@ final class CandidatureController extends AbstractController
 
         return $this->redirectToRoute('app_offre_index', [], Response::HTTP_SEE_OTHER);
     }
-
 }

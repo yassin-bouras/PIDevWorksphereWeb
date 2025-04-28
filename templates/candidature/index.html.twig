@@ -31,7 +31,7 @@
                 <input type="text" name="search" value="{{ search }}" class="form-control" placeholder="Rechercher par nom d'Offre..."
                     value="{{ app.request.query.get('search') }}">
                 <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="submit">Rechercher</button>
+                    <button class="btn btn-outline-secondary" type="submit">Recherche</button>
                 </div>
             </div>
         </form>
@@ -176,37 +176,60 @@
         z-index: 2;
     }
 
+    
     .form-control {
-        border: 3px solid #33ccc5;
+        border: 3px solid #4771cb;
+        /* Set the border color */
         border-radius: 5px;
+        /* Optional: Add rounded corners */
         padding: 10px;
+        /* Optional: Add padding for better appearance */
         font-size: 1.2rem;
-        width: 100%;
-
+        /* Increase font size */
+        width: 80%;
+        /* Ensure the input takes up the full width of its container */
         transition: border-color 0.3s ease;
+        /* Smooth transition for hover/focus */
     }
 
     .form-control:focus {
         border-color: #33ccc5;
+        /* Keep the same color on focus */
         outline: none;
+        /* Remove the default outline */
         box-shadow: 0 0 5px rgba(51, 204, 197, 0.5);
+        /* Optional: Add a glow effect */
     }
 
+    
     .btn-outline-secondary {
-        border: 3px solid #33ccc5;
-        color: #33ccc5;
+        background-color: transparent;
+        /* Remove the default blue background */
+
+        border: 3px solid #4771cb;
+        /* Match the border size with the search box */
+        color: #4771cb;
+        /* Set the text color */
         padding: 10px 50px;
-        font-size: 1.2rem;
-        border-radius: 5px;
+        /* Increase padding for a larger button */
+        font-size: 1.39rem;
+        /* Increase font size */
+        border-radius: 6px;
+        /* Match the rounded corners with the search box */
+        /* width: 345px; */
         transition: all 0.3s ease;
+
     }
 
     .btn-outline-secondary:hover {
-        border: 3px solid #99fffa;
+        border: 3px solid #30539f;
 
-        background-color: #33ccc5;
+        background-color: #4771cb;
+        /* Change background color on hover */
         color: white;
-        transform: scale(1.05);
+        /* Change text color on hover */
+        transform: scale(1.08);
+        /* Slightly enlarge the button on hover */
         transition: all 0.2s ease;
 
     }

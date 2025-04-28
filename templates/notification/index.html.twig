@@ -1,41 +1,198 @@
-<!DOCTYPE html>
+{% extends 'dashboard/base2.html.twig' %}
 
-<title>Notification index</title>
+{% block title %}Mes Notifications{% endblock %}
 
-{% block body %}
-    <h1>Notification index</h1>
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .notification-card {
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+        transition: transform 0.2s, box-shadow 0.2s;
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .notification-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .notification-card.unread {
+        border-left: 4px solid #4680ff;
+    }
+    
+    .notification-card.unread::before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background-color: #4680ff;
+    }
+    
+    .notification-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+    
+    .notification-title {
+        font-size: 24px;
+        color: #333;
+        font-weight: 600;
+    }
+    
+    .notification-actions {
+        display: flex;
+        gap: 10px;
+    }
+    
+    .notification-message {
+        font-size: 16px;
+        color: #000000;
+        margin-bottom: 10px;
+        line-height: 1.6;
+    }
+    
+    .notification-time {
+        font-size: 13px;
+        color: #555;
+    }
+    
+    .notification-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+    }
+    
+    .mark-read-btn {
+        background-color: transparent;
+        border: 1px solid #4680ff;
+        color: #4680ff;
+        border-radius: 5px;
+        padding: 6px 14px;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+    
+    .mark-read-btn:hover {
+        background-color: #4680ff;
+        color: white;
+    }
+    
+    .notification-type {
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 12px;
+        display: inline-block;
+        color: white;
+    }
+    
+    .notification-type.candidature {
+        background-color: #ff6b6b;
+    }
+    
+    .notification-type.interview {
+        background-color: #46c35f;
+    }
+    
+    .notification-type.system {
+        background-color: #17a2b8;
+    }
+    
+    .notification-empty {
+        text-align: center;
+        padding: 50px 0;
+        color: #888;
+    }
+    
+    .notification-empty i {
+        font-size: 50px;
+        color: #ddd;
+        margin-bottom: 20px;
+        display: block;
+    }
+</style>
+{% endblock %}
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Message</th>
-                <th>Created_at</th>
-                <th>Is_read</th>
-                <th>Notification_type</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for notification in notifications %}
-            <tr>
-                <td>{{ notification.id }}</td>
-                <td>{{ notification.message }}</td>
-                <td>{{ notification.createdAt ? notification.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ notification.isRead ? 'Yes' : 'No' }}</td>
-                <td>{{ notification.notificationType }}</td>
-                <td>
-                    <a href="{{ path('app_notification_show', {'id': notification.id}) }}">show</a>
-                    <a href="{{ path('app_notification_edit', {'id': notification.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_notification_new') }}">Create new</a>
+{% block content %}
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Mes Notifications</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Notifications</li>
+                </ul>
+            </div>
+            {% if notifications is not empty %}
+            <div class="col-auto">
+                <a href="{{ path('app_notification_mark_all_read') }}" class="btn btn-outline-primary">
+                    <i class="fa fa-check-circle"></i> Marquer tout comme lu
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            {% if notifications is empty %}
+                <div class="card notification-empty">
+                    <div class="card-body">
+                        <i class="fa fa-bell-slash"></i>
+                        <h4>Vous n'avez pas de notifications</h4>
+                        <p>Les nouvelles notifications apparaîtront ici</p>
+                    </div>
+                </div>
+            {% else %}
+                {% for notification in notifications %}
+                    <div class="card notification-card {% if not notification.isRead %}unread{% endif %}">
+                        <div class="card-body">
+                            <div class="notification-message">{{ notification.message }}</div>
+                            <div class="notification-footer">
+                                <div class="notification-time">
+                                    <i class="fa fa-clock"></i> {{ notification.createdAt|date('d/m/Y H:i') }}
+                                    
+                                    {% if notification.notificationType %}
+                                        <span class="notification-type {{ notification.notificationType }}">
+                                            {% if notification.notificationType == 'candidature_deleted' %}
+                                                Candidature
+                                            {% elseif notification.notificationType == 'interview_scheduled' %}
+                                                Entretien
+                                            {% else %}
+                                                Système
+                                            {% endif %}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="notification-actions">
+                                    <a href="{{ path('app_notification_show', {'id': notification.id}) }}" class="btn btn-info btn-sm">
+                                        <i class="fa fa-eye"></i> Voir détails
+                                    </a>
+                                    
+                                    {% if not notification.isRead %}
+                                        <form method="post" action="{{ path('app_notification_mark_read', {'id': notification.id}) }}" style="display: inline;">
+                                            <button class="btn btn-outline-primary btn-sm">
+                                                <i class="fa fa-check"></i> Marquer comme lu
+                                            </button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,38 +1,238 @@
-<!DOCTYPE html>
+{% extends 'dashboard/base2.html.twig' %}
 
-<title>Notification</title>
+{% block title %}Détail de la notification{% endblock %}
 
-{% block body %}
-    <h1>Notification</h1>
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    .btn-custom-teal {
+        background-color: #33ccc5;
+        border-color: #33ccc5;
+        color: white;
+    }
+    .btn-custom-teal:hover {
+        background-color: #33a6a0;
+        border-color: #33a6a0;
+        color: white;
+    }
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ notification.id }}</td>
-            </tr>
-            <tr>
-                <th>Message</th>
-                <td>{{ notification.message }}</td>
-            </tr>
-            <tr>
-                <th>Created_at</th>
-                <td>{{ notification.createdAt ? notification.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Is_read</th>
-                <td>{{ notification.isRead ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>Notification_type</th>
-                <td>{{ notification.notificationType }}</td>
-            </tr>
-        </tbody>
-    </table>
+    .notification-detail-card {
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+    }
+    
+    .notification-detail-header {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-bottom: 1px solid #eaeaea;
+    }
+    
+    .notification-detail-title {
+        font-size: 18px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 5px;
+    }
+    
+    .notification-detail-time {
+        font-size: 14px;
+        color: #888;
+    }
+    
+    .notification-detail-body {
+        padding: 25px;
+    }
+    
+    .notification-content {
+        font-size: 18px;
+        line-height: 1.7;
+        color: #333;
+        margin-bottom: 25px;
+        font-weight: 550;
+        
+    }
+    
+    .notification-meta {
+        display: flex;
+        align-items: center;
+        margin-bottom: 8px;
+    }
+    
+    .notification-meta-label {
+        width: 140px;
+        font-weight: 500;
+        color: #666;
+    }
+    
+    .notification-meta-value {
+        color: #333;
+    }
+    
+    .notification-status {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        color: white;
+    }
+    
+    .notification-status.read {
+        background-color: #46c35f;
+    }
+    
+    .notification-status.unread {
+        background-color: #8eb2ff;
+    }
+    
+    .notification-actions {
+        margin-top: 25px;
+        display: flex;
+        gap: 10px;
+    }
+    .notification-actions form {
+        flex: 1;
+    }
+    .notification-actions button {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
+        padding: 8px 15px;
+    }
+    
+    .notification-type-badge {
+        display: inline-block;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 13px;
+        color: white;
+    }
+    
+    .notification-type-badge.candidature_deleted {
+        background-color: #ff6b6b;
+    }
+    
+    .notification-type-badge.interview_scheduled {
+        background-color: #46c35f;
+    }
+    
+    .notification-type-badge.system {
+        background-color: #17a2b8;
+    }
+    
+    .notification-back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        color: #4680ff;
+        text-decoration: none;
+        margin-bottom: 15px;
+    }
+    
+    .notification-back-btn:hover {
+        text-decoration: underline;
+    }
+</style>
+{% endblock %}
 
-    <a href="{{ path('app_notification_index') }}">back to list</a>
-
-    <a href="{{ path('app_notification_edit', {'id': notification.id}) }}">edit</a>
-
-    {{ include('notification/_delete_form.html.twig') }}
+{% block content %}
+<div class="content container-fluid"style="margin-top: -56%">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Détail de la notification</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_notification_index') }}">Notifications</a></li>
+                    <li class="breadcrumb-item active">Détail</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <a href="{{ path('app_notification_index') }}" class="notification-back-btn">
+                <i class="fa fa-arrow-left"></i> Retour à la liste
+            </a>
+            
+            <div class="card notification-detail-card">
+                <div class="notification-detail-header">
+                    <div class="notification-detail-title">
+                         Notification <!--#{{ notification.id }} -->
+                        
+                        {% if notification.notificationType %}
+                            <span class="notification-type-badge {{ notification.notificationType }}">
+                                {% if notification.notificationType == 'candidature_deleted' %}
+                                    Candidature
+                                {% elseif notification.notificationType == 'interview_scheduled' %}
+                                    Entretien
+                                {% else %}
+                                    Système
+                                {% endif %}
+                            </span>
+                        {% endif %}
+                    </div>
+                    <div class="notification-detail-time">
+                        <i class="fa fa-clock"></i> {{ notification.createdAt|date('d/m/Y à H:i') }}
+                    </div>
+                </div>
+                
+                <div class="notification-detail-body">
+                    <div class="notification-content">
+                        {{ notification.message|nl2br }}
+                    </div>
+                    
+                    <div class="notification-meta">
+                        <div class="notification-meta-label">Statut :</div>
+                        <div class="notification-meta-value">
+                            <span class="notification-status {% if notification.isRead %}read{% else %}unread{% endif %}">
+                                {% if notification.isRead %}Lu{% else %}Non lu{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="notification-meta">
+                        <div class="notification-meta-label">Date de création :</div>
+                        <div class="notification-meta-value">{{ notification.createdAt|date('d/m/Y à H:i:s') }}</div>
+                    </div>
+                    
+                    {% if notification.notificationType %}
+                    <div class="notification-meta">
+                        <div class="notification-meta-label">Type :</div>
+                        <div class="notification-meta-value">
+                            {% if notification.notificationType == 'candidature_deleted' %}
+                                Suppression de candidature
+                            {% elseif notification.notificationType == 'interview_scheduled' %}
+                                Entretien planifié
+                            {% else %}
+                                {{ notification.notificationType }}
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="notification-actions">
+                        {% if not notification.isRead %}
+                            <form method="post" action="{{ path('app_notification_mark_read', {'id': notification.id}) }}">
+                                <button class="btn btn-custom-teal">
+                                    <i class="fa fa-check"></i> Marquer comme lu
+                                </button>
+                            </form>
+                        {% endif %}
+                        
+                        <form method="post" action="{{ path('app_notification_delete', {'id': notification.id}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette notification?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ notification.id) }}">
+                            <button class="btn btn-outline-danger">
+                                <i class="fa fa-trash"></i> Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

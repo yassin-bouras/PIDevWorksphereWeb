@@ -1,0 +1,120 @@
+{% extends '/dashboard/base2.html.twig' %}
+
+{% block title %}Statistiques des Offres{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    {{ importmap('app') }}
+    <style>
+        .chart-container {
+            position: relative;
+            height: 300px;
+            width: 100%;
+        }
+        .card {
+            margin-bottom: 20px;
+        }
+    </style>
+{% endblock %}
+
+
+
+{% block js %}
+    <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ asset('back/js/popper.min.js') }}"></script>
+    <script src="{{ asset('back/js/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('back/js/feather.min.js') }}"></script>
+    <script src="{{ asset('back/plugins/slimscroll/jquery.slimscroll.min.js') }}"></script>
+    <script src="{{ asset('back/js/script.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="content container-fluid" style="margin-top: -58%">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="page-title">Statistiques des Offres</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_offre_index') }}">Offres</a></li>
+                    <li class="breadcrumb-item active">Statistiques</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 mb-4">
+            <div class="text-start">
+                <a href="{{ path('app_offre_index') }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left me-2"></i> Retour à la liste des offres
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Contract Type Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Offres par Type de Contrat</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        {{ render_chart(contractTypeChart) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Experience Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Offres par Niveau d'Expérience</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        {{ render_chart(experienceChart) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Location Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Offres par Localisation</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        {{ render_chart(locationChart) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Date Chart -->
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Offres Publiées par Mois</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        {{ render_chart(dateChart) }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+{% endblock %}

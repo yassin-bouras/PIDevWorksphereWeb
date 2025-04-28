@@ -204,19 +204,25 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="card-body">
-                    <!-- <div class="text-start mb-4">
-                        <a href="{{ path('app_offre_new') }}" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Créer une nouvelle offre
-                        </a>
-                    </div> -->
                     <div class="text-start mb-4">
-                        <a href="{{ path('app_offre_new') }}" class="btn-create-offer">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24" fill="none" class="svg">
-                                <line y2="19" y1="5" x2="12" x1="12"></line>
-                                <line y2="12" y1="12" x2="19" x1="5"></line>
-                            </svg>
-                            <span>CRÉER UNE NOUVELLE OFFRE</span>
-                        </a>
+                        <div class="d-flex align-items-center">
+                            <a href="{{ path('app_offre_new') }}" class="btn-create-offer me-3">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24" fill="none" class="svg">
+                                    <line y2="19" y1="5" x2="12" x1="12"></line>
+                                    <line y2="12" y1="12" x2="19" x1="5"></line>
+                                </svg>
+                                <span>CRÉER UNE NOUVELLE OFFRE</span>
+                            </a>
+                            <a href="{{ path('app_offre_statistics') }}" class="btn-create-offer" style="background-color: #4e73df;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 3v18h18"></path>
+                                    <path d="M18 17V9"></path>
+                                    <path d="M13 17V5"></path>
+                                    <path d="M8 17v-3"></path>
+                                </svg>
+                                <span>VOIR LES STATISTIQUES</span>
+                            </a>
+                        </div>
                     </div>
 
                     <div class="mb-4">

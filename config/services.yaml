@@ -6,6 +6,8 @@
 parameters:
   image_directory: "%kernel.project_dir%/public/img"
   uploads_directory: '%kernel.project_dir%/public/uploads'
+  azure_api_endpoint: 'https://models.inference.ai.azure.com/chat/completions'
+  azure_api_token: '%env(AZURE_API_TOKEN)%'
 services:
   # default configuration for services in *this* file
   _defaults:
@@ -23,3 +25,8 @@ services:
 
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
+  
+  App\Service\CvAnalyzerService:
+    arguments:
+      $apiEndpoint: '%azure_api_endpoint%'
+      $apiToken: '%azure_api_token%'

@@ -1,3 +1,26 @@
+<style>
+    .notification-time {
+        color: #0eaedf !important;
+        /* Darker gray for better readability */
+        font-weight: 600;
+    }
+
+    /* Style for unread notifications */
+    .notification-message.unread {
+        background-color: #adefef;
+    }
+
+    /* Add a small badge for notification count */
+    .badge-pill {
+        background-color: #ff0000;
+        color: white;
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-size: 10px;
+    }
+</style>
+<!-- /*******************************************************************************/ -->
 <div class="main-wrapper">
     <div class="header">
         <div class="header-left">
@@ -40,11 +63,13 @@
                                 <a href="#">
                                     <div class="media">
                                         <span class="avatar avatar-sm">
-                                            <img class="avatar-img rounded-circle" alt="Photo de profil" src="{{ asset('back/img/profiles/avatar-02.jpg') }}">
+                                            <img class="avatar-img rounded-circle" alt="Photo de profil"
+                                                src="{{ asset('back/img/profiles/avatar-02.jpg') }}">
                                         </span>
                                         <div class="media-body">
                                             <p class="noti-details">
-                                                <span class="noti-title">Brian Johnson</span> paid the invoice <span class="noti-title">#DF65485</span>
+                                                <span class="noti-title">Brian Johnson</span> paid the invoice <span
+                                                    class="noti-title">#DF65485</span>
                                             </p>
                                             <p class="noti-time">
                                                 <span class="notification-time">4 mins ago</span>
@@ -73,7 +98,7 @@
                         <i data-feather="user" class="mr-1"></i> Profile
                     </a>
                     <a class="dropdown-item" href="#"><i data-feather="settings" class="mr-1"></i> Settings</a>
-             </div>
+                </div>
             </li>
         </ul>
     </div>
@@ -95,7 +120,7 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         function getCookie(name) {
             let cookieArray = document.cookie.split('; ');
             let cookie = cookieArray.find(row => row.startsWith(name + '='));
@@ -110,19 +135,157 @@
             },
             body: JSON.stringify({ token: getCookie('BEARER') }) // Get the token from cookies
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const user = data.user;
-                document.getElementById('user-profile-image').src = user.imageprofil || '{{ asset('back/img/profile.jpg') }}';
-                document.getElementById('user-full-name').textContent = user.nom + ' ' + user.prenom;
-                document.getElementById('user-profile-link').href = '/user/' + user.iduser;
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const user = data.user;
+                    document.getElementById('user-profile-image').src = user.imageprofil || '{{ asset('back / img / profile.jpg') }}';
+                    document.getElementById('user-full-name').textContent = user.nom + ' ' + user.prenom;
+                    document.getElementById('user-profile-link').href = '/user/' + user.iduser;
 
-                const sidebarLinks = document.getElementById('sidebar-links');
-                sidebarLinks.innerHTML = '';
+    /**********************************************************************************************************************
+                                    // Populate role-specific notifications
+                                    const notificationList = document.querySelector('.notification-list');
+                                    if (notificationList) {
+                                        if (user.role === 'Candidat') {
+                                            // Candidate-specific notifications
+                                            notificationList.innerHTML = `
+                                        <li class="notification-message">
+                                            <a href="/offre">
+                                                <div class="media">
+                                                    <span class="avatar avatar-sm">
+                                                        <img class="avatar-img rounded-circle" alt="Notification" src="{{ asset('back/img/profiles/jobs-icon.jpg') }}">
+                                                    </span>
+                                                    <div class="media-body">
+                                                        <p class="noti-details">
+                                                            <span class="noti-title">New job opportunities</span> are available
+                                                        </p>
+                                                        <p class="noti-time">
+                                                            <span class="notification-time">Just now</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                        <li class="notification-message">
+                                            <a href="#">
+                                                <div class="media">
+                                                    <span class="avatar avatar-sm">
+                                                        <img class="avatar-img rounded-circle" alt="Notification" src="{{ asset('back/img/profiles/interview-icon.jpg') }}">
+                                                    </span>
+                                                    <div class="media-body">
+                                                        <p class="noti-details">
+                                                            <span class="noti-title">Application status</span> updates available
+                                                        </p>
+                                                        <p class="noti-time">
+                                                            <span class="notification-time">2 days ago</span>
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </a>
+                                        </li>
+                                    `;
+                                        }
+                                    }
+    /***********************************************************************************************/
+                    // Fetch real notifications for the user
+                    if (user.role === 'Candidat') {
+                        fetch('/notification/api/user/' + user.iduser, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + getCookie('BEARER')
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(notificationData => {
+                                const notificationList = document.querySelector('.notification-list');
+                                if (notificationList) {
+                                    if (notificationData.notifications && notificationData.notifications.length > 0) {
+                                        let notificationHtml = '';
 
-                if (user.role === 'RH') {
-                    sidebarLinks.innerHTML += `
+                                        // Update notification count badge
+                                        const unreadCount = notificationData.notifications.filter(n => !n.isRead).length;
+                                        const badgeElement = document.querySelector('.nav-item.dropdown .badge');
+                                        if (badgeElement && unreadCount > 0) {
+                                            badgeElement.textContent = unreadCount;
+                                            badgeElement.classList.add('badge-pill');
+                                        }
+
+                                        // Generate notification items
+                                        notificationData.notifications.forEach(notification => {
+                                            const date = new Date(notification.createdAt);
+                                            const timeAgo = getTimeAgo(date);
+
+                                            notificationHtml += `
+                                            <li class="notification-message ${notification.isRead ? '' : 'unread'}">
+                                                <a href="/notification/${notification.id}">
+                                                    <div class="media">
+                                                        <span class="avatar avatar-sm">
+                                                            <i class="fas fa-bell" style="font-size: 1.9em; color: #0eaedf;"></i>
+                                                        </span>
+                                                        <div class="media-body">
+                                                            <p class="noti-details">
+                                                                <span class="noti-title">${notification.message}</span>
+                                                            </p>
+                                                            <p class="noti-time">
+                                                                <span class="notification-time">${timeAgo}</span>
+                                                            </p>
+                                                        </div>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                        `;
+                                        });
+
+                                        notificationList.innerHTML = notificationHtml;
+                                    } else {
+                                        notificationList.innerHTML = `
+                                        <li class="notification-message">
+                                            <div class="media">
+                                                <div class="media-body">
+                                                    <p class="noti-details text-center">
+                                                        No notifications available
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        </li>
+                                    `;
+                                    }
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching notifications:', error);
+                            });
+                    }
+
+                    // Function to calculate time ago
+                    function getTimeAgo(date) {
+                        const seconds = Math.floor((new Date() - date) / 1000);
+
+                        let interval = seconds / 31536000;
+                        if (interval > 1) return Math.floor(interval) + " years ago";
+
+                        interval = seconds / 2592000;
+                        if (interval > 1) return Math.floor(interval) + " months ago";
+
+                        interval = seconds / 86400;
+                        if (interval > 1) return Math.floor(interval) + " days ago";
+
+                        interval = seconds / 3600;
+                        if (interval > 1) return Math.floor(interval) + " hours ago";
+
+                        interval = seconds / 60;
+                        if (interval > 1) return Math.floor(interval) + " minutes ago";
+
+                        return "Just now";
+                    }
+    /***********************************************************************************************/
+                    const sidebarLinks = document.getElementById('sidebar-links');
+                    sidebarLinks.innerHTML = '';
+
+                    if (user.role === 'RH') {
+                        sidebarLinks.innerHTML += `
                         <li><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
                         <li><a href="/contrat"><span>📜 Contrat</span></a></li>
                         <li><a href="/sponsor"><span>📢 Gestion Sponsor</span></a></li>
@@ -133,15 +296,15 @@
                         <li><a href="/entretien"><span>🔥 Entretien</span></a></li>
                         <li><a href="/mdp"><span>🔄 Mot de Passe</span></a></li>
                     `;
-                } else if (user.role === 'Candidat') {
-                    sidebarLinks.innerHTML += `
-                        <li><a href="/"><span>🔄 Offre Emploi</span></a></li>
-                        <li><a href="/reclamation/user/${user.iduser}"><span>🔄 Reclamation</span></a></li>
-                        <li><a href="/"><span>👥 Candidature</span></a></li>
-                        <li><a href="/"><span>👤 Changer Mot de Passe</span></a></li>
+                    } else if (user.role === 'Candidat') {
+                        sidebarLinks.innerHTML += `
+                        <li><a href="/"><span>💼 Offre Emploi</span></a></li>
+                        <li><a href="/reclamation/user/${user.iduser}"><span>📄 Reclamation</span></a></li>
+                        <li><a href="/"><span>🗳️ Candidatures</span></a></li>
+                        <li><a href="/"><span>🔄 Changer Mot de Passe</span></a></li>
                     `;
-                } else if (user.role === 'Employe') {
-                    sidebarLinks.innerHTML += `
+                    } else if (user.role === 'Employe') {
+                        sidebarLinks.innerHTML += `
                         <li class="active"><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
                         <li><a href="/reclamation/user/${user.iduser}"><span>🔄 Reclamation</span></a></li>
                         <li><a href="/formation"><span>📢 Formation</span></a></li>
@@ -152,18 +315,18 @@
                         <li><a href="/"><span>📂 Projet</span></a></li>
                         <li><a href="/"><span>🔄 Mot de Passe</span></a></li>
                     `;
-                } else if (user.role === 'manager') {
-                    sidebarLinks.innerHTML += `
+                    } else if (user.role === 'manager') {
+                        sidebarLinks.innerHTML += `
                         <li class="active"><a href="/"><span>👤 Profile</span></a></li>
                         <li><a href="/"><span>⚙️ Settings</span></a></li>
                     `;
+                    }
+                } else {
+                    console.error('Failed to fetch user data:', data.error);
                 }
-            } else {
-                console.error('Failed to fetch user data:', data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching user data:', error);
-        });
+            })
+            .catch(error => {
+                console.error('Error fetching user data:', error);
+            });
     });
 </script>

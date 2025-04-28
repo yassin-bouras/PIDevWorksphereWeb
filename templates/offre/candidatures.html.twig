@@ -33,12 +33,22 @@
                         Non fournie
                         {% endif %}
                     </p>
-                    <form method="post" action="{{ path('app_candidature_delete', {'id_candidature': candidature.id_candidature}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette candidature?');">
-                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ candidature.id_candidature) }}">
-                        <button class="btn btn-danger btn-sm mt-2">
-                            <i class="fas fa-trash-alt"></i> Supprimer
-                        </button>
-                    </form>
+                    <div class="d-flex flex-wrap">
+                        <form method="post" action="{{ path('app_candidature_delete', {'id_candidature': candidature.id_candidature}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette candidature?');" class="me-2 mb-2">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ candidature.id_candidature) }}">
+                            <button class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash-alt"></i> Supprimer
+                            </button>
+                        </form>
+                        <a href="{{ path('app_offre_compare_cv', {'id_offre': offre.id_offre, 'id_candidature': candidature.id_candidature}) }}" class="btn btn-primary btn-sm me-2 mb-2">
+                            <i class="fas fa-exchange-alt"></i> Comparer CV
+                        </a>
+                        {% if candidature.cv %}
+                        <a href="{{ path('app_offre_translate_cv', {'id_offre': offre.id_offre, 'id_candidature': candidature.id_candidature}) }}" class="btn btn-success btn-sm mb-2">
+                            <i class="fas fa-language"></i> Traduire CV
+                        </a>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
         </div>

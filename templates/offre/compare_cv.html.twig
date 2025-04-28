@@ -1,0 +1,138 @@
+{% extends '/dashboard/base2.html.twig' %}
+
+{% block title %}Comparaison CV - {{ offre.titre }}{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: -53%;">
+    <div class="mb-4">
+        <a href="{{ path('app_offre_candidatures', {'id_offre': offre.id_offre}) }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Retour aux candidatures
+        </a>
+    </div>
+
+    <div class="card shadow-lg mb-5">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">Comparaison CV - {{ offre.titre }}</h2>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header bg-info text-white">
+                            <h3 class="mb-0">Offre d'emploi</h3>
+                        </div>
+                        <div class="card-body">
+                            <h4>{{ offre.titre }}</h4>
+                            <p><strong>Type de contrat:</strong> {{ offre.typeContrat }}</p>
+                            <p><strong>Description:</strong> {{ offre.description }}</p>
+                            <p><strong>Compétences requises:</strong> {{ offre.experience }}</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h3 class="mb-0">CV du candidat</h3>
+                        </div>
+                        <div class="card-body">
+                            {% if cvPath %}
+                                <p>
+                                    <a href="{{ asset('uploads/' ~ cvPath) }}" target="_blank" class="btn btn-outline-primary">
+                                        <i class="fas fa-file-pdf"></i> Ouvrir le CV
+                                    </a>
+                                </p>
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    CV non disponible
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h3 class="mb-0">Résultats de la comparaison</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="text-center mb-4">
+                                <div class="progress" style="height: 30px;">
+                                    <div class="progress-bar {% if matchPercentage >= 80 %}bg-success{% elseif matchPercentage >= 60 %}bg-warning{% else %}bg-danger{% endif %}" 
+                                         role="progressbar" 
+                                         style="width: {{ matchPercentage }}%;color: black !important;" 
+                                         aria-valuenow="{{ matchPercentage }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100"
+                                         >
+                                        {{ matchPercentage }}% de correspondance
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header bg-success text-white">
+                                            <h4 class="mb-0">Compétences correspondantes</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            {% if matchedSkills is empty %}
+                                                <p class="text-muted">Aucune compétence correspondante trouvée</p>
+                                            {% else %}
+                                                <ul class="list-group">
+                                                    {% for skill in matchedSkills %}
+                                                        <li class="list-group-item">
+                                                            <i class="fas fa-check-circle text-success"></i> {{ skill }}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-md-6">
+                                    <div class="card">
+                                        <div class="card-header bg-danger text-white">
+                                            <h4 class="mb-0">Compétences manquantes</h4>
+                                        </div>
+                                        <div class="card-body">
+                                            {% if missingSkills is empty %}
+                                                <p class="text-muted">Toutes les compétences requises sont présentes</p>
+                                            {% else %}
+                                                <ul class="list-group">
+                                                    {% for skill in missingSkills %}
+                                                        <li class="list-group-item">
+                                                            <i class="fas fa-times-circle text-danger"></i> {{ skill }}
+                                                        </li>
+                                                    {% endfor %}
+                                                </ul>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-4 text-center">
+                                <div class="alert {% if matchPercentage >= 80 %}alert-success{% elseif matchPercentage >= 60 %}alert-warning{% else %}alert-danger{% endif %}">
+                                    {% if matchPercentage >= 80 %}
+                                        <strong>Excellente correspondance!</strong> Ce candidat semble très bien correspondre à l'offre d'emploi.
+                                    {% elseif matchPercentage >= 60 %}
+                                        <strong>Bonne correspondance.</strong> Ce candidat a plusieurs compétences requises, mais certaines compétences clés peuvent manquer.
+                                    {% else %}
+                                        <strong>Correspondance faible.</strong> Ce candidat ne semble pas avoir la plupart des compétences requises pour ce poste.
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

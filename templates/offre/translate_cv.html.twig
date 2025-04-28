@@ -1,0 +1,111 @@
+{% extends '/dashboard/base2.html.twig' %}
+
+{% block title %}{{ 'cv.translation_title'|trans }}{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: -53%;">
+    <div class="mb-4">
+        <a href="{{ path('app_offre_candidatures', {'id_offre': offre.id_offre}) }}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> {{ 'cv.back_to_applications'|trans }}
+        </a>
+    </div>
+
+    <div class="card shadow-lg mb-5">
+        <div class="card-header bg-primary text-white">
+            <h2 class="mb-0">{{ 'cv.translate_cv'|trans }}</h2>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-info text-white">
+                            <h3 class="mb-0">{{ 'cv.original_cv'|trans }}</h3>
+                        </div>
+                        <div class="card-body">
+                            {% if cvPath %}
+                                <p>
+                                    <a href="{{ asset('uploads/' ~ cvPath) }}" target="_blank" class="btn btn-outline-primary">
+                                        <i class="fas fa-file-pdf"></i> {{ 'cv.view_original_cv'|trans }}
+                                    </a>
+                                </p>
+                            {% else %}
+                                <div class="alert alert-warning">
+                                    {{ 'cv.not_available'|trans }}
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="card">
+                        <div class="card-header bg-success text-white">
+                            <h3 class="mb-0">{{ 'cv.translation_options'|trans }}</h3>
+                        </div>
+                        <div class="card-body">
+                            <form method="POST" action="{{ path('app_offre_translate_cv', {'id_offre': offre.id_offre, 'id_candidature': candidature.id_candidature}) }}">
+                                <div class="form-group">
+                                    <label for="language">{{ 'cv.select_language'|trans }}</label>
+                                    <select name="language" id="language" class="form-control">
+                                        <option value="">{{ 'cv.choose_language'|trans }}</option>
+                                        {% for key, label in languages %}
+                                            <option value="{{ key }}" {% if targetLanguage == key %}selected{% endif %}>{{ label }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="mt-3">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-language"></i> {{ 'cv.translate_button'|trans }}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if error %}
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i> {{ error }}
+                </div>
+            {% endif %}
+
+            {% if success and translatedContent %}
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h3 class="mb-0">
+                            {{ 'cv.translation_result'|trans }} - {{ languages[targetLanguage] }}
+                        </h3>
+                    </div>
+                    <div class="card-body bg-light">
+                        <div class="translated-content" style="white-space: pre-wrap; font-family: Arial, sans-serif;">
+                            {{ translatedContent|nl2br }}
+                        </div>
+                        <div class="mt-3">
+                            <button class="btn btn-outline-primary" onclick="window.print()">
+                                <i class="fas fa-print"></i> {{ 'cv.print_translation'|trans }}
+                            </button>
+                            <button class="btn btn-outline-success" onclick="copyToClipboard()">
+                                <i class="fas fa-copy"></i> {{ 'cv.copy_translation'|trans }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% if success and translatedContent %}
+<script>
+function copyToClipboard() {
+    const translatedContent = document.querySelector('.translated-content').innerText;
+    navigator.clipboard.writeText(translatedContent).then(function() {
+        alert("{{ 'cv.copied_to_clipboard'|trans }}");
+    }, function() {
+        alert("{{ 'cv.copy_failed'|trans }}");
+    });
+}
+</script>
+{% endif %}
+{% endblock %}
