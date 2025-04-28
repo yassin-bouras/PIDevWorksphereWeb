@@ -57,7 +57,7 @@ final class ProjetController extends AbstractController{
             $etat = $request->query->get('etat');
             $nomEquipe = $request->query->get('nomEquipe');
     
-            // Utiliser le repository
+           
             $query = $projetRepository->findProjectsByUser($user->getIduser(), $nom, $etat, $nomEquipe);
     
             $projets = $paginator->paginate(
@@ -81,7 +81,7 @@ final class ProjetController extends AbstractController{
 #[Route('/new', name: 'app_projet_new', methods: ['GET', 'POST'])]
 public function new(Request $request, EntityManagerInterface $entityManager): Response
 {
-    // Récupérer le token JWT depuis les cookies
+
     $token = $request->cookies->get('BEARER');
     
     if (!$token) {
@@ -89,7 +89,7 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
     }
 
     try {
-        // Décoder le token pour obtenir l'email de l'utilisateur
+    
         $decodedData = $this->jwtEncoder->decode($token);
         $email = $decodedData['username'] ?? null;
 
@@ -98,7 +98,7 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
             return $this->redirectToRoute('app_login');
         }
 
-        // Récupérer l'utilisateur depuis la base de données
+
         $user = $this->userRepository->findOneBy(['email' => $email]);
 
         if (!$user) {
@@ -111,10 +111,10 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         $form->handleRequest($request);
         
         if ($form->isSubmitted() && $form->isValid()) {
-            // Assigner l'ID de l'utilisateur au projet
+       
             $projet->setIdUser($user->getIduser());
             
-            // Gestion de l'image
+         
             $imageFile = $form->get('imageProjet')->getData();
             
             if ($imageFile) {
@@ -236,10 +236,10 @@ public function generatePdf(
     CloudinaryUploader $cloudinaryUploader
 ): Response {
     try {
-        // Générer le contenu PDF
+        
         $pdfContent = $pdfGenerator->generateProjetPdf($projet, $projet->getEquipes());
         
-        // Sauvegarder localement (optionnel)
+   
         $localPath = $this->getParameter('kernel.project_dir').'/public/pdfs/';
         if (!file_exists($localPath)) {
             mkdir($localPath, 0777, true);
@@ -249,10 +249,10 @@ public function generatePdf(
         $fullLocalPath = $localPath.$pdfFileName;
         file_put_contents($fullLocalPath, $pdfContent);
         
-        // Upload vers Cloudinary (optionnel)
+
         $cloudinaryUrl = $cloudinaryUploader->uploadPdfToCloudinary($pdfContent);
-        
-        // Retourner la réponse PDF
+    
+    
         return new Response(
             $pdfContent,
             200,
@@ -307,5 +307,31 @@ public function projectStatsApi(ProjetRepository $projetRepository): JsonRespons
     ]);
 }
 
+
+#[Route('/projet/api/stats-equipes', name: 'app_projet_stats_equipes_api')]
+public function projectStatsByEquipe(ProjetRepository $projetRepository): JsonResponse
+{
+    $stats = $projetRepository->createQueryBuilder('p')
+        ->select('e.nom_equipe as label, COUNT(p.id) as count')
+        ->join('p.equipes', 'e')
+        ->groupBy('e.nom_equipe')
+        ->getQuery()
+        ->getResult();
+
+    $labels = [];
+    $data = [];
+    $colors = ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40'];
+
+    foreach ($stats as $item) {
+        $labels[] = $item['label'];
+        $data[] = $item['count'];
+    }
+
+    return new JsonResponse([
+        'labels' => $labels,
+        'data' => $data,
+        'colors' => $colors,
+    ]);
+}
 
 }

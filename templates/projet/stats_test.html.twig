@@ -47,14 +47,33 @@
         </div>
     </div>
 
-    {# Graphique #}
-    <div class="card mt-4">
-        <div class="card-header">
-            <h2 class="card-titles">Graphique des Projets</h2>
+    {# Graphiques #}
+    <div class="row mt-4">
+        {# Graphique en barres #}
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-titles">Statut des Projets</h2>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:40vh;">
+                        <canvas id="projectChart"></canvas>
+                    </div>
+                </div>
+            </div>
         </div>
-        <div class="card-body">
-            <div class="chart-container" style="position: relative; height:40vh; width:80vw">
-                <canvas id="projectChart"></canvas>
+
+        {# Graphique en camembert #}
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="card-titles">Répartition des Projets</h2>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container" style="position: relative; height:40vh;">
+                        <canvas id="projectPieChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -65,38 +84,76 @@
 {% block javascripts %}
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            fetch("{{ path('app_projet_stats_api') }}")
-                .then(response => response.json())
-                .then(data => {
-                    new Chart(document.getElementById('projectChart'), {
-                        type: 'bar',
-                        data: {
-                            labels: data.labels,
-                            datasets: [{
-                                label: 'Projets par statut',
-                                data: data.data,
-                                backgroundColor: data.colors,
-                                borderWidth: 1
-                            }]
+     document.addEventListener('DOMContentLoaded', function() {
+    // Bar Chart - Statut des projets (utilise l'API existante)
+    fetch("{{ path('app_projet_stats_api') }}")
+        .then(response => response.json())
+        .then(data => {
+            new Chart(document.getElementById('projectChart'), {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Nombre de projets',
+                        data: data.data,
+                        backgroundColor: data.colors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+        });
+
+    // Pie Chart - Répartition par équipe (nouvelle API)
+    fetch("{{ path('app_projet_stats_equipes_api') }}")
+        .then(response => response.json())
+        .then(data => {
+            new Chart(document.getElementById('projectPieChart'), {
+                type: 'pie',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        data: data.data,
+                        backgroundColor: data.colors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
                         },
-                        options: {
-                            responsive: true,
-                            maintainAspectRatio: false,
-                            scales: {
-                                y: {
-                                    beginAtZero: true,
-                                    ticks: {
-                                        stepSize: 1
-                                    }
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = context.raw || 0;
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = Math.round((value / total) * 100);
+                                    return `${label}: ${value} (${percentage}%)`;
                                 }
                             }
                         }
-                    });
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                });
+                    }
+                }
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
         });
+});
     </script>
 {% endblock %}

@@ -34,7 +34,7 @@ final class EquipeController extends AbstractController{
 #[Route(name: 'app_equipe_index', methods: ['GET'])]
 public function index(EquipeRepository $equipeRepository, ProjetRepository $projetRepository, Request $request, PaginatorInterface $paginator): Response
 {
-    // Récupérer l'utilisateur connecté
+ 
     $token = $request->cookies->get('BEARER');
     
     if (!$token) {
@@ -47,8 +47,7 @@ public function index(EquipeRepository $equipeRepository, ProjetRepository $proj
         $user = $this->userRepository->findOneBy(['email' => $email]);
 
         $searchTerm = $request->query->get('search');
-        
-        // Modifier la requête pour filtrer par utilisateur
+       
         $queryBuilder = $equipeRepository->createQueryBuilder('e')
             ->leftJoin('e.projets', 'p')
             ->addSelect('p')
@@ -135,7 +134,7 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Enregistrer l'ID de l'utilisateur créateur
+      
             $equipe->setIdUser($user->getIduser());
             
             $imageFile = $form->get('imageEquipe')->getData();
