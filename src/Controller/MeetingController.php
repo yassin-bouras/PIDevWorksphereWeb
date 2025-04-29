@@ -84,9 +84,7 @@ final class MeetingController extends AbstractController{
         if ($request->isMethod('POST')) {
             $username = $request->request->get('username');
     
-            // Ici tu peux soit :
-            // - Rediriger vers un service de visio en ligne
-            // - Générer une page qui intègre un iframe pour la visio
+           
     
             return $this->render('meeting/room.html.twig', [
                 'roomName' => $roomName,

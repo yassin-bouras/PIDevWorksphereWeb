@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Service\HuggingFaceRecommendationService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -11,21 +10,16 @@ use Symfony\Component\Routing\Annotation\Route;
 class RecommendationController extends AbstractController
 {
     #[Route('/recommendation', name: 'app_recommendation', methods: ['GET', 'POST'])]
-    public function recommend(Request $request, HuggingFaceRecommendationService $hfService): Response
+    public function recommend(Request $request): Response
     {
-        $recommendations = null;
+        $recommendations = [];
         $formationName = null;
 
         if ($request->isMethod('POST')) {
             $formationName = $request->request->get('formation');
 
             if ($formationName) {
-                try {
-                    $result = $hfService->getRecommendations($formationName);
-                    $recommendations = $result['text'];
-                } catch (\Exception $e) {
-                    $this->addFlash('error', 'Erreur lors de la récupération des recommandations : '.$e->getMessage());
-                }
+                $recommendations = $this->getRecommendations($formationName);
             } else {
                 $this->addFlash('warning', 'Veuillez entrer une formation.');
             }
@@ -35,5 +29,26 @@ class RecommendationController extends AbstractController
             'recommendations' => $recommendations,
             'formationName'   => $formationName,
         ]);
+    }
+
+    private function getRecommendations(string $formation): array
+    {
+        return [
+            'Développement web' => [
+                'HTML & CSS avancé',
+                'JavaScript moderne',
+                'Symfony pour les débutants'
+            ],
+            'Machine Learning' => [
+                'Introduction à Scikit-learn',
+                'Apprentissage supervisé avec Python',
+                'Réseaux de neurones avec TensorFlow'
+            ],
+            'Développement mobile' => [
+                'Flutter pour les débutants',
+                'React Native avancé',
+                'Kotlin pour Android'
+            ],
+        ][$formation] ?? [];
     }
 }

@@ -12,11 +12,24 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use App\Repository\UserRepository;
 
 
 #[Route('/favori')]
 class FavoriController extends AbstractController
 {
+
+    private $jwtEncoder;
+    private $userRepository;
+
+    public function __construct(JWTEncoderInterface $jwtEncoder, UserRepository $userRepository)
+    {
+        $this->jwtEncoder = $jwtEncoder;
+        $this->userRepository = $userRepository;
+    }
+
+
     #[Route('/add/{formation_id}', name: 'app_favori_add')]
     public function addToFavori(
         int $formation_id,
@@ -24,7 +37,7 @@ class FavoriController extends AbstractController
         EntityManagerInterface $em,
         FavoriRepository $favoriRepository
     ): RedirectResponse {
-        // Vérifier si la formation est déjà en favori (sans user)
+        
         $existing = $favoriRepository->findOneBy(['id_f' => $formation_id]);
 
         if (!$existing) {

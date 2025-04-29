@@ -44,6 +44,18 @@
                 </div>
             </div>
         </div>
+            <!-- Notation -->
+            <div class="mt-4 text-center">
+                <h5 class="text-primary mb-3" style="font-weight: 600;">Votre évaluation</h5>
+                <div id="rating-stars" class="d-inline-flex align-items-center justify-content-center" style="font-size: 1.8rem; color: #ccc; cursor: pointer;">
+                    {% for i in 1..5 %}
+                        <i class="fas fa-star" data-value="{{ i }}"></i>
+                    {% endfor %}
+                    <span id="rating-value" class="ms-3 text-muted" style="font-size: 1rem;"></span>
+                </div>
+            </div>
+            
+</div>
     </div>
 
     <div class="text-center mt-4">
@@ -55,8 +67,52 @@
         </a>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const stars = document.querySelectorAll('#rating-stars .fa-star');
+        const valueDisplay = document.getElementById('rating-value');
+        const storageKey = 'formation_rating_{{ formation.idF }}';
+
+        // Charger note sauvegardée
+        let savedRating = localStorage.getItem(storageKey);
+        if (savedRating) {
+            highlightStars(savedRating);
+            valueDisplay.textContent = `Vous avez noté ${savedRating}/5`;
+        }
+
+        stars.forEach(star => {
+            star.addEventListener('mouseover', function () {
+                highlightStars(this.dataset.value);
+            });
+
+            star.addEventListener('mouseout', function () {
+                highlightStars(savedRating);
+            });
+
+            star.addEventListener('click', function () {
+                savedRating = this.dataset.value;
+                localStorage.setItem(storageKey, savedRating);
+                highlightStars(savedRating);
+                valueDisplay.textContent = `Vous avez noté ${savedRating}/5`;
+            });
+        });
+
+        function highlightStars(rating) {
+            stars.forEach(star => {
+                if (parseInt(star.dataset.value) <= rating) {
+                    star.style.color = '#ffc107'; // or gold
+                } else {
+                    star.style.color = '#ccc';
+                }
+            });
+        }
+    });
+</script>
 
 <style>
+      #rating-stars .fa-star:hover {
+        transform: scale(1.2);
+    }
     body {
         background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
         background-attachment: fixed;
