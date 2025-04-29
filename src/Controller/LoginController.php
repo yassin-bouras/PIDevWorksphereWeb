@@ -23,7 +23,6 @@ final class LoginController extends AbstractController
     private UserRepository $userRepository;
 
     public function __construct(
-        string $hcaptchaSiteKey,
 
         JWTTokenManagerInterface $jwtManager,
         JWTEncoderInterface $jwtEncoder,
