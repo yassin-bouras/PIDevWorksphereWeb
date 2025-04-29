@@ -37,7 +37,9 @@
                     <div class="noti-content">
                         <ul class="notification-list">
                             <li class="notification-message">
-                                <a href="#">
+                               <button class="btn btn-success" id="openWebSocketBtn">
+                <i class="bi bi-broadcast"></i> Open Communication Port
+            </button>
                                     <div class="media">
                                         <span class="avatar avatar-sm">
                                             <img class="avatar-img rounded-circle" alt="Photo de profil" src="{{ asset('back/img/profiles/avatar-02.jpg') }}">
@@ -95,6 +97,9 @@
 </div>
 
 <script>
+        document.getElementById('openWebSocketBtn').addEventListener('click', function() {
+            window.location.href = '{{ path("admin_websocket_communication") }}';
+        });
     document.addEventListener('DOMContentLoaded', function() {
         function getCookie(name) {
             let cookieArray = document.cookie.split('; ');

@@ -1,0 +1,4 @@
+# Your WebSocket routes
+chat:
+  channel: chat/channel
+  handler: App\WebSocket\Chat\ChatHandler

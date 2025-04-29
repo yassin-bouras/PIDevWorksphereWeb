@@ -12,14 +12,19 @@ use Symfony\Component\HttpFoundation\Request;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use App\Service\MailService;
+use App\Service\HCaptchaService;
 
 final class LoginController extends AbstractController
 {
+    private string $hcaptchaSiteKey;
+
     private JWTTokenManagerInterface $jwtManager;
     private JWTEncoderInterface $jwtEncoder;
     private UserRepository $userRepository;
 
     public function __construct(
+        string $hcaptchaSiteKey,
+
         JWTTokenManagerInterface $jwtManager,
         JWTEncoderInterface $jwtEncoder,
         UserRepository $userRepository

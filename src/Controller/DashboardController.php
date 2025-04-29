@@ -39,4 +39,14 @@ final class DashboardController extends AbstractController
             'controller_name' => 'DashboardController',
         ]);
     }
+
+    #[Route('/websocket-communication', name: 'admin_websocket_communication')]
+    public function webSocketCommunication(): Response
+    {
+
+        return $this->render('dashboard/test.html.twig', [
+            'websocketHost' => '127.0.0.1',
+            'websocketPort' => 8888
+        ]);
+    }
 }
