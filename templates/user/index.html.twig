@@ -182,22 +182,52 @@
                                         <td>{{ user.role }}</td>
                                         <td>{{ user.sexe }}</td>
                                         <td>{{ user.status ?: 'Non spécifié' }}</td>
-                                        <td>
-                                            <div class="d-flex">
-                                                <a href="{{ path('app_user_show', {'iduser': user.idUser}) }}" class="btn btn-sm btn-outline-primary me-2" title="Voir">
-                                                    <i class="far fa-eye"></i>
-                                                </a>
-                                                <a href="{{ path('app_user_edit', {'iduser': user.idUser}) }}" class="btn btn-sm btn-outline-warning me-2" title="Modifier">
-                                                    <i class="far fa-edit"></i>
-                                                </a>
-                                                <form method="post" action="{{ path('app_user_delete', {'iduser': user.idUser}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
-                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.idUser) }}">
-                                                    <button class="btn btn-sm btn-outline-danger" title="Supprimer">
-                                                        <i class="far fa-trash-alt"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
-                                        </td>
+<td>
+    <div class="d-flex flex-wrap gap-1">
+        <a href="{{ path('app_user_show', {'iduser': user.idUser}) }}" class="btn btn-sm btn-outline-primary" title="Voir">
+            <i class="far fa-eye"></i>
+        </a>
+        <a href="{{ path('app_user_edit', {'iduser': user.idUser}) }}" class="btn btn-sm btn-outline-warning" title="Modifier">
+            <i class="far fa-edit"></i>
+        </a>
+        <form method="post" action="{{ path('app_user_delete', {'iduser': user.idUser}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.idUser) }}">
+            <button class="btn btn-sm btn-outline-danger" title="Supprimer">
+                <i class="far fa-trash-alt"></i>
+            </button>
+        </form>
+
+        {# Ban/Unban Button #}
+        {% if user.banned %}
+            <form method="post" action="{{ path('app_user_unban', {'id': user.idUser}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir débannir cet utilisateur ?');">
+                <button class="btn btn-sm btn-outline-success" title="Débannir">
+                    <i class="fas fa-unlock"></i>
+                </button>
+            </form>
+        {% else %}
+            <form method="post" action="{{ path('app_user_ban', {'id': user.idUser}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir bannir cet utilisateur ?');">
+                <button class="btn btn-sm btn-outline-danger" title="Bannir">
+                    <i class="fas fa-ban"></i>
+                </button>
+            </form>
+        {% endif %}
+
+        {# View Reclamation (only if banned and has reclamations) #}
+        {% if user == 'banned' and user.reclamations|length > 0 %}
+            <a href="{{ path('app_user_reclamations', {'iduser': user.idUser}) }}" class="btn btn-sm btn-outline-info" title="Voir réclamations">
+                <i class="fas fa-exclamation-circle"></i>
+            </a>
+        {% endif %}
+
+        {# Promote Button #}
+        <form method="post" action="{{ path('app_user_promote', {'id': user.idUser}) }}" onsubmit="return confirm('Promouvoir cet utilisateur ?');">
+            <button class="btn btn-sm btn-outline-secondary" title="Promouvoir">
+                <i class="fas fa-level-up-alt"></i>
+            </button>
+        </form>
+    </div>
+</td>
+
                                     </tr>
                                 {% else %}
                                     <tr>

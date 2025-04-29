@@ -1,0 +1,315 @@
+[
+    {
+        "label": "sys",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys",
+        "description": "sys",
+        "detail": "sys",
+        "documentation": {}
+    },
+    {
+        "label": "os",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "os",
+        "description": "os",
+        "detail": "os",
+        "documentation": {}
+    },
+    {
+        "label": "cv2",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "cv2",
+        "description": "cv2",
+        "detail": "cv2",
+        "documentation": {}
+    },
+    {
+        "label": "tempfile",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "tempfile",
+        "description": "tempfile",
+        "detail": "tempfile",
+        "documentation": {}
+    },
+    {
+        "label": "shutil",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "shutil",
+        "description": "shutil",
+        "detail": "shutil",
+        "documentation": {}
+    },
+    {
+        "label": "sys,",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "sys.",
+        "description": "sys.",
+        "detail": "sys.",
+        "documentation": {}
+    },
+    {
+        "label": "lexers",
+        "importPath": "sphinx.highlighting",
+        "description": "sphinx.highlighting",
+        "isExtraImport": true,
+        "detail": "sphinx.highlighting",
+        "documentation": {}
+    },
+    {
+        "label": "PhpLexer",
+        "importPath": "pygments.lexers.web",
+        "description": "pygments.lexers.web",
+        "isExtraImport": true,
+        "detail": "pygments.lexers.web",
+        "documentation": {}
+    },
+    {
+        "label": "guzzle_sphinx_theme",
+        "kind": 6,
+        "isExtraImport": true,
+        "importPath": "guzzle_sphinx_theme",
+        "description": "guzzle_sphinx_theme",
+        "detail": "guzzle_sphinx_theme",
+        "documentation": {}
+    },
+    {
+        "label": "detect_faces",
+        "kind": 2,
+        "importPath": "public.script.face_compare",
+        "description": "public.script.face_compare",
+        "peekOfCode": "def detect_faces(image, cascade_path):\n    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)\n    face_cascade = cv2.CascadeClassifier(cascade_path)\n    if face_cascade.empty():\n        print(\"ERROR: Could not load cascade classifier\", file=sys.stderr)\n        sys.exit(1)\n    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)\n    return faces\ndef compare_faces(stored_img, live_img, cascade_path):\n    stored_faces = detect_faces(stored_img, cascade_path)",
+        "detail": "public.script.face_compare",
+        "documentation": {}
+    },
+    {
+        "label": "compare_faces",
+        "kind": 2,
+        "importPath": "public.script.face_compare",
+        "description": "public.script.face_compare",
+        "peekOfCode": "def compare_faces(stored_img, live_img, cascade_path):\n    stored_faces = detect_faces(stored_img, cascade_path)\n    live_faces = detect_faces(live_img, cascade_path)\n    if len(stored_faces) == 0 or len(live_faces) == 0:\n        return False\n    (x, y, w, h) = stored_faces[0]\n    stored_roi = stored_img[y:y+h, x:x+w]\n    (x, y, w, h) = live_faces[0]\n    live_roi = live_img[y:y+h, x:x+w]\n    stored_roi = cv2.resize(stored_roi, (100, 100))",
+        "detail": "public.script.face_compare",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "public.script.face_compare",
+        "description": "public.script.face_compare",
+        "peekOfCode": "def main():\n    if len(sys.argv) != 4:\n        print(\"Usage: python face_compare.py <faces_dir> <live_image_path> <cascade_path>\", file=sys.stderr)\n        sys.exit(1)\n    faces_dir = sys.argv[1]\n    live_image_path = sys.argv[2]\n    cascade_path = sys.argv[3]\n    if not os.path.isdir(faces_dir):\n        print(\"ERROR: Faces directory not found\", file=sys.stderr)\n        sys.exit(1)",
+        "detail": "public.script.face_compare",
+        "documentation": {}
+    },
+    {
+        "label": "detect_faces",
+        "kind": 2,
+        "importPath": "src.tests.test",
+        "description": "src.tests.test",
+        "peekOfCode": "def detect_faces(image, cascade_path):\n    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)\n    face_cascade = cv2.CascadeClassifier(cascade_path)\n    if face_cascade.empty():\n        print(\"ERROR: Could not load cascade classifier\", file=sys.stderr)\n        sys.exit(1)\n    faces = face_cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)\n    return faces\ndef compare_faces(stored_img, live_img, cascade_path):\n    stored_faces = detect_faces(stored_img, cascade_path)",
+        "detail": "src.tests.test",
+        "documentation": {}
+    },
+    {
+        "label": "compare_faces",
+        "kind": 2,
+        "importPath": "src.tests.test",
+        "description": "src.tests.test",
+        "peekOfCode": "def compare_faces(stored_img, live_img, cascade_path):\n    stored_faces = detect_faces(stored_img, cascade_path)\n    live_faces = detect_faces(live_img, cascade_path)\n    if len(stored_faces) == 0 or len(live_faces) == 0:\n        return False\n    (x, y, w, h) = stored_faces[0]\n    stored_roi = stored_img[y:y+h, x:x+w]\n    (x, y, w, h) = live_faces[0]\n    live_roi = live_img[y:y+h, x:x+w]\n    stored_roi = cv2.resize(stored_roi, (100, 100))",
+        "detail": "src.tests.test",
+        "documentation": {}
+    },
+    {
+        "label": "compare_faces_with_directory",
+        "kind": 2,
+        "importPath": "src.tests.test",
+        "description": "src.tests.test",
+        "peekOfCode": "def compare_faces_with_directory(faces_dir, live_image_path, cascade_path):\n    if not os.path.isdir(faces_dir):\n        print(\"ERROR: Faces directory not found\", file=sys.stderr)\n        return None\n    if not os.path.isfile(live_image_path):\n        print(\"ERROR: Live image not found\", file=sys.stderr)\n        return None\n    live_img = cv2.imread(live_image_path)\n    if live_img is None:\n        print(\"ERROR: Failed to load live image\", file=sys.stderr)",
+        "detail": "src.tests.test",
+        "documentation": {}
+    },
+    {
+        "label": "main",
+        "kind": 2,
+        "importPath": "src.tests.test",
+        "description": "src.tests.test",
+        "peekOfCode": "def main():\n    # Default paths (modify these to match your environment)\n    faces_dir = \"C:/xampp/htdocs/faces\"\n    cascade_path = \"C:/Users/yassi/OneDrive/Documents/GitHub/backup/PidevWorksphere/src/main/resources/haarcascade_frontalface_alt.xml\"\n    # Validate paths\n    if not os.path.isdir(faces_dir):\n        print(f\"ERROR: Faces directory does not exist: {faces_dir}\", file=sys.stderr)\n        sys.exit(1)\n    if not os.path.isfile(cascade_path):\n        print(f\"ERROR: Cascade file does not exist: {cascade_path}\", file=sys.stderr)",
+        "detail": "src.tests.test",
+        "documentation": {}
+    },
+    {
+        "label": "lexers['php']",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "lexers['php'] = PhpLexer(startinline=True, linenos=1)\nlexers['php-annotations'] = PhpLexer(startinline=True, linenos=1)\nprimary_domain = 'php'\nextensions = []\ntemplates_path = ['_templates']\nsource_suffix = '.rst'\nmaster_doc = 'index'\nproject = u'Guzzle'\ncopyright = u'2015, Michael Dowling'\nversion = '7'",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "lexers['php-annotations']",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "lexers['php-annotations'] = PhpLexer(startinline=True, linenos=1)\nprimary_domain = 'php'\nextensions = []\ntemplates_path = ['_templates']\nsource_suffix = '.rst'\nmaster_doc = 'index'\nproject = u'Guzzle'\ncopyright = u'2015, Michael Dowling'\nversion = '7'\nhtml_title = \"Guzzle Documentation\"",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "primary_domain",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "primary_domain = 'php'\nextensions = []\ntemplates_path = ['_templates']\nsource_suffix = '.rst'\nmaster_doc = 'index'\nproject = u'Guzzle'\ncopyright = u'2015, Michael Dowling'\nversion = '7'\nhtml_title = \"Guzzle Documentation\"\nhtml_short_title = \"Guzzle 7\"",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "extensions",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "extensions = []\ntemplates_path = ['_templates']\nsource_suffix = '.rst'\nmaster_doc = 'index'\nproject = u'Guzzle'\ncopyright = u'2015, Michael Dowling'\nversion = '7'\nhtml_title = \"Guzzle Documentation\"\nhtml_short_title = \"Guzzle 7\"\nexclude_patterns = ['_build']",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "templates_path",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "templates_path = ['_templates']\nsource_suffix = '.rst'\nmaster_doc = 'index'\nproject = u'Guzzle'\ncopyright = u'2015, Michael Dowling'\nversion = '7'\nhtml_title = \"Guzzle Documentation\"\nhtml_short_title = \"Guzzle 7\"\nexclude_patterns = ['_build']\nhtml_static_path = ['_static']",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "source_suffix",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "source_suffix = '.rst'\nmaster_doc = 'index'\nproject = u'Guzzle'\ncopyright = u'2015, Michael Dowling'\nversion = '7'\nhtml_title = \"Guzzle Documentation\"\nhtml_short_title = \"Guzzle 7\"\nexclude_patterns = ['_build']\nhtml_static_path = ['_static']\n##### Guzzle sphinx theme",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "master_doc",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "master_doc = 'index'\nproject = u'Guzzle'\ncopyright = u'2015, Michael Dowling'\nversion = '7'\nhtml_title = \"Guzzle Documentation\"\nhtml_short_title = \"Guzzle 7\"\nexclude_patterns = ['_build']\nhtml_static_path = ['_static']\n##### Guzzle sphinx theme\nimport guzzle_sphinx_theme",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "project",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "project = u'Guzzle'\ncopyright = u'2015, Michael Dowling'\nversion = '7'\nhtml_title = \"Guzzle Documentation\"\nhtml_short_title = \"Guzzle 7\"\nexclude_patterns = ['_build']\nhtml_static_path = ['_static']\n##### Guzzle sphinx theme\nimport guzzle_sphinx_theme\nhtml_translator_class = 'guzzle_sphinx_theme.HTMLTranslator'",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "copyright",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "copyright = u'2015, Michael Dowling'\nversion = '7'\nhtml_title = \"Guzzle Documentation\"\nhtml_short_title = \"Guzzle 7\"\nexclude_patterns = ['_build']\nhtml_static_path = ['_static']\n##### Guzzle sphinx theme\nimport guzzle_sphinx_theme\nhtml_translator_class = 'guzzle_sphinx_theme.HTMLTranslator'\nhtml_theme_path = guzzle_sphinx_theme.html_theme_path()",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "version",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "version = '7'\nhtml_title = \"Guzzle Documentation\"\nhtml_short_title = \"Guzzle 7\"\nexclude_patterns = ['_build']\nhtml_static_path = ['_static']\n##### Guzzle sphinx theme\nimport guzzle_sphinx_theme\nhtml_translator_class = 'guzzle_sphinx_theme.HTMLTranslator'\nhtml_theme_path = guzzle_sphinx_theme.html_theme_path()\nhtml_theme = 'guzzle_sphinx_theme'",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "html_title",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "html_title = \"Guzzle Documentation\"\nhtml_short_title = \"Guzzle 7\"\nexclude_patterns = ['_build']\nhtml_static_path = ['_static']\n##### Guzzle sphinx theme\nimport guzzle_sphinx_theme\nhtml_translator_class = 'guzzle_sphinx_theme.HTMLTranslator'\nhtml_theme_path = guzzle_sphinx_theme.html_theme_path()\nhtml_theme = 'guzzle_sphinx_theme'\n# Custom sidebar templates, maps document names to template names.",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "html_short_title",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "html_short_title = \"Guzzle 7\"\nexclude_patterns = ['_build']\nhtml_static_path = ['_static']\n##### Guzzle sphinx theme\nimport guzzle_sphinx_theme\nhtml_translator_class = 'guzzle_sphinx_theme.HTMLTranslator'\nhtml_theme_path = guzzle_sphinx_theme.html_theme_path()\nhtml_theme = 'guzzle_sphinx_theme'\n# Custom sidebar templates, maps document names to template names.\nhtml_sidebars = {",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "exclude_patterns",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "exclude_patterns = ['_build']\nhtml_static_path = ['_static']\n##### Guzzle sphinx theme\nimport guzzle_sphinx_theme\nhtml_translator_class = 'guzzle_sphinx_theme.HTMLTranslator'\nhtml_theme_path = guzzle_sphinx_theme.html_theme_path()\nhtml_theme = 'guzzle_sphinx_theme'\n# Custom sidebar templates, maps document names to template names.\nhtml_sidebars = {\n    '**': ['logo-text.html', 'globaltoc.html', 'searchbox.html']",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "html_static_path",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "html_static_path = ['_static']\n##### Guzzle sphinx theme\nimport guzzle_sphinx_theme\nhtml_translator_class = 'guzzle_sphinx_theme.HTMLTranslator'\nhtml_theme_path = guzzle_sphinx_theme.html_theme_path()\nhtml_theme = 'guzzle_sphinx_theme'\n# Custom sidebar templates, maps document names to template names.\nhtml_sidebars = {\n    '**': ['logo-text.html', 'globaltoc.html', 'searchbox.html']\n}",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "html_translator_class",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "html_translator_class = 'guzzle_sphinx_theme.HTMLTranslator'\nhtml_theme_path = guzzle_sphinx_theme.html_theme_path()\nhtml_theme = 'guzzle_sphinx_theme'\n# Custom sidebar templates, maps document names to template names.\nhtml_sidebars = {\n    '**': ['logo-text.html', 'globaltoc.html', 'searchbox.html']\n}\n# Register the theme as an extension to generate a sitemap.xml\nextensions.append(\"guzzle_sphinx_theme\")\n# Guzzle theme options (see theme.conf for more information)",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "html_theme_path",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "html_theme_path = guzzle_sphinx_theme.html_theme_path()\nhtml_theme = 'guzzle_sphinx_theme'\n# Custom sidebar templates, maps document names to template names.\nhtml_sidebars = {\n    '**': ['logo-text.html', 'globaltoc.html', 'searchbox.html']\n}\n# Register the theme as an extension to generate a sitemap.xml\nextensions.append(\"guzzle_sphinx_theme\")\n# Guzzle theme options (see theme.conf for more information)\nhtml_theme_options = {",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "html_theme",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "html_theme = 'guzzle_sphinx_theme'\n# Custom sidebar templates, maps document names to template names.\nhtml_sidebars = {\n    '**': ['logo-text.html', 'globaltoc.html', 'searchbox.html']\n}\n# Register the theme as an extension to generate a sitemap.xml\nextensions.append(\"guzzle_sphinx_theme\")\n# Guzzle theme options (see theme.conf for more information)\nhtml_theme_options = {\n    # Set the path to a special layout to include for the homepage",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "html_sidebars",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "html_sidebars = {\n    '**': ['logo-text.html', 'globaltoc.html', 'searchbox.html']\n}\n# Register the theme as an extension to generate a sitemap.xml\nextensions.append(\"guzzle_sphinx_theme\")\n# Guzzle theme options (see theme.conf for more information)\nhtml_theme_options = {\n    # Set the path to a special layout to include for the homepage\n    # \"index_template\": \"homepage.html\",\n    # Allow a separate homepage from the master_doc",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    },
+    {
+        "label": "html_theme_options",
+        "kind": 5,
+        "importPath": "vendor.guzzlehttp.guzzle.docs.conf",
+        "description": "vendor.guzzlehttp.guzzle.docs.conf",
+        "peekOfCode": "html_theme_options = {\n    # Set the path to a special layout to include for the homepage\n    # \"index_template\": \"homepage.html\",\n    # Allow a separate homepage from the master_doc\n    # homepage = index\n    # Set the name of the project to appear in the nav menu\n    # \"project_nav_name\": \"Guzzle\",\n    # Set your Disqus short name to enable comments\n    # \"disqus_comments_shortname\": \"my_disqus_comments_short_name\",\n    # Set you GA account ID to enable tracking",
+        "detail": "vendor.guzzlehttp.guzzle.docs.conf",
+        "documentation": {}
+    }
+]

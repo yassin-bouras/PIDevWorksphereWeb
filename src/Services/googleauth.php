@@ -8,10 +8,10 @@ use KnpU\OAuth2ClientBundle\Client\ClientRegistry;
 use KnpU\OAuth2ClientBundle\Security\Authenticator\OAuth2Authenticator;
 use League\OAuth2\Client\Provider\GoogleUser;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
 use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
@@ -39,13 +39,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
         $this->jwtManager = $jwtManager;
         $this->client = $client;
     }
-    public function makeRequest()
-    {
-        $response = $this->client->request('GET', 'https://oauth2.googleapis.com/token', [
-            'verify_peer' => true,
-            'cafile' => '/absolute/path/to/cacert.pem',
-        ]);
-    }
+
     public function supports(Request $request): ?bool
     {
         return $request->attributes->get('_route') === 'connect_google_check';
@@ -53,10 +47,17 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
     public function authenticate(Request $request): Passport
     {
+        error_log('DEBUG: Entering GoogleAuthenticator::authenticate');
+
         $client = $this->clientRegistry->getClient('google');
-        $accessToken = $client->getAccessToken();
-        /** @var GoogleUser $googleUser */
-        $googleUser = $client->fetchUserFromToken($accessToken);
+        try {
+            $accessToken = $client->getAccessToken();
+            /** @var GoogleUser $googleUser */
+            $googleUser = $client->fetchUserFromToken($accessToken);
+        } catch (\Exception $e) {
+            error_log('ERROR: Failed to fetch Google user: ' . $e->getMessage());
+            throw new AuthenticationException('Failed to authenticate with Google');
+        }
 
         $email = $googleUser->getEmail();
         $name = $googleUser->getName();
@@ -66,6 +67,7 @@ class GoogleAuthenticator extends OAuth2Authenticator
                 $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
 
                 if (!$user) {
+                    error_log('DEBUG: Creating new user for email: ' . $email);
                     $user = new User();
                     $user->setEmail($email);
                     $user->setNom($name);
@@ -81,23 +83,37 @@ class GoogleAuthenticator extends OAuth2Authenticator
 
     public function onAuthenticationSuccess(Request $request, $token, string $firewallName): RedirectResponse
     {
-        /** @var UserInterface $user */
+        error_log('DEBUG: Entering onAuthenticationSuccess');
+
+        /** @var User $user */
         $user = $token->getUser();
 
-        // ✅ Generate JWT token
-        $jwt = $this->jwtManager->create($user);
+        // Validate user
+        if ($user->isBanned()) {
+            error_log('DEBUG: User is banned: ' . $user->getEmail());
+            return new RedirectResponse($this->router->generate('app_login') . '?error=banned');
+        }
 
-        // 🔁 Store in session (optional)
-        $request->getSession()->set('jwt', $jwt);
+        // Generate JWT token
+        try {
+            $jwt = $this->jwtManager->create($user);
+            error_log('DEBUG: JWT generated for user: ' . $user->getEmail());
 
-        // Or redirect to dashboard with JWT in URL (if frontend needs it)
-        // return new RedirectResponse($this->router->generate('app_dashboard', ['token' => $jwt]));
+            $response = new RedirectResponse($this->router->generate('app_dashboard'));
+            $response->headers->setCookie(
+                new \Symfony\Component\HttpFoundation\Cookie('BEARER', $jwt, strtotime('+1 day'), '/', null, false, true)
+            );
 
-        return new RedirectResponse($this->router->generate('app_dashboard'));
+            return $response;
+        } catch (\Exception $e) {
+            error_log('ERROR: Failed to generate JWT: ' . $e->getMessage());
+            return new RedirectResponse($this->router->generate('app_login') . '?error=jwt');
+        }
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): RedirectResponse
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): JsonResponse
     {
-        return new RedirectResponse($this->router->generate('app_login'));
+        error_log('ERROR: Authentication failed: ' . $exception->getMessage());
+        return new JsonResponse(['error' => $exception->getMessage()], 401);
     }
 }

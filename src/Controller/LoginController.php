@@ -90,11 +90,17 @@ final class LoginController extends AbstractController
 
         return new JsonResponse(['message' => 'Email sent successfully']);
     }
-    #[Route('/jwt/user', name: 'api_decode_token_user', methods: ['POST'])]
+    #[Route('/jwt/user', name: 'api_decode_token_user', methods: ['POST', 'GET'])]
     public function decodeTokenReturnUser(Request $request): JsonResponse
     {
+        // 1. Try to get the token from JSON body
         $data = json_decode($request->getContent(), true);
         $token = $data['token'] ?? null;
+
+        // 2. If not found, try to get it from the BEARER cookie
+        if (!$token) {
+            $token = $request->cookies->get('BEARER');
+        }
 
         if (!$token) {
             return new JsonResponse(['error' => 'Token is required'], 400);
@@ -129,7 +135,6 @@ final class LoginController extends AbstractController
                     'adresse' => $user->getAdresse(),
                     'banned' => $user->isBanned(),
                     'reclamation' => $user->getMessagereclamation(),
-
                 ],
             ]);
         } catch (\Exception $e) {

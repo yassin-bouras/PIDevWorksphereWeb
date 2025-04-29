@@ -5,63 +5,26 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use App\Service\MailService;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use App\Service\MailService;
 use Symfony\Component\HttpFoundation\JsonResponse;
-
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/user')]
 final class UserController extends AbstractController
 {
-
-    #[Route('/reclamation', name: 'api_user_reclamation', methods: ['POST'])]
-    public function updateReclamation(
-        Request $request,
-        UserRepository $userRepository,
-        EntityManagerInterface $entityManager
-    ): JsonResponse {
-        $data = json_decode($request->getContent(), true);
-        $email = $data['email'] ?? null;
-        $message = $data['message'] ?? null;
-
-        if (!$email || !$message) {
-            return new JsonResponse(['error' => 'Missing email or message'], 400);
-        }
-
-        $user = $userRepository->findOneBy(['email' => $email]);
-
-        if (!$user) {
-            return new JsonResponse(['error' => 'User not found'], 404);
-        }
-
-        if (!$user->isBanned()) {
-            return new JsonResponse(['error' => 'User is not banned'], 400);
-        }
-
-        if ($user->getMessageReclamation()) {
-            return new JsonResponse(['error' => 'Reclamation already submitted'], 400);
-        }
-
-        $user->setMessageReclamation($message);
-
-        $entityManager->flush();
-
-        return new JsonResponse(['message' => 'Reclamation saved successfully']);
-    }
     private $passwordHasher;
 
-    // Inject the UserPasswordHasherInterface via constructor
     public function __construct(UserPasswordHasherInterface $passwordHasher)
     {
         $this->passwordHasher = $passwordHasher;
     }
 
-    #[Route(name: 'app_user_index', methods: ['GET'])]
+    #[Route('/', name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
         return $this->render('user/index.html.twig', [
@@ -77,7 +40,6 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Get the plain password from the form and hash it
             $plainPassword = $form->get('plainPassword')->getData();
             if ($plainPassword) {
                 $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
@@ -87,7 +49,7 @@ final class UserController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $this->redirectToRoute('/login', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('user/new.html.twig', [
@@ -103,23 +65,7 @@ final class UserController extends AbstractController
             'user' => $user,
         ]);
     }
-    #[Route('/api/send-email', name: 'api_send_email', methods: ['POST'])]
-    public function sendEmail(Request $request, MailService $mailService): JsonResponse
-    {
-        $data = json_decode($request->getContent(), true);
 
-        if (!isset($data['recipient'], $data['subject'], $data['content'])) {
-            return new JsonResponse(['error' => 'Missing required fields'], 400);
-        }
-
-        $mailService->sendMail(
-            $data['recipient'],
-            $data['subject'],
-            $data['content']
-        );
-
-        return new JsonResponse(['message' => 'Email sent successfully']);
-    }
     #[Route('/{iduser}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
     {
@@ -127,7 +73,6 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Get the plain password from the form and hash it if provided
             $plainPassword = $form->get('plainPassword')->getData();
             if ($plainPassword) {
                 $hashedPassword = $this->passwordHasher->hashPassword($user, $plainPassword);
@@ -154,6 +99,22 @@ final class UserController extends AbstractController
 
         return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    // API ENDPOINTS
+    #[Route('/api/send-email', name: 'api_send_email', methods: ['POST'])]
+    public function sendEmail(Request $request, MailService $mailService): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        if (!isset($data['recipient'], $data['subject'], $data['content'])) {
+            return new JsonResponse(['error' => 'Missing required fields'], 400);
+        }
+
+        $mailService->sendMail($data['recipient'], $data['subject'], $data['content']);
+
+        return new JsonResponse(['message' => 'Email sent successfully']);
+    }
+
     #[Route('/api/verify-email', name: 'api_verify_email', methods: ['POST'])]
     public function verifyEmail(Request $request, UserRepository $userRepository): JsonResponse
     {
@@ -163,14 +124,12 @@ final class UserController extends AbstractController
             return new JsonResponse(['error' => 'Email field is required'], 400);
         }
 
-        $email = $data['email'];
-        $user = $userRepository->findOneBy(['email' => $email]);
+        $user = $userRepository->findOneBy(['email' => $data['email']]);
 
-        if ($user) {
-            return new JsonResponse(['exists' => true, 'message' => 'Email found']);
-        } else {
-            return new JsonResponse(['exists' => false, 'message' => 'Email not found'], 404);
-        }
+        return new JsonResponse([
+            'exists' => (bool) $user,
+            'message' => $user ? 'Email found' : 'Email not found'
+        ], $user ? 200 : 404);
     }
 
     #[Route('/api/reset-password', name: 'api_reset_password', methods: ['POST'])]
@@ -179,23 +138,92 @@ final class UserController extends AbstractController
         $data = json_decode($request->getContent(), true);
 
         if (!isset($data['email'], $data['newPassword'])) {
-            return new JsonResponse(['error' => 'Missing email or newPassword field'], 400);
+            return new JsonResponse(['error' => 'Missing email or newPassword'], 400);
         }
 
-        $email = $data['email'];
-        $newPassword = $data['newPassword'];
-
-        $user = $userRepository->findOneBy(['email' => $email]);
+        $user = $userRepository->findOneBy(['email' => $data['email']]);
 
         if (!$user) {
             return new JsonResponse(['error' => 'Email not found'], 404);
         }
 
-        $hashedPassword = $this->passwordHasher->hashPassword($user, $newPassword);
+        $hashedPassword = $this->passwordHasher->hashPassword($user, $data['newPassword']);
         $user->setMdp($hashedPassword);
 
         $em->flush();
 
         return new JsonResponse(['message' => 'Password has been successfully reset']);
+    }
+    #[Route('/user/{id}/ban', name: 'app_user_ban')]
+    public function ban(User $user, EntityManagerInterface $em): Response
+    {
+        $user->setBanned(true);
+        $em->flush();
+        return $this->redirectToRoute('app_user_index');
+    }
+
+    #[Route('/user/{id}/unban', name: 'app_user_unban')]
+    public function unban(User $user, EntityManagerInterface $em): Response
+    {
+        $user->setBanned(false);
+        $em->flush();
+        return $this->redirectToRoute('app_user_index');
+    }
+    private $entityManager;
+    private $userRepository;
+    #[Route('/reclamation', name: 'app_user_reclamation')]
+    public function submitReclamation(Request $request): JsonResponse
+    {
+        error_log('DEBUG: Entering /user/reclamation route');
+
+        // Parse JSON payload
+        $data = json_decode($request->getContent(), true);
+        $email = $data['email'] ?? null;
+        $message = $data['message'] ?? null;
+
+        // Validate input
+        if (!$email || !$message) {
+            error_log('ERROR: Missing email or message');
+            return new JsonResponse(['error' => 'Email and message are required'], 400);
+        }
+
+        // Find user by email
+        $user = $this->userRepository->findOneBy(['email' => $email]);
+        if (!$user) {
+            error_log('ERROR: User not found for email: ' . $email);
+            return new JsonResponse(['error' => 'User not found'], 404);
+        }
+
+        // Check if user is banned
+        if (!$user->isBanned()) {
+            error_log('ERROR: User is not banned: ' . $email);
+            return new JsonResponse(['error' => 'User is not banned'], 403);
+        }
+
+        // Check if reclamation already exists
+        if ($user->getMessageReclamation()) {
+            error_log('ERROR: Reclamation already submitted for user: ' . $email);
+            return new JsonResponse(['error' => 'Reclamation already submitted'], 400);
+        }
+
+        // Save reclamation message
+        try {
+            $user->setMessageReclamation($message);
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+            error_log('DEBUG: Reclamation saved for user: ' . $email);
+            return new JsonResponse(['message' => 'Reclamation submitted successfully'], 200);
+        } catch (\Exception $e) {
+            error_log('ERROR: Failed to save reclamation: ' . $e->getMessage());
+            return new JsonResponse(['error' => 'Failed to save reclamation', 'details' => $e->getMessage()], 500);
+        }
+    }
+
+    #[Route('/user/{id}/promote', name: 'app_user_promote')]
+    public function promote(User $user, EntityManagerInterface $em): Response
+    {
+        $user->setRole('ROLE_MANAGER'); // example promotion
+        $em->flush();
+        return $this->redirectToRoute('app_user_index');
     }
 }

@@ -45,13 +45,22 @@
         .modal-content-custom .btn {
             margin: 5px;
         }
+        #faceAuthModal {
+            max-width: 600px;
+        }
+        #faceAuthModal video, #faceAuthModal canvas {
+            width: 100%;
+            max-width: 100%;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <div class="main-wrapper login-body">
         <div class="login-wrapper">
             <div class="container">
-                <img class="img-fluid logo-dark mb-2" src="{{ asset('back/img/logo.png') }}" alt="Logo">
+                <img class="img-fluid logo-dark mb-2" src="{{ asset('Images/logo.png') }}" alt="Logo">
                 <div class="loginbox">
                     <div class="login-right">
                         <div class="login-right-wrap">
@@ -79,12 +88,14 @@
                                             </div>
                                         </div>
                                         <div class="col-6 text-right">
-                                            <a class="forgot-link" href="/user/new">don't have an account?</a>
+                                            <a class="forgot-link" href="/user/new">Don't have an account?</a>
                                             <a class="forgot-link" href="/forgot">Forgot password?</a>
                                             <a href="{{ path('connect_google') }}" class="btn btn-danger">
-    <i class="fab fa-google"></i> Login with Google
-</a>
-
+                                                <i class="fab fa-google"></i> Login with Google
+                                            </a>
+                                            <a href="#" id="faceAuthLink" class="btn btn-info mt-2">
+                                                <i class="fas fa-camera"></i> Login with Face ID
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
@@ -110,9 +121,23 @@
         </div>
     </div>
 
+    <!-- Face Auth Modal -->
+    <div id="faceAuthModal" class="modal-custom">
+        <div class="modal-content-custom">
+            <h5>Face Authentication</h5>
+            <p>Position your face in front of the camera.</p>
+            <video id="video" autoplay></video>
+            <canvas id="canvas" style="display: none;"></canvas>
+            <div>
+                <button id="cancelFaceAuth" class="btn btn-danger">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
     <script>
         $(document).ready(function () {
+            // Handle regular login form submission
             $('#loginForm').on('submit', function (e) {
                 e.preventDefault();
 
@@ -127,76 +152,7 @@
                     data: JSON.stringify(data),
                     success: function (response) {
                         if (response.token) {
-                            const token = response.token;
-                            document.cookie = `BEARER=${token}; Path=/; Secure; SameSite=Strict`;
-
-                            const payload = JSON.parse(atob(token.split('.')[1]));
-                            const userRole = payload.roles && payload.roles.length > 0 ? payload.roles[0].toLowerCase() : null;
-
-                            $.ajax({
-                                url: '/jwt/user',
-                                method: 'POST',
-                                contentType: 'application/json',
-                                data: JSON.stringify({ token: token }),
-                                success: function (res) {
-                                    const user = res.user;
-
-                                    if (user.banned) {
-                                        if (user.messageReclamation) {
-                                            $('.login-right-wrap').prepend('<div class="alert alert-danger">You are banned. Reclamation already submitted.</div>');
-                                        } else {
-                                            $('#reclamationModal').fadeIn();
-
-                                            $('#submitReclamation').one('click', function () {
-                                                const msg = $('#reclamationMessage').val().trim();
-                                                if (msg) {
-                                                    $.ajax({
-                                                        url: '/user/reclamation',
-                                                        method: 'POST',
-                                                        contentType: 'application/json',
-                                                        data: JSON.stringify({
-                                                            email: user.email,
-                                                            message: msg
-                                                        }),
-                                                        success: function () {
-                                                            $('#reclamationModal').fadeOut();
-                                                            $('.login-right-wrap').prepend('<div class="alert alert-success">Reclamation submitted successfully.</div>');
-                                                        },
-                                                        error: function (xhr) {
-                                                            const err = xhr.responseJSON?.error || "Error saving reclamation.";
-                                                            $('.login-right-wrap').prepend(`<div class="alert alert-danger">${err}</div>`);
-                                                        }
-                                                    });
-                                                } else {
-                                                    alert("Please write a message before submitting.");
-                                                }
-                                            });
-
-                                            $('#cancelReclamation').one('click', function () {
-                                                $('#reclamationModal').fadeOut();
-                                            });
-                                        }
-                                        return;
-                                    }
-
-                                    switch (userRole) {
-                                        case 'candidat':
-                                            window.location.href = '/dashboardcandidat';
-                                            break;
-                                        case 'rh':
-                                            window.location.href = '/dashboard';
-                                            break;
-                                        case 'employe':
-                                            window.location.href = '/dashboardemploye';
-                                            break;
-                                        case 'manager':
-                                            window.location.href = '/dashboardmanager';
-                                            break;
-                                        default:
-                                            $('.login-right-wrap').prepend('<div class="alert alert-danger">Unknown role</div>');
-                                    }
-                                }
-                            });
+                            handleSuccessfulLogin(response.token);
                         }
                     },
                     error: function (xhr) {
@@ -206,11 +162,180 @@
                 });
             });
 
+            // Handle password visibility toggle
             $('.toggle-password').click(function () {
                 const input = $(this).siblings('.pass-input');
                 input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
                 $(this).toggleClass('fa-eye fa-eye-slash');
             });
+
+          
+            let stream = null;
+            let faceCheckInterval = null;
+            const video = document.getElementById('video');
+            const canvas = document.getElementById('canvas');
+            const cancelFaceAuth = document.getElementById('cancelFaceAuth');
+            const faceAuthModal = $('#faceAuthModal');
+            const CHECK_INTERVAL = 5000;
+
+            $('#faceAuthLink').click(function (e) {
+                e.preventDefault();
+                faceAuthModal.fadeIn();
+                startVideo();
+            });
+
+            function startVideo() {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                    .then(function (mediaStream) {
+                        stream = mediaStream;
+                        video.srcObject = stream;
+                        // Start periodic face checking
+                        startFaceChecking();
+                    })
+                    .catch(function (err) {
+                        stopFaceChecking();
+                        faceAuthModal.fadeOut();
+                        $('.login-right-wrap').prepend('<div class="alert alert-danger">Camera access denied or unavailable.</div>');
+                    });
+            }
+
+            function startFaceChecking() {
+                // Clear any existing interval
+                stopFaceChecking();
+                // Start checking every CHECK_INTERVAL milliseconds
+                faceCheckInterval = setInterval(checkFace, CHECK_INTERVAL);
+            }
+
+            function stopFaceChecking() {
+                if (faceCheckInterval) {
+                    clearInterval(faceCheckInterval);
+                    faceCheckInterval = null;
+                }
+            }
+
+            function checkFace() {
+                if (!stream || !faceAuthModal.is(':visible')) {
+                    stopFaceChecking();
+                    return;
+                }
+
+                canvas.width = video.videoWidth;
+                canvas.height = video.videoHeight;
+                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+                const imageData = canvas.toDataURL('image/png');
+
+                // Send the captured image to the face-auth endpoint
+                $.ajax({
+                    url: '{{ path('face_auth') }}',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ image: imageData }),
+                    success: function (response) {
+                        if (response.token) {
+                            stopFaceChecking();
+                            stopVideoStream();
+                            faceAuthModal.fadeOut();
+                            handleSuccessfulLogin(response.token);
+                        }
+                    },
+                    error: function (xhr) {
+                        // Do not display error immediately; allow retries
+                        // Optionally, limit retries or show error after a certain number of failures
+                    }
+                });
+            }
+
+            function stopVideoStream() {
+                if (stream) {
+                    stream.getTracks().forEach(track => track.stop());
+                    stream = null;
+                }
+            }
+
+            cancelFaceAuth.addEventListener('click', function () {
+                stopFaceChecking();
+                stopVideoStream();
+                faceAuthModal.fadeOut();
+            });
+
+            // Ensure cleanup when modal is hidden (e.g., via external means)
+            faceAuthModal.on('hidden', function () {
+                stopFaceChecking();
+                stopVideoStream();
+            });
+
+            // Handle successful login (for both password and face auth)
+            function handleSuccessfulLogin(token) {
+                document.cookie = `BEARER=${token}; Path=/; Secure; SameSite=Strict`;
+
+                const payload = JSON.parse(atob(token.split('.')[1]));
+                const userRole = payload.roles && payload.roles.length > 0 ? payload.roles[0].toLowerCase() : null;
+
+                $.ajax({
+                    url: '/jwt/user',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ token: token }),
+                    success: function (res) {
+                        const user = res.user;
+
+                        if (user.banned) {
+                            if (user.messageReclamation) {
+                                $('.login-right-wrap').prepend('<div class="alert alert-danger">You are banned. Reclamation already submitted.</div>');
+                            } else {
+                                $('#reclamationModal').fadeIn();
+
+                                $('#submitReclamation').one('click', function () {
+                                    const msg = $('#reclamationMessage').val().trim();
+                                    if (msg) {
+                                        $.ajax({
+                                            url: Path('app_user_reclamation' ),
+                                            method: 'POST',
+                                            contentType: 'application/json',
+                                            data: JSON.stringify({
+                                                email: user.email,
+                                                message: msg
+                                            }),
+                                            success: function () {
+                                                $('#reclamationModal').fadeOut();
+                                                $('.login-right-wrap').prepend('<div class="alert alert-success">Reclamation submitted successfully.</div>');
+                                            },
+                                            error: function (xhr) {
+                                                const err = xhr.responseJSON?.error || "Error saving reclamation.";
+                                                $('.login-right-wrap').prepend(`<div class="alert alert-danger">${err}</div>`);
+                                            }
+                                        });
+                                    } else {
+                                        alert("Please write a message before submitting.");
+                                    }
+                                });
+
+                                $('#cancelReclamation').one('click', function () {
+                                    $('#reclamationModal').fadeOut();
+                                });
+                            }
+                            return;
+                        }
+
+                        switch (userRole) {
+                            case 'candidat':
+                                window.location.href = '/dashboardcandidat';
+                                break;
+                            case 'rh':
+                                window.location.href = '/dashboard';
+                                break;
+                            case 'employe':
+                                window.location.href = '/dashboardemploye';
+                                break;
+                            case 'manager':
+                                window.location.href = '/dashboardmanager';
+                                break;
+                            default:
+                                $('.login-right-wrap').prepend('<div class="alert alert-danger">Unknown role</div>');
+                        }
+                    }
+                });
+            }
         });
     </script>
 </body>

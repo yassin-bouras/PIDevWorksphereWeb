@@ -1,11 +1,99 @@
 {% extends 'dashboard/base2.html.twig' %}
 
-
 {% block content %}
-    <div class="container mt-4">
-        <h1>Edit User</h1>
-        {{ include('user/_form.html.twig', { 'button_label': 'Update' }) }}
-        <a href="{{ path('app_user_index') }}" class="btn btn-secondary mt-3">Back to list</a>
-        {{ include('user/_delete_form.html.twig') }}
+<div class="container mt-4">
+    <h1>Edit User</h1>
+
+    {{ include('user/_form.html.twig', { 'button_label': 'Update' }) }}
+    <a href="{{ path('app_user_index') }}" class="btn btn-secondary mt-3">Back to list</a>
+    {{ include('user/_delete_form.html.twig') }}
+
+    <hr>
+    <h2>Register Face</h2>
+
+    <div class="text-center">
+        <video id="video" width="400" height="300" class="border rounded mb-2" autoplay muted playsinline></video>
+        <canvas id="canvas" width="400" height="300" class="d-none"></canvas>
+        <img id="preview" alt="Captured Image" class="img-thumbnail mt-2 d-none" style="max-width: 100%; height: auto;">
+        
+        <div class="mt-3">
+            <button class="btn btn-primary" id="capture">Capture</button>
+            <button class="btn btn-success d-none" id="save">Save Face</button>
+        </div>
+
+        <div id="status" class="mt-3"></div>
     </div>
+
+    <script>
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('capture');
+        const saveButton = document.getElementById('save');
+        const preview = document.getElementById('preview');
+        const statusDiv = document.getElementById('status');
+        const email = "{{ user.email|e('js') }}"; // escape for JS safety
+
+        // Start video stream
+        async function startVideo() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                video.srcObject = stream;
+            } catch (err) {
+                console.error('Webcam access error:', err);
+                statusDiv.innerHTML = '<div class="alert alert-danger">Error accessing webcam.</div>';
+            }
+        }
+
+        // Capture image
+        function captureImage() {
+            captureButton.disabled = true;
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/png');
+
+            preview.src = imageData;
+            preview.classList.remove('d-none');
+            saveButton.classList.remove('d-none');
+            captureButton.disabled = false;
+            statusDiv.innerHTML = '';
+        }
+
+        // Save captured image
+        async function saveImage() {
+            const imageData = canvas.toDataURL('image/png');
+            saveButton.disabled = true;
+            statusDiv.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Saving...</span></div>';
+
+            try {
+                const response = await fetch('{{ path('app_upload_face') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'email': email,
+                        'image': imageData
+                    })
+                });
+
+                const text = await response.text();
+                statusDiv.innerHTML = response.ok
+                    ? `<div class="alert alert-success">${text}</div>`
+                    : `<div class="alert alert-danger">${text}</div>`;
+            } catch (error) {
+                console.error('Upload error:', error);
+                statusDiv.innerHTML = '<div class="alert alert-danger">Failed to upload face.</div>';
+            } finally {
+                saveButton.disabled = false;
+            }
+        }
+
+        // Event listeners
+        captureButton.addEventListener('click', captureImage);
+        saveButton.addEventListener('click', saveImage);
+
+        // Start video on page load
+        startVideo();
+    </script>
+</div>
 {% endblock %}
