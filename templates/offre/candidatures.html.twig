@@ -53,43 +53,54 @@
                     </p>
                     <div class="d-flex flex-wrap justify-content-between">
                         {% if candidature.status != 'accepted' %}
-                            <!-- Accept button for non-accepted candidatures -->
+                            <!-- First row: Traduire CV and Comparer CV buttons -->
+                            <div class="d-flex mb-2"> <!-- First wrapper div -->
+                                <!-- Traduire CV button moved to the first row, first position -->
+                                {% if candidature.cv %}
+                                <a href="{{ path('app_offre_translate_cv', {'id_offre': offre.id_offre, 'id_candidature': candidature.id_candidature}) }}"
+                                    class="btn btn-success btn-sm me-2 candidature-action-btn">
+                                    <i class="fas fa-language"></i> Traduire CV
+                                </a>
+                                {% endif %}
+                                
+                                <!-- Compare CV button stays in first row, second position -->
+                                <a href="{{ path('app_offre_compare_cv', {'id_offre': offre.id_offre, 'id_candidature': candidature.id_candidature}) }}"
+                                    class="btn btn-primary btn-sm candidature-action-btn">
+                                    <i class="fas fa-exchange-alt"></i> Comparer CV
+                                </a>
+                            </div>
+                            
+                            <!-- Accept button moved to its own row -->
                             <a href="{{ path('app_candidature_accept', {'id_candidature': candidature.id_candidature}) }}"
-                                class="btn btn-info btn-sm me-2 mb-2 candidature-action-btn"
+                                class="btn btn-info btn-sm mb-2 candidature-action-btn w-100"
                                 onclick="return confirm('Êtes-vous sûr de vouloir accepter cette candidature?');">
                                 <i class="fas fa-check-circle"></i> Accepter
                             </a>
                             
-                            <!-- Compare CV button - only shown for non-accepted candidatures -->
-                            <a href="{{ path('app_offre_compare_cv', {'id_offre': offre.id_offre, 'id_candidature': candidature.id_candidature}) }}"
-                                class="btn btn-primary btn-sm me-2 mb-2 candidature-action-btn">
-                                <i class="fas fa-exchange-alt"></i> Comparer CV
-                            </a>
-                            
-                            <!-- Delete button - only shown for non-accepted candidatures -->
+                            <!-- Delete button remains at the bottom -->
                             <form method="post"
                                 action="{{ path('app_candidature_delete', {'id_candidature': candidature.id_candidature}) }}"
                                 onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette candidature?');"
-                                class="me-2 mb-2">
+                                class="mb-2 w-100">
                                 <input type="hidden" name="_token"
                                     value="{{ csrf_token('delete' ~ candidature.id_candidature) }}">
-                                <button class="btn btn-danger btn-sm candidature-action-btn">
+                                <button class="btn btn-danger btn-sm candidature-action-btn w-100">
                                     <i class="fas fa-trash-alt"></i> Supprimer
                                 </button>
                             </form>
                         {% else %}
                             <!-- Only show this button for accepted candidatures -->
-                            <button class="btn btn-outline-success btn-sm me-2 mb-2 candidature-action-btn" disabled>
+                            <button class="btn btn-outline-success btn-sm mb-2 candidature-action-btn w-100" disabled>
                                 <i class="fas fa-check-circle"></i> Déjà acceptée
                             </button>
-                        {% endif %}
-                        
-                        <!-- Translate CV button - always shown if CV exists, regardless of status -->
-                        {% if candidature.cv %}
-                        <a href="{{ path('app_offre_translate_cv', {'id_offre': offre.id_offre, 'id_candidature': candidature.id_candidature}) }}"
-                            class="btn btn-success btn-sm mb-2 candidature-action-btn">
-                            <i class="fas fa-language"></i> Traduire CV
-                        </a>
+                            
+                            <!-- Translate CV button for accepted candidatures -->
+                            {% if candidature.cv %}
+                            <a href="{{ path('app_offre_translate_cv', {'id_offre': offre.id_offre, 'id_candidature': candidature.id_candidature}) }}"
+                                class="btn btn-success btn-sm mb-2 candidature-action-btn w-100">
+                                <i class="fas fa-language"></i> Traduire CV
+                            </a>
+                            {% endif %}
                         {% endif %}
                     </div>
                 </div>
