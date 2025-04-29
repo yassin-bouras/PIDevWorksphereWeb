@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\String\Slugger\SluggerInterface;
+use App\Repository\NotificationRepository;
 
 #[Route('/candidature')]
 final class CandidatureController extends AbstractController
@@ -205,7 +206,6 @@ final class CandidatureController extends AbstractController
             if ($candidature->getOffre()) {
                 $offreId = $candidature->getOffre()->getId_offre(); // Use getId_offre instead of getId
                 $offreTitre = $candidature->getOffre()->getTitre();
-
             }
             // Create notification for the candidate
             if ($user) {
@@ -231,5 +231,31 @@ final class CandidatureController extends AbstractController
         }
 
         return $this->redirectToRoute('app_offre_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id_candidature}/accept', name: 'app_candidature_accept', methods: ['GET'])]
+    public function accept(Request $request, Candidature $candidature, EntityManagerInterface $entityManager): Response
+    {
+        // Update candidature status
+        $candidature->setStatus('accepted');
+        $entityManager->persist($candidature);
+
+        // Create notification for the candidate
+        $notification = new Notification();
+        $notification->setUser($candidature->getUser()); // Assuming getUser() returns the candidate
+        $notification->setMessage('Votre candidature pour l\'offre "' . $candidature->getOffre()->getTitre() . '" a été acceptée.');
+        $notification->setCreatedAt(new \DateTime());
+        $notification->setIsRead(false);
+        $notification->setNotificationType('candidature_accepted');
+
+        $entityManager->persist($notification);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'La candidature a été acceptée avec succès.');
+
+        // Redirect back to the candidatures list for this job offer
+        return $this->redirectToRoute('app_offre_candidatures', [
+            'id_offre' => $candidature->getOffre()->getIdOffre(),
+        ]);
     }
 }

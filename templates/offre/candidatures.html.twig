@@ -3,20 +3,38 @@
 {% block title %}Candidatures pour {{ offre.titre }}{% endblock %}
 
 {% block content %}
+<style>
+    /* Add custom styles to ensure consistent button sizes */
+    .candidature-action-btn {
+        min-width: 130px;
+        text-align: center;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+        line-height: 1.5;
+    }
+</style>
+
 <div class="container" style="margin-top: -53%;">
     <div class="mb-10">
         <a href="{{ path('app_offre_index') }}" class="btn btn-secondary">
             <i class="fas fa-arrow-left"></i> Retour
         </a>
     </div>
-    <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Candidatures pour l'offre : {{ offre.titre }}</h1>
+    <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Candidatures pour l'offre : {{ offre.titre }}
+    </h1>
 
     <div class="candidature-grid row" style="max-width: 1060px; margin: 0 auto;">
         {% for candidature in candidatures %}
         <div class="col-md-4 mb-4">
             <div class="card shadow-sm">
                 <div class="card-body">
-                     <h5 class="card-title">Candidature <!--#{{ candidature.id }}--></h5> 
+                    <!-- Add this right after the card-title -->
+                    <h5 class="card-title">
+                        Candidature
+                        {% if candidature.status == 'accepted' %}
+                        <span class="badge bg-success ms-2">Acceptée</span>
+                        {% endif %}
+                    </h5>
                     <p class="card-text">
                         <strong>CV:</strong>
                         {% if candidature.cv %}
@@ -33,18 +51,43 @@
                         Non fournie
                         {% endif %}
                     </p>
-                    <div class="d-flex flex-wrap">
-                        <form method="post" action="{{ path('app_candidature_delete', {'id_candidature': candidature.id_candidature}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette candidature?');" class="me-2 mb-2">
-                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ candidature.id_candidature) }}">
-                            <button class="btn btn-danger btn-sm">
-                                <i class="fas fa-trash-alt"></i> Supprimer
+                    <div class="d-flex flex-wrap justify-content-between">
+                        {% if candidature.status != 'accepted' %}
+                            <!-- Accept button for non-accepted candidatures -->
+                            <a href="{{ path('app_candidature_accept', {'id_candidature': candidature.id_candidature}) }}"
+                                class="btn btn-info btn-sm me-2 mb-2 candidature-action-btn"
+                                onclick="return confirm('Êtes-vous sûr de vouloir accepter cette candidature?');">
+                                <i class="fas fa-check-circle"></i> Accepter
+                            </a>
+                            
+                            <!-- Compare CV button - only shown for non-accepted candidatures -->
+                            <a href="{{ path('app_offre_compare_cv', {'id_offre': offre.id_offre, 'id_candidature': candidature.id_candidature}) }}"
+                                class="btn btn-primary btn-sm me-2 mb-2 candidature-action-btn">
+                                <i class="fas fa-exchange-alt"></i> Comparer CV
+                            </a>
+                            
+                            <!-- Delete button - only shown for non-accepted candidatures -->
+                            <form method="post"
+                                action="{{ path('app_candidature_delete', {'id_candidature': candidature.id_candidature}) }}"
+                                onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette candidature?');"
+                                class="me-2 mb-2">
+                                <input type="hidden" name="_token"
+                                    value="{{ csrf_token('delete' ~ candidature.id_candidature) }}">
+                                <button class="btn btn-danger btn-sm candidature-action-btn">
+                                    <i class="fas fa-trash-alt"></i> Supprimer
+                                </button>
+                            </form>
+                        {% else %}
+                            <!-- Only show this button for accepted candidatures -->
+                            <button class="btn btn-outline-success btn-sm me-2 mb-2 candidature-action-btn" disabled>
+                                <i class="fas fa-check-circle"></i> Déjà acceptée
                             </button>
-                        </form>
-                        <a href="{{ path('app_offre_compare_cv', {'id_offre': offre.id_offre, 'id_candidature': candidature.id_candidature}) }}" class="btn btn-primary btn-sm me-2 mb-2">
-                            <i class="fas fa-exchange-alt"></i> Comparer CV
-                        </a>
+                        {% endif %}
+                        
+                        <!-- Translate CV button - always shown if CV exists, regardless of status -->
                         {% if candidature.cv %}
-                        <a href="{{ path('app_offre_translate_cv', {'id_offre': offre.id_offre, 'id_candidature': candidature.id_candidature}) }}" class="btn btn-success btn-sm mb-2">
+                        <a href="{{ path('app_offre_translate_cv', {'id_offre': offre.id_offre, 'id_candidature': candidature.id_candidature}) }}"
+                            class="btn btn-success btn-sm mb-2 candidature-action-btn">
                             <i class="fas fa-language"></i> Traduire CV
                         </a>
                         {% endif %}
