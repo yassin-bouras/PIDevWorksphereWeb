@@ -10,6 +10,7 @@ use App\Form\EntretienType;
 use App\Repository\CandidatureRepository;
 use App\Repository\EntretienRepository;
 use App\Repository\UserRepository;
+use App\Service\EmailValidatorService;
 use App\Service\GeminiService;
 use App\Service\MailService;
 use Doctrine\ORM\EntityManagerInterface;
@@ -336,7 +337,7 @@ public function index(
 // }
 
 #[Route('/new', name: 'app_entretien_new', methods: ['GET', 'POST'])]
-public function new(Request $request, EntityManagerInterface $entityManager, CandidatureRepository $candidatureRepo , MailService $mailService , EntityManagerInterface $em): Response
+public function new(Request $request, EntityManagerInterface $entityManager, CandidatureRepository $candidatureRepo , MailService $mailService , EntityManagerInterface $em , EmailValidatorService $emailValidator): Response
 {
     $entretien = new Entretien();
     $candidature = new Candidature();
@@ -377,28 +378,38 @@ public function new(Request $request, EntityManagerInterface $entityManager, Can
         $entityManager->flush();
 
         try {
-            $mailService->sendMail(
-                $candidat->getEmail(),
-                'Nouvel Entretien Planifié',
-                "Bonjour {$candidat->getNom()}, un entretien a été planifié pour vous concernant l'offre \"{$offre->getTitre()}\"."
-            );
-        } catch (\Exception $e) {
-            $this->addFlash('error', 'Erreur lors de l\'envoi du mail au candidat : ' . $e->getMessage());
-        }
-
-        try {
-            $mailService->sendMail(
-                $employe->getEmail(),
-                'Nouvel Entretien Planifié',
-                "Bonjour {$employe->getNom()}, vous avez un entretien planifié avec {$candidat->getNom()} pour l'offre \"{$offre->getTitre()}\"."
-            );
+            if (!$emailValidator->isEmailValid($employe->getEmail())) {
+                $this->addFlash('error', '⚠ L\'adresse email de l\'employé semble invalide ou suspecte.');
+            } else {
+                $mailService->sendMail(
+                    $employe->getEmail(),
+                    'Nouvel Entretien Planifié',
+                    "Bonjour {$employe->getNom()}, vous avez un entretien planifié avec {$candidat->getNom()} pour l'offre \"{$offre->getTitre()}\"."
+                );
+            }
         } catch (\Exception $e) {
             $this->addFlash('error', 'Erreur lors de l\'envoi du mail à l\'employé : ' . $e->getMessage());
         }
 
+        try {
+            if (!$emailValidator->isEmailValid($candidat->getEmail())) {
+                $this->addFlash('error', '⚠ L\'adresse email du candidat semble invalide ou suspecte.');
+            } else {
+                $mailService->sendMail(
+                    $candidat->getEmail(),
+                    'Nouvel Entretien Planifié',
+                    "Bonjour {$candidat->getNom()}, un entretien a été planifié pour vous concernant l'offre \"{$offre->getTitre()}\"."
+                );
+            }
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Erreur lors de l\'envoi du mail au candidat : ' . $e->getMessage());
+        }
+
+        
+
         $this->addFlash('success', '✅ Entretien ajouté avec succès !');
         
-        return $this->redirectToRoute('app_entretien_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_entretien_new', [], Response::HTTP_SEE_OTHER);
     }
 
     return $this->render('entretien/new.html.twig', [
