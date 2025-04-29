@@ -10,14 +10,54 @@
         background-color: #adefef;
     }
 
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
     /* Add a small badge for notification count */
     .badge-pill {
         background-color: #ff0000;
         color: white;
         position: absolute;
-        top: 0;
-        right: 0;
+        top: -5px;
+        right: -5px;
         font-size: 10px;
+        width: 20px !important;
+        /* Force fixed width */
+        height: 20px !important;
+        /* Force fixed height */
+        border-radius: 50% !important;
+        /* Force perfect circle */
+        font-weight: 600;
+        border: 2px solid #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+        /* Fix text alignment */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        /* Override any other styles */
+        padding: 0 !important;
+        text-align: center !important;
+        line-height: normal !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Special style for double-digit numbers */
+    .badge-pill.double-digit {
+        width: 24px !important;
+        /* Slightly wider for double digits */
     }
 </style>
 <!-- /*******************************************************************************/ -->
@@ -49,13 +89,17 @@
         </a>
         <ul class="nav user-menu">
             <li class="nav-item dropdown">
-                <a href="#" class="dropdown-toggle nav-link pr-0" data-toggle="dropdown">
-                    <i data-feather="bell"></i> <span class="badge badge-pill"></span>
+                <!-- Find this section (around line 80-83) and update it -->
+                <!-- Update the bell icon with better relative positioning for the badge -->
+                <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" style="position: relative;">
+                    <i data-feather="bell" style="width: 22px; height: 22px;"></i>
+                    <span id="notification-badge"></span>
                 </a>
                 <div class="dropdown-menu notifications">
                     <div class="topnav-dropdown-header">
                         <span class="notification-title">Notifications</span>
-                        <a href="javascript:void(0)" class="clear-noti">Clear All</a>
+                        <button id="clear-all-notifications" class="clear-noti"
+                            style="background: none; border: none; cursor: pointer; color: #f62d51;">Clear All</button>
                     </div>
                     <div class="noti-content">
                         <ul class="notification-list">
@@ -81,7 +125,11 @@
                         </ul>
                     </div>
                     <div class="topnav-dropdown-footer">
-                        <a href="#">View all Notifications</a>
+                        <a href="{{ path('app_notification_index') }}" id="view-all-notifications-link">
+                            <i class="fas fa-list"></i> Voir toutes les notifications
+                            <span id="footer-unread-count" class="float-right"
+                                style="color: #33ccc5; font-weight: bold;"></span>
+                        </a>
                     </div>
                 </div>
             </li>
@@ -143,51 +191,109 @@
                     document.getElementById('user-full-name').textContent = user.nom + ' ' + user.prenom;
                     document.getElementById('user-profile-link').href = '/user/' + user.iduser;
 
-    /**********************************************************************************************************************
-                                    // Populate role-specific notifications
+                    /**********************************************************************************************************************
+                                                    // Populate role-specific notifications
+                                                    const notificationList = document.querySelector('.notification-list');
+                                                    if (notificationList) {
+                                                        if (user.role === 'Candidat') {
+                                                            // Candidate-specific notifications
+                                                            notificationList.innerHTML = `
+                                                        <li class="notification-message">
+                                                            <a href="/offre">
+                                                                <div class="media">
+                                                                    <span class="avatar avatar-sm">
+                                                                        <img class="avatar-img rounded-circle" alt="Notification" src="{{ asset('back/img/profiles/jobs-icon.jpg') }}">
+                                                                    </span>
+                                                                    <div class="media-body">
+                                                                        <p class="noti-details">
+                                                                            <span class="noti-title">New job opportunities</span> are available
+                                                                        </p>
+                                                                        <p class="noti-time">
+                                                                            <span class="notification-time">Just now</span>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </a>
+                                                        </li>
+                                                        <li class="notification-message">
+                                                            <a href="#">
+                                                                <div class="media">
+                                                                    <span class="avatar avatar-sm">
+                                                                        <img class="avatar-img rounded-circle" alt="Notification" src="{{ asset('back/img/profiles/interview-icon.jpg') }}">
+                                                                    </span>
+                                                                    <div class="media-body">
+                                                                        <p class="noti-details">
+                                                                            <span class="noti-title">Application status</span> updates available
+                                                                        </p>
+                                                                        <p class="noti-time">
+                                                                            <span class="notification-time">2 days ago</span>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </a>
+                                                        </li>
+                                                    `;
+                                                        }
+                                                    }
+                    /***********************************************************************************************/
+                    // Add event listener for the Clear All button
+                    const clearAllBtn = document.getElementById('clear-all-notifications');
+                    if (clearAllBtn) {
+                        clearAllBtn.addEventListener('click', function (e) {
+                            e.preventDefault();
+
+                            if (confirm('Are you sure you want to delete all notifications?')) {
+                                clearAllNotifications();
+                            }
+                        });
+                    }
+
+                    function clearAllNotifications() {
+                        fetch('/notification/api/clear-all', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                //'Authorization': 'Bearer ' + getCookie('BEARER')
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Clear the notifications list
                                     const notificationList = document.querySelector('.notification-list');
                                     if (notificationList) {
-                                        if (user.role === 'Candidat') {
-                                            // Candidate-specific notifications
-                                            notificationList.innerHTML = `
-                                        <li class="notification-message">
-                                            <a href="/offre">
-                                                <div class="media">
-                                                    <span class="avatar avatar-sm">
-                                                        <img class="avatar-img rounded-circle" alt="Notification" src="{{ asset('back/img/profiles/jobs-icon.jpg') }}">
-                                                    </span>
-                                                    <div class="media-body">
-                                                        <p class="noti-details">
-                                                            <span class="noti-title">New job opportunities</span> are available
-                                                        </p>
-                                                        <p class="noti-time">
-                                                            <span class="notification-time">Just now</span>
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li class="notification-message">
-                                            <a href="#">
-                                                <div class="media">
-                                                    <span class="avatar avatar-sm">
-                                                        <img class="avatar-img rounded-circle" alt="Notification" src="{{ asset('back/img/profiles/interview-icon.jpg') }}">
-                                                    </span>
-                                                    <div class="media-body">
-                                                        <p class="noti-details">
-                                                            <span class="noti-title">Application status</span> updates available
-                                                        </p>
-                                                        <p class="noti-time">
-                                                            <span class="notification-time">2 days ago</span>
-                                                        </p>
-                                                    </div>
-                                                </div>
-                                            </a>
-                                        </li>
-                                    `;
-                                        }
+                                        notificationList.innerHTML = `
+                            <li class="notification-message">
+                                <div class="media">
+                                    <div class="media-body">
+                                        <p class="noti-details text-center">
+                                            No notifications available
+                                        </p>
+                                    </div>
+                                </div>
+                            </li>
+                        `;
                                     }
-    /***********************************************************************************************/
+
+                                    // Clear the notification badge
+                                    const badgeElement = document.querySelector('.nav-item.dropdown .badge');
+                                    if (badgeElement) {
+                                        badgeElement.textContent = '';
+                                        badgeElement.classList.remove('badge-pill');
+                                    }
+                                } else {
+                                    console.error('Error clearing notifications:', data.message);
+                                    alert('Error clearing notifications: ' + data.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error clearing notifications:', error);
+                                alert('Error clearing notifications. Please try again.');
+                            });
+                    }
+                    /***********************************************************************************************/
+                    // Replace your notification fetching code (around line 253-308) with this:
+
                     // Fetch real notifications for the user
                     if (user.role === 'Candidat') {
                         fetch('/notification/api/user/' + user.iduser, {
@@ -200,16 +306,39 @@
                             .then(response => response.json())
                             .then(notificationData => {
                                 const notificationList = document.querySelector('.notification-list');
+                                const badgeElement = document.getElementById('notification-badge');
+
+                                // IMPORTANT: Always reset the badge first
+                                if (badgeElement) {
+                                    badgeElement.textContent = '';
+                                    badgeElement.className = ''; // Remove ALL classes
+                                }
+
                                 if (notificationList) {
                                     if (notificationData.notifications && notificationData.notifications.length > 0) {
                                         let notificationHtml = '';
 
-                                        // Update notification count badge
+                                        // Update notification count badge - only if there are unread notifications
+                                        // In your notification data handling function:
                                         const unreadCount = notificationData.notifications.filter(n => !n.isRead).length;
-                                        const badgeElement = document.querySelector('.nav-item.dropdown .badge');
+                                        // Update the footer link with count
+                                        const footerUnreadCount = document.getElementById('footer-unread-count');
+                                        if (footerUnreadCount && unreadCount > 0) {
+                                            footerUnreadCount.textContent = `(${unreadCount})`;
+                                        } else if (footerUnreadCount) {
+                                            footerUnreadCount.textContent = '';
+                                        }
                                         if (badgeElement && unreadCount > 0) {
-                                            badgeElement.textContent = unreadCount;
-                                            badgeElement.classList.add('badge-pill');
+                                            badgeElement.textContent = unreadCount > 9 ? '9+' : unreadCount; // Limit displayed number
+                                            badgeElement.className = 'badge badge-pill'; // Just these two classes
+
+                                            // Add special class for double digit or "9+"
+                                            if (unreadCount > 9) {
+                                                badgeElement.classList.add('double-digit');
+                                            }
+
+                                            // Remove inline styles that might conflict
+                                            badgeElement.style = '';
                                         }
 
                                         // Generate notification items
@@ -218,39 +347,45 @@
                                             const timeAgo = getTimeAgo(date);
 
                                             notificationHtml += `
-                                            <li class="notification-message ${notification.isRead ? '' : 'unread'}">
-                                                <a href="/notification/${notification.id}">
-                                                    <div class="media">
-                                                        <span class="avatar avatar-sm">
-                                                            <i class="fas fa-bell" style="font-size: 1.9em; color: #0eaedf;"></i>
-                                                        </span>
-                                                        <div class="media-body">
-                                                            <p class="noti-details">
-                                                                <span class="noti-title">${notification.message}</span>
-                                                            </p>
-                                                            <p class="noti-time">
-                                                                <span class="notification-time">${timeAgo}</span>
-                                                            </p>
-                                                        </div>
-                                                    </div>
-                                                </a>
-                                            </li>
-                                        `;
+                    <li class="notification-message ${notification.isRead ? '' : 'unread'}">
+                        <a href="/notification/${notification.id}">
+                            <div class="media">
+                                <span class="avatar avatar-sm">
+                                    <i class="fas fa-bell" style="font-size: 1.9em; color: #0eaedf;"></i>
+                                </span>
+                                <div class="media-body">
+                                    <p class="noti-details">
+                                        <span class="noti-title">${notification.message}</span>
+                                    </p>
+                                    <p class="noti-time">
+                                        <span class="notification-time">${timeAgo}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                `;
                                         });
 
                                         notificationList.innerHTML = notificationHtml;
                                     } else {
+                                        // No notifications - ensure badge is removed
+                                        if (badgeElement) {
+                                            badgeElement.textContent = '';
+                                            badgeElement.classList.remove('badge-pill');
+                                        }
+
                                         notificationList.innerHTML = `
-                                        <li class="notification-message">
-                                            <div class="media">
-                                                <div class="media-body">
-                                                    <p class="noti-details text-center">
-                                                        No notifications available
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                    `;
+                <li class="notification-message">
+                    <div class="media">
+                        <div class="media-body">
+                            <p class="noti-details text-center">
+                                No notifications available
+                            </p>
+                        </div>
+                    </div>
+                </li>
+            `;
                                     }
                                 }
                             })
@@ -280,7 +415,7 @@
 
                         return "Just now";
                     }
-    /***********************************************************************************************/
+                    /***********************************************************************************************/
                     const sidebarLinks = document.getElementById('sidebar-links');
                     sidebarLinks.innerHTML = '';
 

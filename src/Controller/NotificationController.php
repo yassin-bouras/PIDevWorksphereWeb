@@ -213,13 +213,65 @@ final class NotificationController extends AbstractController
             $entityManager->flush();
 
             $this->addFlash('success', 'Notification marquée comme lue.');
-            
+
             // Redirect back to the referrer or to the notification index
             $referer = $request->headers->get('referer');
             return $referer ? $this->redirect($referer) : $this->redirectToRoute('app_notification_index');
-            
         } catch (\Exception $e) {
             throw $this->createAccessDeniedException('Authentication error');
+        }
+    }
+
+    #[Route('/api/clear-all', name: 'app_notification_clear_all', methods: ['POST'])]
+    public function clearAllNotifications(Request $request, NotificationRepository $notificationRepository, EntityManagerInterface $entityManager): JsonResponse
+    {
+        // Get current user from JWT token
+        $token = $request->cookies->get('BEARER');
+        if (!$token) {
+            return new JsonResponse(['success' => false, 'message' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        try {
+            $data = $this->jwtEncoder->decode($token);
+            // Check multiple possible fields for user identification
+            $userId = $data['id'] ?? $data['user_id'] ?? $data['iduser'] ?? null;
+
+            // If no userId from fields, try to get user by username/email
+            if (!$userId && isset($data['username'])) {
+                $user = $this->userRepository->findOneBy(['email' => $data['username']]);
+                if ($user) {
+                    $userId = $user->getId(); // Or getIdUser() depending on your entity
+                }
+            }
+
+            if (!$userId) {
+                return new JsonResponse(['success' => false, 'message' => 'Invalid token - could not identify user'], Response::HTTP_UNAUTHORIZED);
+            }
+
+            $user = $this->userRepository->find($userId);
+            if (!$user) {
+                return new JsonResponse(['success' => false, 'message' => 'User not found'], Response::HTTP_NOT_FOUND);
+            }
+
+            // Delete all notifications for this user
+            $notifications = $notificationRepository->findBy(['user' => $user]);
+
+            if (empty($notifications)) {
+                return new JsonResponse(['success' => true, 'message' => 'No notifications to delete']);
+            }
+
+            foreach ($notifications as $notification) {
+                $entityManager->remove($notification);
+            }
+
+            $entityManager->flush();
+
+            return new JsonResponse(['success' => true, 'message' => 'All notifications deleted']);
+        } catch (\Exception $e) {
+            return new JsonResponse([
+                'success' => false,
+                'message' => 'Error processing request: ' . $e->getMessage()
+            ], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
