@@ -13,14 +13,14 @@
     {% endblock %}
 </head>
 <body>
-
+    <div class="main-wrapper">
     {% include 'dashboard/headside.html.twig' %}
     <div class="page-wrapper" id="content-wrapper">
         {% block content %}{% endblock %}
     </div>
-
+</div>
     {% block js %}
-        <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
+       <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script> 
         <script src="{{ asset('back/js/popper.min.js') }}"></script>
         <script src="{{ asset('back/js/bootstrap.min.js') }}"></script>
         <script src="{{ asset('back/js/feather.min.js') }}"></script>

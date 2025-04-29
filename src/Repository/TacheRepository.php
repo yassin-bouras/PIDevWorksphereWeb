@@ -37,4 +37,27 @@ class TacheRepository extends ServiceEntityRepository
             'Terminé' => array_filter($taches, fn($t) => $t->getStatut() === 'Terminé'),
         ];
     }
+
+
+    public function findTachesByUser($userId, $search = null, $statut = null)
+    {
+        $qb = $this->createQueryBuilder('t')
+            ->where('t.user = :userId')  
+            ->setParameter('userId', $userId);
+    
+        if ($search) {
+            $qb->andWhere('LOWER(t.titre) LIKE LOWER(:search)')
+               ->setParameter('search', '%' . $search . '%');
+        }
+    
+        if ($statut) {
+            $qb->andWhere('t.statut = :statut')
+               ->setParameter('statut', $statut);
+        }
+    
+        return $qb->getQuery()->getResult();  
+    }
+    
+
+    
 }
