@@ -9,8 +9,8 @@ use Symfony\Component\HttpKernel\KernelInterface;
 
 class GeminiService
 {
-    private const API_URL = '';
-    private const API_KEY = '';
+    private const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent';
+    private const API_KEY = 'AIzaSyDlJH2RyzPz9CZdF2n9zcggC0JKd0nOwGc';
 
     private $pdfGenerator;
     private $kernel;
@@ -24,7 +24,7 @@ class GeminiService
     public function generateInterviewQuestions(string $poste): ?string
     {
         $client = HttpClient::create();
-        $prompt = "Génère 5 questions d'entretien pour un poste de $poste";
+        $prompt = "Génère 5 questions chaque fois different  d'entretien pour un poste de $poste";
 
         try {
             $response = $client->request('POST', self::API_URL.'?key='.self::API_KEY, [

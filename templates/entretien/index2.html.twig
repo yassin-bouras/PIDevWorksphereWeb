@@ -27,7 +27,7 @@
                         {% if entretien.feedback is  null %}
                         <a class="btn" href="{{ path('app_feedback_news', {'id': entretien.id}) }}" style="background-color: #FF8C00; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Ajouter Feedback</a>
                         {% else %}
-                        <a class="btn" href="{{ path('app_feedback_edit', {'id': entretien.feedback.id}) }}" style="background-color: #FF8C00; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">modifier   Feedback</a>
+                        <a class="btn" href="{{ path('app_feedback_show', {'id': entretien.feedback.id}) }}" style="background-color: #FF8C00; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">voir  Feedback</a>
                         {% endif %}
 
                         {% if not entretien.status %}

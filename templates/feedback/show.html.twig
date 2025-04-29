@@ -1,34 +1,201 @@
-<!DOCTYPE html>
+{% extends '/dashboard/base2.html.twig' %}
 
-<title>Feedback</title>
+{% block title %}Feedback{% endblock %}
 
-{% block body %}
-    <h1>Feedback</h1>
+{% block content  %}
+    <div class="container" style="margin-top:-50%;">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h1 class="card-title text-center mb-4">Feedback Details</h1>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ feedback.id }}</td>
-            </tr>
-            <tr>
-                <th>Message</th>
-                <td>{{ feedback.message }}</td>
-            </tr>
-            <tr>
-                <th>Rate</th>
-                <td>{{ feedback.rate }}</td>
-            </tr>
-            <tr>
-                <th>Date_feedback</th>
-                <td>{{ feedback.dateFeedback ? feedback.dateFeedback|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+                <table class="table table-bordered table-striped">
+                    <tbody>
+                        <tr>
+                            <th class="text-muted">Message</th>
+                            <td>{{ feedback.message }}</td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted">Rate</th>
+                            <td>
+                                {% set rate = feedback.rate|default(0) %}
+                                {% for i in 1..10 %}
+                                    {% if i <= rate %}
+                                        <i class="fas fa-star text-warning"></i>
+                                    {% else %}
+                                        <i class="far fa-star text-muted"></i>
+                                    {% endif %}
+                                {% endfor %}
+                                <span class="ms-2 text-muted">({{ rate }}/10)</span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th class="text-muted">Date Feedback</th>
+                            <td>{{ feedback.dateFeedback ? feedback.dateFeedback|date('Y-m-d H:i:s') : 'N/A' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
 
-    <a href="{{ path('app_feedback_index') }}">back to list</a>
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{{ path('entretien_by_employee') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i> Back to List
+                    </a>
+                    <div>
+                        {{ include('feedback/_delete_form.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <a href="{{ path('app_feedback_edit', {'id': feedback.id}) }}">edit</a>
+    <style>
+        /* Card Styling */
+        .card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            background-color: #fff;
+        }
 
-    {{ include('feedback/_delete_form.html.twig') }}
+        .card-body {
+            padding: 2rem;
+        }
+
+        .card-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: #1a1a1a;
+        }
+
+        /* Table Styling */
+        .table {
+            margin-bottom: 0;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .table th {
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            color: #6c757d;
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #dee2e6;
+            padding: 1rem;
+            width: 30%;
+        }
+
+        .table td {
+            font-size: 1rem;
+            color: #495057;
+            padding: 1rem;
+            vertical-align: middle;
+        }
+
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: #f9f9f9;
+        }
+
+        .table-bordered th,
+        .table-bordered td {
+            border: 1px solid #e9ecef;
+        }
+
+        .table tr:hover {
+            background-color: #f1f3f5;
+        }
+
+        /* Star Rating */
+        .fa-star, .fa-star-half-alt {
+            font-size: 1.1rem;
+            margin-right: 0.2rem;
+        }
+
+        .text-warning {
+            color: #ffc107 !important;
+        }
+
+        /* Buttons */
+        .btn {
+            font-size: 1rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #0052cc;
+            border-color: #0052cc;
+        }
+
+        .btn-primary:hover {
+            background-color: #003d99;
+            border-color: #003d99;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-outline-secondary {
+            border-color: #6c757d;
+            color: #6c757d;
+        }
+
+        .btn-outline-secondary:hover {
+            background-color: #f1f3f5;
+            color: #495057;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+
+        .btn-danger:hover {
+            background-color: #b02a37;
+            border-color: #b02a37;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Icons in Buttons */
+        .btn i {
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            .card-body {
+                padding: 1.5rem;
+            }
+
+            .card-title {
+                font-size: 1.5rem;
+            }
+
+            .table th,
+            .table td {
+                font-size: 0.85rem;
+                padding: 0.75rem;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .d-flex {
+                flex-direction: column;
+                gap: 1rem;
+                align-items: stretch;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
 {% endblock %}

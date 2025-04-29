@@ -11,6 +11,10 @@ services:
   App\Service\GeminiService:
         arguments:
             $pdfGenerator: '@knp_snappy.pdf'
+
+  App\EventSubscriber\EntretienHistorySubscriber:
+        tags:
+            - { name: 'doctrine.event_subscriber' }
   # default configuration for services in *this* file
   _defaults:
     autowire: true # Automatically injects dependencies in your services.

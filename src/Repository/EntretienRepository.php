@@ -62,6 +62,18 @@ public function findByKeyword(string $keyword)
 }
 
 
+public function findByTitre(string $search): array
+{
+    return $this->createQueryBuilder('e')
+        ->where('e.titre LIKE :search')
+        ->andWhere('LOWER(e.titre) LIKE LOWER(:search)')
+        ->setParameter('search', '%' . $search . '%')
+        ->orderBy('e.date_entretien', 'DESC') 
+        ->getQuery()
+        ->getResult();
+}
+
+
 
 //    /**
 //     * @return Entretien[] Returns an array of Entretien objects

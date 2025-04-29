@@ -49,30 +49,35 @@ final class EntretienController extends AbstractController
     }
 
     #[Route(name: 'app_entretien_index', methods: ['GET'])]
-    public function index(
-        EntretienRepository $entretienRepository,
-        PaginatorInterface $paginator,
-        Request $request
-            ): Response {
-        $query = $entretienRepository->createQueryBuilder('e')
-            ->orderBy('e.date_entretien', 'DESC')
-            ->getQuery();
+public function index(
+    EntretienRepository $entretienRepository,
+    PaginatorInterface $paginator,
+    Request $request
+): Response {
+    $queryBuilder = $entretienRepository->createQueryBuilder('e')
+        ->orderBy('e.date_entretien', 'DESC');
 
-        $entretiens = $paginator->paginate(
-            $query,
-            $request->query->getInt('page', 1), 
-            2
-        );
+    $search = $request->query->get('search');
 
-        return $this->render('entretien/index.html.twig', [
-            'entretiens' => $entretiens,
-        ]);
+    if ($search) {
+        $queryBuilder
+            ->andWhere('e.titre LIKE :search')
+            ->setParameter('search', '%' . $search . '%');
     }
 
+    $entretiens = $paginator->paginate(
+        $queryBuilder->getQuery(),
+        $request->query->getInt('page', 1), 
+        2 
+    );
 
+    return $this->render('entretien/index.html.twig', [
+        'entretiens' => $entretiens,
+        'search' => $search 
+    ]);
+}
 
-
-
+   
 
 
     #[Route('/employee', name: 'entretien_by_employee')]
@@ -112,7 +117,6 @@ final class EntretienController extends AbstractController
         }
     }
 
-
     #[Route('/employees', name: 'entretien_by_employees')]
     public function showEntretienByEmployees(Request $request, EntretienRepository $entretienRepository): Response
     {
@@ -149,7 +153,6 @@ final class EntretienController extends AbstractController
             return $this->redirectToRoute('app_login');
         }
     }
-
 
 
 
@@ -332,7 +335,6 @@ final class EntretienController extends AbstractController
 //     ]);
 // }
 
-
 #[Route('/new', name: 'app_entretien_new', methods: ['GET', 'POST'])]
 public function new(Request $request, EntityManagerInterface $entityManager, CandidatureRepository $candidatureRepo , MailService $mailService , EntityManagerInterface $em): Response
 {
@@ -407,8 +409,6 @@ public function new(Request $request, EntityManagerInterface $entityManager, Can
 
 
 
-
-
 #[Route('/test-mail', name: 'app_test_mail', methods: ['GET'])]
 public function testMail(MailService $mailService): Response
 {
@@ -427,8 +427,6 @@ public function testMail(MailService $mailService): Response
 
 
     
-
-
 
 
 
@@ -455,7 +453,6 @@ public function testMail(MailService $mailService): Response
             'candidat' => $candidat,
         ]);
     }
-
 
     #[Route('/{id}/edit', name: 'app_entretien_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Entretien $entretien, EntityManagerInterface $entityManager): Response
@@ -519,7 +516,6 @@ public function testMail(MailService $mailService): Response
         return new JsonResponse($result);
     }
 
-
     #[Route('/change-status/{id}', name: 'entretien_change_status', methods: ['POST'])]
     public function changeStatus(int $id, EntityManagerInterface $entityManager, Request $request, EntretienRepository $entretienRepository)
     {
@@ -571,7 +567,6 @@ public function testMail(MailService $mailService): Response
         }
     }
 
-
     #[Route('/entretiens/filtrer', name: 'filtrer_entretiens')]
 public function filtrerParDate(
     Request $request,
@@ -610,7 +605,6 @@ public function filtrerParDate(
     ]);
 }
 
-
     #[Route('/entretienssss/filtrers', name: 'filtrer_entretiens_keyWords', methods: ['GET'])]
     public function filtrerParKeyword(Request $request, EntretienRepository $entretienRepository)
     {
@@ -626,7 +620,6 @@ public function filtrerParDate(
             'entretiens' => $entretiens,
         ]);
     }
-
 
     #[Route('/calendar', name: 'entretien_calendar', methods: ['GET'])]
     public function calendar(): Response
@@ -678,7 +671,6 @@ public function filtrerParDate(
             return new JsonResponse(['error' => 'Invalid token'], 401);
         }
     }
-
     #[Route('/generate-questions/{id}', name: 'app_entretien_generate_questions', requirements: ['id' => '\d+'], methods: ['GET'])]
 public function generateQuestions(
     int $id,
@@ -699,11 +691,9 @@ public function generateQuestions(
         return $this->redirectToRoute('app_entretien_show', ['id' => $id]);
     }
 
-    // Pas de try-catch ici pour voir directement l'erreur
     $filename = 'questions_entretien_'.$id.'.pdf';
     $pdfPath = $geminiService->generatePdfFromQuestions($questions, $filename);
 
-    // Ajoute un contrôle d'existence de fichier
     $fullPath = $this->getParameter('kernel.project_dir').'/public'.$pdfPath;
 
     if (!file_exists($fullPath)) {
@@ -729,7 +719,6 @@ public function generateQuestions(
 
 
    
-
 
 
 #[Route('/test/generate-questions', name: 'test_generate_questions', methods: ['GET'])]
