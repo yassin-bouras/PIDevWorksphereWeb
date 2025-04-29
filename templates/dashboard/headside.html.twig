@@ -73,8 +73,7 @@
                         <i data-feather="user" class="mr-1"></i> Profile
                     </a>
                     <a class="dropdown-item" href="#"><i data-feather="settings" class="mr-1"></i> Settings</a>
-                    <a class="dropdown-item" href="{{ path('app_logout') }}"><i data-feather="log-out" class="mr-1"></i> Logout</a>
-                </div>
+             </div>
             </li>
         </ul>
     </div>
@@ -128,7 +127,7 @@
                         <li><a href="/contrat"><span>📜 Contrat</span></a></li>
                         <li><a href="/sponsor"><span>📢 Gestion Sponsor</span></a></li>
                         <li><a href="/user"><span>👥 Gestion User</span></a></li>
-                        <li><a href="/event"><span>✅ Evenements</span></a></li>
+                        <li><a href="/evennement"><span>✅ Evenements</span></a></li>
                         <li><a href="/formation"><span>📢 Formations</span></a></li>
                         <li><a href="/offre"><span>🎯 Offres Emploi</span></a></li>
                         <li><a href="/entretien"><span>🔥 Entretien</span></a></li>
@@ -137,17 +136,17 @@
                 } else if (user.role === 'Candidat') {
                     sidebarLinks.innerHTML += `
                         <li><a href="/"><span>🔄 Offre Emploi</span></a></li>
-                        <li><a href="/reclamtion"><span>👥 Reclamations</span></a></li>
+                        <li><a href="/reclamation/user/${user.iduser}"><span>🔄 Reclamation</span></a></li>
                         <li><a href="/"><span>👥 Candidature</span></a></li>
                         <li><a href="/"><span>👤 Changer Mot de Passe</span></a></li>
                     `;
                 } else if (user.role === 'Employe') {
                     sidebarLinks.innerHTML += `
                         <li class="active"><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
-                        <li><a href="/user"><span>🔄 Reclamation</span></a></li>
+                        <li><a href="/reclamation/user/${user.iduser}"><span>🔄 Reclamation</span></a></li>
                         <li><a href="/formation/employe"><span>📢 Formation</span></a></li>
                         <li><a href="/"><span>🚀 Entretien Archive</span></a></li>
-                        <li><a href="/entretien/employee"><span>✅ Entretien</span></a></li>
+                        <li><a href="/entretien/employee"><span>🚀 Entretien</span></a></li>
                         <li><a href="/"><span>🎯 Mes Reservations</span></a></li>
                         <li><a href="/"><span>👥 Équipe</span></a></li>
                         <li><a href="/"><span>📂 Projet</span></a></li>

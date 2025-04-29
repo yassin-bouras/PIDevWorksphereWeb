@@ -23,7 +23,12 @@
             <div class="card">
                 <div class="card-header">
                     <h4 class="card-title">Partenariat entre {{ evenement_sponsor.sponsor.nomSponso }} et {{ evenement_sponsor.evenement.nomEvent }}</h4>
-                   
+                    <div class="card-actions">
+                        <a href="{{ path('app_evenement_sponsor_edit', {'evenement_id': evenement_sponsor.evenement.idEvent, 'sponsor_id': evenement_sponsor.sponsor.idSponsor}) }}" 
+                           class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i> Modifier
+                        </a>
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="table-responsive">
@@ -49,15 +54,51 @@
                                 </tr>
                                 <tr>
                                     <th>Durée du contrat</th>
-                                    <td>{{ evenement_sponsor.duree }} jours</td>
+                                    <td>
+                                        {% if evenement_sponsor.duree == 'troisMois' %}
+                                            3 Mois
+                                        {% elseif evenement_sponsor.duree == 'sixMois' %}
+                                            6 Mois
+                                        {% elseif evenement_sponsor.duree == 'unAns' %}
+                                            1 An
+                                        {% else %}
+                                            {{ evenement_sponsor.duree ?? 'Non spécifiée' }}
+                                        {% endif %}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <th>Date de fin estimée</th>
                                     <td>
                                         {% if evenement_sponsor.datedebutContrat and evenement_sponsor.duree %}
-                                            {{ evenement_sponsor.datedebutContrat|date_modify('+' ~ evenement_sponsor.duree ~ ' days')|date('d/m/Y') }}
+                                            {% set dateFin = evenement_sponsor.datedebutContrat|date_modify(
+                                                evenement_sponsor.duree == 'troisMois' ? '+3 months' :
+                                                evenement_sponsor.duree == 'sixMois' ? '+6 months' : '+1 year'
+                                            ) %}
+                                            {{ dateFin|date('d/m/Y') }}
+                                            {% if dateFin < date() %}
+                                                <span class="badge bg-danger ms-2">Contrat expiré</span>
+                                            {% endif %}
                                         {% else %}
                                             Non calculable
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>Statut du contrat</th>
+                                    <td>
+                                        {% if evenement_sponsor.datedebutContrat and evenement_sponsor.duree %}
+                                            {% set dateFin = evenement_sponsor.datedebutContrat|date_modify(
+                                                evenement_sponsor.duree == 'troisMois' ? '+3 months' :
+                                                evenement_sponsor.duree == 'sixMois' ? '+6 months' : '+1 year'
+                                            ) %}
+                                            {% if dateFin < date() %}
+                                                <span class="badge bg-danger">Expiré</span>
+                                            {% else %}
+                                                <span class="badge bg-success">Actif</span>
+                                                (expire dans {{ dateFin.diff(date()).days }} jours)
+                                            {% endif %}
+                                        {% else %}
+                                            <span class="badge bg-secondary">Indéterminé</span>
                                         {% endif %}
                                     </td>
                                 </tr>
@@ -66,8 +107,10 @@
                     </div>
 
                     <div class="mt-4 d-flex justify-content-between">
-                        
-                        
+                        <a href="{{ path('app_sponsor_events', {'idSponsor': evenement_sponsor.sponsor.idSponsor}) }}" 
+                           class="btn btn-secondary">
+                            <i class="fas fa-arrow-left me-2"></i> Retour à la liste
+                        </a>
                         <div>
                             {{ include('evenement_sponsor/_delete_form.html.twig') }}
                         </div>
@@ -100,5 +143,19 @@
         background-color: #d62c2c;
         color: white;
     }
+    .badge.bg-danger {
+        font-size: 0.8em;
+        padding: 0.35em 0.65em;
+    }
 </style>
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script>
+$(document).ready(function() {
+    // Activation des tooltips
+    $('[data-bs-toggle="tooltip"]').tooltip();
+});
+</script>
 {% endblock %}

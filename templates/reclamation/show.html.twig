@@ -1,38 +1,88 @@
-<!DOCTYPE html>
+{% extends '/dashboard/base2.html.twig' %}
 
-<title>Reclamation</title>
+{% block title %}Détails de la Réclamation{% endblock %}
 
-{% block body %}
-    <h1>Reclamation</h1>
+{% block content %}
+<div class="content container-fluid" style="margin-top: -58%;">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="page-title">Détails de la Réclamation</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="">Réclamations</a></li>
+                    <li class="breadcrumb-item active">Détails</li>
+                </ul>
+            </div>
+        </div>
+    </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id_reclamation</th>
-                <td>{{ reclamation.idReclamation }}</td>
-            </tr>
-            <tr>
-                <th>Titre</th>
-                <td>{{ reclamation.titre }}</td>
-            </tr>
-            <tr>
-                <th>Description</th>
-                <td>{{ reclamation.description }}</td>
-            </tr>
-            <tr>
-                <th>Type</th>
-                <td>{{ reclamation.type }}</td>
-            </tr>
-            <tr>
-                <th>Datedepot</th>
-                <td>{{ reclamation.datedepot ? reclamation.datedepot|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title text-center">{{ reclamation.titre }}</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>ID Réclamation</th>
+                                <td>{{ reclamation.idReclamation }}</td>
+                            </tr>
+                            <tr>
+                                <th>Titre</th>
+                                <td>{{ reclamation.titre }}</td>
+                            </tr>
+                            <tr>
+                                <th>Description</th>
+                                <td>
+                                    <p style="white-space: pre-wrap;">{{ reclamation.description }}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Type</th>
+                                <td>{{ reclamation.type }}</td>
+                            </tr>
+                            <tr>
+                                <th>Date de Dépôt</th>
+                                <td>{{ reclamation.datedepot ? reclamation.datedepot|date('Y-m-d H:i:s') : '' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Utilisateur</th>
+                                <td>{{ reclamation.user ? reclamation.user.nom ~ ' ' ~ reclamation.user.prenom : 'Non spécifié' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Destinataire</th>
+                                <td>{{ reclamation.receiver ? reclamation.receiver.nom ~ ' ' ~ reclamation.receiver.prenom : 'Non spécifié' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour à la liste
+                    </a>
+                    <a href="{{ path('app_reclamation_edit', {'id_reclamation': reclamation.idReclamation}) }}" class="btn btn-warning">
+                        <i class="far fa-edit"></i> Modifier
+                    </a>
+                    <form method="post" action="{{ path('app_reclamation_delete', {'id_reclamation': reclamation.idReclamation}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.idReclamation) }}">
+                        <button class="btn btn-danger">
+                            <i class="far fa-trash-alt"></i> Supprimer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-    <a href="{{ path('app_reclamation_index') }}">back to list</a>
-
-    <a href="{{ path('app_reclamation_edit', {'id_reclamation': reclamation.id_reclamation}) }}">edit</a>
-
-    {{ include('reclamation/_delete_form.html.twig') }}
+<style>
+    .btn-danger:hover {
+        background-color: #980808; /* Dark red color */
+        border-color: #a80000; /* Match the border color */
+        color: white; /* Ensure the text remains visible */
+    }
+</style>
 {% endblock %}

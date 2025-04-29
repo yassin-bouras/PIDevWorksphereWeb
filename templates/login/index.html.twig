@@ -42,7 +42,7 @@
                                             </div>
                                         </div>
                                         <div class="col-6 text-right">
-                                            <a class="forgot-link" href="{{ path('app_forgot_password') }}">Forgot Password?</a>
+                                            <a class="forgot-link" href="/user/new">don't have an accout?</a>
                                         </div>
                                     </div>
                                 </div>
@@ -57,65 +57,65 @@
 
     <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
     <script>
-   $(document).ready(function() {
-    $('#loginForm').on('submit', function(e) {
-        e.preventDefault();
+        $(document).ready(function() {
+            $('#loginForm').on('submit', function(e) {
+                e.preventDefault();
 
-        const email = $('input[name="email"]').val();
-        const password = $('input[name="password"]').val();
-        const data = { email: email, password: password };
+                const email = $('input[name="email"]').val();
+                const password = $('input[name="password"]').val();
+                const data = { email: email, password: password };
 
-        $.ajax({
-            url: '/login',
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(data),
-            success: function(response) {
-                if (response.token) {
-                    // Store the token
-                    document.cookie = `BEARER=${response.token}; Path=/; Secure; SameSite=Strict`;
+                $.ajax({
+                    url: '/login',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(data),
+                    success: function(response) {
+                        if (response.token) {
+                            // Store the token
+                            document.cookie = `BEARER=${response.token}; Path=/; Secure; SameSite=Strict`;
 
-                    // Decode the token to extract the roles
-                    const token = response.token;
-                    const payload = JSON.parse(atob(token.split('.')[1]));
-                    const userRole = payload.roles && payload.roles.length > 0 ? payload.roles[0].toLowerCase() : null;
+                            // Decode the token to extract the roles
+                            const token = response.token;
+                            const payload = JSON.parse(atob(token.split('.')[1]));
+                            const userRole = payload.roles && payload.roles.length > 0 ? payload.roles[0].toLowerCase() : null;
 
-                    console.log('Token:', token);
-                    console.log('User Role:', userRole);
+                            console.log('Token:', token);
+                            console.log('User Role:', userRole);
 
-                    // Redirect based on role
-                    switch(userRole) {
-                        case 'candidat':
-                            window.location.href = '/dashboardcandidat';
-                            break;
-                        case 'rh':
-                            window.location.href = '/dashboard';
-                            break;
-                        case 'employe':
-                            window.location.href = '/dashboardemploye';
-                            break;
-                        case 'manager':
-                            window.location.href = '/dashboardmanager';
-                            break;
-                        default:
-                            console.error('Unknown role:', userRole);
-                            $('.login-right-wrap').prepend('<div class="alert alert-danger">Unknown role</div>');
+                            // Redirect based on role
+                            switch(userRole) {
+                                case 'candidat':
+                                    window.location.href = '/dashboardcandidat';
+                                    break;
+                                case 'rh':
+                                    window.location.href = '/dashboard';
+                                    break;
+                                case 'employe':
+                                    window.location.href = '/dashboardemploye';
+                                    break;
+                                case 'manager':
+                                    window.location.href = '/dashboardmanager';
+                                    break;
+                                default:
+                                    console.error('Unknown role:', userRole);
+                                    $('.login-right-wrap').prepend('<div class="alert alert-danger">Unknown role</div>');
+                            }
+                        }
+                    },
+                    error: function(xhr) {
+                        const errorMessage = xhr.responseJSON?.message || 'Login failed';
+                        $('.login-right-wrap').prepend(`<div class="alert alert-danger">${errorMessage}</div>`);
                     }
-                }
-            },
-            error: function(xhr) {
-                const errorMessage = xhr.responseJSON?.message || 'Login failed';
-                $('.login-right-wrap').prepend(`<div class="alert alert-danger">${errorMessage}</div>`);
-            }
-        });
-    });
+                });
+            });
 
-    $('.toggle-password').click(function() {
-        const input = $(this).siblings('.pass-input');
-        input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
-        $(this).toggleClass('fa-eye fa-eye-slash');
-    });
-});
+            $('.toggle-password').click(function() {
+                const input = $(this).siblings('.pass-input');
+                input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
+                $(this).toggleClass('fa-eye fa-eye-slash');
+            });
+        });
     </script>
 </body>
 </html>

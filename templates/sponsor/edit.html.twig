@@ -99,24 +99,7 @@
                             </div>
                         </div>
 
-                        <div class="col-xl-6 col-sm-12 col-12">
-                            <div class="form-group">
-                                {{ form_label(form.classement, "Classement") }}
-                                {{ form_widget(form.classement, {
-                                    'attr': {
-                                        'class': 'form-control' ~ (form.classement.vars.errors|length ? ' is-invalid' : ''),
-                                        'placeholder': 'A, B, C...'
-                                    }
-                                }) }}
-                                {% if form.classement.vars.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.classement.vars.errors %}
-                                            {{ error.message }}
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
+                      
                     </div>
 
                     <div class="row">
@@ -152,37 +135,7 @@
                             </div>
                         </div>
 
-                        <div class="col-xl-6 col-sm-12 col-12">
-                            <div class="form-group">
-                                {{ form_label(form.BudgetApresReduction, "Budget Après Réduction*") }}
-                                <div class="input-group">
-                                    {{ form_widget(form.BudgetApresReduction, {
-                                        'attr': {
-                                            'class': 'form-control' ~ (form.BudgetApresReduction.vars.errors|length ? ' is-invalid' : ''),
-                                            'required': 'required',
-                                            'type': 'number',
-                                            'min': '0',
-                                            'step': '0.01',
-                                            'placeholder': 'Montant en €'
-                                        }
-                                    }) }}
-                                    <div class="input-group-append">
-                                        <span class="input-group-text">€</span>
-                                    </div>
-                                </div>
-                                {% if form.BudgetApresReduction.vars.errors %}
-                                    <div class="invalid-feedback d-block">
-                                        {% for error in form.BudgetApresReduction.vars.errors %}
-                                            {{ error.message }}
-                                        {% endfor %}
-                                    </div>
-                                {% else %}
-                                    <div class="invalid-feedback">
-                                        Le budget doit être un nombre positif
-                                    </div>
-                                {% endif %}
-                            </div>
-                        </div>
+                        
                     </div>
 
                     <div class="row">

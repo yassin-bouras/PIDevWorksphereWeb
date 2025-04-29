@@ -12,7 +12,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/reponse')]
-final class ReponseController extends AbstractController{
+final class ReponseController extends AbstractController
+{
     #[Route(name: 'app_reponse_index', methods: ['GET'])]
     public function index(ReponseRepository $reponseRepository): Response
     {
@@ -21,10 +22,29 @@ final class ReponseController extends AbstractController{
         ]);
     }
 
-    #[Route('/new', name: 'app_reponse_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
+    #[Route('/new/{id_reclamation}/{id_user}', name: 'app_reponse_new', methods: ['GET', 'POST'])]
+    public function new(
+        Request $request,
+        int $id_reclamation,
+        int $id_user,
+        EntityManagerInterface $entityManager
+    ): Response {
         $reponse = new Reponse();
+
+        $reclamation = $entityManager->getRepository(\App\Entity\Reclamation::class)->find($id_reclamation);
+        $user = $entityManager->getRepository(\App\Entity\User::class)->find($id_user);
+
+        if (!$reclamation || !$user) {
+            throw $this->createNotFoundException('Reclamation or User not found.');
+        }
+
+        $reponse->setReclamation($reclamation);
+        $reponse->setUser($user);
+
+        if (!$reponse->getDatedepot()) {
+            $reponse->setDatedepot(new \DateTimeImmutable());
+        }
+
         $form = $this->createForm(ReponseType::class, $reponse);
         $form->handleRequest($request);
 
@@ -32,12 +52,13 @@ final class ReponseController extends AbstractController{
             $entityManager->persist($reponse);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_reponse_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('reclamations_by_user', ['id' => $id_user], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('reponse/new.html.twig', [
             'reponse' => $reponse,
-            'form' => $form,
+            'form' => $form->createView(),
+            'id_user' => $id_user,
         ]);
     }
 
@@ -55,22 +76,26 @@ final class ReponseController extends AbstractController{
         $form = $this->createForm(ReponseType::class, $reponse);
         $form->handleRequest($request);
 
+        $userId = $reponse->getUser()->getId();
+
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_reponse_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('reclamations_by_user', ['id' => $userId], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('reponse/edit.html.twig', [
             'reponse' => $reponse,
-            'form' => $form,
+            'form' => $form->createView(),
+            'id_user' => $userId,
         ]);
     }
+
 
     #[Route('/{id_reponse}', name: 'app_reponse_delete', methods: ['POST'])]
     public function delete(Request $request, Reponse $reponse, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$reponse->getId_reponse(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $reponse->getId_reponse(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($reponse);
             $entityManager->flush();
         }

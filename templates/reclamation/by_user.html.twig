@@ -1,0 +1,245 @@
+{% extends '/dashboard/base2.html.twig' %}
+
+{% block title %}Réclamations de l'Utilisateur{% endblock %}
+
+{% block content %}
+<style>
+    .d-flex > * {
+        margin-right: 10px; /* Add spacing between buttons */
+    }
+
+    .d-flex > *:last-child {
+        margin-right: 0; /* Remove margin from the last button */
+    }
+
+    .form-control {
+        border: 3px solid #33ccc5;
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 1.2rem;
+        width: 80%;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #33ccc5;
+        outline: none;
+        box-shadow: 0 0 5px rgba(51, 204, 197, 0.5);
+    }
+
+    .btn-outline-secondary {
+        background-color: transparent;
+        border: 3px solid #33ccc5;
+        color: #33ccc5;
+        padding: 10px 50px;
+        font-size: 0.635rem;
+        border-radius: 5px;
+        transition: all 0.3s ease;
+    }
+    .btn-outline-secondary span {
+        font-size: 3rem; 
+        font-weight: bold;
+    }
+
+    .btn-outline-secondary:hover {
+        border: 3px solid #99fffa;
+        background-color: #33ccc5;
+        color: white;
+        transform: scale(1.05);
+        transition: all 0.2s ease;
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0;
+    }
+    .btn-primary {
+        background-color: #33ccc5 !important; /* Change the background color */
+        border-color: #33ccc5 !important; /* Change the border color */
+    }
+
+    .btn-primary:hover {
+        background-color: #28a39b !important; /* Slightly darker shade for hover */
+        border-color: #28a39b !important; /* Match the border color on hover */
+    }
+    .btn-create-reclamation {
+        background-color: #33ccc5; /* Set the background color to #33ccc5 */
+        position: relative;
+        padding: 5px 15px;
+        display: flex;
+        align-items: center;
+        font-size: 17px;
+        font-weight: 600;
+        text-decoration: none;
+        cursor: pointer;
+        border: 1px solid #33ccc5; /* Match the border color */
+        border-radius: 25px;
+        outline: none;
+        overflow: hidden;
+        color: white; /* Set the text color to white for contrast */
+        transition: background-color 0.3s ease, color 0.3s ease;
+        text-align: center;
+    }
+
+    .btn-create-reclamation span {
+        margin: 10px;
+    }
+    .btn-create-reclamation svg {
+        width: 24px;
+        height: 24px;
+        stroke: white; /* Set the icon color to white */
+    }
+
+    .btn-create-reclamation::before {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        margin: auto;
+        content: '';
+        border-radius: 50%;
+        display: block;
+        width: 20em;
+        height: 20em;
+        left: -5em;
+        text-align: center;
+        transition: box-shadow 0.5s ease-out;
+        z-index: -1;
+    }
+
+    .btn-create-reclamation:hover {
+        background-color: #28a39b; /* Slightly darker shade for hover */
+        color: #023d44;
+        border: 1px solid rgb(40, 144, 241);
+    }
+
+    .btn-create-reclamation:hover::before {
+        box-shadow: inset 0 0 0 10em rgb(40, 144, 241);
+    }
+</style>
+<div class="content container-fluid" style="margin-top: -58%;">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="page-title">Réclamations de l'Utilisateur</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Réclamations</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    {% if role == 'Candidat' %}
+                        <div class="text-start mb-4">
+                            <a href="{{ path('app_reclamation_new', {'id': id_user}) }}" class="btn-create-reclamation">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24" fill="none" class="svg">
+                                    <line y2="19" y1="5" x2="12" x1="12"></line>
+                                    <line y2="12" y1="12" x2="19" x1="5"></line>
+                                </svg>
+                                <span>CRÉER UNE NOUVELLE RÉCLAMATION</span>
+                            </a>
+                        </div>
+                    {% endif %}
+
+                    <div class="mb-4">
+                        <form method="GET" action="{{ path('reclamations_by_user', {'id': id_user}) }}">
+                            <div class="input-group" style="max-width: 1050px; margin: 0 auto;">
+                                <input type="text" name="search" class="form-control"
+                                    placeholder="Rechercher par titre..."
+                                    value="{{ app.request.query.get('search') }}">
+                                <div class="input-group-append">
+                                    <button class="btn btn-outline-secondary" type="submit"><span>Rechercher</span></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover table-striped mb-0">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Titre</th>
+                                    <th>Description</th>
+                                    <th>Type</th>
+                                    <th>Date de Dépôt</th>
+                                    <th>Actions</th>
+                                    <th>Réponse</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for reclamation in reclamations %}
+                                    <tr>
+                                        <td>{{ reclamation.idReclamation }}</td>
+                                        <td>{{ reclamation.titre }}</td>
+                                        <td>
+                                            <p style="white-space: pre-wrap;">{{ reclamation.description|length > 100 ? reclamation.description|slice(0, 100) ~ '...' : reclamation.description }}</p>
+                                        </td>
+                                        <td>{{ reclamation.type }}</td>
+                                        <td>{{ reclamation.datedepot ? reclamation.datedepot|date('Y-m-d H:i:s') : '' }}</td>
+                                        <td>
+                                            <div class="d-flex">
+                                                <a href="{{ path('app_reclamation_show', {'id_reclamation': reclamation.idReclamation}) }}" class="btn btn-sm btn-outline-primary me-2" title="Voir">
+                                                    <i class="far fa-eye"></i>
+                                                </a>
+                                                {% if role == 'Candidat' %}
+                                                    <a href="{{ path('app_reclamation_edit', {'id_reclamation': reclamation.idReclamation}) }}" class="btn btn-sm btn-outline-warning me-2" title="Modifier">
+                                                        <i class="far fa-edit"></i>
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+                                        </td>
+                                        <td>
+                                            {% set reponseId = reponsesMap[reclamation.idReclamation]|default(0) %}
+                                            {% if reponseId == 0 %}
+                                                {% if role == 'Employe' %}
+                                                    <div class="d-flex">
+                                                        <a href="{{ path('app_reponse_new', {'id_reclamation': reclamation.idReclamation, 'id_user': id_user}) }}" class="btn btn-sm btn-outline-success me-2" title="Répondre">
+                                                            <i class="fas fa-reply"></i>
+                                                        </a>
+                                                    </div>
+                                                {% else %}
+                                                    <span>Aucune réponse</span>
+                                                {% endif %}
+                                            {% else %}
+                                                <div class="d-flex">
+                                                    <a href="{{ path('app_reponse_show', {'id_reponse': reponseId}) }}" class="btn btn-sm btn-outline-info me-2" title="Voir Réponse">
+                                                        <i class="far fa-eye"></i>
+                                                    </a>
+                                                    {% if role == 'Employe' %}
+                                                        <a href="{{ path('app_reponse_edit', {'id_reponse': reponseId}) }}" class="btn btn-sm btn-outline-warning me-2" title="Modifier Réponse">
+                                                            <i class="far fa-edit"></i>
+                                                        </a>
+                                                        <form method="post" action="{{ path('app_reponse_delete', {'id_reponse': reponseId}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette réponse ?');">
+                                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reponseId) }}">
+                                                            <button class="btn btn-sm btn-outline-danger" title="Supprimer Réponse">
+                                                                <i class="far fa-trash-alt"></i>
+                                                            </button>
+                                                        </form>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="7" class="text-center">Aucune réclamation trouvée pour cet utilisateur.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

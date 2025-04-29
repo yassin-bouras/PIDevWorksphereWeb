@@ -30,10 +30,7 @@ class EvennementType extends AbstractType
                     'placeholder' => 'Ex: Conférence, Atelier, Concert...'
                 ],
             ])
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
-            ])
+            
         ;
     }
 
