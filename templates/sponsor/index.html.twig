@@ -1,7 +1,20 @@
 {% extends '/dashboard/base.html.twig' %}
 
 {% block title %}Sponsors{% endblock %}
-
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .bg-bronze {
+            background-color: #cd7f32; /* Couleur bronze */
+        }
+        /* Assure que le texte est blanc sur tous les badges de classement */
+        .badge.bg-warning.text-white,
+        .badge.bg-secondary.text-white,
+        .badge.bg-bronze.text-white {
+            color: white !important;
+        }
+    </style>
+{% endblock %}
 {% block content %}
     <div class="content container-fluid">
         <div class="page-header">
@@ -68,8 +81,19 @@
                                             <td>{{ sponsor.nomSponso }} {{ sponsor.prenomSponso }}</td>
                                             <td>{{ sponsor.emailSponso }}</td>
                                             <td>{{ sponsor.budgetSponso }} €</td>
-                                            <td>{{ sponsor.BudgetApresReduction }} €</td>
-                                            <td>{{ sponsor.classement }}</td>
+                                            <td>{{ sponsor.getBudgetApresReduction }} €</td>
+                                            <td>
+                                                <span class="badge 
+                                                    {% if sponsor.getClassement == 'Or' %}bg-warning
+                                                    {% elseif sponsor.getClassement == 'Argent' %}bg-secondary
+                                                    {% else %}bg-bronze{% endif %} text-white">
+                                                    <i class="fas 
+                                                        {% if sponsor.getClassement == 'Or' %}fa-trophy
+                                                        {% elseif sponsor.getClassement == 'Argent' %}fa-medal
+                                                        {% else %}fa-award{% endif %} me-1"></i>
+                                                    {{ sponsor.getClassement }}
+                                                </span>
+                                            </td>
                                             <td>{{ sponsor.secteurSponsor }}</td> <td>
                                                 <div class="d-flex">
                                                     <a href="{{ path('app_sponsor_show', {'idSponsor': sponsor.idSponsor}) }}" class="btn btn-sm btn-outline-primary me-1" title="Voir">

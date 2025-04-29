@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Repository\CoursRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: CoursRepository::class)]
@@ -11,8 +13,8 @@ class Cours
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
-    #[ORM\Column]
-    private ?int $id_c = null;
+    #[ORM\Column(name: "id_c", type: "integer")]
+     private ?int $id_c = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\NotBlank(message: "Le nom du cours est obligatoire.")]
@@ -27,7 +29,7 @@ class Cours
     #[Assert\GreaterThanOrEqual("today", message: "La date doit être aujourd'hui ou dans le futur.")]
     private ?\DateTimeInterface $date = null;
 
-    #[ORM\Column(type: 'time', nullable:true)]
+    #[ORM\Column(type: 'time', nullable: true)]
     #[Assert\NotNull(message: "L'heure de début est obligatoire.")]
     private ?\DateTimeInterface $heure_debut = null;
 
@@ -46,6 +48,15 @@ class Cours
         mimeTypesMessage: "Veuillez télécharger une image valide (JPEG, PNG, GIF)."
     )]
     private ?string $photo = null;
+
+
+    #[ORM\OneToMany(mappedBy: 'cours', targetEntity: FormationCours::class, cascade: ['persist', 'remove'])]
+    private Collection $formationCours;
+
+    public function __construct()
+    {
+        $this->formationCours = new ArrayCollection();
+    }
 
     public function getIdC(): ?int
     {
@@ -123,6 +134,34 @@ class Cours
         return $this;
     }
 
+ 
+
+    public function getFormationCours(): Collection
+    {
+        return $this->formationCours;
+    }
+
+    public function addFormationCour(FormationCours $formationCour): self
+    {
+        if (!$this->formationCours->contains($formationCour)) {
+            $this->formationCours[] = $formationCour;
+            $formationCour->setCours($this);
+        }
+
+        return $this;
+    }
+
+    public function removeFormationCour(FormationCours $formationCour): self
+    {
+        if ($this->formationCours->removeElement($formationCour)) {
+            if ($formationCour->getCours() === $this) {
+                $formationCour->setCours(null);
+            }
+        }
+
+        return $this;
+    }
+
 
     #[ORM\ManyToOne(targetEntity: Formation::class, inversedBy: 'cours')]
     #[ORM\JoinColumn(name: 'id_f', referencedColumnName: 'id_f', nullable: false, onDelete: 'CASCADE')]
@@ -138,4 +177,5 @@ class Cours
         $this->formation = $formation;
         return $this;
     }
+
 }

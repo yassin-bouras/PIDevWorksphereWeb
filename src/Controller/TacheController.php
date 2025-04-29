@@ -177,7 +177,6 @@ final class TacheController extends AbstractController
         $response = new StreamedResponse(function () use ($taches) {
             $handle = fopen('php://output', 'w');
     
-            // Entêtes du fichier
             fputcsv($handle, ['ID', 'Titre', 'Description', 'Date de creation', 'Deadline', 'Statut', 'Projet', 'Assigne a', 'Priorite']);
     
             foreach ($taches as $tache) {

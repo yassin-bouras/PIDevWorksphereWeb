@@ -1,37 +1,12 @@
-<!DOCTYPE html>
+{% extends '/dashboard/base.html.twig' %}
 
-<title>Meeting index</title>
 
-{% block body %}
-    <h1>Meeting index</h1>
+{% block content %}
+    <h1>Bienvenue dans la salle {{ roomName }}</h1>
+    <iframe src="https://meet.jit.si/{{ roomName }}" 
+            style="width: 100%; height: 600px; border: 0;" 
+            allow="camera; microphone; fullscreen; display-capture"></iframe>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Room_name</th>
-                <th>Meeting_url</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for meeting in meetings %}
-            <tr>
-                <td>{{ meeting.id }}</td>
-                <td>{{ meeting.roomName }}</td>
-                <td>{{ meeting.meetingUrl }}</td>
-                <td>
-                    <a href="{{ path('app_meeting_show', {'id': meeting.id}) }}">show</a>
-                    <a href="{{ path('app_meeting_edit', {'id': meeting.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="4">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_meeting_new') }}">Create new</a>
+    <a href="{{ path('app_formation_index') }}" class="btn btn-secondary mt-4 d-block mx-auto">Quitter la salle</a>
+   
 {% endblock %}

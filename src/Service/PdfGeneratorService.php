@@ -25,7 +25,6 @@ class PdfGeneratorService
             'date' => new \DateTime()
         ]);
         
-        // Génère le PDF et retourne le contenu binaire
         return $this->pdf->getOutputFromHtml($html, [
             'encoding' => 'utf-8',
             'enable-javascript' => true,

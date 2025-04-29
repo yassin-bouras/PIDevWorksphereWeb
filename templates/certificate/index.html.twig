@@ -1,0 +1,35 @@
+{% extends '/dashboard/base.html.twig' %}
+
+{% block title %}Générer un Certificat{% endblock %}
+
+{% block content %}
+    <h1>Générer un certificat de formation</h1>
+
+    {# Messages d'erreur #}
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+    {% endfor %}
+
+    <form method="post" style="margin-top: 20px;">
+        <div class="form-group mb-3">
+            <label for="first_name">Prénom :</label>
+            <input type="text" id="first_name" name="first_name" class="form-control" required>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="last_name">Nom :</label>
+            <input type="text" id="last_name" name="last_name" class="form-control" required>
+        </div>
+
+        <div class="form-group mb-3">
+            <label for="course_title">Titre de la formation :</label>
+            <input type="text" id="course_title" name="course_title" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-success">Imprimer le certificat</button>
+    </form>
+
+    <a href="{{ path('app_home') }}" class="btn btn-secondary mt-3">Retour à l'accueil</a>
+{% endblock %}

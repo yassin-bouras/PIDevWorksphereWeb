@@ -126,5 +126,44 @@
             </div>
         </div>
     </div>
+
+
+
+    <h4>Localisation de l'événement</h4>
+<p><strong>Adresse :</strong> {{ evennement.lieuEvent }}</p>
+<div id="map" style="height: 400px;"></div>
+
+<script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js"></script>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" />
+
+<script>
+    const address = "{{ evennement.lieuEvent|e('js') }}";
+
+    fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.length > 0) {
+                const lat = data[0].lat;
+                const lon = data[0].lon;
+
+                const map = L.map('map').setView([lat, lon], 13);
+
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors'
+                }).addTo(map);
+
+                L.marker([lat, lon]).addTo(map)
+                    .bindPopup(address)
+                    .openPopup();
+            } else {
+                document.getElementById('map').innerHTML = 'Adresse introuvable.';
+            }
+        })
+        .catch(error => {
+            console.error('Erreur de géocodage :', error);
+            document.getElementById('map').innerHTML = 'Erreur lors du chargement de la carte.';
+        });
+</script>
+
 </div>
 {% endblock %}

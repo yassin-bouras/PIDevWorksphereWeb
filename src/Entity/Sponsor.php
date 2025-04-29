@@ -89,10 +89,10 @@ public function setBudgetSponso(?string $budgetSponso): self
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $classement = null;
 
-    public function getClassement(): ?string
-    {
-        return $this->classement;
-    }
+    // public function getClassement(): ?string
+    // {
+    //     return $this->classement;
+    // }
 
     public function setClassement(?string $classement): self
     {
@@ -103,10 +103,10 @@ public function setBudgetSponso(?string $budgetSponso): self
     #[ORM\Column(name: 'BudgetApresReduction', type: 'decimal', precision: 10, scale: 2, nullable: true)]
     private ?string $BudgetApresReduction = null;
 
-    public function getBudgetApresReduction(): ?string
-{
-    return $this->BudgetApresReduction;
-}
+//     public function getBudgetApresReduction(): ?string
+// {
+//     return $this->BudgetApresReduction;
+// }
 
 public function setBudgetApresReduction(?string $BudgetApresReduction): self
 {
@@ -126,5 +126,29 @@ public function setBudgetApresReduction(?string $BudgetApresReduction): self
         $this->secteurSponsor = $secteurSponsor;
         return $this;
     }
+
+
+
+    // Dans src/Entity/Sponsor.php
+
+public function getBudgetApresReduction(): ?float
+{
+    if ($this->budgetSponso >= 50000) {
+        return $this->budgetSponso * 0.9; // 10% de réduction
+    } elseif ($this->budgetSponso >= 10000) {
+        return $this->budgetSponso * 0.95; // 5% de réduction
+    }
+    return $this->budgetSponso; // Pas de réduction
+}
+
+public function getClassement(): string
+{
+    if ($this->budgetSponso >= 50000) {
+        return 'Or';
+    } elseif ($this->budgetSponso >= 10000) {
+        return 'Argent';
+    }
+    return 'Bronze';
+}
 
 }
