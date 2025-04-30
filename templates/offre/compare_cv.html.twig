@@ -596,12 +596,12 @@
                         <div class="card-body">
                             {% if cvPath %}
                                 <div class="text-center mb-4">
-                                    <img src="{{ asset('assets/images/cv-icon.png') }}" alt="CV Icon" class="mb-3" style="width: 64px; height: auto;">
-                                    <p class="mb-4">Le CV du candidat est disponible pour analyse.</p>
-                                    <a href="{{ asset('uploads/' ~ cvPath) }}" target="_blank" class="btn btn-outline-primary document-btn">
-                                        <i class="fas fa-file-pdf"></i> Ouvrir le CV
-                                    </a>
-                                </div>
+    <i class="fas fa-file-pdf fa-4x mb-3" style="color: var(--success-color);"></i>
+    <p class="mb-4">Le CV du candidat est disponible pour analyse.</p>
+    <a href="{{ asset('uploads/' ~ cvPath) }}" target="_blank" class="btn btn-outline-primary document-btn">
+        <i class="fas fa-file-pdf"></i> Ouvrir le CV
+    </a>
+</div>
                             {% else %}
                                 <div class="alert alert-warning">
                                     <i class="fas fa-exclamation-triangle me-2"></i>
