@@ -77,4 +77,26 @@ final class MeetingController extends AbstractController{
 
         return $this->redirectToRoute('app_meeting_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    #[Route('/meet/{roomName}', name: 'app_meeting', methods: ['GET', 'POST'])]
+    public function joinRoom(Request $request, string $roomName): Response
+    {
+        if ($request->isMethod('POST')) {
+            $username = $request->request->get('username');
+    
+           
+    
+            return $this->render('meeting/room.html.twig', [
+                'roomName' => $roomName,
+                'username' => $username,
+            ]);
+        }
+    
+        return $this->render('meeting/index.html.twig', [
+            'roomName' => $roomName,
+        ]);
+    }
+  
+
+
 }

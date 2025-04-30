@@ -48,12 +48,6 @@ class CoursType extends AbstractType
             'mapped' => false,
             'required' => false,
         
-        ])
-        ->add('formation', EntityType::class, [
-            'class' => Formation::class,
-            'choice_label' => 'titre',
-            'placeholder' => 'Choisie une formation',
-            'label' => 'Formation ',
         ]);
     
     }

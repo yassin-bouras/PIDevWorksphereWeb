@@ -5,6 +5,8 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Repository\ProjetRepository;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Collections\ArrayCollection;
 
 #[ORM\Entity(repositoryClass: ProjetRepository::class)]
 #[ORM\Table(name: 'projet')]
@@ -94,22 +96,6 @@ class Projet
         return $this;
     }
 
-    #[ORM\ManyToOne(targetEntity: Equipe::class, inversedBy: 'projets')]
-    #[ORM\JoinColumn(name: 'equipe_id', referencedColumnName: 'id')]
-    private ?Equipe $equipe = null;
-
-    public function getEquipe(): ?Equipe
-    {
-        return $this->equipe;
-    }
-
-    public function setEquipe(?Equipe $equipe): self
-    {
-        $this->equipe = $equipe;
-        return $this;
-    }
-
-    
     #[ORM\Column(type: 'string', nullable: true)]
     private ?string $etat = null;
 
@@ -146,6 +132,85 @@ class Projet
         return $this;
     }
 
+    #[ORM\ManyToMany(targetEntity: Equipe::class, inversedBy: 'projets')]
+    #[ORM\JoinTable(name: 'equipe_projet')]
+    private Collection $equipes;
 
+    public function __construct()
+    {
+        $this->equipes = new ArrayCollection();
+        $this->taches = new ArrayCollection();
+    }
+
+    /**
+     * @return Collection<int, Equipe>
+     */
     
+    public function getEquipes(): Collection
+    {
+        return $this->equipes;
+    }
+
+    public function addEquipe(Equipe $equipe): self
+    {
+        if (!$this->equipes->contains($equipe)) {
+            $this->equipes->add($equipe);
+            $equipe->addProjet($this);
+        }
+        return $this;
+    }
+
+    public function removeEquipe(Equipe $equipe): self
+    {
+        if ($this->equipes->removeElement($equipe)) {
+            $equipe->removeProjet($this);
+        }
+        return $this;
+    }
+   
+    #[ORM\Column(name: 'id_user' ,type: 'integer', nullable: true)]
+    private ?int $idUser = null;
+    public function getIdUser(): ?int
+    {
+        return $this->idUser;
+    }
+
+    public function setIdUser(?int $idUser): self
+    {
+        $this->idUser = $idUser;
+        return $this;
+    }
+
+
+
+#[ORM\OneToMany(targetEntity: Tache::class, mappedBy: 'projet')]
+private Collection $taches;
+
+
+/**
+ * @return Collection<int, Tache>
+ */
+public function getTaches(): Collection
+{
+    return $this->taches;
+}
+
+public function addTache(Tache $tache): self
+{
+    if (!$this->taches->contains($tache)) {
+        $this->taches->add($tache);
+        $tache->setProjet($this);
+    }
+    return $this;
+}
+
+public function removeTache(Tache $tache): self
+{
+    if ($this->taches->removeElement($tache)) {
+        if ($tache->getProjet() === $this) {
+            $tache->setProjet(null);
+        }
+    }
+    return $this;
+}
 }

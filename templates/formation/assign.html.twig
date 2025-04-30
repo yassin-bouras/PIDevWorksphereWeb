@@ -1,0 +1,23 @@
+{% extends '/dashboard/base.html.twig' %}
+
+{% block title %}Assigner un cours{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2 class="mb-4">Assigner un cours à la formation : <strong>{{ formation.titre }}</strong></h2>
+
+    <form method="post">
+        <div class="mb-3">
+            <label for="cours" class="form-label">Choisissez un cours :</label>
+            <select name="cours_id" id="cours" class="form-select">
+                {% for c in cours %}
+                    <option value="{{ c.idC }}">{{ c.NomC }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Assigner</button>
+        <a href="{{ path('app_formation_index') }}" class="btn btn-secondary">Annuler</a>
+    </form>
+</div>
+{% endblock %}

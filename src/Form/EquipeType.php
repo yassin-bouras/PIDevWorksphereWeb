@@ -48,6 +48,7 @@ class EquipeType extends AbstractType
     ])
 ;*/
 
+
 ->add('users', EntityType::class, [
     'label' => 'Employés',
     'class' => User::class,

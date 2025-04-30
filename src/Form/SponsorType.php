@@ -17,8 +17,8 @@ class SponsorType extends AbstractType
             ->add('prenomSponso')
             ->add('emailSponso')
             ->add('budgetSponso')
-            ->add('classement')
-            ->add('BudgetApresReduction')
+            //->add('classement')
+            //->add('BudgetApresReduction')
             ->add('secteurSponsor', TextType::class, [ // Ajout du champ secteurSponsor
                 'label' => 'Secteur d\'activité',
                 'required' => false, // Modifier à true si nécessaire

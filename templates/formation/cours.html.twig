@@ -1,20 +1,19 @@
-{% extends '/home/index.html.twig' %}
+{% extends '/dashboard/base.html.twig' %}
 
 {% block title %}Cours de la Formation{% endblock %}
 
-{% block body %}
+{% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-lg-8">
+        <div class="col-lg-10">
             <!-- En-tête avec bouton Retour -->
-            <div class="d-flex justify-content-between align-items-center mb-4">ù
+            <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0" style="font-weight: 600; color: #2c3e50; margin-top:50px;margin-left:20%;">
-                   Cours de la formation:
+                    Cours de la formation:
                 </h2>
                 <div style="width: 100px;"></div>
             </div>
 
-         
             <h4 class="text-center mb-4" style="color: #6c757d;">
                 {{ formation.titre }}
             </h4>
@@ -30,86 +29,53 @@
                                         <h5 class="mb-1" style="color: #3498db;">{{ c.NomC }}</h5>
                                         <small class="text-muted">Cours n°{{ loop.index }}</small>
                                     </div>
-                                    <button class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#detailCours{{ loop.index }}">
+                                    <button class="btn btn-sm btn-outline-secondary toggle-details" data-target="details-{{ loop.index }}">
                                         <i class="fas fa-info-circle me-1"></i>Détail
                                     </button>
                                 </li>
 
-                                <!-- Modal pour les détails -->
-                                <div class="modal fade" id="detailCours{{ loop.index }}" tabindex="-1" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content">
-                                            <div class="modal-header  text-white" style="background-color: #52cdd1;">
-                                                <h5 class="modal-title">{{ c.nomC }}</h5>
-                                                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <!-- Colonne Image -->
-                                                    <div class="col-md-4 text-center mb-4">
-                                                        {% if c.photo %}
-                                                            <img src="{{ asset(c.photo) }}" alt="Image du Cours" class="img-fluid rounded" style="max-height: 250px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                                                        {% else %}
-                                                            <div class="bg-light p-4 rounded text-muted">
-                                                                <i class="fas fa-image fa-3x mb-2"></i>
-                                                                <p class="mb-0">Pas d'image disponible</p>
-                                                            </div>
-                                                        {% endif %}
+                                <!-- Détails du cours en dessous -->
+                                <li class="list-group-item bg-light d-none" id="details-{{ loop.index }}">
+                                    <div class="p-3">
+                                        <div class="row">
+                                            <div class="col-md-4 text-center mb-3">
+                                                {% if c.photo %}
+                                                    <img src="{{ asset(c.photo) }}" alt="Image du Cours" class="img-fluid rounded" style="max-height: 250px; object-fit: cover; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+                                                {% else %}
+                                                    <div class="bg-light p-4 rounded text-muted border">
+                                                        <i class="fas fa-image fa-3x mb-2"></i>
+                                                        <p class="mb-0">Pas d'image disponible</p>
                                                     </div>
-                                                    
-                                                    <!-- Colonne Détails -->
-                                                    <div class="col-md-8">
-                                                        <div class="mb-4">
-                                                            <h4 class="text-primary mb-3">Description</h4>
-                                                            <div class="p-3 bg-light rounded">
-                                                                {{ c.descriptionC|nl2br }}
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <div class="row">
-                                                            <div class="col-md-4">
-                                                                <div class="card bg-light mb-3">
-                                                                    <div class="card-body">
-                                                                        <h6 class="card-title text-muted">Date</h6>
-                                                                        <p class="card-text">{{ c.date ? c.date|date('d/m/Y') : 'N/A' }}</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <div class="col-md-4">
-                                                                <div class="card bg-light mb-3">
-                                                                    <div class="card-body">
-                                                                        <h6 class="card-title text-muted">Heure début</h6>
-                                                                        <p class="card-text">{{ c.heureDebut ? c.heureDebut|date('H:i') : 'N/A' }}</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            
-                                                            <div class="col-md-4">
-                                                                <div class="card bg-light mb-3">
-                                                                    <div class="card-body">
-                                                                        <h6 class="card-title text-muted">Heure fin</h6>
-                                                                        <p class="card-text">{{ c.heureFin ? c.heureFin|date('H:i') : 'N/A' }}</p>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
+                                                {% endif %}
+                                            </div>
+                                            <div class="col-md-8">
+                                                <h5 class="text-primary">Description</h5>
+                                                <p>{{ c.descriptionC|nl2br }}</p>
+                                                <div class="row">
+                                                    <div class="col-md-4">
+                                                        <strong>Date:</strong><br>
+                                                        {{ c.date ? c.date|date('d/m/Y') : 'N/A' }}
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <strong>Heure début:</strong><br>
+                                                        {{ c.heureDebut ? c.heureDebut|date('H:i') : 'N/A' }}
+                                                    </div>
+                                                    <div class="col-md-4">
+                                                        <strong>Heure fin:</strong><br>
+                                                        {{ c.heureFin ? c.heureFin|date('H:i') : 'N/A' }}
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                                                    <i class="fas fa-times me-1"></i> Fermer
-                                                </button>
                                                 {% if is_granted('ROLE_ADMIN') %}
-                                                    <a href="{{ path('app_cour_edit', {'id_c': c.idC}) }}" class="btn btn-warning">
-                                                        <i class="fas fa-edit me-1"></i> Modifier
-                                                    </a>
+                                                    <div class="mt-3">
+                                                        <a href="{{ path('app_cour_edit', {'id_c': c.idC}) }}" class="btn btn-warning btn-sm">
+                                                            <i class="fas fa-edit me-1"></i> Modifier
+                                                        </a>
+                                                    </div>
                                                 {% endif %}
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </li>
                             {% endfor %}
                         </ul>
                     {% else %}
@@ -121,26 +87,24 @@
                     {% endif %}
                 </div>
             </div>
-        </div>
-        <div class="text-center mt-4">
-            <a href="{{ path('app_formation_show', {'id_f': formation.idF}) }}" class="btn" style="background-color: #4771cb; color: white; padding: 7px 25px; border-radius: 8px; text-decoration: none; margin-right: 15px; transition: all 0.3s;">
-                <i class="fas fa-arrow-left me-2"></i>Retour à la liste
-            </a>
+
+            <!-- Bouton Retour -->
+            <div class="text-center mt-4">
+                <a href="{{ path('app_formation_show', {'id_f': formation.idF}) }}" class="btn" style="background-color: #4771cb; color: white; padding: 7px 25px; border-radius: 8px; text-decoration: none; margin-right: 15px; transition: all 0.3s;">
+                    <i class="fas fa-arrow-left me-2"></i>Retour à la liste
+                </a>
+            </div>
         </div>
     </div>
 </div>
 
+<!-- Styles -->
 <style>
     .list-group-item {
         transition: all 0.3s ease;
     }
     .list-group-item:hover {
         background-color: #f8f9fa;
-        transform: translateX(5px);
-    }
-    .card {
-        border: none;
-        border-radius: 10px;
     }
     .btn-outline-secondary {
         border-radius: 20px;
@@ -151,4 +115,19 @@
         color: white;
     }
 </style>
+
+<!-- Script pour afficher/cacher les détails -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.toggle-details').forEach(button => {
+            button.addEventListener('click', function () {
+                const targetId = this.getAttribute('data-target');
+                const target = document.getElementById(targetId);
+                if (target) {
+                    target.classList.toggle('d-none');
+                }
+            });
+        });
+    });
+</script>
 {% endblock %}

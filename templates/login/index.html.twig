@@ -289,7 +289,7 @@
                                     const msg = $('#reclamationMessage').val().trim();
                                     if (msg) {
                                         $.ajax({
-                                            url: Path('app_user_reclamation' ),
+                                           url: "{{ path('app_lr_reclamation') }}",
                                             method: 'POST',
                                             contentType: 'application/json',
                                             data: JSON.stringify({

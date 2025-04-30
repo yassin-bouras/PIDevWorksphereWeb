@@ -66,7 +66,8 @@ class Formation
     public function __construct()
     {
         $this->reservations = new ArrayCollection();
-        $this->cours = new ArrayCollection();
+        // $this->cours = new ArrayCollection();
+        $this->formationCours = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -209,6 +210,29 @@ public function setDate(?\DateTimeInterface $date): self
     }
 
 
+
+    // #[ORM\ManyToMany(targetEntity: Cours::class, inversedBy: 'formations')]
+    // private Collection $cours;
+    // public function getCours(): Collection
+    // {
+    //     return $this->cours;
+    // }
+
+    // public function addCour(Cours $cour): self
+    // {
+    //     if (!$this->cours->contains($cour)) {
+    //         $this->cours[] = $cour;
+    //     }
+
+    //     return $this;
+    // }
+
+    // public function removeCour(Cours $cour): self
+    // {
+    //     $this->cours->removeElement($cour);
+    //     return $this;
+    // }
+
     #[ORM\OneToMany(mappedBy: 'formation', targetEntity: Cours::class, orphanRemoval: true)]
     private Collection $cours;
 
@@ -238,4 +262,28 @@ public function setDate(?\DateTimeInterface $date): self
         return $this;
 
     }
+
+    #[ORM\OneToMany(mappedBy: 'formation', targetEntity: FormationCours::class, cascade: ['persist', 'remove'])]
+     private Collection $formationCours;
+
+     public function addFormationCour(FormationCours $formationCour): self
+{
+    if (!$this->formationCours->contains($formationCour)) {
+        $this->formationCours[] = $formationCour;
+        $formationCour->setFormation($this);
+    }
+
+    return $this;
+}
+
+public function removeFormationCour(FormationCours $formationCour): self
+{
+    if ($this->formationCours->removeElement($formationCour)) {
+        if ($formationCour->getFormation() === $this) {
+            $formationCour->setFormation(null);
+        }
+    }
+
+    return $this;
+}
 }

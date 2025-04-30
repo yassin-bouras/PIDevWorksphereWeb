@@ -6,6 +6,7 @@ use App\Entity\Reservation;
 use App\Entity\Formation;
 use App\Form\ReservationType;
 use App\Repository\ReservationRepository;
+use App\Repository\UserRepository;
 use App\Repository\FavoriRepository;
 use App\Repository\FormationRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -13,9 +14,23 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+
 
 #[Route('/reservation')]
 final class ReservationController extends AbstractController{
+    private $jwtEncoder;
+    private $userRepository;
+
+    public function __construct(JWTEncoderInterface $jwtEncoder, UserRepository $userRepository)
+    {
+        $this->jwtEncoder = $jwtEncoder;
+        $this->userRepository = $userRepository;
+    }
+
+      
+    
     #[Route(name: 'app_reservation_index', methods: ['GET'])]
     public function index(ReservationRepository $reservationRepository , FormationRepository $formationRepository): Response
     {
@@ -27,56 +42,116 @@ final class ReservationController extends AbstractController{
     #[Route('/new', name: 'app_reservation_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
-        $reservation = new Reservation();
-        $form = $this->createForm(ReservationType::class, $reservation);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($reservation);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+        // Récupérer le token dans les cookies
+        $token = $request->cookies->get('BEARER');
+    
+        if (!$token) {
+            return $this->redirectToRoute('app_login');
         }
-
-        return $this->render('reservation/new.html.twig', [
-            'reservation' => $reservation,
-            'form' => $form,
-        ]);
+    
+        try {
+            $decodedData = $this->jwtEncoder->decode($token);
+            $email = $decodedData['username'] ?? null;
+    
+            if (!$email) {
+                $this->addFlash('error', 'Email non trouvé dans le token.');
+                return $this->redirectToRoute('app_login');
+            }
+    
+            $user = $this->userRepository->findOneBy(['email' => $email]);
+    
+            if (!$user) {
+                $this->addFlash('error', 'Utilisateur non trouvé.');
+                return $this->redirectToRoute('app_login');
+            }
+    
+            $reservation = new Reservation();
+            $form = $this->createForm(ReservationType::class, $reservation);
+            $form->handleRequest($request);
+    
+            if ($form->isSubmitted() && $form->isValid()) {
+                // Lier l'utilisateur connecté à la réservation
+                $reservation->setIdUser($user->getIduser());
+    
+                $entityManager->persist($reservation);
+                $entityManager->flush();
+    
+                return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
+            }
+    
+            return $this->render('reservation/new.html.twig', [
+                'reservation' => $reservation,
+                'form' => $form,
+            ]);
+    
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Token invalide ou expiré.');
+            return $this->redirectToRoute('app_login');
+        }
     }
+    
+    
 
-    #[Route('/formation/front/{id_f}/reservation/new', name: 'app_formation_reservation_new', methods: ['GET', 'POST'])]
+    #[Route('/formation/employe/{id_f}/reservation/new', name: 'app_formation_reservation_new', methods: ['GET', 'POST'])]
     public function ajouterReservationPourFormation(
         int $id_f,
         Request $request,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        HttpClientInterface $httpClient
     ): Response {
-        // Récupérer la formation en fonction de l'ID passé dans l'URL
         $formation = $entityManager->getRepository(Formation::class)->find($id_f);
-    
-        // Vérifier si la formation existe
         if (!$formation) {
             throw $this->createNotFoundException('Formation non trouvée');
         }
     
-        // Créer une nouvelle réservation
         $reservation = new Reservation();
-        $reservation->setFormation($formation); // Associer la formation à la réservation
+        $reservation->setFormation($formation);
+        $reservation->setIduser(39);
     
-        // Créer et gérer le formulaire de réservation
         $form = $this->createForm(ReservationType::class, $reservation);
         $form->handleRequest($request);
     
-        // Si le formulaire est soumis et valide
         if ($form->isSubmitted() && $form->isValid()) {
-            // Persister la réservation
             $entityManager->persist($reservation);
             $entityManager->flush();
     
-            // Rediriger vers la liste des réservations
+            // Envoi du SMS directement ici
+            $numero = '+21653462002'; // Numéro statique pour le test
+            $message = "Votre réservation pour la formation '{$formation->getTitre()}' est confirmée.";
+    
+            $body = [
+                'messages' => [
+                    [
+                        'destinations' => [['to' => $numero]],
+                        'from' => '447491163443',
+                      'text' =>  $message ,
+
+                    ],
+                ],
+            ];
+    
+            try {
+                $response = $httpClient->request('POST', 'https://nmvl3e.api.infobip.com/sms/2/text/advanced', [
+                    'headers' => [
+                        'Authorization' => 'App 6e9114132980f5449e41c015aaba2ab9-c66a9121-fa77-4264-8dc2-b1b3557d0e69',
+                        'Content-Type' => 'application/json',
+                        'Accept' => 'application/json',
+                    ],
+                    'json' => $body,
+                ]);
+    
+                if ($response->getStatusCode() === 200) {
+                    // SMS envoyé
+                } else {
+                    // Gestion d'erreur
+                }
+            } catch (\Exception $e) {
+                // Log ou message d’erreur ici
+            }
+    
             return $this->redirectToRoute('app_reservation_index', [], Response::HTTP_SEE_OTHER);
         }
     
-        // Rendre la vue du formulaire
         return $this->render('reservation/new.html.twig', [
             'reservation' => $reservation,
             'form' => $form->createView(),
@@ -119,4 +194,7 @@ final class ReservationController extends AbstractController{
             'form' => $form,
         ]);
     }
+
 }
+
+

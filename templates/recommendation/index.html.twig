@@ -1,0 +1,59 @@
+{% extends '/dashboard/base.html.twig' %}
+
+{% block title %}Recommandations de cours{% endblock %}
+
+{% block content %}
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">Obtenir des recommandations de cours</h1>
+
+        {# Messages flash (erreur, info, etc.) #}
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : (label == 'warning' ? 'warning' : 'info') }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endfor %}
+
+        {# Formulaire de saisie #}
+        <form method="post" class="mx-auto" style="max-width: 600px;">
+            <div class="form-group mb-3">
+                <label for="formation" class="form-label">Nom de la formation :</label>
+                <input 
+                    type="text" 
+                    id="formation" 
+                    name="formation" 
+                    class="form-control" 
+                    placeholder="Ex : Développement web, Machine Learning..." 
+                    value="{{ formationName ?? '' }}" 
+                    required
+                >
+            </div>
+            <button type="submit" class="btn btn-primary w-100">Obtenir des recommandations</button>
+        </form>
+
+        {# Affichage des recommandations #}
+        {% if recommendations is iterable and recommendations|length > 0 %}
+            <div class="mt-5">
+                <h2 class="text-center">Cours recommandés pour : <span class="text-primary">"{{ formationName }}"</span></h2>
+                <ul class="list-group mt-3 shadow-sm">
+                    {% for cours in recommendations %}
+                        <li class="list-group-item d-flex align-items-center">
+                            <i class="bi bi-book-fill text-primary me-2"></i>
+                            {{ cours }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% elseif formationName %}
+            <div class="alert alert-info mt-4 text-center">
+                Aucune recommandation trouvée pour "<strong>{{ formationName }}</strong>".
+            </div>
+        {% endif %}
+
+        <div class="text-center mt-4">
+            <a href="{{ path('app_formation_index') }}" class="btn btn-secondary">Retour à l'accueil</a>
+        </div>
+    </div>
+{% endblock %}

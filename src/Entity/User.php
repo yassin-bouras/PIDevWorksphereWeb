@@ -85,7 +85,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: 'boolean', nullable: true)]
     private ?bool $banned = null;
 
-    #[ORM\Column(type: 'text', nullable: true)]
+    #[ORM\Column(name: 'messagereclamation', type: 'text', nullable: true)]
     private ?string $messagereclamation = null;
 
     #[ORM\Column(name: 'numt_tel', type: 'integer', nullable: true)]

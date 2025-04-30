@@ -42,42 +42,40 @@
                         </div>
 
                         {# Liste des membres avec barre de recherche #}
-                        <div class="section-title mb-3">
-                            <h4>Membres de l'équipe</h4>
-                           <!--  <div class="search-box">
-                                <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un membre..." onkeyup="filterMembers()">
-                                <i class="fas fa-search search-icon"></i>
-                            </div> -->
-                        </div>
-
-                        <div class="member-list">
-                            {% if equipe.users is not empty %}
-                                <ul id="memberList" class="list-group">
-                                    {% for user in equipe.users %}
-                                        <li class="list-group-item d-flex align-items-center">
-                                            <div class="member-avatar">
-                                               {#  <img src="{{ asset(user.imageprofil) }}" alt="User Image"> #}
+                        <h3 style="color: #333;">Membres de l'équipe</h3>
+                                            {# Liste des membres avec barre de recherche #}
+                                            <div class="section-title mb-3">
+                                       
+                                            
                                             </div>
-                                            <div class="member-info">
-                                                <h5>{{ user.nom }} {{ user.prenom }}</h5>
-                                                <p>{{ user.email }}</p>
+                                            <div class="member-list">
+                                                {% if equipe.users is not empty %}
+                                                    <ul id="memberList" class="list-group">
+                                                        {% for user in equipe.users %}
+                                                            <li class="list-group-item d-flex align-items-center">
+                                                                <div class="member-avatar">
+                                                                    <img src="{{ asset(user.imageprofil) }}" alt="Image de l'équipe" class="team-image">
+                                                                </div>
+                                                                <div class="member-info">
+                                                                    <h5>{{ user.nom }} {{ user.prenom }}</h5>
+                                                                    <p>{{ user.email }}</p>
+                                                                </div>
+                                                            </li>
+                                                        {% endfor %}
+                                                    </ul>
+                                                {% else %}
+                                                    <div class="empty-state">
+                                                        <i class="fas fa-user-friends"></i>
+                                                        <p>Aucun membre dans cette équipe</p>
+                                                    </div>
+                                                {% endif %}
                                             </div>
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                            {% else %}
-                                <div class="empty-state">
-                                    <i class="fas fa-user-friends"></i>
-                                    <p>Aucun membre dans cette équipe</p>
-                                </div>
-                            {% endif %}
-                        </div>
 
                         {# Liste des projets de l'équipe #}
                         <div class="section-title mt-5 mb-3">
                             <h4>Projets de l'équipe</h4>
                         </div>
-
+                        
                         <div class="project-list">
                             {% if equipe.projets is not empty %}
                                 {% for projet in equipe.projets %}
@@ -97,7 +95,32 @@
                                                 <span><i class="far fa-calendar-alt"></i> {{ projet.dateCreation|date('d/m/Y') }}</span>
                                             </div>
                                         </div>
-                                        
+                                        <div class="project-actions">
+                                            <button type="button" class="btn btn-sm btn-danger" data-toggle="modal" data-target="#removeProjectModal{{ projet.id }}" title="Retirer le projet">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                        
+                                    <!-- Modal de suppression pour chaque projet -->
+                                    <div class="modal fade" id="removeProjectModal{{ projet.id }}" tabindex="-1" role="dialog" aria-labelledby="removeProjectModalLabel{{ projet.id }}" aria-hidden="true">
+                                        <div class="modal-dialog modal-dialog-centered" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header text-center border-0">
+                                                    <h5 class="modal-title" id="removeProjectModalLabel{{ projet.id }}">Retirer le projet</h5>
+                                                </div>
+                                                <div class="modal-body text-center">
+                                                    <p>Vous êtes sur le point de retirer le projet "{{ projet.nom }}" de l'équipe "{{ equipe.nomEquipe }}".</p>
+                                                </div>
+                                                <div class="modal-footer text-center border-0">
+                                                    <form method="post" action="{{ path('app_equipe_remove_project', {'id': equipe.id, 'projetId': projet.id}) }}">
+                                                        <input type="hidden" name="_token" value="{{ csrf_token('remove_project_' ~ equipe.id ~ '_' ~ projet.id) }}">
+                                                        <button type="submit" class="btn btn-danger">Confirmer</button>
+                                                    </form>
+                                                    <button type="button" class="btn btn-secondary" style="background-color: #2f8f37;" data-dismiss="modal">Annuler</button>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 {% endfor %}
                             {% else %}
@@ -118,6 +141,7 @@
                             <a href="{{ path('app_equipe_edit', {'id': equipe.id}) }}" class="btn btn-primary">
                                 <i class="fas fa-edit"></i> Modifier
                             </a>
+
                         </div>
                     </div>
                 </div>

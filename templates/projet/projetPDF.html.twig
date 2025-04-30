@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Projet {{ projet.nom }}</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #fff;
+        }
+        .page-border {
+            border: 3px solid black;
+            padding: 30px;
+            margin: 20px;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            width: 100px;
+        }
+        .header {
+            font-size: 10px;
+            color: #666;
+            text-align: right;
+        }
+        .title {
+            text-align: center;
+            font-size: 24pt;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .section-title {
+            font-size: 16pt;
+            font-weight: bold;
+            margin-top: 30px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 14pt;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .content {
+            font-size: 12pt;
+            margin-bottom: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th, td {
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .member-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+        .center {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .list-group {
+            list-style: none;
+            padding: 0;
+        }
+        .list-group-item {
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .team-summary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 20px;
+            margin-bottom: 30px;
+            border-left: 4px solid #3498db;
+        }
+        .team-section {
+            margin-bottom: 40px;
+        }
+    </style>
+</head>
+<body>
+<div class="page-border">
+    <div class="top-bar">
+        <img src="{{ absolute_url(asset('back/img/workspherelogo.PNG')) }}" alt="Logo" class="logo">
+        <div class="header">Date: {{ date|date('d/m/Y H:i') }}</div>
+    </div>
+
+    <h1 class="title">Détails du Projet</h1>
+
+    {% if projet.imageProjet %}
+    <div class="center">
+     <!--   <img src="{{ absolute_url(projet.imageProjet) }}" class="project-image" alt="Image du projet">  -->
+    </div>
+    {% endif %}
+
+    <h2 class="subtitle">Nom du projet: {{ projet.nom }}</h2>
+    <p class="content">Description: {{ projet.description }}</p>
+    <p class="content">Date de création: {{ projet.dateCreation|date('d/m/Y') }}</p>
+    <p class="content">Deadline: {{ projet.deadline|date('d/m/Y') }}</p>
+    <p class="content">État: {{ projet.etat }}</p>
+
+    <div class="section-title">
+        <h2>Équipes assignées</h2>
+    </div>
+
+    <div class="member-list">
+        {% if projet.equipes is not empty %}
+            {% for equipe in projet.equipes %}
+                <div class="team-section">
+                    <div class="team-summary">
+                        <h3 style="margin-top: 0;">Équipe: {{ equipe.nomEquipe }}</h3>
+                        <p>Nombre de membres: {{ equipe.users|length }}</p>
+                        {% if equipe.nbrProjet %}
+                        <p>Nombre de projets: {{ equipe.nbrProjet }}</p>
+                        {% endif %}
+                    </div>
+
+                    {% if equipe.users is not empty %}
+                        <h4>Membres :</h4>
+                        <ul class="list-group">
+                            {% for user in equipe.users %}
+                                <li class="list-group-item">
+                                    <div style="display: flex; align-items: center;">
+                                        <div>
+                                            <strong>{{ user.nom }} {{ user.prenom }}</strong>
+                                            <div style="color: #666;">{{ user.email }}</div>
+                                        </div>
+                                    </div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p style="color: #666; font-style: italic;">Aucun membre dans cette équipe</p>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p style="color: #666; font-style: italic;">Aucune équipe assignée à ce projet</p>
+        {% endif %}
+    </div>
+</div>
+</body>
+</html>

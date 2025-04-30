@@ -5,76 +5,85 @@ namespace App\Controller;
 use App\Entity\Favori;
 use App\Form\FavoriType;
 use App\Repository\FavoriRepository;
+use App\Repository\FormationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use App\Repository\UserRepository;
+
 
 #[Route('/favori')]
-final class FavoriController extends AbstractController{
-    #[Route(name: 'app_favori_index', methods: ['GET'])]
-    public function index(FavoriRepository $favoriRepository): Response
+class FavoriController extends AbstractController
+{
+
+    private $jwtEncoder;
+    private $userRepository;
+
+    public function __construct(JWTEncoderInterface $jwtEncoder, UserRepository $userRepository)
     {
+        $this->jwtEncoder = $jwtEncoder;
+        $this->userRepository = $userRepository;
+    }
+
+
+    #[Route('/add/{formation_id}', name: 'app_favori_add')]
+    public function addToFavori(
+        int $formation_id,
+        
+        EntityManagerInterface $em,
+        FavoriRepository $favoriRepository
+    ): RedirectResponse {
+        
+        $existing = $favoriRepository->findOneBy(['id_f' => $formation_id]);
+
+        if (!$existing) {
+            $favori = new Favori();
+            $favori->setIdF($formation_id);
+            $favori->setIduser(39);
+            $em->persist($favori);
+            $em->flush();
+
+            $this->addFlash('success', 'Formation ajoutée aux favoris');
+        } else {
+            $this->addFlash('warning', 'Formation déjà présente dans les favoris');
+        }
+
+        return $this->redirectToRoute('app_formation_index2');
+    }
+
+    #[Route('/remove/{id}', name: 'app_favori_remove')]
+    public function removeFromFavori(int $id, FavoriRepository $favoriRepository, EntityManagerInterface $em): RedirectResponse
+    {
+        $favori = $favoriRepository->find($id);
+        if ($favori) {
+            $em->remove($favori);
+            $em->flush();
+            $this->addFlash('info', 'Formation retirée des favoris');
+        }
+
+        return $this->redirectToRoute('app_favori_list');
+    }
+
+    #[Route('/list', name: 'app_favori_list')]
+    public function listFavoris(FavoriRepository $favoriRepository, FormationRepository $formationRepository): Response
+    {
+        $favoris = $favoriRepository->findAll();
+
+        $formationsFavoris = [];
+        foreach ($favoris as $favori) {
+            $formation = $formationRepository->find($favori->getIdF());
+            if ($formation) {
+                $formationsFavoris[] = $formation;
+            }
+        }
+
         return $this->render('favori/index.html.twig', [
-            'favoris' => $favoriRepository->findAll(),
+            'formations' => $formationsFavoris,
+            'favoris' => $favoris,
         ]);
-    }
-
-    #[Route('/new', name: 'app_favori_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $favori = new Favori();
-        $form = $this->createForm(FavoriType::class, $favori);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($favori);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_favori_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('favori/new.html.twig', [
-            'favori' => $favori,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id_favori}', name: 'app_favori_show', methods: ['GET'])]
-    public function show(Favori $favori): Response
-    {
-        return $this->render('favori/show.html.twig', [
-            'favori' => $favori,
-        ]);
-    }
-
-    #[Route('/{id_favori}/edit', name: 'app_favori_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Favori $favori, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(FavoriType::class, $favori);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_favori_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('favori/edit.html.twig', [
-            'favori' => $favori,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id_favori}', name: 'app_favori_delete', methods: ['POST'])]
-    public function delete(Request $request, Favori $favori, EntityManagerInterface $entityManager): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$favori->getId_favori(), $request->getPayload()->getString('_token'))) {
-            $entityManager->remove($favori);
-            $entityManager->flush();
-        }
-
-        return $this->redirectToRoute('app_favori_index', [], Response::HTTP_SEE_OTHER);
     }
 }

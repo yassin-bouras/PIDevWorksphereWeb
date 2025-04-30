@@ -54,41 +54,46 @@
             </div>
 
             {# Description #}
-            <div class="section-title mb-3">
+            <div class="section-title mb-3 d-flex justify-content-between align-items-center">
                 <h4>Description</h4>
+                <button id="readAloudBtn" class="btn btn-sm btn-outline-primary">
+                    <i class="fas fa-volume-up"></i> Lire
+                </button>
             </div>
             <div class="project-description p-3 mb-4 bg-light rounded">
-                <p>{{ projet.description }}</p>
+                <p id="projectDescription">{{ projet.description }}</p>
             </div>
 
-            {# Équipe assignée #}
+            {# Équipe(s) assignée(s) #}
             <div class="section-title mb-3">
-                <h4>Équipe assignée</h4>
+                <h4>Équipe(s) assignée(s)</h4>
             </div>
             <div class="assigned-team">
-                {% if projet.equipe %}
-                    <div class="team-card d-flex align-items-center p-3 bg-light rounded">
-                        {% if projet.equipe.imageEquipe %}
-                            <img src="{{ asset(projet.equipe.imageEquipe) }}" alt="Image de l'équipe" class="team-image">
-                        {% else %}
-                            <div class="team-image-placeholder">
-                                <i class="fas fa-users"></i>
-                            </div>
-                        {% endif %}
-                        <div class="team-details ml-4">
-                            <h5>{{ projet.equipe.nomEquipe }}</h5>
-                            <div class="team-stats">
-                                <span class="stat-item">
-                                    <i class="fas fa-project-diagram"></i> 
-                                    {{ projet.equipe.nbrProjet }} Projets
-                                </span>
-                                <span class="stat-item">
-                                    <i class="fas fa-users"></i> 
-                                    {{ projet.equipe.users|length }} Membres
-                                </span>
+                {% if projet.equipes is not empty %}
+                    {% for equipe in projet.equipes %}
+                        <div class="team-card d-flex align-items-center p-3 bg-light rounded mb-3">
+                            {% if equipe.imageEquipe %}
+                                <img src="{{ asset(equipe.imageEquipe) }}" alt="Image de l'équipe" class="team-image">
+                            {% else %}
+                                <div class="team-image-placeholder">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                            {% endif %}
+                            <div class="team-details ml-4">
+                                <h5>{{ equipe.nomEquipe }}</h5>
+                                <div class="team-stats">
+                                    <span class="stat-item">
+                                        <i class="fas fa-project-diagram"></i> 
+                                        {{ equipe.nbrProjet }} Projets
+                                    </span>
+                                    <span class="stat-item">
+                                        <i class="fas fa-users"></i> 
+                                        {{ equipe.users|length }} Membres
+                                    </span>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    {% endfor %}
                 {% else %}
                     <div class="empty-state">
                         <i class="fas fa-users"></i>
@@ -96,7 +101,6 @@
                     </div>
                 {% endif %}
             </div>
-
             
         </div>
         
@@ -106,9 +110,21 @@
                 <a href="{{ path('app_projet_index') }}" class="btn btn-secondary">
                     <i class="fas fa-arrow-left"></i> Retour
                 </a>
-               <!--  <a href="{{ path('app_projet_edit', {'id': projet.id}) }}" class="btn btn-primary">
-                    <i class="fas fa-edit"></i> Modifier
-                </a> -->
+            
+
+                <a href="#" class="btn btn-primary" onclick="document.getElementById('pdf-form').submit();">
+                    <i class="fas fa-file-pdf"></i> Générer PDF
+                </a>
+                
+                <form id="pdf-form" action="{{ path('app_projet_pdf', {id: projet.id}) }}" method="post" style="display: none;">
+                </form>
+                
+               <!--  <form action="{{ path('app_projet_pdf', {id: projet.id}) }}" method="post">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-file-pdf"></i> Générer PDF
+                    </button>
+                </form> -->
+                
             </div>
         </div>
     </div>
@@ -278,4 +294,70 @@
         });
     });
 </script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const readAloudBtn = document.getElementById('readAloudBtn');
+        const descriptionText = document.getElementById('projectDescription').textContent;
+        let speechSynthesis = window.speechSynthesis;
+        let utterance = null;
+    
+        // Vérifier la compatibilité
+        if (!speechSynthesis) {
+            readAloudBtn.disabled = true;
+            readAloudBtn.title = "La synthèse vocale n'est pas supportée par votre navigateur";
+            return;
+        }
+    
+        readAloudBtn.addEventListener('click', function() {
+            if (speechSynthesis.speaking && !speechSynthesis.paused) {
+                // Si déjà en train de lire, mettre en pause
+                speechSynthesis.pause();
+                readAloudBtn.innerHTML = '<i class="fas fa-play"></i> Reprendre';
+            } else if (speechSynthesis.paused) {
+                // Si en pause, reprendre
+                speechSynthesis.resume();
+                readAloudBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+            } else {
+                // Sinon, commencer la lecture
+                if (utterance) {
+                    speechSynthesis.cancel();
+                }
+                
+                utterance = new SpeechSynthesisUtterance(descriptionText);
+                utterance.lang = 'fr-FR'; // Français
+                utterance.rate = 1.0; // Vitesse normale
+                utterance.pitch = 1.0; // Ton normal
+                
+                // Mettre à jour le bouton pendant la lecture
+                utterance.onstart = function() {
+                    readAloudBtn.innerHTML = '<i class="fas fa-pause"></i> Pause';
+                    readAloudBtn.classList.add('active-reading');
+                };
+                
+                utterance.onend = function() {
+                    readAloudBtn.innerHTML = '<i class="fas fa-volume-up"></i> Lire';
+                    readAloudBtn.classList.remove('active-reading');
+                };
+                
+                utterance.onerror = function(event) {
+                    console.error('Erreur de synthèse vocale:', event.error);
+                    readAloudBtn.innerHTML = '<i class="fas fa-volume-up"></i> Lire';
+                    readAloudBtn.classList.remove('active-reading');
+                    alert('Erreur de lecture: ' + event.error);
+                };
+                
+                speechSynthesis.speak(utterance);
+            }
+        });
+        
+        // Arrêter la lecture si l'utilisateur quitte la page
+        window.addEventListener('beforeunload', function() {
+            if (speechSynthesis.speaking) {
+                speechSynthesis.cancel();
+            }
+        });
+    });
+    </script>
 {% endblock %}

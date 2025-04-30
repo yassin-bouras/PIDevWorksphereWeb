@@ -1,0 +1,126 @@
+{% extends '/dashboard/base2.html.twig' %}
+
+{% block title %}Mes Tâches{% endblock %}
+
+{% block content %}
+<div class="content container-fluid">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-xl-12 col-sm-12 col-12 mb-4">
+                <h3 class="page-title">Mes Tâches</h3>
+                <div class="breadcrumb-path">
+                    <ul class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{{ path('app_dashboard_employe') }}">Accueil</a></li>
+                        <li class="breadcrumb-item active">Mes Tâches</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-body">
+                    <div class="mb-4">
+                        <form method="GET" action="{{ path('app_mes_taches') }}">
+                          
+                        </form>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Titre</th>
+                                    <th>Description</th>
+                                    <th>Projet</th>
+                                    <th>Équipe</th>
+                                    <th>Priorité</th>
+                                    <th>Statut</th>
+                                    <th>Deadline</th>
+                                 
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for statut, taches in groupedTaches %}
+                                    {% for tache in taches %}
+                                        <tr>
+                                            <td>{{ tache.titre }}</td>
+                                            <td>{{ tache.description|length > 50 ? tache.description|slice(0, 50) ~ '...' : tache.description }}</td>
+                                            <td>{{ tache.projet.nom }}</td>
+                                            <td>
+                                                {% if tache.projet.equipes|length > 0 %}
+                                                    {{ tache.projet.equipes.first.nomEquipe }}
+                                                {% else %}
+                                                    Non assignée
+                                                {% endif %}
+                                            </td>
+                                            <td>
+                                                <span class="badge priority-{{ tache.priorite }}">
+                                                    {{ tache.priorite }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span>
+                                                    {{ tache.statut }}
+                                                </span>
+                                            </td>
+                                            <td>{{ tache.deadline ? tache.deadline|date('d/m/Y') : 'Non définie' }}</td>
+                                           
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="8" class="text-center">Aucune tâche trouvée</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .priority-1 { background-color: #28a745; color: white; }
+    .priority-2 { background-color: #17a2b8; color: white; }
+    .priority-3 { background-color: #ffc107; color: #212529; }
+    .priority-4 { background-color: #fd7e14; color: white; }
+    .priority-5 { background-color: #dc3545; color: white; }
+    
+    .badge {
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+    
+    .table-responsive {
+        overflow-x: auto;
+    }
+    
+    .table {
+        width: 100%;
+        margin-bottom: 1rem;
+        color: #212529;
+    }
+    
+    .table-striped tbody tr:nth-of-type(odd) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+    
+    .table th, .table td {
+        padding: 12px 15px;
+        vertical-align: middle;
+        border-top: 1px solid #dee2e6;
+    }
+    
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
+    }
+</style>
+{% endblock %}

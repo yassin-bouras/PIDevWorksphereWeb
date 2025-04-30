@@ -1,15 +1,25 @@
-{% extends '/home/index.html.twig' %}
+{% extends '/dashboard/base2.html.twig' %}
 
 {% block title %}Formations{% endblock %}
 
-{% block body %}
+{% block content %}
 <div class="container" style="margin-top: 7%;">
+    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}"></a></li>
     <h1 class="text-center mb-5" style="font-weight: 700; color: #2c3e50; text-shadow: 1px 1px 3px rgba(0,0,0,0.1);">Liste des Formations</h1>
     
-    <!-- Barre de recherche améliorée -->
-    <div class="mb-5">
-        <form method="get" action="{{ path('app_formation_search') }}" class="w-75 mx-auto">
-            <div class="input-group shadow-sm">
+    <!-- Affichage des messages flash -->
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+            <div class="alert alert-{{ label == 'success' ? 'success' : (label == 'error' ? 'danger' : 'warning') }} text-center fw-semibold" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <!-- Barre de recherche -->
+    <div class="mb-5 d-flex justify-content-center align-items-center flex-wrap">
+        <form method="get" action="{{ path('app_formation_search') }}" class="d-flex w-75" style="max-width: 700px;">
+            <div class="input-group shadow-sm w-100">
                 <input type="text" name="search" class="form-control py-2 border-0" 
                        placeholder="Rechercher une formation..." 
                        value="{{ app.request.get('search') }}"
@@ -20,8 +30,39 @@
                 </button>
             </div>
         </form>
+
+        <a href="{{ path('app_favori_list') }}" class="ms-3">
+            <button class="btn" type="button"
+                    style="background-color: #ff4757; color: white; border-radius: 30px; padding-left: 20px; padding-right: 25px; width: 200px;">
+                <i class="fas fa-heart"></i> Mes favoris
+            </button>
+        </a>
     </div>
 
+    <div class="filters mb-4 text-center">
+        <form method="get" action="{{ path('app_formation_filter2') }}" class="d-flex justify-content-center flex-wrap gap-3">
+            <select name="certifie" class="form-select w-auto">
+                <option value="">Avec ou sans certificat</option>
+                <option value="oui" {% if app.request.get('certifie') == 'oui' %}selected{% endif %}>Avec certificat</option>
+                <option value="non" {% if app.request.get('certifie') == 'non' %}selected{% endif %}>Sans certificat</option>
+            </select>
+
+            <select name="type" class="form-select w-auto">
+                <option value="">Type</option>
+                <option value="présentiel" {% if app.request.get('type') == 'présentiel' %}selected{% endif %}>Présentiel</option>
+                <option value="distanciel" {% if app.request.get('type') == 'distanciel' %}selected{% endif %}>Distanciel</option>
+            </select>
+
+            <select name="langue" class="form-select w-auto">
+                <option value="">Langue</option>
+                <option value="français" {% if app.request.get('langue') == 'français' %}selected{% endif %}>Français</option>
+                <option value="anglais" {% if app.request.get('langue') == 'anglais' %}selected{% endif %}>Anglais</option>
+            </select>
+
+            <button class="btn btn-primary" type="submit" style="background-color:#4771cb; border: none;width: 70px;">Filtrer</button>
+        </form>
+    </div>
+    
     {% if formations is not empty %}
         <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
             {% for formation in formations %}
@@ -30,12 +71,15 @@
                          style="border-radius: 15px; transition: all 0.3s ease; overflow: hidden;">
                         
                         <!-- Bouton favori en haut à droite -->
-                        <button class="btn btn-sm position-absolute" 
-                                style="top: 10px; right: 10px; z-index: 1; background-color: #ff4757; color: white; border-radius: 50%; width: 36px; height: 36px; padding: 0;"
-                                title="Ajouter aux favoris">
-                            <i class="fas fa-heart"></i>
-                        </button>
-                        
+                        <a href="{{ path('app_favori_add', {'formation_id': formation.id}) }}"
+                        style="position: absolute; top: 10px; right: 10px; z-index: 1;">
+                            <button class="btn btn-sm" 
+                                    style="background-color: #ff4757; color: white; border-radius: 50%; width: 36px; height: 36px; padding: 0;"
+                                    title="Ajouter aux favoris">
+                                <i class="fas fa-heart"></i>
+                            </button>
+                        </a>
+
                         {% if formation.photo %}
                             <img src="{{ asset(formation.photo) }}" class="card-img-top" alt="Image Formation" 
                                  style="height: 200px; object-fit: cover; transition: transform 0.5s ease;">
@@ -51,9 +95,6 @@
                                 {{ formation.titre }}
                             </h5>
                             
-                            <!-- Commentaire conservé -->
-                            <!-- <p class="card-text">{{ formation.description|slice(0, 100) }}{% if formation.description|length > 100 %}...{% endif %}</p> -->
-                            
                             <ul class="list-unstyled mb-4">
                                 <li class="mb-2">
                                     <i class="fas fa-calendar-day text-primary me-2"></i>
@@ -67,9 +108,9 @@
                                     <i class="fas fa-certificate text-primary me-2"></i>
                                     <strong>Certification:</strong> 
                                     {% if formation.certifie %}
-                                        <span class="badge bg-success">Oui</span>
+                                        <span class="badge " style="color: white; background-color: rgb(38, 227, 38);">Oui</span>
                                     {% else %}
-                                        <span class="badge bg-secondary">Non</span>
+                                        <span class="badge" style="color: white; background-color: rgb(243, 227, 80);">Non</span>
                                     {% endif %}
                                 </li>
                                 <li class="mb-2">

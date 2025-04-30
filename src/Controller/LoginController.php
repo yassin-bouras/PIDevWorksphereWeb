@@ -13,6 +13,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
 use App\Service\MailService;
 use App\Service\HCaptchaService;
+use Doctrine\ORM\EntityManagerInterface;
 
 final class LoginController extends AbstractController
 {
@@ -21,8 +22,10 @@ final class LoginController extends AbstractController
     private JWTTokenManagerInterface $jwtManager;
     private JWTEncoderInterface $jwtEncoder;
     private UserRepository $userRepository;
+    private $entityManager;
 
     public function __construct(
+        EntityManagerInterface $entityManager,
 
         JWTTokenManagerInterface $jwtManager,
         JWTEncoderInterface $jwtEncoder,
@@ -31,8 +34,56 @@ final class LoginController extends AbstractController
         $this->jwtManager = $jwtManager;
         $this->jwtEncoder = $jwtEncoder;
         $this->userRepository = $userRepository;
+        $this->entityManager = $entityManager;
     }
 
+    #[Route('/lrreclamation', name: 'app_lr_reclamation')]
+    public function submitReclamation(Request $request): JsonResponse
+    {
+        error_log('DEBUG: Entering /user/reclamation route');
+
+        // Parse JSON payload
+        $data = json_decode($request->getContent(), true);
+        $email = $data['email'] ?? null;
+        $message = $data['message'] ?? null;
+
+        // Validate input
+        if (!$email || !$message) {
+            error_log('ERROR: Missing email or message');
+            return new JsonResponse(['error' => 'Email and message are required'], 400);
+        }
+
+        // Find user by email
+        $user = $this->userRepository->findOneBy(['email' => $email]);
+        if (!$user) {
+            error_log('ERROR: User not found for email: ' . $email);
+            return new JsonResponse(['error' => 'User not found'], 404);
+        }
+
+        // Check if user is banned
+        if (!$user->isBanned()) {
+            error_log('ERROR: User is not banned: ' . $email);
+            return new JsonResponse(['error' => 'User is not banned'], 403);
+        }
+
+        // Check if reclamation already exists
+        if ($user->getMessagereclamation()) {
+            error_log('ERROR: Reclamation already submitted for user: ' . $email);
+            return new JsonResponse(['error' => 'Reclamation already submitted'], 400);
+        }
+
+        // Save reclamation message
+        try {
+            $user->setMessageReclamation($message);
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+            error_log('DEBUG: Reclamation saved for user: ' . $email);
+            return new JsonResponse(['message' => 'Reclamation submitted successfully'], 200);
+        } catch (\Exception $e) {
+            error_log('ERROR: Failed to save reclamation: ' . $e->getMessage());
+            return new JsonResponse(['error' => 'Failed to save reclamation', 'details' => $e->getMessage()], 500);
+        }
+    }
     #[Route('/login', name: 'app_login', methods: ['POST', 'GET'])]
     public function loginForm(): Response
     {
