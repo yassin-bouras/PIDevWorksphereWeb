@@ -22,7 +22,6 @@ class EntretienHistorySubscriber implements EventSubscriber
 
         $em = $args->getObjectManager();
         
-        // Ensure that $em is actually an instance of EntityManager
         if (!$em instanceof EntityManagerInterface) {
             return;
         }

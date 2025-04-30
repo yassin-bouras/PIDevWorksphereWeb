@@ -13,6 +13,7 @@ use App\Repository\UserRepository;
 use App\Service\EmailValidatorService;
 use App\Service\GeminiService;
 use App\Service\MailService;
+use App\Service\NewsApiService;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
@@ -409,7 +410,7 @@ public function new(Request $request, EntityManagerInterface $entityManager, Can
 
         $this->addFlash('success', '✅ Entretien ajouté avec succès !');
         
-        return $this->redirectToRoute('app_entretien_new', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('app_entretien_index', [], Response::HTTP_SEE_OTHER);
     }
 
     return $this->render('entretien/new.html.twig', [
@@ -587,11 +588,9 @@ public function filtrerParDate(
     $startDate = $request->query->get('start_date');
     $endDate = $request->query->get('end_date');
 
-    // Création de la requête de base
     $queryBuilder = $entretienRepository->createQueryBuilder('e')
         ->orderBy('e.date_entretien', 'DESC');
 
-    // Application des filtres si les dates sont fournies
     if ($startDate && $endDate) {
         $startDateTime = new \DateTime($startDate);
         $endDateTime = new \DateTime($endDate);
@@ -602,16 +601,15 @@ public function filtrerParDate(
             ->setParameter('end', $endDateTime);
     }
 
-    // Pagination des résultats
     $entretiens = $paginator->paginate(
-        $queryBuilder->getQuery(), // Requête Doctrine
-        $request->query->getInt('page', 1), // Numéro de page
-        2 // Nombre d'éléments par page
+        $queryBuilder->getQuery(), 
+        $request->query->getInt('page', 1), 
+        2 
     );
 
     return $this->render('entretien/index.html.twig', [
         'entretiens' => $entretiens,
-        'start_date' => $startDate, // Conserver les dates pour le formulaire
+        'start_date' => $startDate, 
         'end_date' => $endDate
     ]);
 }
@@ -748,6 +746,67 @@ public function testGenerateQuestions(Request $request, GeminiService $geminiSer
         'questions' => $questions,
     ]);
 }
+
+
+
+#[Route('/news', name: 'app_news_hr')]
+public function hrNews(NewsApiService $newsApiService): Response
+    {
+        try {
+            $news = $newsApiService->fetchHrNews();
+            $news = array_map(function ($article) {
+                return [
+                    'title' => $article['title'] ?? 'Untitled',
+                    'link' => $article['link'] ?? '#',
+                    'creator' => isset($article['creator']) ? implode(', ', $article['creator']) : 'Unknown Author',
+                    'description' => $article['description'] ?? 'No description available.',
+                    'image_url' => $article['image_url'] ?? 'https://via.placeholder.com/300x200?text=No+Image',
+                    'content' => $article['content'] ?? 'No content available.',
+                    'pubDate' => $article['pubDate'] ?? null,
+                    'category' => isset($article['category']) ? implode(', ', $article['category']) : 'Uncategorized',
+                    'source_name' => $article['source_name'] ?? 'Unknown Source',
+                ];
+            }, $news);
+        } catch (\Exception $e) {
+            $this->addFlash('error', 'Failed to load HR news: ' . $e->getMessage());
+            $news = [];
+        }
+
+        return $this->render('entretien/hr.html.twig', [
+            'news' => $news,
+        ]);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
 
 

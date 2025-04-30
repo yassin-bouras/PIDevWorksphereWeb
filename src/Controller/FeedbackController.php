@@ -79,12 +79,8 @@ final class FeedbackController extends AbstractController{
         
             $feedback->setRate($rate);
 
-
-
-
             $feedback->setEntretien($entretien);
             $entretien->setFeedback($feedback);
-
             $entityManager->persist($feedback);
             $entityManager->flush();
 

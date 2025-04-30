@@ -20,7 +20,7 @@ class FeedbackType extends AbstractType
 
             ->add('q1', ChoiceType::class, [
                 'mapped' => false,
-                'label' => 'Question 1',
+                'label' => 'Le candidat s est-il bien présenté  ?',
                 'choices' => [
                     'Bien' => 2,
                     'Moyen' => 1,
@@ -30,7 +30,7 @@ class FeedbackType extends AbstractType
             ])
             ->add('q2', ChoiceType::class, [
                 'mapped' => false,
-                'label' => 'Question 2',
+                'label' => 'A-t-il démontré une bonne compréhension du poste  ?',
                 'choices' => [
                     
                     'Bien' => 2,
@@ -41,7 +41,7 @@ class FeedbackType extends AbstractType
             ])
             ->add('q3', ChoiceType::class, [
                 'mapped' => false,
-                'label' => 'Question 3',
+                'label' => 'Le candidat a-t-il démontré une bonne maîtrise des compétences techniques requises pour le poste',
                 'choices' => [
                     
                     'Bien' => 2,
@@ -52,7 +52,7 @@ class FeedbackType extends AbstractType
             ])
             ->add('q4', ChoiceType::class, [
                 'mapped' => false,
-                'label' => 'Question 4',
+                'label' => 'A-t-il su résoudre les cas pratiques / exercices techniques proposés',
                 'choices' => [
                     'Bien' => 2,
                     'Moyen' => 1,
@@ -62,7 +62,7 @@ class FeedbackType extends AbstractType
             ])
             ->add('q5', ChoiceType::class, [
                 'mapped' => false,
-                'label' => 'Question 5',
+                'label' => 'Son niveau technique est-il adapté au poste',
                 'choices' => [
                     'Bien' => 2,
                     'Moyen' => 1,
