@@ -1,38 +1,950 @@
-<!DOCTYPE html>
+{% extends 'dashboard/base2.html.twig' %}
 
-<title>Notification</title>
+{% block title %}Détail de la notification{% endblock %}
 
-{% block body %}
-    <h1>Notification</h1>
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    /* Add this to the CSS styles section */
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ notification.id }}</td>
-            </tr>
-            <tr>
-                <th>Message</th>
-                <td>{{ notification.message }}</td>
-            </tr>
-            <tr>
-                <th>Created_at</th>
-                <td>{{ notification.createdAt ? notification.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Is_read</th>
-                <td>{{ notification.isRead ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>Notification_type</th>
-                <td>{{ notification.notificationType }}</td>
-            </tr>
-        </tbody>
-    </table>
+    .back-link {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-4);
+        border-radius: var(--radius-lg);
+        font-weight: var(--font-weight-semibold);
+        transition: all var(--animation-base) var(--animation-timing);
+        border: none;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        box-shadow: var(--shadow-md);
+        text-decoration: none;
+        color: white;
+        background-image: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+        width: 100%;
+    }
 
-    <a href="{{ path('app_notification_index') }}">back to list</a>
+    .back-link:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+        color: white;
+        text-decoration: none;
+    }
 
-    <a href="{{ path('app_notification_edit', {'id': notification.id}) }}">edit</a>
+    .back-link::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(180deg,
+                rgba(255, 255, 255, 0.15) 0%,
+                rgba(255, 255, 255, 0) 100%);
+        z-index: -1;
+    }
 
-    {{ include('notification/_delete_form.html.twig') }}
+    .back-link::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
+        transform: translate(-50%, -50%) scale(0);
+        transition: transform var(--animation-slow) var(--animation-timing);
+        z-index: -1;
+        pointer-events: none;
+        opacity: 0;
+    }
+
+    .back-link:hover::after {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
+    .back-link:hover i {
+        transform: translateX(-5px);
+    }
+
+    .back-link i {
+        transition: transform var(--animation-base) var(--animation-timing);
+    }
+
+    /* Enterprise Design System Variables */
+    :root {
+        /* Core Color Palette */
+        --primary-color: #33ccc5;
+        --primary-dark: #2a9d8f;
+        --primary-light: #a8e4e0;
+        --primary-gradient: linear-gradient(135deg, #33ccc5, #1a7b75);
+        --secondary-color: #4361ee;
+        --secondary-dark: #3a56d4;
+        --secondary-light: #c7d0ff;
+        --secondary-gradient: linear-gradient(135deg, #4361ee, #3a56d4);
+        --success-color: #10b981;
+        --success-gradient: linear-gradient(135deg, #10b981, #059669);
+        --danger-color: #ef4444;
+        --danger-gradient: linear-gradient(135deg, #ef4444, #dc2626);
+        --warning-color: #f59e0b;
+        --info-color: #3b82f6;
+        --info-gradient: linear-gradient(135deg, #3b82f6, #1d4ed8);
+
+        /* Text Colors */
+        --text-dark: #1e293b;
+        --text-medium: #475569;
+        --text-light: #64748b;
+        --text-muted: #94a3b8;
+
+        /* Background Colors */
+        --bg-white: #ffffff;
+        --bg-light: #f8fafc;
+        --bg-light-hover: #f1f5f9;
+        --bg-accent: #ecfdf5;
+
+        /* Shadow System */
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.04);
+        --shadow-focus: 0 0 0 3px rgba(51, 204, 197, 0.4);
+
+        /* Border Radius */
+        --radius-sm: 0.25rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+        --radius-2xl: 1.5rem;
+        --radius-full: 9999px;
+
+        /* Spacing */
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-5: 1.25rem;
+        --space-6: 1.5rem;
+        --space-8: 2rem;
+        --space-10: 2.5rem;
+        --space-12: 3rem;
+        --space-16: 4rem;
+
+        /* Animation */
+        --animation-fast: 0.15s ease;
+        --animation-base: 0.3s ease;
+        --animation-slow: 0.5s ease;
+        --animation-timing: cubic-bezier(0.16, 1, 0.3, 1);
+        --animation-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+        /* Font System */
+        --font-weight-normal: 400;
+        --font-weight-medium: 500;
+        --font-weight-semibold: 600;
+        --font-weight-bold: 700;
+        --font-weight-extrabold: 800;
+    }
+
+    /* Page Layout */
+    .page-container {
+        max-width: 1440px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Back button */
+    .back-button {
+        position: relative;
+        background-color: var(--bg-white);
+        color: var(--primary-color);
+        border: none;
+        border-radius: var(--radius-md);
+        padding: var(--space-3) var(--space-5);
+        font-weight: var(--font-weight-semibold);
+        transition: all var(--animation-base) var(--animation-timing);
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: var(--space-4);
+        box-shadow: var(--shadow-md);
+        text-decoration: none;
+        overflow: hidden;
+    }
+
+    .back-button:hover {
+        background-color: var(--bg-light-hover);
+        transform: translateX(-5px);
+        box-shadow: var(--shadow-lg);
+        color: var(--primary-dark);
+        text-decoration: none;
+    }
+
+    .back-button:focus {
+        outline: none;
+        box-shadow: var(--shadow-focus);
+    }
+
+    .back-button::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--primary-gradient);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform var(--animation-base) var(--animation-bounce);
+    }
+
+    .back-button:hover::after {
+        transform: scaleX(1);
+    }
+
+    .back-button i {
+        margin-right: var(--space-2);
+        transition: transform var(--animation-base) var(--animation-timing);
+    }
+
+    .back-button:hover i {
+        transform: translateX(-3px);
+    }
+
+    /* Page Header */
+    .page-header {
+        position: relative;
+        background: var(--primary-gradient);
+        color: white;
+        padding: var(--space-8) var(--space-10);
+        border-radius: var(--radius-xl);
+        margin-bottom: var(--space-8);
+        overflow: hidden;
+        box-shadow: var(--shadow-xl);
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.8s var(--animation-bounce) forwards;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+        z-index: 0;
+    }
+
+    .page-header h3 {
+        font-weight: var(--font-weight-bold);
+        margin: 0;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-header .breadcrumb {
+        margin-bottom: 0;
+        padding: 0;
+        background: transparent;
+        position: relative;
+        z-index: 1;
+    }
+
+    .page-header .breadcrumb-item {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .page-header .breadcrumb-item.active {
+        color: white;
+        font-weight: var(--font-weight-medium);
+    }
+
+    .page-header .breadcrumb-item+.breadcrumb-item::before {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .page-header .breadcrumb a {
+        color: rgba(255, 255, 255, 0.8);
+        transition: color var(--animation-fast);
+        text-decoration: none;
+    }
+
+    .page-header .breadcrumb a:hover {
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Notification Card */
+    .notification-detail-card {
+        border: none;
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-xl);
+        transition: all var(--animation-base) var(--animation-timing);
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.8s var(--animation-bounce) forwards;
+        animation-delay: 0.3s;
+    }
+
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .notification-detail-header {
+        background: var(--bg-light);
+        padding: var(--space-6);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .notification-detail-header::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(120deg, rgba(51, 204, 197, 0.1) 0%, rgba(51, 204, 197, 0) 70%);
+        pointer-events: none;
+    }
+
+    .notification-detail-title {
+        font-size: 1.25rem;
+        font-weight: var(--font-weight-bold);
+        color: var(--text-dark);
+        margin-bottom: var(--space-2);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .notification-detail-time {
+        font-size: 0.95rem;
+        color: var(--text-light);
+        margin-top: var(--space-2);
+        display: flex;
+        align-items: center;
+    }
+
+    .notification-detail-time i {
+        margin-right: var(--space-2);
+        color: var(--text-muted);
+    }
+
+    .notification-detail-body {
+        padding: var(--space-8);
+        background: var(--bg-white);
+    }
+
+    .notification-content {
+        font-size: 1.1rem;
+        line-height: 1.7;
+        color: var(--text-dark);
+        margin-bottom: var(--space-6);
+        font-weight: var(--font-weight-medium);
+        padding: var(--space-4);
+        background: var(--bg-light);
+        border-radius: var(--radius-lg);
+        border-left: 4px solid var(--primary-color);
+        position: relative;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.8s var(--animation-bounce) forwards;
+        animation-delay: 0.5s;
+    }
+
+    .notification-content::before {
+        content: '"';
+        position: absolute;
+        top: 0;
+        left: var(--space-4);
+        font-size: 3rem;
+        color: rgba(51, 204, 197, 0.2);
+        line-height: 1;
+    }
+
+    /* Notification Meta */
+    .notification-meta {
+        display: flex;
+        align-items: center;
+        margin-bottom: var(--space-3);
+        padding: var(--space-3) var(--space-4);
+        border-radius: var(--radius-md);
+        background: var(--bg-light);
+        transition: all var(--animation-base);
+        transform: translateX(-10px);
+        opacity: 0;
+        animation: slideInRight 0.5s var(--animation-bounce) forwards;
+    }
+
+    /* Staggered meta item animations */
+    .notification-meta:nth-child(1) {
+        animation-delay: 0.6s;
+    }
+
+    .notification-meta:nth-child(2) {
+        animation-delay: 0.7s;
+    }
+
+    .notification-meta:nth-child(3) {
+        animation-delay: 0.8s;
+    }
+
+    @keyframes slideInRight {
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .notification-meta:hover {
+        background: var(--bg-light-hover);
+        transform: translateX(5px);
+    }
+
+    .notification-meta-label {
+        width: 140px;
+        font-weight: var(--font-weight-semibold);
+        color: var(--text-medium);
+    }
+
+    .notification-meta-value {
+        color: var(--text-dark);
+        font-weight: var(--font-weight-medium);
+    }
+
+    /* Status Badge */
+    .notification-status {
+        display: inline-flex;
+        align-items: center;
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-full);
+        font-size: 0.85rem;
+        font-weight: var(--font-weight-semibold);
+        color: white;
+        box-shadow: var(--shadow-md);
+        animation: pulse 2s infinite;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .notification-status::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transform: translateX(-100%);
+        animation: shimmer 2s infinite;
+    }
+
+    .notification-status i {
+        margin-right: var(--space-2);
+    }
+
+    .notification-status.read {
+        background: var(--success-gradient);
+    }
+
+    .notification-status.unread {
+        background: var(--info-gradient);
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+        }
+
+        70% {
+            box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+        }
+    }
+
+    @keyframes shimmer {
+        0% {
+            transform: translateX(-100%);
+        }
+
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    /* Notification Type Badge */
+    .notification-type-badge {
+        display: inline-flex;
+        align-items: center;
+        padding: var(--space-1) var(--space-3);
+        border-radius: var(--radius-full);
+        font-size: 0.8rem;
+        font-weight: var(--font-weight-bold);
+        color: white;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+    }
+
+    /* Add to your CSS styles section with the other notification-type-badge styles */
+    .notification-type-badge.candidature_accepted {
+        background: var(--success-gradient);
+    }
+
+    .notification-type-badge::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transform: translateX(-100%);
+        animation: shimmer 2s infinite;
+    }
+
+    .notification-type-badge i {
+        margin-right: var(--space-1);
+    }
+
+    .notification-type-badge.candidature_deleted {
+        background: var(--danger-gradient);
+    }
+
+    .notification-type-badge.interview_scheduled {
+        background: var(--success-gradient);
+    }
+
+    .notification-type-badge.system {
+        background: var(--info-gradient);
+    }
+
+    /* Action Buttons */
+    .notification-actions {
+        margin-top: var(--space-6);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-3);
+        position: relative;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.8s var(--animation-bounce) forwards;
+        animation-delay: 0.9s;
+    }
+
+    .notification-actions form {
+        width: 100%;
+    }
+
+    .notification-actions button {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-3) var(--space-4);
+        border-radius: var(--radius-lg);
+        font-weight: var(--font-weight-semibold);
+        transition: all var(--animation-base) var(--animation-timing);
+        border: none;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        box-shadow: var(--shadow-md);
+    }
+
+    .notification-actions button:focus {
+        outline: none;
+        box-shadow: var(--shadow-focus);
+    }
+
+    .notification-actions button::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(180deg,
+                rgba(255, 255, 255, 0.15) 0%,
+                rgba(255, 255, 255, 0) 100%);
+        z-index: -1;
+    }
+
+    .notification-actions button::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
+        transform: translate(-50%, -50%) scale(0);
+        transition: transform var(--animation-slow) var(--animation-timing);
+        z-index: -1;
+        pointer-events: none;
+        opacity: 0;
+    }
+
+    .notification-actions button:hover::after {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
+    .notification-actions button:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .notification-actions button:active {
+        transform: scale(0.97);
+    }
+
+    .notification-actions button i {
+        transition: transform var(--animation-base) var(--animation-bounce);
+    }
+
+    .notification-actions button:hover i {
+        transform: translateY(-2px) rotate(-5deg);
+    }
+
+    .btn-custom-teal {
+        background: var(--primary-gradient);
+        color: white;
+    }
+
+    .btn-outline-danger {
+        background: var(--danger-gradient);
+        color: white;
+    }
+
+    /* Tooltip System */
+    [data-tooltip] {
+        position: relative;
+    }
+
+    [data-tooltip]::before {
+        content: attr(data-tooltip);
+        position: absolute;
+        top: -35px;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px);
+        background: var(--primary-gradient);
+        color: white;
+        padding: 6px 12px;
+        border-radius: var(--radius-md);
+        font-size: 12px;
+        font-weight: var(--font-weight-medium);
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: all 0.3s var(--animation-timing);
+        z-index: 100;
+        box-shadow: var(--shadow-md);
+    }
+
+    [data-tooltip]::after {
+        content: '';
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px);
+        border-width: 6px;
+        border-style: solid;
+        border-color: var(--primary-dark) transparent transparent transparent;
+        pointer-events: none;
+        opacity: 0;
+        transition: all 0.3s var(--animation-timing);
+        z-index: 100;
+    }
+
+    [data-tooltip]:hover::before,
+    [data-tooltip]:hover::after {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        animation: tooltipPulse 2s infinite;
+    }
+
+    @keyframes tooltipPulse {
+        0% {
+            box-shadow: 0 5px 15px rgba(17, 46, 45, 0);
+        }
+
+        50% {
+            box-shadow: 0 5px 15px rgba(16, 250, 238, 0.3);
+        }
+
+        100% {
+            box-shadow: 0 5px 15px rgba(51, 204, 197, 0);
+        }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .page-header {
+            padding: var(--space-5) var(--space-6);
+        }
+
+        .notification-actions {
+            grid-template-columns: 1fr;
+        }
+
+        .notification-detail-body {
+            padding: var(--space-5);
+        }
+
+        .notification-content {
+            font-size: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content container-fluid page-container" style="margin-top: -52%">
+    <!-- <a href="{{ path('app_notification_index') }}" class="back-button"
+        data-tooltip="Retourner à la liste des notifications">
+        <i class="fas fa-arrow-left"></i> Retour aux notifications
+    </a> -->
+
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Détail de la notification</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_notification_index') }}">Notifications</a></li>
+                    <li class="breadcrumb-item active">Détail</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card notification-detail-card">
+                <div class="notification-detail-header">
+                    <div class="notification-detail-title">
+                        <span>
+                            <i class="fas fa-bell me-2" style="color: var(--primary-color);"></i>
+                            Notification
+                        </span>
+
+                        <!-- Update the notification-type-badge span in the notification-detail-title section -->
+                        {% if notification.notificationType %}
+                        <span class="notification-type-badge {{ notification.notificationType }}">
+                            <i class="fas {% if notification.notificationType == 'candidature_deleted' %}fa-user-minus
+                  {% elseif notification.notificationType == 'interview_scheduled' %}fa-calendar-check
+                  {% elseif notification.notificationType == 'candidature_accepted' %}fa-user-check
+                  {% else %}fa-info-circle{% endif %}"></i>
+                            {% if notification.notificationType == 'candidature_deleted' %}
+                            Candidature
+                            {% elseif notification.notificationType == 'interview_scheduled' %}
+                            Entretien
+                            {% elseif notification.notificationType == 'candidature_accepted' %}
+                            Candidature
+                            {% else %}
+                            Système
+                            {% endif %}
+                        </span>
+                        {% endif %}
+                    </div>
+                    <div class="notification-detail-time">
+                        <i class="fas fa-clock"></i> {{ notification.createdAt|date('d/m/Y à H:i') }}
+                    </div>
+                </div>
+
+                <div class="notification-detail-body">
+                    <div class="notification-content">
+                        {{ notification.message|nl2br }}
+                    </div>
+
+                    <div class="notification-meta">
+                        <div class="notification-meta-label">
+                            <i class="fas fa-tag me-2" style="color: var(--primary-color);"></i> Statut
+                        </div>
+                        <div class="notification-meta-value">
+                            <span
+                                class="notification-status {% if notification.isRead %}read{% else %}unread{% endif %}">
+                                <i
+                                    class="fas {% if notification.isRead %}fa-check-circle{% else %}fa-dot-circle{% endif %}"></i>
+                                {% if notification.isRead %}Lu{% else %}Non lu{% endif %}
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="notification-meta">
+                        <div class="notification-meta-label">
+                            <i class="fas fa-calendar-alt me-2" style="color: var(--primary-color);"></i> Date
+                        </div>
+                        <div class="notification-meta-value">
+                            {{ notification.createdAt|date('d/m/Y à H:i:s') }}
+                        </div>
+                    </div>
+
+                    <!-- Update the notification type display in the meta section -->
+                    {% if notification.notificationType %}
+                    <div class="notification-meta">
+                        <div class="notification-meta-label">
+                            <i class="fas fa-list-alt me-2" style="color: var(--primary-color);"></i> Type
+                        </div>
+                        <div class="notification-meta-value">
+                            <span class="fw-semibold" style="
+            color: {% if notification.notificationType == 'candidature_deleted' %}var(--danger-color)
+                   {% elseif notification.notificationType == 'interview_scheduled' %}var(--success-color)
+                   {% elseif notification.notificationType == 'candidature_accepted' %}var(--success-color)
+                   {% else %}var(--info-color){% endif %};
+        ">
+                                {% if notification.notificationType == 'candidature_deleted' %}
+                                Suppression de candidature
+                                {% elseif notification.notificationType == 'interview_scheduled' %}
+                                Entretien planifié
+                                {% elseif notification.notificationType == 'candidature_accepted' %}
+                                Candidature acceptée
+                                {% else %}
+                                {{ notification.notificationType }}
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <div class="notification-actions">
+                        {% if not notification.isRead %}
+                        <form method="post" action="{{ path('app_notification_mark_read', {'id': notification.id}) }}">
+                            <button class="btn btn-custom-teal" data-tooltip="Marquer cette notification comme lue">
+                                <i class="fas fa-check"></i> Marquer comme lu
+                            </button>
+                        </form>
+                        {% else %}
+                        <a href="{{ path('app_notification_index') }}" class="btn back-link"
+                            data-tooltip="Retourner à la liste des notifications">
+                            <i class="fas fa-arrow-left"></i> Retour aux notifications
+                        </a>
+                        {% endif %}
+
+                        <form method="post" action="{{ path('app_notification_delete', {'id': notification.id}) }}"
+                            onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette notification?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ notification.id) }}">
+                            <button class="btn btn-outline-danger" data-tooltip="Supprimer définitivement">
+                                <i class="fas fa-trash"></i> Supprimer
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Add 3D hover effect to the notification card
+        const card = document.querySelector('.notification-detail-card');
+
+        document.addEventListener('mousemove', function (e) {
+            if (!card) return;
+
+            const rect = card.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+
+            // Calculate distance from center (divided by a higher number for subtle effect)
+            const deltaX = (e.clientX - centerX) / 40;
+            const deltaY = (e.clientY - centerY) / 40;
+
+            // Apply the transform
+            card.style.transform = `perspective(1000px) rotateX(${-deltaY}deg) rotateY(${deltaX}deg) translateZ(10px)`;
+        });
+
+        // Reset transform on mouse leave
+        document.addEventListener('mouseleave', function () {
+            if (!card) return;
+            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateZ(0)';
+        });
+
+        // Add ripple effect to buttons
+        const buttons = document.querySelectorAll('.btn, .back-button');
+        buttons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                ripple.style.cssText = `
+                    position: absolute;
+                    background: rgba(255, 255, 255, 0.7);
+                    border-radius: 50%;
+                    width: 5px;
+                    height: 5px;
+                    top: ${y}px;
+                    left: ${x}px;
+                    transform: translate(-50%, -50%);
+                    animation: ripple 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                    pointer-events: none;
+                `;
+
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Add hover effect to meta items
+        const metaItems = document.querySelectorAll('.notification-meta');
+        metaItems.forEach(item => {
+            item.addEventListener('mousemove', function (e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                this.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(248, 250, 252, 0.8) 0%, rgba(248, 250, 252, 1) 70%)`;
+            });
+
+            item.addEventListener('mouseleave', function () {
+                this.style.background = 'var(--bg-light)';
+            });
+        });
+    });
+
+    // Add necessary keyframes
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes ripple {
+            0% {
+                width: 5px;
+                height: 5px;
+                opacity: 1;
+            }
+            100% {
+                width: 300px;
+                height: 300px;
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
 {% endblock %}

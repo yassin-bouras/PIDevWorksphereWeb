@@ -53,4 +53,121 @@ class OffreRepository extends ServiceEntityRepository
         return $qb->getQuery()->getResult();
     }
 
+
+    public function findBySearchAndContractType(string $search = '', string $contractType = ''): array
+    {
+        $qb = $this->createQueryBuilder('o')
+            ->orderBy('o.date_publication', 'DESC');
+
+        // Apply search filter if provided
+        if (!empty($search)) {
+            $qb->andWhere('o.titre LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
+
+        // Apply contract type filter if provided
+        if (!empty($contractType)) {
+            $qb->andWhere('o.type_contrat = :contractType')
+                ->setParameter('contractType', $contractType);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+
+    public function findBySearchContractTypeAndSort(string $search = '', string $contractType = '', string $sortBy = ''): array
+    {
+        $qb = $this->createQueryBuilder('o')
+            ->orderBy('o.idOffre', 'DESC');
+
+        // Apply search filter if provided
+        if (!empty($search)) {
+            $qb->andWhere('o.titre LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
+
+        // Apply contract type filter if provided
+        if (!empty($contractType)) {
+            $qb->andWhere('o.type_contrat = :contractType')
+                ->setParameter('contractType', $contractType);
+        }
+
+        // Apply sorting
+        switch ($sortBy) {
+            case 'date_pub_asc':
+                $qb->orderBy('o.date_publication', 'ASC');
+                break;
+            case 'date_pub_desc':
+                $qb->orderBy('o.date_publication', 'DESC');
+                break;
+            case 'date_lim_asc':
+                $qb->orderBy('o.date_limite', 'ASC');
+                break;
+            case 'date_lim_desc':
+                $qb->orderBy('o.date_limite', 'DESC');
+                break;
+            case 'salaire_asc':
+                $qb->orderBy('o.salaire', 'ASC');
+                break;
+            case 'salaire_desc':
+                $qb->orderBy('o.salaire', 'DESC');
+                break;
+            default:
+                $qb->orderBy('o.date_publication', 'DESC'); // Default sort
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Count offers by contract type
+     * 
+     * @return array
+     */
+    public function countOffresByContractType(): array
+    {
+        return $this->createQueryBuilder('o')
+            ->select('o.type_contrat as label, COUNT(o.id_offre) as count')
+            ->groupBy('o.type_contrat')
+            ->orderBy('count', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Count offers by location
+     * 
+     * @return array
+     */
+    public function countOffresByLocation(): array
+    {
+        return $this->createQueryBuilder('o')
+            ->select('o.lieu_travail as label, COUNT(o.id_offre) as count')
+            ->groupBy('o.lieu_travail')
+            ->orderBy('count', 'DESC')
+            ->setMaxResults(10)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Count offers by month
+     * 
+     * @return array
+     */
+    public function countOffresByMonth(): array
+    {
+        $conn = $this->getEntityManager()->getConnection();
+        $sql = "
+            SELECT MONTH(date_publication) as month, COUNT(id_offre) as count
+            FROM offre
+            GROUP BY MONTH(date_publication)
+            ORDER BY month ASC
+        ";
+        
+        $stmt = $conn->prepare($sql);
+        $result = $stmt->executeQuery();
+        
+        return $result->fetchAllAssociative();
+    }
 }

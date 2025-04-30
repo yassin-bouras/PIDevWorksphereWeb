@@ -79,7 +79,24 @@ class Candidature
         $this->cv = $cv;
         return $this;
     }
+/************************************************************************** */
+    // Add this property to your Candidature entity if it doesn't already exist
 
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
+    private ?string $status = 'pending';
+
+    public function getStatus(): ?string
+    {
+        return $this->status;
+    }
+
+    public function setStatus(?string $status): self
+    {
+        $this->status = $status;
+        return $this;
+    }
+
+/****************************************************************************************** */
     #[ORM\Column(type: 'string', nullable: false)]
     private ?string $lettre_motivation = null;
 
