@@ -89,6 +89,7 @@ class PDFService
             
             <img src='{$logoSrc}' class='logo' alt='Logo de la formation'>
             
+            
             <h1>Certificat de Réussite</h1>
             
             <p>Ce certificat est décerné à</p>

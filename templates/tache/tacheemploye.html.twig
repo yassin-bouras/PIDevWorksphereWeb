@@ -6,77 +6,76 @@
 <div class="content container-fluid">
     <div class="page-header">
         <div class="row">
-            <div class="col-xl-12 col-sm-12 col-12 mb-4">
+            <div class="col-sm-12">
                 <h3 class="page-title">Mes Tâches</h3>
-                <div class="breadcrumb-path">
-                    <ul class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{{ path('app_dashboard_employe') }}">Accueil</a></li>
-                        <li class="breadcrumb-item active">Mes Tâches</li>
-                    </ul>
-                </div>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard_employe') }}">Accueil</a></li>
+                    <li class="breadcrumb-item active">Mes Tâches</li>
+                </ul>
             </div>
         </div>
     </div>
 
     <div class="row">
-        <div class="col-md-12">
+        <div class="col-xl-12 col-sm-12 col-12">
             <div class="card">
+                <div class="card-header">
+                    <h2 class="card-titles">Visualisation Kanban</h2>
+                 
+                </div>
+                
                 <div class="card-body">
-                    <div class="mb-4">
-                        <form method="GET" action="{{ path('app_mes_taches') }}">
-                          
-                        </form>
-                    </div>
-
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Titre</th>
-                                    <th>Description</th>
-                                    <th>Projet</th>
-                                    <th>Équipe</th>
-                                    <th>Priorité</th>
-                                    <th>Statut</th>
-                                    <th>Deadline</th>
-                                 
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for statut, taches in groupedTaches %}
+                    <div class="kanban-board">
+                        {% for statut, taches in groupedTaches %}
+                            <div class="kanban-column">
+                                <div class="kanban-column-header">
+                                    <h3>{{ statut }}</h3>
+                                    <span class="badge bg-primary">{{ taches|length }}</span>
+                                </div>
+                                
+                                <div class="kanban-column-body">
                                     {% for tache in taches %}
-                                        <tr>
-                                            <td>{{ tache.titre }}</td>
-                                            <td>{{ tache.description|length > 50 ? tache.description|slice(0, 50) ~ '...' : tache.description }}</td>
-                                            <td>{{ tache.projet.nom }}</td>
-                                            <td>
-                                                {% if tache.projet.equipes|length > 0 %}
-                                                    {{ tache.projet.equipes.first.nomEquipe }}
-                                                {% else %}
-                                                    Non assignée
-                                                {% endif %}
-                                            </td>
-                                            <td>
-                                                <span class="badge priority-{{ tache.priorite }}">
-                                                    {{ tache.priorite }}
-                                                </span>
-                                            </td>
-                                            <td>
-                                                <span>
-                                                    {{ tache.statut }}
-                                                </span>
-                                            </td>
-                                            <td>{{ tache.deadline ? tache.deadline|date('d/m/Y') : 'Non définie' }}</td>
-                                           
-                                        </tr>
+                                        <div class="kanban-card" data-id="{{ tache.id }}">
+                                            <div class="kanban-card-header">
+                                                <h4>{{ tache.titre }}</h4>
+                                                <span class="priority-badge priority-{{ tache.priorite }}">{{ tache.priorite }}</span>
+                                            </div>
+                                            
+                                            <div class="kanban-card-content">
+                                                <p>{{ tache.description|slice(0, 80) }}{% if tache.description|length > 80 %}...{% endif %}</p>
+                                                <p class="project-info">
+                                                    <small>
+                                                        <i class="fas fa-project-diagram"></i> 
+                                                        {{ tache.projet.nom }}
+                                                        {% if tache.projet.equipes|length > 0 %}
+                                                            | <i class="fas fa-users"></i> {{ tache.projet.equipes.first.nomEquipe }}
+                                                        {% endif %}
+                                                    </small>
+                                                </p>
+                                            </div>
+                                            
+                                            <div class="kanban-card-footer">
+                                                <div class="deadline">
+                                                    <i class="far fa-calendar-alt"></i>
+                                                    {{ tache.deadline ? tache.deadline|date('d/m/Y') : 'Non définie' }}
+                                                    {% if tache.deadline and tache.deadline < date() %}
+                                                        <span class="badge bg-danger">En retard</span>
+                                                    {% endif %}
+                                                </div>
+                                                
+                                              
+                                            </div>
+      
+                                        </div>
+                                    {% else %}
+                                        <div class="kanban-empty">
+                                            <i class="far fa-check-circle"></i>
+                                            <p>Aucune tâche</p>
+                                        </div>
                                     {% endfor %}
-                                {% else %}
-                                    <tr>
-                                        <td colspan="8" class="text-center">Aucune tâche trouvée</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                                </div>
+                            </div>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
@@ -85,42 +84,206 @@
 </div>
 
 <style>
-    .priority-1 { background-color: #28a745; color: white; }
-    .priority-2 { background-color: #17a2b8; color: white; }
-    .priority-3 { background-color: #ffc107; color: #212529; }
-    .priority-4 { background-color: #fd7e14; color: white; }
-    .priority-5 { background-color: #dc3545; color: white; }
+    .kanban-board {
+        display: flex;
+        gap: 20px;
+        overflow-x: auto;
+        padding-bottom: 15px;
+    }
     
-    .badge {
-        padding: 5px 10px;
-        border-radius: 4px;
-        font-size: 12px;
+    .kanban-column {
+        flex: 1;
+        min-width: 300px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        border: 1px solid #e0e0e0;
+    }
+    
+    .kanban-column-header {
+        padding: 15px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #f8f9fa;
+        border-radius: 8px 8px 0 0;
+    }
+    
+    .kanban-column-header h3 {
+        margin: 0;
+        font-size: 16px;
         font-weight: 600;
     }
     
-    .table-responsive {
-        overflow-x: auto;
+    .kanban-column-body {
+        padding: 15px;
+        min-height: 100px;
     }
     
-    .table {
-        width: 100%;
-        margin-bottom: 1rem;
-        color: #212529;
+    .kanban-card {
+        background: #fff;
+        padding: 15px;
+        margin-bottom: 15px;
+        border-radius: 6px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        border-left: 4px solid #4e73df;
+        transition: all 0.3s ease;
     }
     
-    .table-striped tbody tr:nth-of-type(odd) {
-        background-color: rgba(0, 0, 0, 0.05);
+    .kanban-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
     }
     
-    .table th, .table td {
-        padding: 12px 15px;
-        vertical-align: middle;
-        border-top: 1px solid #dee2e6;
+    .kanban-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
     }
     
-    .table thead th {
-        vertical-align: bottom;
-        border-bottom: 2px solid #dee2e6;
+    .kanban-card-header h4 {
+        margin: 0;
+        font-size: 15px;
+        font-weight: 500;
+        color: #333;
+    }
+    
+    .priority-badge {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 24px;
+        font-size: 12px;
+        font-weight: 600;
+        color: white;
+    }
+    
+    .priority-1 { background: #28a745; }
+    .priority-2 { background: #17a2b8; }
+    .priority-3 { background: #ffc107; color: #212529; }
+    .priority-4 { background: #fd7e14; }
+    .priority-5 { background: #dc3545; }
+    
+    .kanban-card-content p {
+        margin: 0 0 10px 0;
+        color: #6c757d;
+        font-size: 14px;
+    }
+    
+    .project-info {
+        font-size: 12px !important;
+        color: #adb5bd !important;
+    }
+    
+    .kanban-card-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 15px;
+        font-size: 13px;
+    }
+    
+    .deadline {
+        color: #6c757d;
+    }
+    
+    .deadline i {
+        margin-right: 5px;
+    }
+    
+    .actions a {
+        color: #6c757d;
+        margin-left: 10px;
+        transition: color 0.3s;
+    }
+    
+    .actions a:hover {
+        color: #4e73df;
+    }
+    
+    .kanban-empty {
+        text-align: center;
+        padding: 20px;
+        color: #adb5bd;
+    }
+    
+    .kanban-empty i {
+        font-size: 24px;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .total-tasks {
+        margin-left: auto;
+        padding-left: 15px;
     }
 </style>
+{% block javascripts %}
+ 
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.kanban-column-body').forEach(column => {
+            new Sortable(column, {
+                group: {
+                    name: 'kanban',
+                    pull: true,
+                    put: true
+                },
+                animation: 150,
+                ghostClass: 'kanban-ghost',
+                chosenClass: 'kanban-chosen',
+                dragClass: 'kanban-drag',
+                onEnd: async (evt) => {
+                    if (!evt.to || !evt.item) return;
+
+                    const taskId = evt.item.dataset.id;
+                    const newStatus = evt.to.closest('.kanban-column')
+                                          .querySelector('.kanban-column-header h3')
+                                          .textContent.trim();
+
+                    try {
+                        const response = await fetch(`/tache/tache/mestaches/${taskId}/update-statut`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-Requested-With': 'XMLHttpRequest'
+                            },
+                            body: JSON.stringify({ statut: newStatus })
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Erreur lors de la mise à jour');
+                        }
+
+                        console.log(`Tâche ${taskId} mise à jour avec statut ${newStatus}`);
+                    } catch (error) {
+                        alert("Erreur lors de la mise à jour de la tâche.");
+                        console.error(error);
+                    }
+
+                    updateTaskCounters();
+                }
+
+                
+            });
+        });
+
+        function updateTaskCounters() {
+            document.querySelectorAll('.kanban-column').forEach(column => {
+                const count = column.querySelectorAll('.kanban-card').length;
+                const badge = column.querySelector('.badge');
+                if (badge) {
+                    badge.textContent = count;
+                }
+            });
+        }
+    });
+</script>
+
+    {% endblock %}
 {% endblock %}

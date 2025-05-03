@@ -106,7 +106,7 @@ final class TacheController extends AbstractController
         return $this->redirectToRoute('app_tache_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id}/update-status', name: 'app_tache_update_status', methods: ['POST'])]
+   #[Route('/{id}/update-status', name: 'app_tache_update_status', methods: ['POST'])]
     public function updateStatus(Request $request, Tache $tache, EntityManagerInterface $entityManager): Response
     {
     
@@ -124,6 +124,7 @@ final class TacheController extends AbstractController
         
         return new JsonResponse(['status' => 'success']);
     }
+
 
 
 
@@ -205,4 +206,22 @@ final class TacheController extends AbstractController
         return $response;
     }
 
+    #[Route('/tache/mestaches/{id}/update-statut', name: 'update_statut_tache', methods: ['POST'])]
+public function updateStatut(int $id, Request $request, TacheRepository $tacheRepository, EntityManagerInterface $entityManager): JsonResponse
+{
+
+        $tache = $tacheRepository->find($id);
+    
+        $data = json_decode($request->getContent(), true);
+        if (!isset($data['statut'])) {
+            return new JsonResponse(['error' => 'Statut non fourni'], 400);
+        }
+    
+        $tache->setStatut($data['statut']);
+        $entityManager->flush();
+    
+        return new JsonResponse(['success' => true]);
+ 
+}
+    
 }
