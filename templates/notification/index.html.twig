@@ -1,41 +1,850 @@
-<!DOCTYPE html>
+{% extends 'dashboard/base2.html.twig' %}
 
-<title>Notification index</title>
+{% block title %}Mes Notifications{% endblock %}
 
-{% block body %}
-    <h1>Notification index</h1>
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    /* Enterprise Design System Variables */
+    :root {
+        /* Core Color Palette */
+        --primary-color: #33ccc5;
+        --primary-dark: #2a9d8f;
+        --primary-light: #a8e4e0;
+        --primary-gradient: linear-gradient(135deg, #33ccc5, #1a7b75);
+        --secondary-color: #4361ee;
+        --secondary-dark: #3a56d4;
+        --secondary-light: #c7d0ff;
+        --secondary-gradient: linear-gradient(135deg, #4361ee, #3a56d4);
+        --success-color: #10b981;
+        --success-gradient: linear-gradient(135deg, #10b981, #059669);
+        --danger-color: #ef4444;
+        --danger-gradient: linear-gradient(135deg, #ef4444, #dc2626);
+        --warning-color: #f59e0b;
+        --info-color: #3b82f6;
+        --info-gradient: linear-gradient(135deg, #3b82f6, #1d4ed8);
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Message</th>
-                <th>Created_at</th>
-                <th>Is_read</th>
-                <th>Notification_type</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for notification in notifications %}
-            <tr>
-                <td>{{ notification.id }}</td>
-                <td>{{ notification.message }}</td>
-                <td>{{ notification.createdAt ? notification.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                <td>{{ notification.isRead ? 'Yes' : 'No' }}</td>
-                <td>{{ notification.notificationType }}</td>
-                <td>
-                    <a href="{{ path('app_notification_show', {'id': notification.id}) }}">show</a>
-                    <a href="{{ path('app_notification_edit', {'id': notification.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        /* Text Colors */
+        --text-dark: #1e293b;
+        --text-medium: #475569;
+        --text-light: #64748b;
+        --text-muted: #94a3b8;
 
-    <a href="{{ path('app_notification_new') }}">Create new</a>
+        /* Background Colors */
+        --bg-white: #ffffff;
+        --bg-light: #f8fafc;
+        --bg-light-hover: #f1f5f9;
+        --bg-accent: #ecfdf5;
+
+        /* Shadow System */
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.04);
+        --shadow-focus: 0 0 0 3px rgba(51, 204, 197, 0.4);
+
+        /* Border Radius */
+        --radius-sm: 0.25rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+        --radius-2xl: 1.5rem;
+        --radius-full: 9999px;
+
+        /* Spacing */
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-5: 1.25rem;
+        --space-6: 1.5rem;
+        --space-8: 2rem;
+        --space-10: 2.5rem;
+        --space-12: 3rem;
+        --space-16: 4rem;
+
+        /* Animation */
+        --animation-fast: 0.15s ease;
+        --animation-base: 0.3s ease;
+        --animation-slow: 0.5s ease;
+        --animation-timing: cubic-bezier(0.16, 1, 0.3, 1);
+        --animation-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+        /* Font System */
+        --font-weight-normal: 400;
+        --font-weight-medium: 500;
+        --font-weight-semibold: 600;
+        --font-weight-bold: 700;
+        --font-weight-extrabold: 800;
+    }
+
+    /* Page Layout */
+    .page-container {
+        max-width: 1440px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Page Header */
+    .page-header {
+        position: relative;
+        background: var(--primary-gradient);
+        color: white;
+        padding: var(--space-8) var(--space-10);
+        border-radius: var(--radius-xl);
+        margin-bottom: var(--space-8);
+        overflow: hidden;
+        box-shadow: var(--shadow-xl);
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.8s var(--animation-bounce) forwards;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+        z-index: 0;
+    }
+
+    .page-header h3 {
+        font-weight: var(--font-weight-bold);
+        margin: 0;
+        position: relative;
+        z-index: 1;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-header .breadcrumb {
+        margin-bottom: 0;
+        padding: 0;
+        background: transparent;
+        position: relative;
+        z-index: 1;
+    }
+
+    .page-header .breadcrumb-item {
+        color: rgba(255, 255, 255, 0.8);
+    }
+
+    .page-header .breadcrumb-item.active {
+        color: white;
+        font-weight: var(--font-weight-medium);
+    }
+
+    .page-header .breadcrumb-item+.breadcrumb-item::before {
+        color: rgba(255, 255, 255, 0.6);
+    }
+
+    .page-header .breadcrumb a {
+        color: rgba(255, 255, 255, 0.8);
+        transition: color var(--animation-fast);
+        text-decoration: none;
+    }
+
+    .page-header .breadcrumb a:hover {
+        color: white;
+        text-decoration: none;
+    }
+
+    /* Notification Card */
+    .notification-card {
+        border: none;
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        margin-bottom: var(--space-6);
+        transition: all var(--animation-base) var(--animation-timing);
+        position: relative;
+        opacity: 0;
+        transform: translateY(20px);
+        animation: fadeInUp 0.8s var(--animation-bounce) forwards;
+    }
+
+    /* Stagger notification card animations */
+        {
+        % for i in 0..20 %
+    }
+
+    .notification-card:nth-child({
+            {
+            i
+        }
+
+    }) {
+        animation-delay: {
+                {
+                0.1+i * 0.05
+            }
+        }
+
+        s;
+    }
+
+        {
+        % endfor %
+    }
+
+    .notification-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .notification-card.unread {
+        border-left: 4px solid var(--primary-color);
+    }
+
+    .notification-card.unread::before {
+        content: '';
+        position: absolute;
+        top: var(--space-4);
+        right: var(--space-4);
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        box-shadow: 0 0 0 rgba(51, 204, 197, 0.4);
+        animation: pulse 2s infinite;
+        z-index: 2;
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(51, 204, 197, 0.4);
+        }
+
+        70% {
+            box-shadow: 0 0 0 10px rgba(51, 204, 197, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(51, 204, 197, 0);
+        }
+    }
+
+    .notification-card .card-body {
+        position: relative;
+        padding: var(--space-6);
+        background: linear-gradient(120deg,
+                rgba(248, 250, 252, 1) 0%,
+                rgba(255, 255, 255, 1) 100%);
+        overflow: hidden;
+    }
+
+    .notification-card.unread .card-body {
+        background: linear-gradient(120deg,
+                rgba(248, 250, 252, 1) 0%,
+                rgba(51, 204, 197, 0.05) 100%);
+    }
+
+    .notification-card .card-body::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 50%;
+        height: 100%;
+        background: linear-gradient(120deg, transparent 0%, rgba(51, 204, 197, 0.03) 100%);
+        pointer-events: none;
+    }
+
+    /* Message */
+    .notification-message {
+        font-size: 1rem;
+        color: var(--text-dark);
+        margin-bottom: var(--space-3);
+        line-height: 1.6;
+        font-weight: var(--font-weight-medium);
+        position: relative;
+        padding-left: var(--space-8);
+    }
+
+    .notification-message::before {
+        content: '"';
+        font-family: Georgia, serif;
+        position: absolute;
+        left: 0;
+        top: -5px;
+        font-size: 2rem;
+        color: rgba(51, 204, 197, 0.2);
+        line-height: 1;
+    }
+
+    .notification-card.unread .notification-message {
+        font-weight: var(--font-weight-semibold);
+    }
+
+    /* Footer */
+    .notification-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: var(--space-4);
+        flex-wrap: wrap;
+        gap: var(--space-3);
+    }
+
+    /* Time */
+    .notification-time {
+        font-size: 0.85rem;
+        color: var(--text-medium);
+        display: flex;
+        align-items: center;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+    }
+
+    .notification-time i {
+        color: var(--text-muted);
+    }
+
+    /* Type */
+    .notification-type {
+        display: inline-flex;
+        align-items: center;
+        padding: var(--space-1) var(--space-3);
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: var(--font-weight-bold);
+        color: white;
+        margin-left: var(--space-2);
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--shadow-md);
+    }
+
+    .notification-type::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transform: translateX(-100%);
+        animation: shimmer 2s infinite;
+    }
+
+    @keyframes shimmer {
+        0% {
+            transform: translateX(-100%);
+        }
+
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    .notification-type i {
+        margin-right: var(--space-1);
+        font-size: 0.7rem;
+    }
+
+    .notification-type.candidature_deleted {
+        background: var(--danger-gradient);
+    }
+
+    .notification-type.interview_scheduled {
+        background: var(--success-gradient);
+    }
+
+    .notification-type.candidature_accepted {
+        background: var(--success-gradient);
+    }
+
+    .notification-type.system {
+        background: var(--info-gradient);
+    }
+
+    /* Empty State */
+    .notification-empty {
+        text-align: center;
+        padding: var(--space-12) var(--space-6);
+        color: var(--text-medium);
+        border-radius: var(--radius-xl);
+        background: var(--bg-white);
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+        opacity: 0;
+        transform: scale(0.95);
+        animation: fadeScale 0.6s var(--animation-bounce) forwards;
+    }
+
+    @keyframes fadeScale {
+        to {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .notification-empty::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+        background: var(--primary-gradient);
+        opacity: 0.5;
+    }
+
+    .notification-empty i {
+        font-size: 4rem;
+        color: var(--text-muted);
+        margin-bottom: var(--space-4);
+        display: block;
+        opacity: 0.6;
+    }
+
+    .notification-empty h4 {
+        color: var(--text-dark);
+        font-weight: var(--font-weight-bold);
+        margin-bottom: var(--space-2);
+    }
+
+    .notification-empty p {
+        color: var(--text-light);
+        font-size: 1rem;
+    }
+
+    /* Actions */
+    .notification-actions {
+        display: flex;
+        gap: var(--space-2);
+        flex-wrap: wrap;
+    }
+
+    .notification-actions .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-md);
+        font-weight: var(--font-weight-semibold);
+        font-size: 0.875rem;
+        transition: all var(--animation-base) var(--animation-timing);
+        box-shadow: var(--shadow-md);
+        position: relative;
+        overflow: hidden;
+        border: none;
+    }
+
+    .notification-actions .btn::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        pointer-events: none;
+        background-image: radial-gradient(circle, rgba(255, 255, 255, 0.3) 10%, transparent 10.01%);
+        background-repeat: no-repeat;
+        background-position: 50%;
+        transform: scale(10, 10);
+        opacity: 0;
+        transition: transform 0.5s, opacity 0.5s;
+    }
+
+    .notification-actions .btn:active::after {
+        transform: scale(0, 0);
+        opacity: 0.3;
+        transition: 0s;
+    }
+
+    .notification-actions .btn i {
+        transition: transform var(--animation-base) var(--animation-bounce);
+    }
+
+    .notification-actions .btn:hover i {
+        transform: translateY(-2px);
+    }
+
+    .notification-actions .btn-info {
+        background: var(--info-gradient);
+        color: white;
+    }
+
+    .notification-actions .btn-info:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .notification-actions .btn-outline-primary {
+        background: transparent;
+        border: 1px solid var(--primary-color);
+        color: var(--primary-color);
+    }
+
+    .notification-actions .btn-outline-primary:hover {
+        background: var(--primary-gradient);
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .btn-mark-all {
+        background: transparent;
+        border: 1px solid white;
+        color: white;
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-md);
+        font-weight: var(--font-weight-semibold);
+        font-size: 0.875rem;
+        transition: all var(--animation-base) var(--animation-timing);
+        box-shadow: var(--shadow-md);
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+    }
+
+    .btn-mark-all:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        color: white;
+    }
+
+    .btn-mark-all i {
+        transition: transform var(--animation-base) var(--animation-bounce);
+    }
+
+    .btn-mark-all:hover i {
+        transform: rotate(15deg);
+    }
+
+    /* Animations */
+    @keyframes fadeInUp {
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Tooltip System */
+    [data-tooltip] {
+        position: relative;
+    }
+
+    [data-tooltip]::before {
+        content: attr(data-tooltip);
+        position: absolute;
+        top: -35px;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px);
+        background: var(--primary-gradient);
+        color: white;
+        padding: 6px 12px;
+        border-radius: var(--radius-md);
+        font-size: 12px;
+        font-weight: var(--font-weight-medium);
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: all 0.3s var(--animation-timing);
+        z-index: 100;
+        box-shadow: var(--shadow-md);
+    }
+
+    [data-tooltip]::after {
+        content: '';
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px);
+        border-width: 6px;
+        border-style: solid;
+        border-color: var(--primary-dark) transparent transparent transparent;
+        pointer-events: none;
+        opacity: 0;
+        transition: all 0.3s var(--animation-timing);
+        z-index: 100;
+    }
+
+    [data-tooltip]:hover::before,
+    [data-tooltip]:hover::after {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    /* Filter Buttons */
+    .notification-filters {
+        display: flex;
+        margin-bottom: var(--space-5);
+        gap: var(--space-3);
+        flex-wrap: wrap;
+        transform: translateY(20px);
+        opacity: 0;
+        animation: fadeInUp 0.8s var(--animation-bounce) forwards;
+        animation-delay: 0.3s;
+    }
+
+    .filter-btn {
+        background: var(--bg-white);
+        border: none;
+        color: var(--text-medium);
+        padding: var(--space-2) var(--space-4);
+        border-radius: var(--radius-full);
+        font-weight: var(--font-weight-medium);
+        font-size: 0.9rem;
+        transition: all var(--animation-base) var(--animation-timing);
+        box-shadow: var(--shadow-md);
+        display: inline-flex;
+        align-items: center;
+        gap: var(--space-2);
+    }
+
+    .filter-btn.active {
+        background: var(--primary-gradient);
+        color: white;
+    }
+
+    .filter-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+        color: var(--primary-color);
+    }
+
+    .filter-btn.active:hover {
+        color: white;
+    }
+
+    .filter-btn i {
+        font-size: 0.8rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .notification-footer {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .notification-actions {
+            margin-top: var(--space-3);
+            width: 100%;
+        }
+
+        .notification-actions .btn {
+            flex: 1;
+            justify-content: center;
+        }
+
+        .page-header {
+            padding: var(--space-6);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="content container-fluid page-container" style="margin-top: -52%">
+    <div class="page-header">
+        <div class="row align-items-center">
+            <div class="col">
+                <h3 class="page-title">Mes Notifications</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Notifications</li>
+                </ul>
+            </div>
+
+        </div>
+    </div>
+
+    {% if notifications is not empty %}
+    <div class="notification-filters">
+        <button class="filter-btn active" data-filter="all">
+            <i class="fas fa-list"></i> Toutes
+        </button>
+        <button class="filter-btn" data-filter="unread">
+            <i class="fas fa-dot-circle"></i> Non lues
+        </button>
+        <button class="filter-btn" data-filter="candidature">
+            <i class="fas fa-user-tie"></i> Candidatures
+        </button>
+        <!--  -->
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-12">
+            {% if notifications is empty %}
+            <div class="notification-empty">
+                <i class="fas fa-bell-slash"></i>
+                <h4>Vous n'avez pas de notifications</h4>
+                <p>Les nouvelles notifications apparaîtront ici lorsque vous en recevrez</p>
+            </div>
+            {% else %}
+            {% for notification in notifications %}
+            <div class="card notification-card {% if not notification.isRead %}unread{% endif %}"
+                data-notification-type="{{ notification.notificationType }}"
+                data-read-status="{% if notification.isRead %}read{% else %}unread{% endif %}">
+                <div class="card-body">
+                    <div class="notification-message">{{ notification.message }}</div>
+                    <div class="notification-footer">
+                        <div class="notification-time">
+                            <i class="fas fa-clock"></i> {{ notification.createdAt|date('d/m/Y à H:i') }}
+
+                            {% if notification.notificationType %}
+                            <span class="notification-type {{ notification.notificationType }}">
+                                <i class="fas 
+                                            {% if notification.notificationType == 'candidature_deleted' %}fa-user-minus
+                                            {% elseif notification.notificationType == 'interview_scheduled' %}fa-calendar-check
+                                            {% elseif notification.notificationType == 'candidature_accepted' %}fa-user-check
+                                            {% else %}fa-info-circle{% endif %}"></i>
+
+                                {% if notification.notificationType == 'candidature_deleted' %}
+                                Candidature
+                                {% elseif notification.notificationType == 'interview_scheduled' %}
+                                Entretien
+                                {% elseif notification.notificationType == 'candidature_accepted' %}
+                                Candidature
+                                {% else %}
+                                Système
+                                {% endif %}
+                            </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="notification-actions">
+                            <a href="{{ path('app_notification_show', {'id': notification.id}) }}" class="btn btn-info"
+                                data-tooltip="Voir les détails">
+                                <i class="fas fa-eye"></i> Voir détails
+                            </a>
+
+                            {% if not notification.isRead %}
+                            <form method="post"
+                                action="{{ path('app_notification_mark_read', {'id': notification.id}) }}"
+                                style="display: inline;">
+                                <button class="btn btn-outline-primary" data-tooltip="Marquer comme lu">
+                                    <i class="fas fa-check"></i> Marquer comme lu
+                                </button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Ripple effect for buttons
+        const buttons = document.querySelectorAll('.btn, .filter-btn, .btn-mark-all');
+        buttons.forEach(button => {
+            button.addEventListener('click', function (e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                ripple.style.cssText = `
+                    position: absolute;
+                    background: rgba(255, 255, 255, 0.7);
+                    border-radius: 50%;
+                    width: 5px;
+                    height: 5px;
+                    top: ${y}px;
+                    left: ${x}px;
+                    transform: translate(-50%, -50%);
+                    animation: ripple 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                    pointer-events: none;
+                `;
+
+                this.style.position = 'relative';
+                this.style.overflow = 'hidden';
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Filter functionality
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const notificationCards = document.querySelectorAll('.notification-card');
+
+        // Update the filter functionality to remove the interview filter
+
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                // Remove active class from all buttons
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+
+                // Add active class to clicked button
+                this.classList.add('active');
+
+                const filter = this.getAttribute('data-filter');
+
+                // Show/hide cards based on filter
+                notificationCards.forEach(card => {
+                    if (filter === 'all') {
+                        card.style.display = 'block';
+                    } else if (filter === 'unread') {
+                        card.style.display = card.classList.contains('unread') ? 'block' : 'none';
+                    } else if (filter === 'candidature') {
+                        card.style.display =
+                            card.getAttribute('data-notification-type') === 'candidature_deleted' ||
+                                card.getAttribute('data-notification-type') === 'candidature_accepted'
+                                ? 'block' : 'none';
+                    }
+                    // Removed the interview filter condition
+                });
+            });
+        });
+
+        // Add 3D hover effect to cards
+        notificationCards.forEach(card => {
+            card.addEventListener('mousemove', function (e) {
+                const rect = this.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+
+                // Calculate distance from center (divided by a higher number for subtle effect)
+                const deltaX = (e.clientX - centerX) / 60;
+                const deltaY = (e.clientY - centerY) / 60;
+
+                // Apply the transform
+                this.style.transform = `perspective(1000px) rotateX(${-deltaY}deg) rotateY(${deltaX}deg) translateZ(5px) translateY(-5px)`;
+            });
+
+            // Reset transform on mouse leave
+            card.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+    });
+
+    // Add necessary keyframes
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes ripple {
+            0% {
+                width: 5px;
+                height: 5px;
+                opacity: 1;
+            }
+            100% {
+                width: 300px;
+                height: 300px;
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+</script>
 {% endblock %}

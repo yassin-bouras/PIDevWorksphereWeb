@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert; // Ajout de l'espace de noms pour les contraintes de validation
 use Doctrine\Common\Collections\ArrayCollection;

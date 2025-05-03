@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/user')]
 final class UserController extends AbstractController
@@ -25,10 +26,36 @@ final class UserController extends AbstractController
     }
 
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
+    public function index(Request $request, UserRepository $userRepository, PaginatorInterface $paginator): Response
     {
+        $search = $request->query->get('search', '');
+        $role = $request->query->get('role', '');
+
+        $queryBuilder = $userRepository->createQueryBuilder('u');
+
+        // Search by name or email (case-insensitive)
+        if ($search) {
+            $queryBuilder->andWhere('UPPER(u.nom) LIKE :search OR UPPER(u.email) LIKE :search')
+                ->setParameter('search', '%' . strtoupper($search) . '%');
+        }
+
+        // Filter by role (case-insensitive)
+        if ($role && in_array(strtoupper($role), ['EMPLOYE', 'MANAGER', 'CANDIDAT', 'RH'], true)) {
+            $queryBuilder->andWhere('UPPER(u.role) = :role')
+                ->setParameter('role', strtoupper($role));
+        }
+
+        // Paginate the results
+        $pagination = $paginator->paginate(
+            $queryBuilder->getQuery(),
+            $request->query->getInt('page', 1),
+            10 // Items per page
+        );
+
         return $this->render('user/index.html.twig', [
-            'users' => $userRepository->findAll(),
+            'users' => $pagination, // Pass pagination as 'users' for compatibility
+            'search' => $search,
+            'role' => $role,
         ]);
     }
 
@@ -169,7 +196,55 @@ final class UserController extends AbstractController
         $em->flush();
         return $this->redirectToRoute('app_user_index');
     }
+    private $entityManager;
+    private $userRepository;
+    #[Route('/reclamation', name: 'app_user_reclamation')]
+    public function submitReclamation(Request $request): JsonResponse
+    {
+        error_log('DEBUG: Entering /user/reclamation route');
 
+        // Parse JSON payload
+        $data = json_decode($request->getContent(), true);
+        $email = $data['email'] ?? null;
+        $message = $data['message'] ?? null;
+
+        // Validate input
+        if (!$email || !$message) {
+            error_log('ERROR: Missing email or message');
+            return new JsonResponse(['error' => 'Email and message are required'], 400);
+        }
+
+        // Find user by email
+        $user = $this->userRepository->findOneBy(['email' => $email]);
+        if (!$user) {
+            error_log('ERROR: User not found for email: ' . $email);
+            return new JsonResponse(['error' => 'User not found'], 404);
+        }
+
+        // Check if user is banned
+        if (!$user->isBanned()) {
+            error_log('ERROR: User is not banned: ' . $email);
+            return new JsonResponse(['error' => 'User is not banned'], 403);
+        }
+
+        // Check if reclamation already exists
+        if ($user->getMessageReclamation()) {
+            error_log('ERROR: Reclamation already submitted for user: ' . $email);
+            return new JsonResponse(['error' => 'Reclamation already submitted'], 400);
+        }
+
+        // Save reclamation message
+        try {
+            $user->setMessageReclamation($message);
+            $this->entityManager->persist($user);
+            $this->entityManager->flush();
+            error_log('DEBUG: Reclamation saved for user: ' . $email);
+            return new JsonResponse(['message' => 'Reclamation submitted successfully'], 200);
+        } catch (\Exception $e) {
+            error_log('ERROR: Failed to save reclamation: ' . $e->getMessage());
+            return new JsonResponse(['error' => 'Failed to save reclamation', 'details' => $e->getMessage()], 500);
+        }
+    }
 
     #[Route('/user/{id}/promote', name: 'app_user_promote')]
     public function promote(User $user, EntityManagerInterface $em): Response

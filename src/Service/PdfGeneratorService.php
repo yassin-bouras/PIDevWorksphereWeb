@@ -8,8 +8,8 @@ use Twig\Environment;
 
 class PdfGeneratorService
 {
-    private $twig;
-    private $pdf;
+    private Environment $twig;
+    private Pdf $pdf;
 
     public function __construct(Environment $twig, Pdf $pdf)
     {
@@ -17,14 +17,21 @@ class PdfGeneratorService
         $this->pdf = $pdf;
     }
 
+    /**
+     * Generates a PDF string from a projet and optional equipes.
+     *
+     * @param mixed $projet The projet data to render.
+     * @param mixed|null $equipes Optional list of equipes.
+     * @return string The generated PDF binary content.
+     */
     public function generateProjetPdf($projet, $equipes = null): string
     {
         $html = $this->twig->render('projet/projetPDF.html.twig', [
             'projet' => $projet,
-            'equipes' => $equipes, 
-            'date' => new \DateTime()
+            'equipes' => $equipes,
+            'date' => new \DateTime(),
         ]);
-        
+
         return $this->pdf->getOutputFromHtml($html, [
             'encoding' => 'utf-8',
             'enable-javascript' => true,
@@ -41,7 +48,6 @@ class PdfGeneratorService
             'image-dpi' => 300,
             'enable-external-links' => true,
             'enable-internal-links' => true,
-            
         ]);
     }
 }

@@ -5,6 +5,7 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
+        /* Existing styles... */
         .form-group {
             margin-bottom: 20px;
             padding: 10px 0;
@@ -13,38 +14,55 @@
             margin-top: 30px;
             padding: 10px 0;
         }
+        /* ... other existing styles ... */
 
-        .form-row {
-            margin-bottom: 20px; /* Add spacing below paired fields */
-            padding: 0 10px; /* Add horizontal padding */
+        /* New styles for radio questions */
+        .questions-container {
+            margin: 25px 0;
         }
-        .form-col {
-            padding: 0 15px; /* Add padding inside columns */
+
+        .question-item {
+            margin-bottom: 25px;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
         }
-        .form-btn {
-            margin-top: 30px; /* Increased spacing above buttons */
-            padding: 10px 0; /* Add padding for balance */
+
+        .question-text {
+            font-weight: 500;
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 16px;
         }
-        .alert-warning {
+
+        .radio-options {
+            display: flex;
+            gap: 25px;
+            padding-left: 10px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+        }
+
+        .radio-option input[type="radio"] {
+            margin-right: 8px;
+            width: 16px;
+            height: 16px;
+        }
+
+        .radio-option label {
+            margin-bottom: 0;
+            cursor: pointer;
+            font-size: 15px;
+            color: #495057;
+        }
+
+        /* Style for invalid radio groups */
+        .is-invalid .question-item {
+            border: 2px solid #ffc107;
             background-color: #fff3cd;
-            border: 1px solid #ffc107;
-            color: #2d3748;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            display: none;
-        }
-        .alert-warning ul {
-            margin: 0;
-            padding-left: 20px;
-        }
-
-
-        .p {
-            padding: 20px ;   
-        }
-        .alert-warning li {
-            margin-bottom: 5px;
         }
     </style>
 {% endblock %}
@@ -89,10 +107,28 @@
                             {{ form_widget(form.message, {'attr': {'class': 'form-control', 'placeholder': 'Votre message...', 'id': 'message', 'rows': '4'}}) }}
                         </div>
 
-                        <div class="form-group">
-                            {{ form_label(form.rate) }}
-                            {{ form_widget(form.rate, {'attr': {'class': 'form-control', 'id': 'rate'}}) }}
+
+                      <div class="questions-container">
+                            {% for i in 1..5 %}
+                                <div class="form-group">
+                                    <div class="question-item">
+                                        <div class="question-text">
+                                            {{ attribute(form, 'q' ~ i).vars.label }}
+                                        </div>
+                                        <div class="radio-options">
+                                            {% for child in attribute(form, 'q' ~ i) %}
+                                                <div class="radio-option">
+                                                    {{ form_widget(child) }}
+                                                    {{ form_label(child) }}
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
                         </div>
+
+                        
 
                         {% if entretien %}
                             <input type="hidden" name="entretien" value="{{ entretien.id }}">
@@ -132,10 +168,8 @@ document.addEventListener('DOMContentLoaded', function () {
         inputs.forEach(input => input.classList.remove('is-invalid'));
 
         const message = document.querySelector('[id$="_message"]');
-        const rate = document.querySelector('[id$="_rate"]');
-        const dateFeedback = document.querySelector('[id$="_date_feedback"]');
-        const entretien = document.querySelector('[id$="_entretien"]');
 
+        // Validation du message
         if (!message.value.trim()) {
             valid = false;
             messages.push("Le message est obligatoire.");
@@ -146,17 +180,27 @@ document.addEventListener('DOMContentLoaded', function () {
             message.classList.add('is-invalid');
         }
 
-        const rateValue = rate.value.trim();
-        if (!rateValue) {
-            valid = false;
-            messages.push("Veuillez sélectionner une note.");
-            rate.classList.add('is-invalid');
-        } else {
-            const rateNum = parseInt(rateValue, 10);
-            if (isNaN(rateNum) || rateNum < 1 || rateNum > 5) {
+        // Validation des questions
+        for (let i = 1; i <= 5; i++) {
+            const radios = document.querySelectorAll(`[name$="[q${i}]"]`);
+            let isChecked = false;
+            radios.forEach(radio => {
+                if (radio.checked) {
+                    isChecked = true;
+                }
+            });
+
+            if (!isChecked) {
                 valid = false;
-                messages.push("La note doit être un nombre entre 1 et 5.");
-                rate.classList.add('is-invalid');
+                messages.push(`Veuillez répondre à la Question ${i}.`);
+
+                // Ajouter une classe pour surligner la question non répondue
+                radios.forEach(radio => {
+                    const questionItem = radio.closest('.question-item');
+                    if (questionItem) {
+                        questionItem.classList.add('is-invalid');
+                    }
+                });
             }
         }
 
@@ -169,4 +213,5 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+
 {% endblock %}

@@ -18,23 +18,26 @@ use Doctrine\ORM\EntityManagerInterface;
 final class LoginController extends AbstractController
 {
     private string $hcaptchaSiteKey;
-
     private JWTTokenManagerInterface $jwtManager;
     private JWTEncoderInterface $jwtEncoder;
     private UserRepository $userRepository;
-    private $entityManager;
+    private EntityManagerInterface $entityManager;
+    private HCaptchaService $hcaptchaService;
 
     public function __construct(
+        string $hcaptchaSiteKey,
         EntityManagerInterface $entityManager,
-
         JWTTokenManagerInterface $jwtManager,
         JWTEncoderInterface $jwtEncoder,
-        UserRepository $userRepository
+        UserRepository $userRepository,
+        HCaptchaService $hcaptchaService
     ) {
+        $this->hcaptchaSiteKey = $hcaptchaSiteKey;
         $this->jwtManager = $jwtManager;
         $this->jwtEncoder = $jwtEncoder;
         $this->userRepository = $userRepository;
         $this->entityManager = $entityManager;
+        $this->hcaptchaService = $hcaptchaService;
     }
 
     #[Route('/lrreclamation', name: 'app_lr_reclamation')]
@@ -84,10 +87,84 @@ final class LoginController extends AbstractController
             return new JsonResponse(['error' => 'Failed to save reclamation', 'details' => $e->getMessage()], 500);
         }
     }
+
     #[Route('/login', name: 'app_login', methods: ['POST', 'GET'])]
-    public function loginForm(): Response
+    public function loginForm(Request $request): Response
     {
-        return $this->render('login/index.html.twig');
+        // Check for ban status
+        $banUntil = $request->getSession()->get('login_ban_until');
+        $isBanned = $banUntil && new \DateTime() < new \DateTime($banUntil);
+
+        if ($isBanned) {
+            return $this->render('login/index.html.twig', [
+                'hcaptcha_site_key' => $this->hcaptchaSiteKey,
+                'is_banned' => true,
+                'ban_until' => $banUntil,
+                'hcaptcha_error' => $request->getSession()->get('hcaptcha_error'),
+            ]);
+        }
+
+        if ($request->isMethod('POST')) {
+            $data = json_decode($request->getContent(), true);
+            $email = $data['email'] ?? null;
+            $password = $data['password'] ?? null;
+            $hcaptchaResponse = $data['h-captcha-response'] ?? null;
+
+            // Check if user is banned
+            if ($isBanned) {
+                return new JsonResponse(['error' => 'Too many failed attempts. Try again later.'], 403);
+            }
+
+            // Validate hCaptcha
+            if (!$hcaptchaResponse) {
+                $this->handleFailedAttempt($request);
+                $request->getSession()->set('hcaptcha_error', 'Please complete the CAPTCHA.');
+                return new JsonResponse(['error' => 'Please complete the CAPTCHA'], 400);
+            }
+
+            $isHCaptchaValid = $this->hcaptchaService->verify($hcaptchaResponse);
+            if (!$isHCaptchaValid) {
+                $this->handleFailedAttempt($request);
+                $request->getSession()->set('hcaptcha_error', 'Invalid CAPTCHA. Please try again.');
+                return new JsonResponse(['error' => 'Invalid CAPTCHA'], 400);
+            }
+
+            // Clear hCaptcha error if successful
+            $request->getSession()->remove('hcaptcha_error');
+
+            // Proceed with authentication (your existing logic)
+            $user = $this->userRepository->findOneBy(['email' => $email]);
+            if (!$user || !password_verify($password, $user->getMdp())) {
+                $this->handleFailedAttempt($request);
+                return new JsonResponse(['error' => 'Invalid credentials'], 401);
+            }
+
+            // Generate JWT token
+            $token = $this->jwtManager->create($user);
+
+            return new JsonResponse(['token' => $token], 200);
+        }
+
+        return $this->render('login/index.html.twig', [
+            'hcaptcha_site_key' => $this->hcaptchaSiteKey,
+            'is_banned' => $isBanned,
+            'ban_until' => $banUntil,
+            'hcaptcha_error' => $request->getSession()->get('hcaptcha_error'),
+        ]);
+    }
+
+    private function handleFailedAttempt(Request $request): void
+    {
+        // Increment failed attempts count
+        $failedAttempts = $request->getSession()->get('login_failed_attempts', 0) + 1;
+        $request->getSession()->set('login_failed_attempts', $failedAttempts);
+
+        // If 3 or more failed attempts, ban for 15 seconds
+        if ($failedAttempts >= 3) {
+            $banUntil = (new \DateTime())->add(new \DateInterval('PT15S'));
+            $request->getSession()->set('login_ban_until', $banUntil->format('Y-m-d H:i:s'));
+            $request->getSession()->set('login_failed_attempts', 0);
+        }
     }
 
     #[Route('/forgot', name: 'app_forgot_password', methods: ['GET'])]
@@ -128,6 +205,7 @@ final class LoginController extends AbstractController
             ], 401);
         }
     }
+
     #[Route('/api/send-email', name: 'api_send_email', methods: ['POST'])]
     public function sendEmail(Request $request, MailService $mailService): JsonResponse
     {
@@ -145,6 +223,7 @@ final class LoginController extends AbstractController
 
         return new JsonResponse(['message' => 'Email sent successfully']);
     }
+
     #[Route('/jwt/user', name: 'api_decode_token_user', methods: ['POST', 'GET'])]
     public function decodeTokenReturnUser(Request $request): JsonResponse
     {

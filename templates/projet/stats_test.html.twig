@@ -85,7 +85,7 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
      document.addEventListener('DOMContentLoaded', function() {
-    // Bar Chart - Statut des projets (utilise l'API existante)
+   
     fetch("{{ path('app_projet_stats_api') }}")
         .then(response => response.json())
         .then(data => {
@@ -115,7 +115,7 @@
             });
         });
 
-    // Pie Chart - Répartition par équipe (nouvelle API)
+   
     fetch("{{ path('app_projet_stats_equipes_api') }}")
         .then(response => response.json())
         .then(data => {

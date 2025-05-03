@@ -3,12 +3,59 @@
 {% block title %}Entretiens{% endblock %}
 
 {% block content  %}
-    <div class="container" style="margin-top:-50%;">
+    <div class="container" style="margin-top:-55%;">
         <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Liste des Entretiens</h1>
 
         <div class="text-center mb-4">
             <a href="{{ path('app_entretien_new') }}" class="btn" style="background-color: #4a6fa5; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Créer un nouvel entretien</a>
         </div>
+
+        <form method="get" action="{{ path('app_entretien_index') }}" class="mb-4">
+    <div class="input-group">
+        <input type="text" 
+               name="search" 
+               class="form-control" 
+               placeholder="Rechercher par titre..."
+                value="{{ app.request.query.get('search') }}">
+        <button type="submit" class="btn btn-primary">
+            <i class="fas fa-search"></i> Rechercher
+        </button>
+            <a href="{{ path('app_entretien_index') }}" class="btn btn-outline-secondary">
+                <i class="fas fa-times"></i> Effacer
+            </a>
+    </div>
+</form>
+
+       <form method="get" action="{{ path('filtrer_entretiens') }}" class="mb-5" style="max-width: 800px; margin: 0 auto;">
+    <input type="hidden" name="page" value="1"> {# Réinitialise à la page 1 lors d'un nouveau filtre #}
+    
+    <div class="filter-container" style="display: flex; align-items: center; gap: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+        <div class="filter-group" style="flex: 1; display: flex; align-items: center; gap: 10px;">
+            <label for="start_date" style="min-width: 80px; font-weight: 500; color: #495057;">Date début</label>
+            <input type="date" id="start_date" name="start_date" 
+                   value="{{ app.request.query.get('start_date') }}" 
+                   class="form-control" 
+                   style="flex: 1; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; background-color: white;" 
+                   required>
+        </div>
+        
+        <div class="filter-group" style="flex: 1; display: flex; align-items: center; gap: 10px;">
+            <label for="end_date" style="min-width: 80px; font-weight: 500; color: #495057;">Date fin</label>
+            <input type="date" id="end_date" name="end_date" 
+                   value="{{ app.request.query.get('end_date') }}" 
+                   class="form-control" 
+                   style="flex: 1; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; background-color: white;" 
+                   required>
+        </div>
+        
+        <button type="submit" class="btn" style="background-color: #4a6fa5; color: white; padding: 8px 20px; border-radius: 4px; border: none; cursor: pointer; transition: all 0.3s ease;">
+            <i class="fas fa-filter"></i> Filtrer
+        </button>
+    </div>
+</form>
+
+
+
 
         <div class="event-grid" style="max-width: 1060px; margin: 0 auto;">
             {% for entretien in entretiens %}
@@ -57,6 +104,44 @@
         </div>
     </div>
 
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        {% if entretiens.currentPageNumber != 1 %}
+            <li class="page-item">
+                <a class="page-link" href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': entretiens.currentPageNumber-1})) }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&laquo;</span>
+            </li>
+        {% endif %}
+
+        {% for page in 1..entretiens.pageCount %}
+            <li class="page-item {% if page == entretiens.currentPageNumber %}active{% endif %}">
+                <a class="page-link" href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': page})) }}">
+                    {{ page }}
+                </a>
+            </li>
+        {% endfor %}
+
+        {% if entretiens.currentPageNumber != entretiens.pageCount %}
+            <li class="page-item">
+                <a class="page-link" href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': entretiens.currentPageNumber+1})) }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        {% else %}
+            <li class="page-item disabled">
+                <span class="page-link" aria-hidden="true">&raquo;</span>
+            </li>
+        {% endif %}
+    </ul>
+</nav>
+
+   
+
     <style>
         .btn:hover {
             opacity: 0.9;
@@ -69,7 +154,151 @@
             transform: translateY(-5px);
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
         }
+
+         .pagination {
+        gap: 8px;
+    }
+    
+    .page-item .page-link {
+        min-width: 40px;
+        height: 40px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #4a6fa5;
+        border: 1px solid #dee2e6;
+        border-radius: 4px !important;
+        font-weight: 500;
+    }
+    
+    .page-item.active .page-link {
+        background-color: #4a6fa5;
+        border-color: #4a6fa5;
+        color: white;
+    }
+    
+    .page-item.disabled .page-link {
+        color: #6c757d;
+        pointer-events: none;
+        background-color: #f8f9fa;
+        border-color: #dee2e6;
+    }
+    
+    .page-link:hover {
+        background-color: #e9ecef;
+    }
+
+
+    /* Style for the search form */
+.search-form {
+    max-width: 600px; /* Limit form width for better readability */
+    margin: 0 auto; /* Center the form */
+}
+
+/* Input group styling */
+.search-form .input-group {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+    border-radius: 8px; /* Rounded corners */
+    overflow: hidden; /* Ensure buttons align with input */
+}
+
+/* Input field styling */
+.search-form .form-control {
+    border: 1px solid #ced4da; /* Consistent border */
+    height: 48px; /* Fixed height for consistency */
+    font-size: 16px; /* Readable font size */
+    padding: 10px 15px; /* Comfortable padding */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+}
+
+.search-form .form-control:focus {
+    border-color: #007bff; /* Bootstrap primary color on focus */
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2); /* Subtle focus glow */
+    outline: none; /* Remove default outline */
+}
+
+/* Button styling */
+.search-form .btn {
+    height: 48px; /* Match input height */
+    display: flex; /* Center icon vertically */
+    align-items: center; /* Center icon vertically */
+    justify-content: center; /* Center icon horizontally */
+    font-size: 16px; /* Match input font size */
+    padding: 0 20px; /* Consistent padding */
+    border: none; /* Remove default border */
+    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
+}
+
+/* Primary button (Search) */
+.search-form .btn-primary {
+    background-color: #007bff; /* Bootstrap primary color */
+    border-radius: 0 8px 8px 0; /* Rounded only on the right */
+}
+
+.search-form .btn-primary:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+    transform: translateY(-1px); /* Slight lift effect */
+}
+
+/* Secondary button (Effacer) */
+.search-form .btn-outline-secondary {
+    border: 1px solid #ced4da; /* Match input border */
+    color: #6c757d; /* Bootstrap secondary color */
+    background-color: #fff; /* White background */
+    border-radius: 8px 0 0 8px; /* Rounded only on the left */
+}
+
+.search-form .btn-outline-secondary:hover {
+    background-color: #f8f9fa; /* Light gray on hover */
+    color: #495057; /* Darker text on hover */
+    transform: translateY(-1px); /* Slight lift effect */
+}
+
+/* Icon alignment */
+.search-form .fas {
+    font-size: 18px; /* Slightly larger icons */
+}
+
+/* Responsive adjustments */
+@media (max-width: 576px) {
+    .search-form .form-control,
+    .search-form .btn {
+        height: 40px; /* Smaller height on mobile */
+        font-size: 14px; /* Smaller font on mobile */
+    }
+    .search-form .fas {
+        font-size: 16px; /* Smaller icons on mobile */
+    }
+}
+
+        
+
+      
     </style>
+
+
+    <script>
+
+    document.addEventListener('DOMContentLoaded', function () {
+    const searchInput = document.getElementById('search');
+    const form = document.getElementById('search-form');
+    const entretienList = document.getElementById('entretien-list');
+
+    
+});
+
+
+
+
+
+
+    </script>
+
+
+
+
+
 {% endblock %}
 
 

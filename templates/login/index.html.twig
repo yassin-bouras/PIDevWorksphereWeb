@@ -54,6 +54,12 @@
             border-radius: 8px;
             margin-bottom: 10px;
         }
+        .h-captcha {
+            margin: 15px 0;
+        }
+        .alert {
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -67,6 +73,16 @@
                             <h1>Login</h1>
                             <p class="account-subtitle">Access to our dashboard</p>
 
+                            {% if is_banned %}
+                                <div class="alert alert-danger">
+                                    Too many failed login attempts. Please try again after {{ ban_until|date('Y-m-d H:i:s') }}.
+                                </div>
+                            {% endif %}
+
+                            {% if hcaptcha_error %}
+                                <div class="alert alert-danger">{{ hcaptcha_error }}</div>
+                            {% endif %}
+
                             <form id="loginForm" method="post">
                                 <div class="form-group">
                                     <label class="form-control-label">Email Address</label>
@@ -78,6 +94,9 @@
                                         <input type="password" class="form-control pass-input" name="password" required>
                                         <span class="fas fa-eye toggle-password"></span>
                                     </div>
+                                </div>
+                                <div class="form-group">
+                                    <div class="h-captcha" data-sitekey="{{ hcaptcha_site_key }}"></div>
                                 </div>
                                 <div class="form-group">
                                     <div class="row">
@@ -99,7 +118,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <button class="btn btn-lg btn-block btn-primary" type="submit">Login</button>
+                                <button class="btn btn-lg btn-block btn-primary" type="submit" {% if is_banned %}disabled{% endif %}>Login</button>
                             </form>
                         </div>
                     </div>
@@ -135,6 +154,7 @@
     </div>
 
     <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
+    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
     <script>
         $(document).ready(function () {
             // Handle regular login form submission
@@ -143,7 +163,12 @@
 
                 const email = $('input[name="email"]').val();
                 const password = $('input[name="password"]').val();
-                const data = { email: email, password: password };
+                const hcaptchaResponse = $('[name="h-captcha-response"]').val();
+                const data = {
+                    email: email,
+                    password: password,
+                    'h-captcha-response': hcaptchaResponse
+                };
 
                 $.ajax({
                     url: '/login',
@@ -156,8 +181,9 @@
                         }
                     },
                     error: function (xhr) {
-                        const errorMessage = xhr.responseJSON?.message || 'Login failed';
+                        const errorMessage = xhr.responseJSON?.error || 'Login failed';
                         $('.login-right-wrap').prepend(`<div class="alert alert-danger">${errorMessage}</div>`);
+                        hcaptcha.reset(); // Reset hCaptcha on error
                     }
                 });
             });
@@ -169,7 +195,6 @@
                 $(this).toggleClass('fa-eye fa-eye-slash');
             });
 
-          
             let stream = null;
             let faceCheckInterval = null;
             const video = document.getElementById('video');
@@ -280,7 +305,7 @@
                         const user = res.user;
 
                         if (user.banned) {
-                            if (user.messageReclamation) {
+                            if (user.reclamation) {
                                 $('.login-right-wrap').prepend('<div class="alert alert-danger">You are banned. Reclamation already submitted.</div>');
                             } else {
                                 $('#reclamationModal').fadeIn();
@@ -289,7 +314,7 @@
                                     const msg = $('#reclamationMessage').val().trim();
                                     if (msg) {
                                         $.ajax({
-                                           url: "{{ path('app_lr_reclamation') }}",
+                                            url: "{{ path('app_lr_reclamation') }}",
                                             method: 'POST',
                                             contentType: 'application/json',
                                             data: JSON.stringify({

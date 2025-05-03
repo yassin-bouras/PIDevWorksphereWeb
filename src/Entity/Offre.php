@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -205,8 +206,7 @@ class Offre
         $this->users = new ArrayCollection();
         $this->candidatures = new ArrayCollection();
         $this->entretiens = new ArrayCollection();
-        $this->date_limite = new \DateTime(); 
-
+        $this->date_limite = new \DateTime();
     }
 
     #[ORM\OneToMany(targetEntity: Candidature::class, mappedBy: 'offre')]

@@ -17,7 +17,7 @@ class Formation
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer')]
     private ?int $id_f = null;
-   
+
     #[ORM\Column(type: 'string', length: 255)]
     #[Assert\NotBlank(message: "Le titre est obligatoire.")]
     private ?string $titre = null;
@@ -113,11 +113,11 @@ class Formation
         return $this->date;
     }
 
-public function setDate(?\DateTimeInterface $date): self
-{
-    $this->date = $date;
-    return $this;
-}
+    public function setDate(?\DateTimeInterface $date): self
+    {
+        $this->date = $date;
+        return $this;
+    }
 
     public function getNbPlace(): ?int
     {
@@ -260,30 +260,29 @@ public function setDate(?\DateTimeInterface $date): self
         }
 
         return $this;
-
     }
 
     #[ORM\OneToMany(mappedBy: 'formation', targetEntity: FormationCours::class, cascade: ['persist', 'remove'])]
-     private Collection $formationCours;
+    private Collection $formationCours;
 
-     public function addFormationCour(FormationCours $formationCour): self
-{
-    if (!$this->formationCours->contains($formationCour)) {
-        $this->formationCours[] = $formationCour;
-        $formationCour->setFormation($this);
-    }
-
-    return $this;
-}
-
-public function removeFormationCour(FormationCours $formationCour): self
-{
-    if ($this->formationCours->removeElement($formationCour)) {
-        if ($formationCour->getFormation() === $this) {
-            $formationCour->setFormation(null);
+    public function addFormationCour(FormationCours $formationCour): self
+    {
+        if (!$this->formationCours->contains($formationCour)) {
+            $this->formationCours[] = $formationCour;
+            $formationCour->setFormation($this);
         }
+
+        return $this;
     }
 
-    return $this;
-}
+    public function removeFormationCour(FormationCours $formationCour): self
+    {
+        if ($this->formationCours->removeElement($formationCour)) {
+            if ($formationCour->getFormation() === $this) {
+                $formationCour->setFormation(null);
+            }
+        }
+
+        return $this;
+    }
 }

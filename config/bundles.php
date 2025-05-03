@@ -17,9 +17,13 @@ return [
     Symfony\UX\LiveComponent\LiveComponentBundle::class => ['all' => true],
     Lexik\Bundle\JWTAuthenticationBundle\LexikJWTAuthenticationBundle::class => ['all' => true],
     Nelmio\CorsBundle\NelmioCorsBundle::class => ['all' => true],
+
     KnpU\OAuth2ClientBundle\KnpUOAuth2ClientBundle::class => ['all' => true],
     Gos\Bundle\PubSubRouterBundle\GosPubSubRouterBundle::class => ['all' => true],
     Gos\Bundle\WebSocketBundle\GosWebSocketBundle::class => ['all' => true],
     Knp\Bundle\PaginatorBundle\KnpPaginatorBundle::class => ['all' => true],
     Knp\Bundle\SnappyBundle\KnpSnappyBundle::class => ['all' => true],
+
+    Symfony\UX\Chartjs\ChartjsBundle::class => ['all' => true],
+
 ];

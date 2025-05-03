@@ -1,3 +1,66 @@
+<style>
+    .notification-time {
+        color: #0eaedf !important;
+        /* Darker gray for better readability */
+        font-weight: 600;
+    }
+
+    /* Style for unread notifications */
+    .notification-message.unread {
+        background-color: #adefef;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.1);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    /* Add a small badge for notification count */
+    .badge-pill {
+        background-color: #ff0000;
+        color: white;
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        font-size: 10px;
+        width: 20px !important;
+        /* Force fixed width */
+        height: 20px !important;
+        /* Force fixed height */
+        border-radius: 50% !important;
+        /* Force perfect circle */
+        font-weight: 600;
+        border: 2px solid #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+
+        /* Fix text alignment */
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+
+        /* Override any other styles */
+        padding: 0 !important;
+        text-align: center !important;
+        line-height: normal !important;
+        box-sizing: border-box !important;
+    }
+
+    /* Special style for double-digit numbers */
+    .badge-pill.double-digit {
+        width: 24px !important;
+        /* Slightly wider for double digits */
+    }
+</style>
+<!-- /*******************************************************************************/ -->
 <div class="main-wrapper">
     <div class="header">
         <div class="header-left">
@@ -26,13 +89,17 @@
         </a>
         <ul class="nav user-menu">
             <li class="nav-item dropdown">
-                <a href="#" class="dropdown-toggle nav-link pr-0" data-toggle="dropdown">
-                    <i data-feather="bell"></i> <span class="badge badge-pill"></span>
+                <!-- Find this section (around line 80-83) and update it -->
+                <!-- Update the bell icon with better relative positioning for the badge -->
+                <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown" style="position: relative;">
+                    <i data-feather="bell" style="width: 22px; height: 22px;"></i>
+                    <span id="notification-badge"></span>
                 </a>
                 <div class="dropdown-menu notifications">
                     <div class="topnav-dropdown-header">
                         <span class="notification-title">Notifications</span>
-                        <a href="javascript:void(0)" class="clear-noti">Clear All</a>
+                        <button id="clear-all-notifications" class="clear-noti"
+                            style="background: none; border: none; cursor: pointer; color: #f62d51;">Clear All</button>
                     </div>
                     <div class="noti-content">
                         <ul class="notification-list">
@@ -42,11 +109,13 @@
             </button>
                                     <div class="media">
                                         <span class="avatar avatar-sm">
-                                            <img class="avatar-img rounded-circle" alt="Photo de profil" src="{{ asset('back/img/profiles/avatar-02.jpg') }}">
+                                            <img class="avatar-img rounded-circle" alt="Photo de profil"
+                                                src="{{ asset('back/img/profiles/avatar-02.jpg') }}">
                                         </span>
                                         <div class="media-body">
                                             <p class="noti-details">
-                                                <span class="noti-title">Brian Johnson</span> paid the invoice <span class="noti-title">#DF65485</span>
+                                                <span class="noti-title">Brian Johnson</span> paid the invoice <span
+                                                    class="noti-title">#DF65485</span>
                                             </p>
                                             <p class="noti-time">
                                                 <span class="notification-time">4 mins ago</span>
@@ -58,7 +127,11 @@
                         </ul>
                     </div>
                     <div class="topnav-dropdown-footer">
-                        <a href="#">View all Notifications</a>
+                        <a href="{{ path('app_notification_index') }}" id="view-all-notifications-link">
+                            <i class="fas fa-list"></i> Voir toutes les notifications
+                            <span id="footer-unread-count" class="float-right"
+                                style="color: #33ccc5; font-weight: bold;"></span>
+                        </a>
                     </div>
                 </div>
             </li>
@@ -75,7 +148,7 @@
                         <i data-feather="user" class="mr-1"></i> Profile
                     </a>
                     <a class="dropdown-item" href="#"><i data-feather="settings" class="mr-1"></i> Settings</a>
-             </div>
+                </div>
             </li>
         </ul>
     </div>
@@ -100,7 +173,8 @@
         document.getElementById('openWebSocketBtn').addEventListener('click', function() {
             window.location.href = '{{ path("admin_websocket_communication") }}';
         });
-    document.addEventListener('DOMContentLoaded', function() {
+    
+    document.addEventListener('DOMContentLoaded', function () {
         function getCookie(name) {
             let cookieArray = document.cookie.split('; ');
             let cookie = cookieArray.find(row => row.startsWith(name + '='));
@@ -115,62 +189,288 @@
             },
             body: JSON.stringify({ token: getCookie('BEARER') }) // Get the token from cookies
         })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const user = data.user;
-                document.getElementById('user-profile-image').src = user.imageprofil || '{{ asset('back/img/profile.jpg') }}';
-                document.getElementById('user-full-name').textContent = user.nom + ' ' + user.prenom;
-                document.getElementById('user-profile-link').href = '/user/' + user.iduser;
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    const user = data.user;
+                    document.getElementById('user-profile-image').src = user.imageprofil || '{{ asset('back / img / profile.jpg') }}';
+                    document.getElementById('user-full-name').textContent = user.nom + ' ' + user.prenom;
+                    document.getElementById('user-profile-link').href = '/user/' + user.iduser;
 
-                const sidebarLinks = document.getElementById('sidebar-links');
-                sidebarLinks.innerHTML = '';
+                    /**********************************************************************************************************************
+                                                    // Populate role-specific notifications
+                                                    const notificationList = document.querySelector('.notification-list');
+                                                    if (notificationList) {
+                                                        if (user.role === 'Candidat') {
+                                                            // Candidate-specific notifications
+                                                            notificationList.innerHTML = `
+                                                        <li class="notification-message">
+                                                            <a href="/offre">
+                                                                <div class="media">
+                                                                    <span class="avatar avatar-sm">
+                                                                        <img class="avatar-img rounded-circle" alt="Notification" src="{{ asset('back/img/profiles/jobs-icon.jpg') }}">
+                                                                    </span>
+                                                                    <div class="media-body">
+                                                                        <p class="noti-details">
+                                                                            <span class="noti-title">New job opportunities</span> are available
+                                                                        </p>
+                                                                        <p class="noti-time">
+                                                                            <span class="notification-time">Just now</span>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </a>
+                                                        </li>
+                                                        <li class="notification-message">
+                                                            <a href="#">
+                                                                <div class="media">
+                                                                    <span class="avatar avatar-sm">
+                                                                        <img class="avatar-img rounded-circle" alt="Notification" src="{{ asset('back/img/profiles/interview-icon.jpg') }}">
+                                                                    </span>
+                                                                    <div class="media-body">
+                                                                        <p class="noti-details">
+                                                                            <span class="noti-title">Application status</span> updates available
+                                                                        </p>
+                                                                        <p class="noti-time">
+                                                                            <span class="notification-time">2 days ago</span>
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            </a>
+                                                        </li>
+                                                    `;
+                                                        }
+                                                    }
+                    /***********************************************************************************************/
+                    // Add event listener for the Clear All button
+                    const clearAllBtn = document.getElementById('clear-all-notifications');
+                    if (clearAllBtn) {
+                        clearAllBtn.addEventListener('click', function (e) {
+                            e.preventDefault();
 
-                if (user.role === 'RH') {
-                    sidebarLinks.innerHTML += `
+                            if (confirm('Are you sure you want to delete all notifications?')) {
+                                clearAllNotifications();
+                            }
+                        });
+                    }
+
+                    function clearAllNotifications() {
+                        fetch('/notification/api/clear-all', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                //'Authorization': 'Bearer ' + getCookie('BEARER')
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(data => {
+                                if (data.success) {
+                                    // Clear the notifications list
+                                    const notificationList = document.querySelector('.notification-list');
+                                    if (notificationList) {
+                                        notificationList.innerHTML = `
+                            <li class="notification-message">
+                                <div class="media">
+                                    <div class="media-body">
+                                        <p class="noti-details text-center">
+                                            No notifications available
+                                        </p>
+                                    </div>
+                                </div>
+                            </li>
+                        `;
+                                    }
+
+                                    // Clear the notification badge
+                                    const badgeElement = document.querySelector('.nav-item.dropdown .badge');
+                                    if (badgeElement) {
+                                        badgeElement.textContent = '';
+                                        badgeElement.classList.remove('badge-pill');
+                                    }
+                                } else {
+                                    console.error('Error clearing notifications:', data.message);
+                                    alert('Error clearing notifications: ' + data.message);
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error clearing notifications:', error);
+                                alert('Error clearing notifications. Please try again.');
+                            });
+                    }
+                    /***********************************************************************************************/
+                    // Replace your notification fetching code (around line 253-308) with this:
+
+                    // Fetch real notifications for the user
+                    if (user.role === 'Candidat') {
+                        fetch('/notification/api/user/' + user.iduser, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': 'Bearer ' + getCookie('BEARER')
+                            }
+                        })
+                            .then(response => response.json())
+                            .then(notificationData => {
+                                const notificationList = document.querySelector('.notification-list');
+                                const badgeElement = document.getElementById('notification-badge');
+
+                                // IMPORTANT: Always reset the badge first
+                                if (badgeElement) {
+                                    badgeElement.textContent = '';
+                                    badgeElement.className = ''; // Remove ALL classes
+                                }
+
+                                if (notificationList) {
+                                    if (notificationData.notifications && notificationData.notifications.length > 0) {
+                                        let notificationHtml = '';
+
+                                        // Update notification count badge - only if there are unread notifications
+                                        // In your notification data handling function:
+                                        const unreadCount = notificationData.notifications.filter(n => !n.isRead).length;
+                                        // Update the footer link with count
+                                        const footerUnreadCount = document.getElementById('footer-unread-count');
+                                        if (footerUnreadCount && unreadCount > 0) {
+                                            footerUnreadCount.textContent = `(${unreadCount})`;
+                                        } else if (footerUnreadCount) {
+                                            footerUnreadCount.textContent = '';
+                                        }
+                                        if (badgeElement && unreadCount > 0) {
+                                            badgeElement.textContent = unreadCount > 9 ? '9+' : unreadCount; // Limit displayed number
+                                            badgeElement.className = 'badge badge-pill'; // Just these two classes
+
+                                            // Add special class for double digit or "9+"
+                                            if (unreadCount > 9) {
+                                                badgeElement.classList.add('double-digit');
+                                            }
+
+                                            // Remove inline styles that might conflict
+                                            badgeElement.style = '';
+                                        }
+
+                                        // Generate notification items
+                                        notificationData.notifications.forEach(notification => {
+                                            const date = new Date(notification.createdAt);
+                                            const timeAgo = getTimeAgo(date);
+
+                                            notificationHtml += `
+                    <li class="notification-message ${notification.isRead ? '' : 'unread'}">
+                        <a href="/notification/${notification.id}">
+                            <div class="media">
+                                <span class="avatar avatar-sm">
+                                    <i class="fas fa-bell" style="font-size: 1.9em; color: #0eaedf;"></i>
+                                </span>
+                                <div class="media-body">
+                                    <p class="noti-details">
+                                        <span class="noti-title">${notification.message}</span>
+                                    </p>
+                                    <p class="noti-time">
+                                        <span class="notification-time">${timeAgo}</span>
+                                    </p>
+                                </div>
+                            </div>
+                        </a>
+                    </li>
+                `;
+                                        });
+
+                                        notificationList.innerHTML = notificationHtml;
+                                    } else {
+                                        // No notifications - ensure badge is removed
+                                        if (badgeElement) {
+                                            badgeElement.textContent = '';
+                                            badgeElement.classList.remove('badge-pill');
+                                        }
+
+                                        notificationList.innerHTML = `
+                <li class="notification-message">
+                    <div class="media">
+                        <div class="media-body">
+                            <p class="noti-details text-center">
+                                No notifications available
+                            </p>
+                        </div>
+                    </div>
+                </li>
+            `;
+                                    }
+                                }
+                            })
+                            .catch(error => {
+                                console.error('Error fetching notifications:', error);
+                            });
+                    }
+
+                    // Function to calculate time ago
+                    function getTimeAgo(date) {
+                        const seconds = Math.floor((new Date() - date) / 1000);
+
+                        let interval = seconds / 31536000;
+                        if (interval > 1) return Math.floor(interval) + " years ago";
+
+                        interval = seconds / 2592000;
+                        if (interval > 1) return Math.floor(interval) + " months ago";
+
+                        interval = seconds / 86400;
+                        if (interval > 1) return Math.floor(interval) + " days ago";
+
+                        interval = seconds / 3600;
+                        if (interval > 1) return Math.floor(interval) + " hours ago";
+
+                        interval = seconds / 60;
+                        if (interval > 1) return Math.floor(interval) + " minutes ago";
+
+                        return "Just now";
+                    }
+                    /***********************************************************************************************/
+                    const sidebarLinks = document.getElementById('sidebar-links');
+                    sidebarLinks.innerHTML = '';
+
+                    if (user.role === 'RH') {
+                        sidebarLinks.innerHTML += `
                         <li><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
                         <li><a href="/contrat"><span>📜 Contrat</span></a></li>
                         <li><a href="/sponsor"><span>📢 Gestion Sponsor</span></a></li>
                         <li><a href="/user"><span>👥 Gestion User</span></a></li>
-                        <li><a href="/event"><span>✅ Evenements</span></a></li>
+                        <li><a href="/evennement"><span>✅ Evenements</span></a></li>
                         <li><a href="/formation"><span>📢 Formations</span></a></li>
                         <li><a href="/offre"><span>🎯 Offres Emploi</span></a></li>
                         <li><a href="/entretien"><span>🔥 Entretien</span></a></li>
+                       <li><a href="/history"><span>📜 historique entretien</span></a></li>
+                        <li><a href="/entretien/news"><span>📰 voir Last news</span></a></li>
+                        
                         <li><a href="/mdp"><span>🔄 Mot de Passe</span></a></li>
                     `;
-                } else if (user.role === 'Candidat') {
-                    sidebarLinks.innerHTML += `
-                                            <li><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
-
-                        <li><a href="/"><span>🔄 Offre Emploi</span></a></li>
-                        <li><a href="/reclamation/user/${user.iduser}"><span>🔄 Reclamation</span></a></li>
-                        <li><a href="/"><span>👥 Candidature</span></a></li>
-                        <li><a href="/"><span>👤 Changer Mot de Passe</span></a></li>
+                    } else if (user.role === 'Candidat') {
+                        sidebarLinks.innerHTML += `
+                        <li><a href="/"><span>💼 Offre Emploi</span></a></li>
+                        <li><a href="/reclamation/user/${user.iduser}"><span>📄 Reclamation</span></a></li>
+                        <li><a href="/"><span>🗳️ Candidatures</span></a></li>
+                        <li><a href="/"><span>🔄 Changer Mot de Passe</span></a></li>
                     `;
-                } else if (user.role === 'Employe') {
-                    sidebarLinks.innerHTML += `
+                    } else if (user.role === 'Employe') {
+                        sidebarLinks.innerHTML += `
                         <li class="active"><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
                         <li><a href="/reclamation/user/${user.iduser}"><span>🔄 Reclamation</span></a></li>
                         <li><a href="/formation"><span>📢 Formation</span></a></li>
-                        <li><a href="/"><span>🚀 Entretien Archive</span></a></li>
+                        <li><a href="/entretien/employees"><span>🚀 Entretien Archive</span></a></li>
                         <li><a href="/entretien/employee"><span>🚀 Entretien</span></a></li>
                         <li><a href="/"><span>🎯 Mes Reservations</span></a></li>
 <li><a href="/formation/employe"><span>📢 Formation</span></a></li>
 <li><a href="/tache/tache/mestaches"><span>📂 Projet</span></a></li>
                         <li><a href="/"><span>🔄 Mot de Passe</span></a></li>
                     `;
-                } else if (user.role === 'manager') {
-                    sidebarLinks.innerHTML += `
+                    } else if (user.role === 'manager') {
+                        sidebarLinks.innerHTML += `
                         <li class="active"><a href="/"><span>👤 Profile</span></a></li>
                         <li><a href="/"><span>⚙️ Settings</span></a></li>
                     `;
+                    }
+                } else {
+                    console.error('Failed to fetch user data:', data.error);
                 }
-            } else {
-                console.error('Failed to fetch user data:', data.error);
-            }
-        })
-        .catch(error => {
-            console.error('Error fetching user data:', error);
-        });
+            })
+            .catch(error => {
+                console.error('Error fetching user data:', error);
+            });
     });
 </script>

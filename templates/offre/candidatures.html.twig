@@ -2,47 +2,1375 @@
 
 {% block title %}Candidatures pour {{ offre.titre }}{% endblock %}
 
-{% block content %}
-<div class="container" style="margin-top: -53%;">
-    <div class="mb-10">
-        <a href="{{ path('app_offre_index') }}" class="btn btn-secondary">
-            <i class="fas fa-arrow-left"></i> Retour
-        </a>
-    </div>
-    <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Candidatures pour l'offre : {{ offre.titre }}</h1>
+{% block stylesheets %}
+{{ parent() }}
+<style>
+    /* Add this to your existing CSS styles */
+    .card .brand-name {
+        position: absolute;
+        font-family: 'Arial', sans-serif;
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: 2px;
+        color: rgba(255, 255, 255, 0.8);
+        text-transform: uppercase;
+        z-index: 5;
+        text-shadow: 0 0 10px rgba(0, 224, 255, 0.7);
+        animation: glowPulse 3s infinite alternate;
+        background: linear-gradient(90deg, rgba(0, 224, 255, 0.8) 0%, rgba(0, 140, 255, 0.8) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-align: center;
+        white-space: nowrap;
+    }
 
-    <div class="candidature-grid row" style="max-width: 1060px; margin: 0 auto;">
+    @keyframes glowPulse {
+        0% {
+            opacity: 0.7;
+            text-shadow: 0 0 5px rgba(0, 224, 255, 0.5);
+        }
+
+        100% {
+            opacity: 1;
+            text-shadow: 0 0 15px rgba(0, 224, 255, 0.9), 0 0 30px rgba(0, 224, 255, 0.5);
+        }
+    }
+
+    /* Enhanced Loading Overlay */
+    .loading-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 9999;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        pointer-events: none;
+    }
+
+    .loading-overlay.active {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: all;
+        animation: pulseBackground 4s infinite;
+    }
+
+    @keyframes pulseBackground {
+        0% {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        50% {
+            background-color: rgba(0, 10, 20, 0.95);
+        }
+
+        100% {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+    }
+
+    /* Improved Scanning Card */
+    .card {
+        width: 260px;
+        height: 320px;
+        background: linear-gradient(135deg, #000000, #0a1a20);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        border-radius: 18px;
+        box-shadow: 0 0 60px rgba(0, 224, 255, 0.4);
+        overflow: hidden;
+        transform: translateY(30px);
+        animation: floatCard 1s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    @keyframes floatCard {
+        to {
+            transform: translateY(0);
+        }
+    }
+
+    .card:hover {
+        transform: scale(1.05) translateY(-5px);
+        transition: 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        box-shadow: 0 0 80px rgba(0, 247, 255, 0.6);
+    }
+
+    .card::after {
+        content: "Analyse en cours";
+        height: fit-content;
+        width: 100%;
+        color: #3fefef;
+        position: absolute;
+        z-index: 2;
+        bottom: 15%;
+        text-align: center;
+        animation: dots 2s infinite;
+        font-family: 'Courier New', monospace;
+        font-size: 18px;
+        /* Increased from 16px */
+        letter-spacing: 2px;
+        font-weight: 600;
+        text-shadow: 0 0 12px rgba(63, 239, 239, 0.8);
+    }
+
+    .card::before {
+        content: "";
+        height: 0.18em;
+        /* Slightly thicker */
+        width: 80%;
+        border-radius: 10px;
+        background-color: #00E0FF;
+        position: absolute;
+        z-index: 2;
+        bottom: 10%;
+        animation: grow 3s cubic-bezier(0.34, 1.56, 0.64, 1) infinite;
+        align-self: flex-start;
+        margin-left: 10%;
+        filter: drop-shadow(0px 0px 15px #3fefef) drop-shadow(0px 0px 30px #3fefef);
+    }
+
+    .card .scanning-label {
+        position: absolute;
+        top: 12%;
+        font-family: 'Courier New', monospace;
+        font-size: 16px;
+        /* Increased from 14px */
+        color: rgba(255, 255, 255, 0.8);
+        /* Slightly brighter */
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        /* Increased spacing */
+        font-weight: 600;
+    }
+
+    /* Also update the SVG size */
+    .card svg {
+        width: 120px;
+        /* Increased from 100px */
+        height: 240px;
+        /* Increased from 200px */
+        filter: drop-shadow(0px 0px 15px #3fefef) drop-shadow(0px 0px 60px #3fefef);
+        animation: pulse 2s ease-in-out infinite alternate;
+        transform-origin: center;
+    }
+
+    @keyframes pulse {
+        from {
+            transform: scale(0.98);
+            filter: drop-shadow(0px 0px 10px #3fefef);
+        }
+
+        to {
+            transform: scale(1.02);
+            filter: drop-shadow(0px 0px 20px #3fefef) drop-shadow(0px 0px 40px #3fefef);
+        }
+    }
+
+    .card path {
+        stroke-dasharray: 90;
+        animation: loop 4s infinite;
+        stroke-width: 1;
+    }
+
+    /* Background elements for the card */
+    .scan-particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .particle {
+        position: absolute;
+        width: 2px;
+        height: 2px;
+        background-color: #00E0FF;
+        border-radius: 50%;
+        animation: moveParticle 3s linear infinite;
+    }
+
+    @keyframes moveParticle {
+        0% {
+            transform: translateY(0) translateX(0);
+            opacity: 0;
+        }
+
+        50% {
+            opacity: 1;
+        }
+
+        100% {
+            transform: translateY(-200px) translateX(100px);
+            opacity: 0;
+        }
+    }
+
+    @keyframes dots {
+        0% {
+            content: "Analyse en cours.";
+        }
+
+        25% {
+            content: "Analyse en cours..";
+        }
+
+        50% {
+            content: "Analyse en cours...";
+        }
+
+        75% {
+            content: "Analyse en cours";
+        }
+
+        100% {
+            content: "Analyse en cours.";
+        }
+    }
+
+    @keyframes grow {
+        0% {
+            width: 0%;
+            opacity: 0.7;
+        }
+
+        50% {
+            width: 80%;
+            opacity: 1;
+        }
+
+        100% {
+            width: 0%;
+            opacity: 0.7;
+        }
+    }
+
+    /* Enterprise Design System Variables */
+    :root {
+        /* Core Color Palette */
+        --primary-color: #33ccc5;
+        --primary-dark: #2a9d8f;
+        --primary-light: #a8e4e0;
+        --primary-gradient: linear-gradient(135deg, #33ccc5, #1a7b75);
+        --secondary-color: #4361ee;
+        --secondary-dark: #3a56d4;
+        --secondary-light: #c7d0ff;
+        --secondary-gradient: linear-gradient(135deg, #4361ee, #3a56d4);
+        --success-color: #10b981;
+        --success-gradient: linear-gradient(135deg, #10b981, #059669);
+        --danger-color: #ef4444;
+        --danger-gradient: linear-gradient(135deg, #ef4444, #dc2626);
+        --warning-color: #f59e0b;
+        --info-color: #3b82f6;
+
+        /* Text Colors */
+        --text-dark: #1e293b;
+        --text-medium: #475569;
+        --text-light: #64748b;
+        --text-muted: #94a3b8;
+
+        /* Background Colors */
+        --bg-white: #ffffff;
+        --bg-light: #f8fafc;
+        --bg-light-hover: #f1f5f9;
+        --bg-accent: #ecfdf5;
+
+        /* Shadow System */
+        --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+        --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.06), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+        --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+        --shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.04);
+        --shadow-focus: 0 0 0 3px rgba(51, 204, 197, 0.4);
+
+        /* Border Radius */
+        --radius-sm: 0.25rem;
+        --radius-md: 0.5rem;
+        --radius-lg: 0.75rem;
+        --radius-xl: 1rem;
+        --radius-2xl: 1.5rem;
+        --radius-full: 9999px;
+
+        /* Spacing */
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-5: 1.25rem;
+        --space-6: 1.5rem;
+        --space-8: 2rem;
+        --space-10: 2.5rem;
+        --space-12: 3rem;
+        --space-16: 4rem;
+
+        /* Animation */
+        --animation-fast: 0.15s ease;
+        --animation-base: 0.3s ease;
+        --animation-slow: 0.5s ease;
+        --animation-timing: cubic-bezier(0.16, 1, 0.3, 1);
+        --animation-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+        /* Font System */
+        --font-weight-normal: 400;
+        --font-weight-medium: 500;
+        --font-weight-semibold: 600;
+        --font-weight-bold: 700;
+        --font-weight-extrabold: 800;
+    }
+
+    /* Page Layout */
+    .page-container {
+        max-width: 1440px;
+        margin: 0 auto;
+        position: relative;
+        z-index: 10;
+    }
+
+    /* Header Area */
+    .page-header {
+        position: relative;
+        background: var(--primary-gradient);
+        color: white;
+        padding: var(--space-10);
+        border-radius: var(--radius-xl);
+        margin-bottom: var(--space-10);
+        overflow: hidden;
+        box-shadow: var(--shadow-xl);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .page-header::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.6;
+    }
+
+    .page-header::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        width: 100%;
+        background: linear-gradient(120deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 30%);
+        pointer-events: none;
+    }
+
+    .page-header h1 {
+        font-weight: var(--font-weight-extrabold);
+        font-size: 2.25rem;
+        margin-bottom: var(--space-2);
+        position: relative;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        background: linear-gradient(to right, white, rgba(255, 255, 255, 0.8));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .page-header p {
+        font-weight: var(--font-weight-normal);
+        opacity: 0.9;
+        max-width: 600px;
+        position: relative;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+
+    /* Navigation Controls */
+    .back-button {
+        position: relative;
+        background-color: var(--bg-white);
+        color: var(--primary-color);
+        border: none;
+        border-radius: var(--radius-md);
+        padding: var(--space-3) var(--space-5);
+        font-weight: var(--font-weight-semibold);
+        transition: all var(--animation-base) var(--animation-timing);
+        display: inline-flex;
+        align-items: center;
+        margin-bottom: var(--space-4);
+        box-shadow: var(--shadow-md);
+        text-decoration: none;
+        overflow: hidden;
+    }
+
+    .back-button:hover {
+        background-color: var(--bg-light-hover);
+        transform: translateX(-5px);
+        box-shadow: var(--shadow-lg);
+        color: var(--primary-dark);
+        text-decoration: none;
+    }
+
+    .back-button:focus {
+        outline: none;
+        box-shadow: var(--shadow-focus);
+    }
+
+    .back-button::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--primary-gradient);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform var(--animation-base) var(--animation-bounce);
+    }
+
+    .back-button:hover::after {
+        transform: scaleX(1);
+    }
+
+    .back-button i {
+        margin-right: var(--space-2);
+        transition: transform var(--animation-base) var(--animation-timing);
+    }
+
+    .back-button:hover i {
+        transform: translateX(-3px);
+    }
+
+    /* Candidature Cards */
+    .candidature-container {
+        perspective: 1000px;
+    }
+
+    .candidature-card {
+        opacity: 0;
+        transform: translateY(20px);
+        border-radius: var(--radius-xl);
+        overflow: hidden;
+        box-shadow: var(--shadow-lg);
+        transition: all var(--animation-slow) var(--animation-timing);
+        border: none;
+        position: relative;
+        background: var(--bg-white);
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        backface-visibility: hidden;
+        transform-style: preserve-3d;
+    }
+
+    .candidature-card:hover {
+        transform: translateY(-7px) rotateX(2deg) rotateY(2deg);
+        box-shadow: var(--shadow-xl);
+    }
+
+    .candidature-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+        border-radius: var(--radius-xl);
+        pointer-events: none;
+        z-index: 3;
+    }
+
+    .candidature-card .card-header {
+        background: var(--primary-gradient);
+        color: white;
+        padding: var(--space-5) var(--space-6);
+        font-weight: var(--font-weight-semibold);
+        border: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+    }
+
+    .candidature-card .card-header::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='52' height='26' viewBox='0 0 52 26' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M10 10c0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6h2c0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4 3.314 0 6 2.686 6 6 0 2.21 1.79 4 4 4v2c-3.314 0-6-2.686-6-6 0-2.21-1.79-4-4-4-3.314 0-6-2.686-6-6zm25.464-1.95l8.486 8.486-1.414 1.414-8.486-8.486 1.414-1.414z' /%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.3;
+        z-index: -1;
+    }
+
+    .candidature-card .card-header h5 {
+        margin: 0;
+        font-weight: var(--font-weight-bold);
+        display: flex;
+        align-items: center;
+    }
+
+    .candidature-card .status-badge {
+        padding: var(--space-1) var(--space-3);
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: var(--font-weight-bold);
+        background: var(--success-gradient);
+        color: white;
+        box-shadow: 0 2px 10px rgba(16, 185, 129, 0.5);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        animation: pulse 2s infinite;
+    }
+
+    .candidature-card .status-badge::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+        transform: translateX(-100%);
+        animation: shimmer 2s infinite;
+    }
+
+    .candidature-card .status-badge i {
+        margin-right: var(--space-1);
+    }
+
+    .candidature-card .card-body {
+        padding: var(--space-6);
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Document Sections */
+    .document-section {
+        background-color: var(--bg-light);
+        border-radius: var(--radius-lg);
+        padding: var(--space-5);
+        margin-bottom: var(--space-4);
+        transition: all var(--animation-base) var(--animation-timing);
+        border: 1px solid rgba(0, 0, 0, 0.03);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .document-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(180deg,
+                rgba(255, 255, 255, 0.5) 0%,
+                rgba(255, 255, 255, 0) 100%);
+        pointer-events: none;
+    }
+
+    .document-section:hover {
+        box-shadow: var(--shadow-md);
+        transform: translateY(-2px);
+        border-color: rgba(51, 204, 197, 0.2);
+    }
+
+    .document-section h6 {
+        font-weight: var(--font-weight-bold);
+        margin-bottom: var(--space-3);
+        color: var(--text-dark);
+        display: flex;
+        align-items: center;
+        position: relative;
+    }
+
+    .document-section h6 i {
+        margin-right: var(--space-2);
+        color: var(--primary-color);
+        font-size: 1.1rem;
+    }
+
+    .document-link {
+        color: var(--primary-color);
+        text-decoration: none;
+        transition: all var(--animation-base) var(--animation-timing);
+        display: inline-flex;
+        align-items: center;
+        margin-top: var(--space-1);
+        font-weight: var(--font-weight-medium);
+        padding: var(--space-2) var(--space-3);
+        border-radius: var(--radius-md);
+        background-color: rgba(51, 204, 197, 0.1);
+    }
+
+    .document-link:hover {
+        color: var(--primary-dark);
+        text-decoration: none;
+        transform: translateX(3px);
+        background-color: rgba(51, 204, 197, 0.15);
+    }
+
+    .document-link i {
+        margin-right: var(--space-2);
+        transition: transform var(--animation-fast);
+    }
+
+    .document-link:hover i {
+        transform: translateY(-2px);
+    }
+
+    .document-not-available {
+        color: var(--text-muted);
+        font-style: italic;
+        padding: var(--space-2) 0;
+    }
+
+    /* Action Buttons */
+    .btn-section {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: var(--space-3);
+        margin-top: auto;
+        padding-top: var(--space-5);
+        position: relative;
+    }
+
+    .btn-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(90deg,
+                rgba(0, 0, 0, 0.03) 0%,
+                rgba(0, 0, 0, 0.06) 50%,
+                rgba(0, 0, 0, 0.03) 100%);
+    }
+
+    .btn-full {
+        grid-column: span 2;
+        margin-top: var(--space-2);
+    }
+
+    .action-btn {
+        border-radius: var(--radius-lg);
+        padding: var(--space-3) var(--space-4);
+        font-weight: var(--font-weight-semibold);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all var(--animation-base) var(--animation-timing);
+        border: none;
+        position: relative;
+        overflow: hidden;
+        z-index: 1;
+        font-size: 0.9rem;
+        box-shadow: var(--shadow-md);
+        cursor: pointer;
+        outline: none;
+        letter-spacing: 0.01em;
+    }
+
+    .action-btn:focus {
+        outline: none;
+        box-shadow: var(--shadow-focus);
+    }
+
+    .action-btn::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(180deg,
+                rgba(255, 255, 255, 0.15) 0%,
+                rgba(255, 255, 255, 0) 100%);
+        z-index: -1;
+    }
+
+    .action-btn::after {
+        content: '';
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0) 70%);
+        transform: translate(-50%, -50%) scale(0);
+        transition: transform var(--animation-slow) var(--animation-timing);
+        z-index: -1;
+        pointer-events: none;
+        opacity: 0;
+    }
+
+    .action-btn:hover::after {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+
+    .action-btn:active {
+        transform: scale(0.97);
+    }
+
+    .action-btn i {
+        margin-right: var(--space-2);
+        transition: transform var(--animation-base) var(--animation-bounce);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+    }
+
+    .action-btn:hover i {
+        transform: translateY(-2px) rotate(-5deg);
+    }
+
+    .btn-translate {
+        background: var(--success-gradient);
+        color: white;
+    }
+
+    .btn-compare {
+        background: var(--secondary-gradient);
+        color: white;
+    }
+
+    .btn-accept {
+        background: var(--primary-gradient);
+        color: white;
+    }
+
+    .btn-delete {
+        background: var(--danger-gradient);
+        color: white;
+    }
+
+    .btn-accepted {
+        background: rgba(16, 185, 129, 0.1);
+        color: var(--success-color);
+        font-weight: var(--font-weight-bold);
+        cursor: default;
+        box-shadow: none;
+    }
+
+    .btn-accepted i {
+        color: var(--success-color);
+    }
+
+    /* Advanced Animations */
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+        }
+
+        70% {
+            box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+        }
+    }
+
+    @keyframes shimmer {
+        0% {
+            transform: translateX(-100%);
+        }
+
+        100% {
+            transform: translateX(100%);
+        }
+    }
+
+    @keyframes float {
+        0% {
+            transform: translateY(0px);
+        }
+
+        50% {
+            transform: translateY(-5px);
+        }
+
+        100% {
+            transform: translateY(0px);
+        }
+    }
+
+    /* Empty State */
+    .no-candidatures {
+        background: linear-gradient(135deg, var(--bg-light) 0%, white 100%);
+        border-radius: var(--radius-xl);
+        padding: var(--space-12);
+        text-align: center;
+        font-size: 1.1rem;
+        color: var(--text-light);
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .no-candidatures::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='120' height='120' viewBox='0 0 120 120' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M9 0h2v20H9V0zm25.134.84l1.732 1-10 17.32-1.732-1 10-17.32zm-20 20l1.732 1-10 17.32-1.732-1 10-17.32zM58.16 4.134l1 1.732-17.32 10-1-1.732 17.32-10zm-40 40l1 1.732-17.32 10-1-1.732 17.32-10zM80 9v2H60V9h20zM20 69v2H0v-2h20zm79.32-55l-1 1.732-17.32-10L82 4l17.32 10zm-80 80l-1 1.732-17.32-10L2 84l17.32 10zm96.546-75.84l-1.732 1-10-17.32 1.732-1 10 17.32zm-100 100l-1.732 1-10-17.32 1.732-1 10 17.32zM38.16 24.134l1 1.732-17.32 10-1-1.732 17.32-10zM60 29v2H40v-2h20zm19.32 5l-1 1.732-17.32-10L62 24l17.32 10zm16.546 4.16l-1.732 1-10-17.32 1.732-1 10 17.32zM111 40h-2V20h2v20zm3.134.84l1.732 1-10 17.32-1.732-1 10-17.32zM40 49v2H20v-2h20zm19.32 5l-1 1.732-17.32-10L42 44l17.32 10zm16.546 4.16l-1.732 1-10-17.32 1.732-1 10 17.32zM91 60h-2V40h2v20zm3.134.84l1.732 1-10 17.32-1.732-1 10-17.32zm24.026 3.294l1 1.732-17.32 10-1-1.732 17.32-10zM39.32 74l-1 1.732-17.32-10L22 64l17.32 10zm16.546 4.16l-1.732 1-10-17.32 1.732-1 10 17.32zM71 80h-2V60h2v20zm3.134.84l1.732 1-10 17.32-1.732-1 10-17.32zm24.026 3.294l1 1.732-17.32 10-1-1.732 17.32-10zM120 89v2h-20v-2h20zm-84.134 9.16l-1.732 1-10-17.32 1.732-1 10 17.32zM51 100h-2V80h2v20zm3.134.84l1.732 1-10 17.32-1.732-1 10-17.32zm24.026 3.294l1 1.732-17.32 10-1-1.732 17.32-10zM100 109v2H80v-2h20zm19.32 5l-1 1.732-17.32-10 1-1.732 17.32 10zM31 120h-2v-20h2v20z' fill='%23f1f5f9' fill-opacity='1' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.5;
+    }
+
+    .no-candidatures i {
+        font-size: 4rem;
+        color: #e2e8f0;
+        margin-bottom: var(--space-6);
+        display: block;
+        animation: float 3s ease-in-out infinite;
+    }
+
+    .no-candidatures p {
+        font-size: 1.2rem;
+        margin-bottom: var(--space-6);
+        color: var(--text-medium);
+    }
+
+    .no-candidatures .btn {
+        padding: var(--space-3) var(--space-6);
+        background: var(--primary-gradient);
+        color: white;
+        border: none;
+        border-radius: var(--radius-md);
+        font-weight: var(--font-weight-semibold);
+        box-shadow: var(--shadow-md);
+        transition: all var(--animation-base) var(--animation-timing);
+    }
+
+    .no-candidatures .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .no-candidatures .btn i {
+        font-size: 1rem;
+        margin-right: var(--space-2);
+        margin-bottom: 0;
+        color: white;
+        animation: none;
+    }
+
+    /* Card Loading States */
+    .loading-shimmer {
+        background: linear-gradient(90deg,
+                rgba(0, 0, 0, 0.03) 0%,
+                rgba(0, 0, 0, 0.06) 50%,
+                rgba(0, 0, 0, 0.03) 100%);
+        background-size: 200% 100%;
+        animation: loading 1.5s infinite;
+        height: 20px;
+        border-radius: var(--radius-sm);
+        margin-bottom: var(--space-2);
+    }
+
+    @keyframes loading {
+        0% {
+            background-position: 200% 0;
+        }
+
+        100% {
+            background-position: -200% 0;
+        }
+    }
+
+    /* Responsive Adjustments */
+    @media (max-width: 992px) {
+        .page-header {
+            padding: var(--space-6);
+        }
+
+        .page-header h1 {
+            font-size: 1.75rem;
+        }
+
+        .candidature-card {
+            margin-bottom: var(--space-4);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            padding: var(--space-5);
+        }
+
+        .page-header h1 {
+            font-size: 1.5rem;
+        }
+
+        .btn-section {
+            grid-template-columns: 1fr;
+        }
+
+        .btn-full {
+            grid-column: 1;
+        }
+
+        .document-section {
+            padding: var(--space-4);
+        }
+    }
+
+    @media (max-width: 576px) {
+        .page-container {
+            padding: 0 var(--space-3);
+        }
+
+        .page-header p {
+            display: none;
+        }
+    }
+
+    /* Tooltip System */
+    [data-tooltip] {
+        position: relative;
+    }
+
+    [data-tooltip]::before {
+        content: attr(data-tooltip);
+        position: absolute;
+        top: -35px;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px);
+        background: var(--primary-gradient);
+        /* Changed from black to your primary gradient */
+        color: white;
+        padding: 6px 12px;
+        border-radius: var(--radius-md);
+        font-size: 12px;
+        font-weight: var(--font-weight-medium);
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: all 0.3s var(--animation-timing);
+        z-index: 100;
+        box-shadow: var(--shadow-md);
+    }
+
+    [data-tooltip]::after {
+        content: '';
+        position: absolute;
+        top: -12px;
+        left: 50%;
+        transform: translateX(-50%) translateY(10px);
+        border-width: 6px;
+        border-style: solid;
+        border-color: var(--primary-dark) transparent transparent transparent;
+        /* Changed from black to your primary dark color */
+        pointer-events: none;
+        opacity: 0;
+        transition: all 0.3s var(--animation-timing);
+        z-index: 100;
+    }
+
+    [data-tooltip]:hover::before,
+    [data-tooltip]:hover::after {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+        animation: tooltipPulse 2s infinite;
+    }
+
+    /* Add a subtle animation to the tooltip */
+    @keyframes tooltipPulse {
+        0% {
+            box-shadow: 0 5px 15px rgba(17, 46, 45, 0);
+        }
+
+        50% {
+            box-shadow: 0 5px 15px rgba(16, 250, 238, 0.3);
+        }
+
+        100% {
+            box-shadow: 0 5px 15px rgba(51, 204, 197, 0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container page-container" style="margin-top: -51%;">
+    <a href="{{ path('app_offre_index') }}" class="back-button" data-tooltip="Retourner à la liste des offres">
+        <i class="fas fa-chevron-left"></i> Retour aux offres
+    </a>
+
+    <div class="page-header">
+        <h1 class="text-center">Candidatures pour " {{ offre.titre }} "</h1>
+        <p class="text-center text-white-50">Visualisez et gérez les candidatures reçues pour cette offre d'emploi</p>
+    </div>
+
+    <div class="row">
         {% for candidature in candidatures %}
-        <div class="col-md-4 mb-4">
-            <div class="card shadow-sm">
+        <div class="col-lg-4 col-md-6 mb-4 candidature-container">
+            <div class="candidature-card">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user-circle"></i>
+                        <span class="ms-2">Candidature</span>
+                    </h5>
+                    {% if candidature.status == 'accepted' %}
+                    <span class="status-badge">
+                        <i class="fas fa-check-circle"></i> Acceptée
+                    </span>
+                    {% endif %}
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">Candidature #{{ candidature.id }}</h5>
-                    <p class="card-text">
-                        <strong>CV:</strong>
+                    <div class="document-section">
+                        <h6><i class="fas fa-file-alt"></i> CV</h6>
                         {% if candidature.cv %}
-                        <a href="{{ asset('uploads/' ~ candidature.cv) }}" target="_blank">Télécharger</a>
+                        <a href="{{ asset('uploads/' ~ candidature.cv) }}" target="_blank" class="document-link">
+                            <i class="fas fa-download"></i> Télécharger le CV
+                        </a>
                         {% else %}
-                        Non fourni
+                        <div class="document-not-available">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            CV non fourni
+                        </div>
                         {% endif %}
-                    </p>
-                    <p class="card-text">
-                        <strong>Lettre de Motivation:</strong>
+                    </div>
+
+                    <div class="document-section">
+                        <h6><i class="fas fa-envelope-open-text"></i> Lettre de motivation</h6>
                         {% if candidature.lettreMotivation %}
-                        <a href="{{ asset('uploads/' ~ candidature.lettreMotivation) }}" target="_blank">Télécharger</a>
+                        <a href="{{ asset('uploads/' ~ candidature.lettreMotivation) }}" target="_blank"
+                            class="document-link">
+                            <i class="fas fa-download"></i> Télécharger la lettre
+                        </a>
                         {% else %}
-                        Non fournie
+                        <div class="document-not-available">
+                            <i class="fas fa-exclamation-circle me-2"></i>
+                            Lettre non fournie
+                        </div>
                         {% endif %}
-                    </p>
+                    </div>
+
+                    {% if candidature.status != 'accepted' %}
+                    <div class="btn-section">
+                        {% if candidature.cv %}
+                        <a href="{{ path('app_offre_translate_cv', {'id_offre': offre.id_offre, 'id_candidature': candidature.id_candidature}) }}"
+                            class="action-btn btn-translate" data-tooltip="Traduire le CV">
+                            <i class="fas fa-language"></i> Traduire
+                        </a>
+                        {% else %}
+                        <button class="action-btn btn-translate" disabled title="CV requis pour la traduction"
+                            data-tooltip="CV requis pour la traduction">
+                            <i class="fas fa-language"></i> Traduire
+                        </button>
+                        {% endif %}
+
+                        <a href="{{ path('app_offre_compare_cv', {'id_offre': offre.id_offre, 'id_candidature': candidature.id_candidature}) }}"
+                            class="action-btn btn-compare" data-tooltip="Comparer avec l'offre">
+                            <i class="fas fa-exchange-alt"></i> Comparer
+                        </a>
+
+                        <a href="{{ path('app_candidature_accept', {'id_candidature': candidature.id_candidature}) }}"
+                            class="action-btn btn-accept btn-full"
+                            onclick="return confirm('Êtes-vous sûr de vouloir accepter cette candidature?');"
+                            data-tooltip="Accepter cette candidature">
+                            <i class="fas fa-check-circle"></i> Accepter la candidature
+                        </a>
+
+                        <form method="post" id="delete-form-{{ candidature.id_candidature }}"
+                            action="{{ path('app_candidature_delete', {'id_candidature': candidature.id_candidature}) }}"
+                            onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette candidature? Cette action est irréversible.');"
+                            class="btn-full">
+                            <input type="hidden" name="_token"
+                                value="{{ csrf_token('delete' ~ candidature.id_candidature) }}">
+                            <button type="submit" class="action-btn btn-delete w-100"
+                                data-tooltip="Supprimer définitivement">
+                                <i class="fas fa-trash-alt"></i> Supprimer
+                            </button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <div class="btn-section">
+                        <button class="action-btn btn-accepted btn-full" disabled>
+                            <i class="fas fa-check-circle"></i> Candidature acceptée
+                        </button>
+
+                        {% if candidature.cv %}
+                        <a href="{{ path('app_offre_translate_cv', {'id_offre': offre.id_offre, 'id_candidature': candidature.id_candidature}) }}"
+                            class="action-btn btn-translate btn-full" data-tooltip="Traduire le CV">
+                            <i class="fas fa-language"></i> Traduire le CV
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
         {% else %}
         <div class="col-12">
-            <div class="alert alert-warning text-center">
-                Aucune candidature trouvée pour cette offre.
+            <div class="no-candidatures">
+                <i class="fas fa-search"></i>
+                <p>Aucune candidature n'a encore été reçue pour cette offre.</p>
+                <a href="{{ path('app_offre_index') }}" class="btn">
+                    <i class="fas fa-arrow-left"></i> Retourner aux offres
+                </a>
             </div>
         </div>
         {% endfor %}
     </div>
 </div>
+<!-- Move the Loading Animation Overlay OUTSIDE the container -->
+<div id="loading-overlay" class="loading-overlay">
+    <div class="card">
+        <div class="scanning-label">CV MATCH</div>
+        <div class="scan-particles">
+            <!-- Particles will be added dynamically via JavaScript -->
+        </div>
+        <div class="brand-name">Workshpere</div>
+        <svg width="100" height="200" viewBox="0 0 90 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <!-- SVG paths remain the same -->
+        </svg>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Staggered entrance animation for cards with 3D effect
+        const cards = document.querySelectorAll('.candidature-card');
+        cards.forEach((card, index) => {
+            card.style.transitionDelay = (index * 0.1) + 's';
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 100 + (index * 70));
+        });
+
+        // Track mouse position for 3D card effect
+        const containers = document.querySelectorAll('.candidature-container');
+        containers.forEach(container => {
+            const card = container.querySelector('.candidature-card');
+
+            container.addEventListener('mousemove', e => {
+                if (!card) return;
+
+                const rect = container.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+                const deltaX = (e.clientX - centerX) / 20;
+                const deltaY = (e.clientY - centerY) / 20;
+
+                card.style.transform = `translateY(-7px) rotateX(${-deltaY}deg) rotateY(${deltaX}deg)`;
+            });
+
+            container.addEventListener('mouseleave', () => {
+                if (!card) return;
+                card.style.transform = '';
+
+                // Add smooth transition back
+                card.style.transition = 'all 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+                setTimeout(() => {
+                    card.style.transform = 'translateY(0) rotateX(0) rotateY(0)';
+                }, 10);
+            });
+        });
+
+        // Advanced Button Interaction
+        const actionButtons = document.querySelectorAll('.action-btn:not([disabled])');
+        actionButtons.forEach(button => {
+            // Create ripple effect on button click
+            button.addEventListener('click', function (e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                ripple.style.cssText = `
+                position: absolute;
+                background: rgba(255, 255, 255, 0.4);
+                border-radius: 50%;
+                width: 5px;
+                height: 5px;
+                top: ${y}px;
+                left: ${x}px;
+                transform: translate(-50%, -50%);
+                animation: ripple 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+                pointer-events: none;
+            `;
+
+                this.appendChild(ripple);
+
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+
+            // Enhanced hover effect with magnetic pull
+            button.addEventListener('mousemove', function (e) {
+                const rect = this.getBoundingClientRect();
+                const centerX = rect.left + rect.width / 2;
+                const centerY = rect.top + rect.height / 2;
+
+                const deltaX = (e.clientX - centerX) / 10;
+                const deltaY = (e.clientY - centerY) / 10;
+
+                const icon = this.querySelector('i');
+                if (icon) {
+                    icon.style.transform = `translate(${deltaX / 2}px, ${deltaY / 2}px) scale(1.1)`;
+                }
+
+                this.style.transform = `translate(${deltaX / 3}px, ${deltaY / 3 - 3}px)`;
+                this.style.boxShadow = `0 8px 16px rgba(0, 0, 0, 0.1), ${-deltaX / 10}px ${-deltaY / 10}px 20px rgba(0, 0, 0, 0.03)`;
+            });
+
+            button.addEventListener('mouseleave', function () {
+                this.style.transform = '';
+                this.style.boxShadow = '';
+
+                const icon = this.querySelector('i');
+                if (icon) {
+                    icon.style.transform = '';
+                }
+            });
+        });
+
+        // Interactive document sections with spotlight effect
+        const docSections = document.querySelectorAll('.document-section');
+        docSections.forEach(section => {
+            section.addEventListener('mousemove', function (e) {
+                const rect = this.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+
+                this.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(248, 250, 252, 0.8) 0%, rgba(248, 250, 252, 1) 70%)`;
+
+                const documentLink = this.querySelector('.document-link');
+                if (documentLink) {
+                    const linkRect = documentLink.getBoundingClientRect();
+                    const distX = e.clientX - (linkRect.left + linkRect.width / 2);
+                    const distY = e.clientY - (linkRect.top + linkRect.height / 2);
+                    const dist = Math.sqrt(distX * distX + distY * distY);
+
+                    if (dist < 100) {
+                        const pull = (100 - dist) / 100 * 2;
+                        documentLink.style.transform = `translateX(${pull}px)`;
+                    } else {
+                        documentLink.style.transform = '';
+                    }
+                }
+            });
+
+            section.addEventListener('mouseleave', function () {
+                this.style.background = 'var(--bg-light)';
+
+                const documentLink = this.querySelector('.document-link');
+                if (documentLink) {
+                    documentLink.style.transform = '';
+                }
+            });
+        });
+    });
+
+    // Add advanced animations
+    const style = document.createElement('style');
+    style.textContent = `
+    @keyframes ripple {
+        0% {
+            width: 5px;
+            height: 5px;
+            opacity: 1;
+        }
+        100% {
+            width: 300px;
+            height: 300px;
+            opacity: 0;
+        }
+    }
+    
+    @keyframes float {
+        0% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-10px);
+        }
+        100% {
+            transform: translateY(0);
+        }
+    }
+`;
+    document.head.appendChild(style);
+
+    // ADD THIS NEW CODE: Handle Compare CV button clicks
+    const compareButtons = document.querySelectorAll('.btn-compare');
+    compareButtons.forEach(button => {
+        button.addEventListener('click', function (e) {
+            e.preventDefault(); // Prevent immediate navigation
+
+            const href = this.getAttribute('href'); // Get the destination URL
+            const loadingOverlay = document.getElementById('loading-overlay');
+
+            // Create particles for additional effect
+            const particlesContainer = loadingOverlay.querySelector('.scan-particles');
+            particlesContainer.innerHTML = ''; // Clear any existing particles
+
+            // Create more particles for the larger card
+            for (let i = 0; i < 50; i++) { // Increased from 30 to 50
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+
+                // Random positioning
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.top = Math.random() * 100 + '%';
+
+                // Random size (slightly larger particles)
+                const size = Math.random() * 4 + 1; // Increased max size
+                particle.style.width = size + 'px';
+                particle.style.height = size + 'px';
+
+                // Random animation delay
+                particle.style.animationDelay = (Math.random() * 3) + 's';
+
+                particlesContainer.appendChild(particle);
+            }
+
+            // Show the loading animation
+            loadingOverlay.classList.add('active');
+
+            // Wait 3 seconds for the animation to play, then navigate
+            setTimeout(() => {
+                window.location.href = href;
+            }, 4000);
+        });
+    });
+</script>
 {% endblock %}

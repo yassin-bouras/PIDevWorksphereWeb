@@ -1,0 +1,63 @@
+{% extends '/dashboard/base.html.twig' %}
+
+{% block title %}Calendrier des Entretiens{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css">
+    <style>
+        #calendar {
+            max-width: 1100px;
+            margin: 40px auto;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    <div class="container">
+        <h1 class="my-4">Calendrier des Entretiens</h1>
+        <div id="calendar"></div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/fr.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarEl = document.getElementById('calendar');
+            const calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'timeGridWeek',
+                locale: 'fr',
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: '{{ path('api_entretiens') }}',
+                eventClick: function(info) {
+                    if (info.event.url) {
+                        window.location.href = info.event.url;
+                        return false;
+                    }
+                },
+                eventDidMount: function(info) {
+                    if (info.event.extendedProps.description) {
+                        const tooltip = new bootstrap.Tooltip(info.el, {
+                            title: `
+                                <strong>${info.event.extendedProps.candidat}</strong><br>
+                                ${info.event.extendedProps.description}<br>
+                                <em>${info.event.extendedProps.offre}</em>
+                            `,
+                            placement: 'top',
+                            html: true,
+                            trigger: 'hover'
+                        });
+                    }
+                }
+            });
+            calendar.render();
+        });
+    </script>
+{% endblock %}

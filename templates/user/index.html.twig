@@ -2,125 +2,148 @@
 
 {% block title %}Utilisateurs{% endblock %}
 
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('back/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/fontawesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('back/css/style.css') }}">
+    <style>
+        .content {
+            margin-top: -58%; /* Keep your original margin */
+        }
+        .page-header {
+            margin-bottom: 1.5rem;
+        }
+        .page-title {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #2d3748;
+        }
+        .breadcrumb {
+            background: none;
+            padding: 0;
+            margin-top: 0.5rem;
+        }
+        .breadcrumb-item a {
+            color: #33ccc5;
+            text-decoration: none;
+        }
+        .breadcrumb-item a:hover {
+            text-decoration: underline;
+        }
+        .card {
+            border: none;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
+        }
+        .card-body {
+            padding: 2rem;
+        }
+        .btn-create-user {
+            background-color: #33ccc5;
+            border: 1px solid #33ccc5;
+            color: white;
+            padding: 0.5rem 1.5rem;
+            border-radius: 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+        }
+        .btn-create-user:hover {
+            background-color: #28a39b;
+            border-color: #28a39b;
+            transform: scale(1.05);
+        }
+        .btn-create-user i {
+            margin-right: 0.5rem;
+        }
+        .form-control {
+            border: 2px solid #33ccc5;
+            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            font-size: 1rem;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .form-control:focus {
+            border-color: #28a39b;
+            box-shadow: 0 0 0 3px rgba(51, 204, 197, 0.2);
+            outline: none;
+        }
+        .input-group {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .btn-search {
+            background-color: #33ccc5;
+            border-color: #33ccc5;
+            color: white;
+            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+        .btn-search:hover {
+            background-color: #28a39b;
+            border-color: #28a39b;
+        }
+        .btn-reset {
+            background-color: transparent;
+            border: 2px solid #33ccc5;
+            color: #33ccc5;
+            border-radius: 0.375rem;
+            padding: 0.5rem 1rem;
+            transition: all 0.3s ease;
+        }
+        .btn-reset:hover {
+            background-color: #33ccc5;
+            color: white;
+        }
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #2d3748;
+            padding: 1rem;
+        }
+        .table td {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+        .table-hover tbody tr:hover {
+            background-color: #e6f3f2;
+        }
+        .action-btn {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.875rem;
+            border-radius: 0.25rem;
+            transition: all 0.3s ease;
+        }
+        .action-btn:hover {
+            transform: scale(1.1);
+        }
+        .pagination {
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        .page-item.active .page-link {
+            background-color: #33ccc5;
+            border-color: #33ccc5;
+        }
+        .page-link {
+            color: #33ccc5;
+        }
+        .page-link:hover {
+            background-color: #e6f3f2;
+        }
+    </style>
+{% endblock %}
+
 {% block content %}
-<style>
-    .d-flex > * {
-        margin-right: 10px; /* Add spacing between buttons */
-    }
-
-    .d-flex > *:last-child {
-        margin-right: 0; /* Remove margin from the last button */
-    }
-
-    .form-control {
-        border: 3px solid #33ccc5;
-        border-radius: 5px;
-        padding: 10px;
-        font-size: 1.2rem;
-        width: 80%;
-        transition: border-color 0.3s ease;
-    }
-
-    .form-control:focus {
-        border-color: #33ccc5;
-        outline: none;
-        box-shadow: 0 0 5px rgba(51, 204, 197, 0.5);
-    }
-
-    .btn-outline-secondary {
-        background-color: transparent;
-        border: 3px solid #33ccc5;
-        color: #33ccc5;
-        padding: 10px 50px;
-        font-size: 0.635rem;
-        border-radius: 5px;
-        transition: all 0.3s ease;
-    }
-    .btn-outline-secondary span {
-        font-size: 3rem; 
-        font-weight: bold;
-    }
-
-    .btn-outline-secondary:hover {
-        border: 3px solid #99fffa;
-        background-color: #33ccc5;
-        color: white;
-        transform: scale(1.05);
-        transition: all 0.2s ease;
-    }
-
-    .input-group {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 0;
-    }
-    .btn-primary {
-        background-color: #33ccc5 !important; /* Change the background color */
-        border-color: #33ccc5 !important; /* Change the border color */
-    }
-
-    .btn-primary:hover {
-        background-color: #28a39b !important; /* Slightly darker shade for hover */
-        border-color: #28a39b !important; /* Match the border color on hover */
-    }
-    .btn-create-user {
-        background-color: #33ccc5; /* Set the background color to #33ccc5 */
-        position: relative;
-        padding: 5px 15px;
-        display: flex;
-        align-items: center;
-        font-size: 17px;
-        font-weight: 600;
-        text-decoration: none;
-        cursor: pointer;
-        border: 1px solid #33ccc5; /* Match the border color */
-        border-radius: 25px;
-        outline: none;
-        overflow: hidden;
-        color: white; /* Set the text color to white for contrast */
-        transition: background-color 0.3s ease, color 0.3s ease;
-        text-align: center;
-    }
-
-    .btn-create-user span {
-        margin: 10px;
-    }
-    .btn-create-user svg {
-        width: 24px;
-        height: 24px;
-        stroke: white; /* Set the icon color to white */
-    }
-
-    .btn-create-user::before {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        margin: auto;
-        content: '';
-        border-radius: 50%;
-        display: block;
-        width: 20em;
-        height: 20em;
-        left: -5em;
-        text-align: center;
-        transition: box-shadow 0.5s ease-out;
-        z-index: -1;
-    }
-
-    .btn-create-user:hover {
-        background-color: #28a39b; /* Slightly darker shade for hover */
-        color: #023d44;
-        border: 1px solid rgb(40, 144, 241);
-    }
-
-    .btn-create-user:hover::before {
-        box-shadow: inset 0 0 0 10em rgb(40, 144, 241);
-    }
-</style>
-<div class="content container-fluid" style="margin-top: -58%;">
+<div class="content container-fluid">
     <div class="page-header">
         <div class="row">
             <div class="col-sm-12">
@@ -139,26 +162,34 @@
                 <div class="card-body">
                     <div class="text-start mb-4">
                         <a href="{{ path('app_user_new') }}" class="btn-create-user">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" viewBox="0 0 24 24" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke="currentColor" height="24" fill="none" class="svg">
-                                <line y2="19" y1="5" x2="12" x1="12"></line>
-                                <line y2="12" y1="12" x2="19" x1="5"></line>
-                            </svg>
-                            <span>CRÉER UN NOUVEL UTILISATEUR</span>
+                            <i class="fas fa-plus"></i> Créer un Nouvel Utilisateur
                         </a>
                     </div>
 
-                    <div class="mb-4">
-                        <form method="GET" action="{{ path('app_user_index') }}">
-                            <div class="input-group" style="max-width: 1050px; margin: 0 auto;">
-                                <input type="text" name="search" class="form-control"
-                                    placeholder="Rechercher par nom ou email..."
-                                    value="{{ app.request.query.get('search') }}">
-                                <div class="input-group-append">
-                                    <button class="btn btn-outline-secondary" type="submit"><span>Rechercher</span></button>
+                    <form method="GET" action="{{ path('app_user_index') }}" class="mb-4">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="input-group">
+                                    <input type="text" name="search" class="form-control" placeholder="Rechercher par nom ou email..." value="{{ search|default('') }}">
+                                    <div class="input-group-append">
+                                        <button class="btn btn-search" type="submit"><i class="fas fa-search"></i> Rechercher</button>
+                                    </div>
                                 </div>
                             </div>
-                        </form>
-                    </div>
+                            <div class="col-md-5">
+                                <select name="role" class="form-control">
+                                    <option value="">Tous les rôles</option>
+                                    <option value="Employe" {{ role == 'Employe' ? 'selected' : '' }}>Employé</option>
+                                    <option value="Manager" {{ role == 'Manager' ? 'selected' : '' }}>Manager</option>
+                                    <option value="Candidat" {{ role == 'Candidat' ? 'selected' : '' }}>Candidat</option>
+                                    <option value="RH" {{ role == 'RH' ? 'selected' : '' }}>RH</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <a href="{{ path('app_user_index') }}" class="btn btn-reset w-100">Réinitialiser</a>
+                            </div>
+                        </div>
+                    </form>
 
                     <div class="table-responsive">
                         <table class="table table-hover table-striped mb-0">
@@ -182,52 +213,45 @@
                                         <td>{{ user.role }}</td>
                                         <td>{{ user.sexe }}</td>
                                         <td>{{ user.status ?: 'Non spécifié' }}</td>
-<td>
-    <div class="d-flex flex-wrap gap-1">
-        <a href="{{ path('app_user_show', {'iduser': user.idUser}) }}" class="btn btn-sm btn-outline-primary" title="Voir">
-            <i class="far fa-eye"></i>
-        </a>
-        <a href="{{ path('app_user_edit', {'iduser': user.idUser}) }}" class="btn btn-sm btn-outline-warning" title="Modifier">
-            <i class="far fa-edit"></i>
-        </a>
-        <form method="post" action="{{ path('app_user_delete', {'iduser': user.idUser}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
-            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.idUser) }}">
-            <button class="btn btn-sm btn-outline-danger" title="Supprimer">
-                <i class="far fa-trash-alt"></i>
-            </button>
-        </form>
-
-        {# Ban/Unban Button #}
-        {% if user.banned %}
-            <form method="post" action="{{ path('app_user_unban', {'id': user.idUser}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir débannir cet utilisateur ?');">
-                <button class="btn btn-sm btn-outline-success" title="Débannir">
-                    <i class="fas fa-unlock"></i>
-                </button>
-            </form>
-        {% else %}
-            <form method="post" action="{{ path('app_user_ban', {'id': user.idUser}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir bannir cet utilisateur ?');">
-                <button class="btn btn-sm btn-outline-danger" title="Bannir">
-                    <i class="fas fa-ban"></i>
-                </button>
-            </form>
-        {% endif %}
-
-        {# View Reclamation (only if banned and has reclamations) #}
-        {% if user == 'banned' and user.reclamations|length > 0 %}
-            <a href="{{ path('app_user_reclamations', {'iduser': user.idUser}) }}" class="btn btn-sm btn-outline-info" title="Voir réclamations">
-                <i class="fas fa-exclamation-circle"></i>
-            </a>
-        {% endif %}
-
-        {# Promote Button #}
-        <form method="post" action="{{ path('app_user_promote', {'id': user.idUser}) }}" onsubmit="return confirm('Promouvoir cet utilisateur ?');">
-            <button class="btn btn-sm btn-outline-secondary" title="Promouvoir">
-                <i class="fas fa-level-up-alt"></i>
-            </button>
-        </form>
-    </div>
-</td>
-
+                                        <td>
+                                            <div class="d-flex flex-wrap gap-2">
+                                                <a href="{{ path('app_user_show', {'iduser': user.idUser}) }}" class="btn btn-sm btn-outline-primary action-btn" title="Voir">
+                                                    <i class="far fa-eye"></i>
+                                                </a>
+                                                <a href="{{ path('app_user_edit', {'iduser': user.idUser}) }}" class="btn btn-sm btn-outline-warning action-btn" title="Modifier">
+                                                    <i class="far fa-edit"></i>
+                                                </a>
+                                                <form method="post" action="{{ path('app_user_delete', {'iduser': user.idUser}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');" class="d-inline">
+                                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.idUser) }}">
+                                                    <button class="btn btn-sm btn-outline-danger action-btn" title="Supprimer">
+                                                        <i class="far fa-trash-alt"></i>
+                                                    </button>
+                                                </form>
+                                                {% if user.banned %}
+                                                    <form method="post" action="{{ path('app_user_unban', {'id': user.idUser}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir débannir cet utilisateur ?');" class="d-inline">
+                                                        <button class="btn btn-sm btn-outline-success action-btn" title="Débannir">
+                                                            <i class="fas fa-unlock"></i>
+                                                        </button>
+                                                    </form>
+                                                {% else %}
+                                                    <form method="post" action="{{ path('app_user_ban', {'id': user.idUser}) }}" onsubmit="return confirm('Êtes-vous sûr de vouloir bannir cet utilisateur ?');" class="d-inline">
+                                                        <button class="btn btn-sm btn-outline-danger action-btn" title="Bannir">
+                                                            <i class="fas fa-ban"></i>
+                                                        </button>
+                                                    </form>
+                                                {% endif %}
+                                                {% if user.banned and user.messageReclamation %}
+                                                    <a href="{{ path('app_user_reclamations', {'iduser': user.idUser}) }}" class="btn btn-sm btn-outline-info action-btn" title="Voir réclamations">
+                                                        <i class="fas fa-exclamation-circle"></i>
+                                                    </a>
+                                                {% endif %}
+                                                <form method="post" action="{{ path('app_user_promote', {'id': user.idUser}) }}" onsubmit="return confirm('Promouvoir cet utilisateur ?');" class="d-inline">
+                                                    <button class="btn btn-sm btn-outline-secondary action-btn" title="Promouvoir">
+                                                        <i class="fas fa-level-up-alt"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
                                     </tr>
                                 {% else %}
                                     <tr>
@@ -236,6 +260,10 @@
                                 {% endfor %}
                             </tbody>
                         </table>
+                    </div>
+
+                    <div class="pagination">
+                        {{ knp_pagination_render(users) }}
                     </div>
                 </div>
             </div>

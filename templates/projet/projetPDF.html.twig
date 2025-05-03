@@ -93,7 +93,7 @@
 <body>
 <div class="page-border">
     <div class="top-bar">
-        <img src="{{ absolute_url(asset('back/img/workspherelogo.PNG')) }}" alt="Logo" class="logo">
+        {# <img src="{{ absolute_url(asset('back/img/workspherelogo.PNG')) }}" alt="Logo" class="logo"> #}
         <div class="header">Date: {{ date|date('d/m/Y H:i') }}</div>
     </div>
 
@@ -101,7 +101,7 @@
 
     {% if projet.imageProjet %}
     <div class="center">
-     <!--   <img src="{{ absolute_url(projet.imageProjet) }}" class="project-image" alt="Image du projet">  -->
+    
     </div>
     {% endif %}
 

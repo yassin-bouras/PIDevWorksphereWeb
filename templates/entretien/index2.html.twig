@@ -3,101 +3,317 @@
 {% block title %}Entretiens{% endblock %}
 
 {% block content %}
-    <div class="container" style="margin-top:-50%;">
-        <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Liste des Entretiens</h1>
+    <div class="container" style="margin-top:-55%;">
+        <h1 class="text-center mb-5">Liste des Entretiens</h1>
 
-        <div class="event-grid" style="max-width: 1060px; margin: 0 auto;">
+        <div class="row row-cols-1 row-cols-md-2 g-4">
             {% for entretien in entretiens %}
-                <div class="event-card" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 25px;">
-                    <div class="event-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h2 style="margin: 0; font-size: 1.5rem; color: #333;">{{ entretien.titre }}</h2>
-                        <span style="background-color: #f0f0f0; padding: 5px 10px; border-radius: 4px; font-size: 0.9rem;">Type: {{ entretien.typeEntretien }}</span>
-                    </div>
-                    
-                    <div class="event-info" style="margin-bottom: 15px;">
-                        <p style="margin: 5px 0; color: #555;"><strong>Description:</strong> {{ entretien.description }}</p>
-                        <p style="margin: 5px 0; color: #555;"><strong>Date:</strong> {{ entretien.dateEntretien ? entretien.dateEntretien|date('Y-m-d') : 'N/A' }}</p>
-                        <p style="margin: 5px 0; color: #555;"><strong>Heure:</strong> {{ entretien.heureEntretien ? entretien.heureEntretien|date('H:i:s') : 'N/A' }}</p>
-                        <p style="margin: 5px 0; color: #555;"><strong>Status:</strong> {{ entretien.status ? 'Yes' : 'No' }}</p>                
-                        
-                         </div>
-                    
-                    <div class="event-actions" style="display: flex; gap: 10px;">
-                        <a class="btn" href="{{ path('app_entretien_show', {'id': entretien.id}) }}" style="background-color: #4a6fa5; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Voir details entretien</a>
-                        {% if entretien.feedback is  null %}
-                        <a class="btn" href="{{ path('app_feedback_news', {'id': entretien.id}) }}" style="background-color: #FF8C00; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Ajouter Feedback</a>
-                        {% else %}
-                        <a class="btn" href="{{ path('app_feedback_edit', {'id': entretien.feedback.id}) }}" style="background-color: #FF8C00; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">modifier   Feedback</a>
-                        {% endif %}
+                <div class="col">
+                    <div class="card event-card h-100">
+                        <div class="card-body">
+                            <div class="event-header d-flex justify-content-between align-items-center mb-3">
+                                <h2 class="card-title mb-0">{{ entretien.titre }}</h2>
+                                <span class="badge bg-light text-dark">{{ entretien.typeEntretien }}</span>
+                            </div>
+                            
+                            <div class="event-info mb-4">
+                                <p class="mb-2"><strong>Description:</strong> {{ entretien.description }}</p>
+                                <p class="mb-2"><strong>Date:</strong> {{ entretien.dateEntretien ? entretien.dateEntretien|date('Y-m-d') : 'N/A' }}</p>
+                                <p class="mb-2"><strong>Heure:</strong> {{ entretien.heureEntretien ? entretien.heureEntretien|date('H:i:s') : 'N/A' }}</p>
+                                <p class="mb-2"><strong>Status:</strong> {{ entretien.status ? 'Terminé' : 'En cours' }}</p>
+                            </div>
+                            
+                            <div class="event-actions d-flex flex-wrap gap-2">
+                                <a href="{{ path('app_entretien_show', {'id': entretien.id}) }}" 
+                                   class="btn btn-primary">
+                                    <i class="fas fa-eye me-2"></i> Voir détails
+                                </a>
+                                {% if entretien.feedback is null %}
+                                    <a href="{{ path('app_feedback_news', {'id': entretien.id}) }}" 
+                                       class="btn btn-warning">
+                                        <i class="fas fa-comment-dots me-2"></i> Ajouter Feedback
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('app_feedback_show', {'id': entretien.feedback.id}) }}" 
+                                       class="btn btn-warning">
+                                        <i class="fas fa-comment-dots me-2"></i> Voir Feedback
+                                    </a>
+                                {% endif %}
+                                {% if not entretien.status %}
+                                    <form method="post" 
+                                          action="{{ path('entretien_change_status', {'id': entretien.id}) }}" 
+                                          class="change-status-form d-inline">
+                                        <button type="submit"
+                                                class="btn btn-success"
+                                                {% if entretien.feedback is null %}disabled{% endif %}
+                                                data-feedback="{% if entretien.feedback is null %}true{% else %}false{% endif %}"
+                                                onclick="checkFeedback(event, this.getAttribute('data-feedback'), {{ entretien.id }})">
+                                            <i class="fas fa-check-circle me-2"></i> Marquer comme terminé
+                                        </button>
+                                    </form>
+                                {% else %}
+                                    <span class="btn btn-success disabled">
+                                        <i class="fas fa-check-circle me-2"></i> Entretien terminé
+                                    </span>
+                                {% endif %}
+                                <a href="{{ path('app_entretien_generate_questions', {'id': entretien.id}) }}" 
+                                   class="btn btn-info" 
+                                   target="_blank">
+                                    <i class="fas fa-file-pdf me-2"></i> Générer des questions
+                                </a>
+                                <a href="{{ path('entretien_calendar') }}" 
+                                   class="btn btn-purple">
+                                    <i class="fas fa-calendar-day me-2"></i> Voir dans le calendrier
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             {% else %}
-                <div class="no-events" style="text-align: center; padding: 40px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    <p style="font-size: 1.2rem; color: #777;">Aucun entretien trouvé</p>
+                <div class="col">
+                    <div class="card no-events text-center">
+                        <div class="card-body">
+                            <p class="fs-5 text-muted">Aucun entretien trouvé</p>
+                        </div>
+                    </div>
                 </div>
             {% endfor %}
         </div>
     </div>
 
-    <style>
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
+    <!-- Modal Structure -->
+    <div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="errorModalLabel">Erreur</h5>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Vous devez d'abord fournir un feedback avant de marquer l'entretien comme terminé.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        function checkFeedback(event, hasNoFeedback, entretienId) {
+            if (hasNoFeedback === 'true') {
+                event.preventDefault();
+                const modal = new bootstrap.Modal(document.getElementById('errorModal'));
+                modal.show();
+            }
         }
+    </script>
+
+    <style>
+        /* General Layout */
+        .container {
+            max-width: 1200px;
+        }
+
+        h1 {
+            font-weight: 700;
+            color: #1a1a1a;
+            font-size: 2rem;
+        }
+
+        /* Card Styling */
         .event-card {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+
         .event-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .badge {
+            font-size: 0.85rem;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+        }
+
+        /* Event Info */
+        .event-info p {
+            font-size: 0.95rem;
+            color: #495057;
+            margin-bottom: 0.75rem;
+        }
+
+        .event-info strong {
+            color: #1a1a1a;
+        }
+
+        /* Buttons */
+        .btn {
+            font-size: 0.9rem;
+            padding: 0.6rem 1.2rem;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            opacity: 1;
+        }
+
+        .btn-primary {
+            background-color: #0052cc;
+            border-color: #0052cc;
+        }
+
+        .btn-primary:hover {
+            background-color: #003d99;
+            border-color: #003d99;
+        }
+
+        .btn-warning {
+            background-color: ##f5c518;
+            border-color: #ff8c00;
+        }
+
+        .btn-warning:hover {
+            background-color: ##f5c518;
+            border-color: #cc7000;
+        }
+
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+
+        .btn-success:hover {
+            background-color: #218838;
+            border-color: #218838;
+        }
+
+        .btn-success.disabled {
+            background-color: #e0ffe0;
+            border-color: #28a745;
+            color: #28a745;
+            opacity: 1;
+        }
+
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+
+        .btn-info:hover {
+            background-color: #138496;
+            border-color: #138496;
+        }
+
+        .btn-purple {
+            background-color: #DBE466FF;
+            border-color: #6f42c1;
+        }
+
+        .btn-purple:hover {
+            background-color: #5e35b1;
+            border-color: #5e35b1;
+        }
+
+        .btn i {
+            font-size: 0.85rem;
+        }
+
+        /* No Events Card */
+        .no-events {
+            border: none;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+            padding: 2rem;
+        }
+
+        /* Modal */
+        .modal-content {
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .modal-header {
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .modal-title {
+            font-weight: 600;
+            color: #1a1a1a;
+        }
+
+        .modal-body {
+            font-size: 1rem;
+            color: #495057;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #5a6268;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 1.75rem;
+            }
+
+            .card-title {
+                font-size: 1.25rem;
+            }
+
+            .event-info p {
+                font-size: 0.9rem;
+            }
+
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+            }
+
+            .event-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .event-actions .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .card-body {
+                padding: 1rem;
+            }
+
+            .no-events {
+                padding: 1.5rem;
+            }
         }
     </style>
 {% endblock %}
-
-
-
-
-
-
-
-
-    {# <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Titre</th>
-                <th>Description</th>
-                <th>Date_entretien</th>
-                <th>Heure_entretien</th>
-                <th>Type_entretien</th>
-                <th>Status</th>
-                <th>CandidatId</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for entretien in entretiens %}
-            <tr>
-                <td>{{ entretien.id }}</td>
-                <td>{{ entretien.titre }}</td>
-                <td>{{ entretien.description }}</td>
-                <td>{{ entretien.dateEntretien ? entretien.dateEntretien|date('Y-m-d') : '' }}</td>
-                <td>{{ entretien.heureentretien ? entretien.heureentretien|date('H:i:s') : '' }}</td>
-                <td>{{ entretien.typeEntretien }}</td>
-                <td>{{ entretien.status ? 'Yes' : 'No' }}</td>
-                <td>{{ entretien.candidatId }}</td>
-                <td>
-                    <a href="{{ path('app_entretien_show', {'id': entretien.id}) }}">show</a>
-                    <a href="{{ path('app_entretien_edit', {'id': entretien.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="9">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_entretien_new') }}">Create new</a>
-{% endblock %} #}
