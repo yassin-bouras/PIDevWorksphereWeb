@@ -205,4 +205,21 @@ final class TacheController extends AbstractController
         return $response;
     }
 
+    #[Route('/tache/mestaches/{id}/update-statut', name: 'update_statut_tache', methods: ['POST'])]
+public function updateStatut(int $id, Request $request, TacheRepository $tacheRepository, EntityManagerInterface $entityManager): JsonResponse
+{
+
+        $tache = $tacheRepository->find($id);
+    
+        $data = json_decode($request->getContent(), true);
+        if (!isset($data['statut'])) {
+            return new JsonResponse(['error' => 'Statut non fourni'], 400);
+        }
+    
+        $tache->setStatut($data['statut']);
+        $entityManager->flush();
+    
+        return new JsonResponse(['success' => true]);
+ 
+}
 }
