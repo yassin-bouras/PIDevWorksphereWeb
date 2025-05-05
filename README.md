@@ -33,10 +33,10 @@ Clone the repository:git clone https://github.com/yourusername/worksphere.git
 Navigate to the project directory:cd worksphere
 
 
-Install backend dependencies:npm install
+Install backend dependencies:composer update
 
 
-Install frontend dependencies:cd frontend && npm install
+
 
 
 Set up the database:
