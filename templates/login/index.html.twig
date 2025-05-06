@@ -291,7 +291,7 @@
 
             // Handle successful login (for both password and face auth)
             function handleSuccessfulLogin(token) {
-                document.cookie = `BEARER=${token}; Path=/; Secure; SameSite=Strict`;
+                document.cookie = `BEARER=${token}; Path=/; SameSite=Strict`;
 
                 const payload = JSON.parse(atob(token.split('.')[1]));
                 const userRole = payload.roles && payload.roles.length > 0 ? payload.roles[0].toLowerCase() : null;
