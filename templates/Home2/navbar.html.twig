@@ -60,18 +60,15 @@
                     sidebarLinks.innerHTML = ''; // Clear old items
 
                     const commonItems = [
-                        `<li class="scroll-to-section"><a href="/user/${user.iduser}">👤 Profile</a></li>`,
-                        `<li class="scroll-to-section"><a href="/formation">📢 Formations</a></li>`
+                       
                     ];
 
                     const candidatItems = [
                         `<li class="scroll-to-section"><a href="/contrat">📜 Contrat</a></li>`,
-                        `<li class="scroll-to-section"><a href="/sponsor">📢 Gestion Sponsor</a></li>`,
-                        `<li class="scroll-to-section"><a href="/user">👥 Gestion User</a></li>`,
-                        `<li class="scroll-to-section"><a href="/event">✅ Evenements</a></li>`,
                         `<li class="scroll-to-section"><a href="/offre">🎯 Offres Emploi</a></li>`,
                         `<li class="scroll-to-section"><a href="/entretien">🔥 Entretien</a></li>`,
-                        `<li class="scroll-to-section"><a href="/mdp">🔄 Mot de Passe</a></li>`
+                        `<li class="scroll-to-section"><a href="/reclamation/user/${user.iduser}"><span>📄 Reclamation</span></a></li>`,
+                       
                     ];
 
                     const employeItems = [
@@ -85,7 +82,7 @@
 
                     const logoutBtn = `
                         <li class="scroll-to-section">
-                            <div class="main-red-button">
+                            <div class="main-blue-button">
                                 <a href="/logout">Se déconnecter</a>
                             </div>
                         </li>

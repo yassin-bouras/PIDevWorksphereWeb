@@ -19,7 +19,7 @@ final class DashboardController extends AbstractController
     #[Route('/dashboardcandidat', name: 'app_dashboard_candidat')]
     public function candidat(): Response
     {
-        return $this->render('dashboard/base2.html.twig', [
+        return $this->render('home2/index.html.twig', [
             'controller_name' => 'DashboardController',
         ]);
     }
