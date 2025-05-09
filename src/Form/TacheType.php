@@ -11,6 +11,9 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormEvent;
 
 class TacheType extends AbstractType
 {
@@ -40,7 +43,7 @@ class TacheType extends AbstractType
                 'class' => Projet::class,
                 'choice_label' => 'nom',
             ])
-            ->add('assignee', EntityType::class, [
+            /*->add('assignee', EntityType::class, [
                 'class' => User::class,
                 'choice_label' => function(User $user) {
                     return $user->getNom() . ' ' . $user->getPrenom();
@@ -51,8 +54,52 @@ class TacheType extends AbstractType
                         ->setParameter('role', 'Employe')
                         ->orderBy('u.nom', 'ASC');
                 }
-            ])
+            ])*/
         ;
+
+        
+            $formModifier = function (FormInterface $form, Projet $projet = null) {
+                $form->add('assignee', EntityType::class, [
+                    'class' => User::class,
+                    'choice_label' => function(User $user) {
+                        return $user->getNom() . ' ' . $user->getPrenom();
+                    },
+                    'query_builder' => function (EntityRepository $er) use ($projet) {
+                        if (!$projet) {
+                            return $er->createQueryBuilder('u')
+                                ->where('1=0'); 
+                        }
+                        
+                        return $er->createQueryBuilder('u')
+                            ->join('u.equipes', 'e')
+                            ->join('e.projets', 'p')
+                            ->where('p.id = :projetId')
+                            ->andWhere('u.role = :role')
+                            ->setParameter('projetId', $projet->getId())
+                            ->setParameter('role', 'Employe')
+                            ->orderBy('u.nom', 'ASC');
+                    },
+                    'placeholder' => $projet ? 'Choisissez un employé' : 'Sélectionnez un projet',
+                    'required' => false,
+                ]);
+            };
+    
+            // Écouter les événements du formulaire
+            $builder->addEventListener(
+                FormEvents::PRE_SET_DATA,
+                function (FormEvent $event) use ($formModifier) {
+                    $data = $event->getData();
+                    $formModifier($event->getForm(), $data->getProjet());
+                }
+            );
+    
+            $builder->get('projet')->addEventListener(
+                FormEvents::POST_SUBMIT,
+                function (FormEvent $event) use ($formModifier) {
+                    $projet = $event->getForm()->getData();
+                    $formModifier($event->getForm()->getParent(), $projet);
+                }
+            );
     }
 
     public function configureOptions(OptionsResolver $resolver): void

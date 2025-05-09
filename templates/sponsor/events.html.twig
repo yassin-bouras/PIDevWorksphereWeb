@@ -44,14 +44,23 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for evenement_sponsor in evenement_sponsors %}
-                                    {% set dateFin = null %}
-                                    {% if evenement_sponsor.datedebutContrat and evenement_sponsor.duree %}
-                                        {% set dateFin = evenement_sponsor.datedebutContrat|date_modify(
-                                            evenement_sponsor.duree == 'troisMois' ? '+3 months' :
-                                            evenement_sponsor.duree == 'sixMois' ? '+6 months' : '+1 year'
-                                        ) %}
-                                    {% endif %}
+                               {% for evenement_sponsor in evenement_sponsors %}
+    {# Calcul de la date de fin #}
+    {% set dateFin = null %}
+    {% if evenement_sponsor.datedebutContrat and evenement_sponsor.duree %}
+        {# Créer un objet DateTime à partir de la date de début #}
+        {% set dateDebut = evenement_sponsor.datedebutContrat|date('Y-m-d') %}
+        {% set dateFin = date(dateDebut) %}
+        
+        {# Appliquer la durée en fonction de la valeur de duree #}
+        {% if evenement_sponsor.duree == 'troisMois' %}
+            {% set dateFin = dateFin.modify('+3 months') %}
+        {% elseif evenement_sponsor.duree == 'sixMois' %}
+            {% set dateFin = dateFin.modify('+6 months') %}
+        {% elseif evenement_sponsor.duree == 'unAns' %}
+            {% set dateFin = dateFin.modify('+1 year') %}
+        {% endif %}
+    {% endif %}
 
                                     <tr class="{{ dateFin and dateFin < date() ? 'table-danger' : '' }}">
                                         <td>

@@ -100,22 +100,54 @@ final class EvennementController extends AbstractController
     }
 
     #[Route('/{idEvent}/edit', name: 'app_evennement_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Evennement $evennement, EntityManagerInterface $entityManager): Response
-    {
+public function edit(Request $request, Evennement $evennement, EntityManagerInterface $entityManager): Response
+{
+    $token = $request->cookies->get('BEARER');
+    
+    if (!$token) {
+        return $this->redirectToRoute('app_login');
+    }
+
+    try {
+        $decodedData = $this->jwtEncoder->decode($token);
+        $email = $decodedData['username'] ?? null;
+
+        if (!$email) {
+            $this->addFlash('error', 'Email non trouvé dans le token.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        $user = $this->userRepository->findOneBy(['email' => $email]);
+
+        if (!$user) {
+            $this->addFlash('error', 'Utilisateur non trouvé.');
+            return $this->redirectToRoute('app_login');
+        }
+
         $form = $this->createForm(EvennementType::class, $evennement);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Associer l'utilisateur connecté à l'événement
+            $evennement->setUser($user);
+            
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_evennement_index', [], Response::HTTP_SEE_OTHER);
+            $this->addFlash('success', 'Événement mis à jour avec succès!');
+            return $this->redirectToRoute('app_evennement_index');
         }
 
         return $this->render('evennement/edit.html.twig', [
             'evennement' => $evennement,
-            'form' => $form,
+            'form' => $form->createView(),
+            'current_user' => $user // Passer l'utilisateur au template
         ]);
+
+    } catch (\Exception $e) {
+        $this->addFlash('error', 'Token invalide ou expiré.');
+        return $this->redirectToRoute('app_login');
     }
+}
 
     #[Route('/{idEvent}', name: 'app_evennement_delete', methods: ['POST'])]
     public function delete(Request $request, Evennement $evennement, EntityManagerInterface $entityManager): Response

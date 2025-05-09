@@ -149,6 +149,60 @@
         </div>
     </div>
 </div>
-
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const projetSelect = document.getElementById('tache_projet');
+        const assigneeSelect = document.getElementById('tache_assignee');
+        const currentAssigneeId = assigneeSelect.value; 
+    
+        if (projetSelect) {
+          
+            if (projetSelect.value) {
+                updateAssigneeOptions(projetSelect.value, currentAssigneeId);
+            }
+    
+            projetSelect.addEventListener('change', function() {
+                updateAssigneeOptions(this.value, currentAssigneeId);
+            });
+        }
+    
+        function updateAssigneeOptions(projetId, selectedId = null) {
+            if (projetId) {
+                fetch(`/tache/get-membres/${projetId}`)
+                    .then(response => response.json())
+                    .then(membres => {
+                        assigneeSelect.innerHTML = '';
+                        
+                        // Option par défaut
+                        const defaultOption = document.createElement('option');
+                        defaultOption.value = '';
+                        defaultOption.textContent = membres.length > 0 
+                            ? `Choisir un emplyée (${membres.length} disponibles)` 
+                            : 'Aucun membre dans ce projet';
+                        assigneeSelect.appendChild(defaultOption);
+                        
+                        // Options des membres
+                        membres.forEach(membre => {
+                            const option = document.createElement('option');
+                            option.value = membre.id;
+                            option.textContent = membre.nomComplet;
+                            if (selectedId && membre.id == selectedId) {
+                                option.selected = true;
+                            }
+                            assigneeSelect.appendChild(option);
+                        });
+                    });
+            } else {
+                assigneeSelect.innerHTML = '';
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.textContent = 'Sélectionnez  un projet';
+                assigneeSelect.appendChild(defaultOption);
+            }
+        }
+    });
+    </script>
+{% endblock %}
 {% endblock %}
 

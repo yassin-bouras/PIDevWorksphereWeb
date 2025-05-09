@@ -183,17 +183,17 @@ public function getSuggestions(Request $request, GeminiAIService $geminiAiServic
             $html .= '<table border="1" cellpadding="5">';
             $html .= '<thead><tr><th>Événement</th><th>Date Début Contrat</th><th>Date Fin Contrat</th><th>Durée</th></tr></thead><tbody>';
             foreach ($evenementSponsors as $evenementSponsor) {
-                $dateFin = null;
-                if ($evenementSponsor->getDatedebutContrat() && $evenementSponsor->getDuree()) {
-                    $dateDebut = $evenementSponsor->getDatedebutContrat();
-                    if ($evenementSponsor->getDuree() === 'troisMois') {
-                        $dateFin = $dateDebut->modify('+3 months');
-                    } elseif ($evenementSponsor->getDuree() === 'sixMois') {
-                        $dateFin = $dateDebut->modify('+6 months');
-                    } elseif ($evenementSponsor->getDuree() === 'unAns') {
-                        $dateFin = $dateDebut->modify('+1 year');
-                    }
-                }
+               $dateFin = null;
+if ($evenementSponsor->getDatedebutContrat() && $evenementSponsor->getDuree()) {
+    $dateDebut = clone $evenementSponsor->getDatedebutContrat(); // Cloner l'objet DateTime
+    if ($evenementSponsor->getDuree() === 'troisMois') {
+        $dateFin = $dateDebut->modify('+3 months');
+    } elseif ($evenementSponsor->getDuree() === 'sixMois') {
+        $dateFin = $dateDebut->modify('+6 months');
+    } elseif ($evenementSponsor->getDuree() === 'unAns') {
+        $dateFin = $dateDebut->modify('+1 year');
+    }
+}
 
                 $html .= '<tr>';
                 $html .= '<td>' . $evenementSponsor->getEvenement()->getNomEvent() . '</td>';

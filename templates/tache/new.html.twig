@@ -148,5 +148,51 @@
         </div>
     </div>
 </div>
-
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const projetSelect = document.getElementById('tache_projet');
+        
+        if (projetSelect) {
+            projetSelect.addEventListener('change', function() {
+                const projetId = this.value;
+                const assigneeSelect = document.getElementById('tache_assignee');
+                
+                if (projetId) {
+                 
+                    fetch(`/tache/get-membres/${projetId}`)
+                        .then(response => response.json())
+                        .then(membres => {
+                   
+                            assigneeSelect.innerHTML = '';
+                            
+                      
+                            const defaultOption = document.createElement('option');
+                            defaultOption.value = '';
+                            defaultOption.textContent = membres.length > 0 
+                                ? `Choisir un employée (${membres.length})` 
+                                : 'Aucun membre dans ce projet';
+                            assigneeSelect.appendChild(defaultOption);
+                            
+                      
+                            membres.forEach(membre => {
+                                const option = document.createElement('option');
+                                option.value = membre.id;
+                                option.textContent = membre.nomComplet;
+                                assigneeSelect.appendChild(option);
+                            });
+                        });
+                } else {
+            
+                    assigneeSelect.innerHTML = '';
+                    const defaultOption = document.createElement('option');
+                    defaultOption.value = '';
+                    defaultOption.textContent = 'Sélectionnez un projet';
+                    assigneeSelect.appendChild(defaultOption);
+                }
+            });
+        }
+    });
+    </script>
+{% endblock %}
 {% endblock %}

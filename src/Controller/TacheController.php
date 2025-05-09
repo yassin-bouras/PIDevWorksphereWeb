@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Tache;
+use App\Entity\Projet;
 use App\Form\TacheType;
 use App\Repository\TacheRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -49,7 +50,7 @@ final class TacheController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_tache_new', methods: ['GET', 'POST'])]
+   /* #[Route('/new', name: 'app_tache_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $tache = new Tache();
@@ -67,7 +68,85 @@ final class TacheController extends AbstractController
             'tache' => $tache,
             'form' => $form,
         ]);
+    }*/
+
+
+    #[Route('/new', name: 'app_tache_new', methods: ['GET', 'POST'])]
+public function new(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $tache = new Tache();
+    $form = $this->createForm(TacheType::class, $tache);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->persist($tache);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_tache_index', [], Response::HTTP_SEE_OTHER);
     }
+
+   
+    if ($request->isXmlHttpRequest()) {
+      
+        if ($request->query->has('projetId')) {
+            $projetId = $request->query->get('projetId');
+            $projet = $entityManager->getRepository(Projet::class)->find($projetId);
+            
+            if (!$projet) {
+                return new JsonResponse([], Response::HTTP_NOT_FOUND);
+            }
+
+     
+            $membres = [];
+            foreach ($projet->getEquipes() as $equipe) {
+                foreach ($equipe->getUsers() as $user) {
+                    if ($user->getRole() === 'Employe') {
+                        $membres[] = [
+                            'id' => $user->getIdUser(),
+                            'nomComplet' => $user->getNom() . ' ' . $user->getPrenom()
+                        ];
+                    }
+                }
+            }
+
+            return new JsonResponse($membres);
+        }
+
+      
+        return $this->render('tache/_form.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    return $this->render('tache/new.html.twig', [
+        'tache' => $tache,
+        'form' => $form->createView(),
+    ]);
+}
+
+#[Route('/get-membres/{projetId}', name: 'app_tache_get_membres', methods: ['GET'])]
+public function getMembresEquipe(int $projetId, EntityManagerInterface $entityManager): JsonResponse
+{
+    $projet = $entityManager->getRepository(Projet::class)->find($projetId);
+    
+    if (!$projet) {
+        return new JsonResponse([], Response::HTTP_NOT_FOUND);
+    }
+
+    $membres = [];
+    foreach ($projet->getEquipes() as $equipe) {
+        foreach ($equipe->getUsers() as $user) {
+            if ($user->getRole() === 'Employe') {
+                $membres[] = [
+                    'id' => $user->getIdUser(),
+                    'nomComplet' => $user->getNom() . ' ' . $user->getPrenom()
+                ];
+            }
+        }
+    }
+
+    return new JsonResponse($membres);
+}
 
     #[Route('/{id}', name: 'app_tache_show', methods: ['GET'])]
     public function show(Tache $tache): Response
@@ -76,7 +155,7 @@ final class TacheController extends AbstractController
             'tache' => $tache,
         ]);
     }
-
+/* 
     #[Route('/{id}/edit', name: 'app_tache_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Tache $tache, EntityManagerInterface $entityManager): Response
     {
@@ -94,7 +173,56 @@ final class TacheController extends AbstractController
             'form' => $form,
         ]);
     }
+ */
 
+ #[Route('/{id}/edit', name: 'app_tache_edit', methods: ['GET', 'POST'])]
+public function edit(Request $request, Tache $tache, EntityManagerInterface $entityManager): Response
+{
+    $form = $this->createForm(TacheType::class, $tache);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_tache_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    if ($request->isXmlHttpRequest()) {
+        if ($request->query->has('projetId')) {
+            $projetId = $request->query->get('projetId');
+            $projet = $entityManager->getRepository(Projet::class)->find($projetId);
+            
+            if (!$projet) {
+                return new JsonResponse([], Response::HTTP_NOT_FOUND);
+            }
+
+            $membres = [];
+            foreach ($projet->getEquipes() as $equipe) {
+                foreach ($equipe->getUsers() as $user) {
+                    if ($user->getRole() === 'Employe') {
+                        $membres[] = [
+                            'id' => $user->getIdUser(),
+                            'nomComplet' => $user->getNom() . ' ' . $user->getPrenom(),
+                            'selected' => $tache->getAssignee() && $tache->getAssignee()->getIdUser() === $user->getIdUser()
+                        ];
+                    }
+                }
+            }
+
+            return new JsonResponse($membres);
+        }
+
+        return $this->render('tache/_form.html.twig', [
+            'form' => $form->createView(),
+            'tache' => $tache
+        ]);
+    }
+
+    return $this->render('tache/edit.html.twig', [
+        'tache' => $tache,
+        'form' => $form->createView(),
+    ]);
+}
     #[Route('/{id}', name: 'app_tache_delete', methods: ['POST'])]
     public function delete(Request $request, Tache $tache, EntityManagerInterface $entityManager): Response
     {
