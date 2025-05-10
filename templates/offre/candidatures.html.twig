@@ -5,19 +5,80 @@
 {% block stylesheets %}
 {{ parent() }}
 <style>
+    /* Add these styles to your existing <style> section */
+
+    /* Match percentage badge */
+    .match-badge {
+        display: inline-flex;
+        align-items: center;
+        margin-left: 10px;
+        padding: 3px 8px;
+        border-radius: var(--radius-full);
+        font-size: 0.75rem;
+        font-weight: var(--font-weight-bold);
+        color: white;
+        box-shadow: var(--shadow-md);
+        animation: fadeIn 0.5s ease-out forwards;
+    }
+
+    .match-badge i {
+        font-size: 0.7rem;
+        margin-right: 4px;
+    }
+
+    .match-badge.high {
+        background: var(--success-gradient);
+        box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+    }
+
+    .match-badge.medium {
+        background: linear-gradient(135deg, #f59e0b, #d97706);
+        box-shadow: 0 2px 10px rgba(245, 158, 11, 0.3);
+    }
+
+    .match-badge.low {
+        background: var(--danger-gradient);
+        box-shadow: 0 2px 10px rgba(239, 68, 68, 0.3);
+    }
+
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(-5px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Add colored borders based on match percentage */
+    .candidature-card.match-high {
+        border-left: 4px solid var(--success-color);
+    }
+
+    .candidature-card.match-medium {
+        border-left: 4px solid var(--warning-color);
+    }
+
+    .candidature-card.match-low {
+        border-left: 4px solid var(--danger-color);
+    }
+
     /* Add this to your existing CSS styles */
     .card .brand-name {
         position: absolute;
         font-family: 'Arial', sans-serif;
-        font-size: 18px;
+        font-size: 20px;
         font-weight: 800;
-        letter-spacing: 2px;
+        letter-spacing: 3px;
         color: rgba(255, 255, 255, 0.8);
         text-transform: uppercase;
         z-index: 5;
-        text-shadow: 0 0 10px rgba(0, 224, 255, 0.7);
+        text-shadow: 0 0 12px rgba(0, 224, 255, 0.7);
         animation: glowPulse 3s infinite alternate;
-        background: linear-gradient(90deg, rgba(0, 224, 255, 0.8) 0%, rgba(0, 140, 255, 0.8) 100%);
+        background: linear-gradient(90deg, rgba(0, 224, 255, 0.9) 0%, rgba(0, 140, 255, 0.9) 100%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
@@ -1039,16 +1100,35 @@
         {% for candidature in candidatures %}
         <div class="col-lg-4 col-md-6 mb-4 candidature-container">
             <div class="candidature-card">
+                <!-- In your candidature card header, add the match percentage badge -->
                 <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="fas fa-user-circle"></i>
-                        <span class="ms-2">Candidature</span>
-                    </h5>
-                    {% if candidature.status == 'accepted' %}
-                    <span class="status-badge">
-                        <i class="fas fa-check-circle"></i> Acceptée
-                    </span>
-                    {% endif %}
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">
+                            <i class="fas fa-user-circle"></i>
+                            <span class="ms-2">Candidature</span>
+                            
+                            {% if candidature.matchPercentage is defined %}
+                                <span class="match-badge {% if candidature.matchPercentage >= 80 %}high{% elseif candidature.matchPercentage >= 60 %}medium{% else %}low{% endif %}">
+                                    <i class="fas fa-chart-line"></i> 
+                                    {% if candidature.matchPercentage >= 80 %}
+                                        80-100%
+                                    {% elseif candidature.matchPercentage >= 60 %}
+                                        61-79%
+                                    {% elseif candidature.matchPercentage >= 40 %}
+                                        40-60%
+                                    {% else %}
+                                        <40%
+                                    {% endif %}
+                                </span>
+                            {% endif %}
+                        </h5>
+
+                        {% if candidature.status == 'Acceptée' %}
+                        <span class="status-badge accepted">
+                            <i class="fas fa-check-circle"></i> Acceptée
+                        </span>
+                        {% endif %}
+                    </div>
                 </div>
                 <div class="card-body">
                     <div class="document-section">
@@ -1155,7 +1235,7 @@
         <div class="scan-particles">
             <!-- Particles will be added dynamically via JavaScript -->
         </div>
-        <div class="brand-name">Workshpere</div>
+        <div class="brand-name">Worksphere</div>
         <svg width="100" height="200" viewBox="0 0 90 200" fill="none" xmlns="http://www.w3.org/2000/svg">
             <!-- SVG paths remain the same -->
         </svg>
@@ -1164,6 +1244,47 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Add sort controls
+    const headerActions = document.querySelector('.page-header .col-auto');
+    if (headerActions) {
+        const sortButton = document.createElement('button');
+        sortButton.className = 'btn btn-outline-primary ms-2';
+        sortButton.innerHTML = '<i class="fas fa-sort-amount-down me-1"></i> Trier par correspondance';
+        sortButton.id = 'sort-matches';
+        headerActions.appendChild(sortButton);
+        
+        // Sort function
+        document.getElementById('sort-matches').addEventListener('click', function() {
+            const container = document.querySelector('.candidates-container');
+            if (!container) return;
+            
+            const cards = Array.from(container.querySelectorAll('.candidature-card'));
+            this.classList.toggle('active');
+            
+            if (this.classList.contains('active')) {
+                // Sort descending (highest match first)
+                cards.sort((a, b) => {
+                    const percentA = parseInt(a.querySelector('.match-badge')?.textContent || '0');
+                    const percentB = parseInt(b.querySelector('.match-badge')?.textContent || '0');
+                    return percentB - percentA;
+                });
+                this.innerHTML = '<i class="fas fa-sort-amount-up me-1"></i> Trier par correspondance';
+            } else {
+                // Reset to original order
+                cards.sort((a, b) => {
+                    return Array.from(container.children).indexOf(a) - 
+                           Array.from(container.children).indexOf(b);
+                });
+                this.innerHTML = '<i class="fas fa-sort-amount-down me-1"></i> Trier par correspondance';
+            }
+            
+            // Re-append in new order
+            cards.forEach(card => container.appendChild(card));
+        });
+    }
+
+
+/*******************************************************************************/
         // Staggered entrance animation for cards with 3D effect
         const cards = document.querySelectorAll('.candidature-card');
         cards.forEach((card, index) => {
@@ -1285,7 +1406,7 @@
                         documentLink.style.transform = `translateX(${pull}px)`;
                     } else {
                         documentLink.style.transform = '';
-                    }
+                    } 
                 }
             });
 

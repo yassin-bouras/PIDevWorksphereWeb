@@ -104,24 +104,24 @@
                     <div class="noti-content">
                         <ul class="notification-list">
                             <li class="notification-message">
-                               <button class="btn btn-success" id="openWebSocketBtn">
-                <i class="bi bi-broadcast"></i> Open Communication Port
-            </button>
-                                    <div class="media">
-                                        <span class="avatar avatar-sm">
-                                            <img class="avatar-img rounded-circle" alt="Photo de profil"
-                                                src="{{ asset('back/img/profiles/avatar-02.jpg') }}">
-                                        </span>
-                                        <div class="media-body">
-                                            <p class="noti-details">
-                                                <span class="noti-title">Brian Johnson</span> paid the invoice <span
-                                                    class="noti-title">#DF65485</span>
-                                            </p>
-                                            <p class="noti-time">
-                                                <span class="notification-time">4 mins ago</span>
-                                            </p>
-                                        </div>
+                                <button class="btn btn-success" id="openWebSocketBtn">
+                                    <i class="bi bi-broadcast"></i> Open Communication Port
+                                </button>
+                                <div class="media">
+                                    <span class="avatar avatar-sm">
+                                        <img class="avatar-img rounded-circle" alt="Photo de profil"
+                                            src="{{ asset('back/img/profiles/avatar-02.jpg') }}">
+                                    </span>
+                                    <div class="media-body">
+                                        <p class="noti-details">
+                                            <span class="noti-title">Brian Johnson</span> paid the invoice <span
+                                                class="noti-title">#DF65485</span>
+                                        </p>
+                                        <p class="noti-time">
+                                            <span class="notification-time">4 mins ago</span>
+                                        </p>
                                     </div>
+                                </div>
                                 </a>
                             </li>
                         </ul>
@@ -170,10 +170,10 @@
 </div>
 
 <script>
-        document.getElementById('openWebSocketBtn').addEventListener('click', function() {
-            window.location.href = '{{ path("admin_websocket_communication") }}';
-        });
-    
+    document.getElementById('openWebSocketBtn').addEventListener('click', function () {
+        window.location.href = '{{ path("admin_websocket_communication") }}';
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
         function getCookie(name) {
             let cookieArray = document.cookie.split('; ');
@@ -428,13 +428,13 @@
                     if (user.role === 'RH') {
                         sidebarLinks.innerHTML += `
                         <li><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
-                        <li><a href="/contrat"><span>📜 Contrat</span></a></li>
-                        <li><a href="/sponsor"><span>📢 Gestion Sponsor</span></a></li>
+                        <li><a href="/contrat"><span>✍️ Contrat</span></a></li>
+                        <li><a href="/sponsor"><span>🤝 Gestion Sponsor</span></a></li>
                         <li><a href="/user"><span>👥 Gestion User</span></a></li>
-                        <li><a href="/evennement"><span>✅ Evenements</span></a></li>
-                        <li><a href="/formation"><span>📢 Formations</span></a></li>
-                        <li><a href="/offre"><span>🎯 Offres Emploi</span></a></li>
-                        <li><a href="/entretien"><span>🔥 Entretien</span></a></li>
+                        <li><a href="/evennement"><span>🎉 Evenements</span></a></li>
+                        <li><a href="/formation"><span>🧑‍🏫 Formations</span></a></li>
+                        <li><a href="/offre"><span>💼 Offres Emploi</span></a></li>
+                        <li><a href="/entretien"><span>💬 Entretien</span></a></li>
                        <li><a href="/history"><span>📜 historique entretien</span></a></li>
                         <li><a href="/entretien/news"><span>📰 voir Last news</span></a></li>
                         
@@ -442,11 +442,13 @@
                     `;
                     } else if (user.role === 'Candidat') {
                         sidebarLinks.innerHTML += `
-                        <li><a href="/"><span>💼 Offre Emploi</span></a></li>
+                        <li><a href="/offre/front"><span>💼 Offre Emploi</span></a></li>
                         <li><a href="/reclamation/user/${user.iduser}"><span>📄 Reclamation</span></a></li>
-                        <li><a href="/"><span>🗳️ Candidatures</span></a></li>
+                        <li><a href="/candidature"><span>🗳️ Mes Candidatures</span></a></li>
+                        <li><a href="{{ path('app_notification_index') }}"><span>🔔 Notifications</span></a></li>
                         <li><a href="/"><span>🔄 Changer Mot de Passe</span></a></li>
                     `;
+                    
                     } else if (user.role === 'Employe') {
                         sidebarLinks.innerHTML += `
                         <li class="active"><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
@@ -455,8 +457,8 @@
                         <li><a href="/entretien/employees"><span>🚀 Entretien Archive</span></a></li>
                         <li><a href="/entretien/employee"><span>🚀 Entretien</span></a></li>
                         <li><a href="/"><span>🎯 Mes Reservations</span></a></li>
-<li><a href="/formation/employe"><span>📢 Formation</span></a></li>
-<li><a href="/tache/tache/mestaches"><span>📂 Projet</span></a></li>
+                        <li><a href="/formation/employe"><span>📢 Formation</span></a></li>
+                        <li><a href="/tache/tache/mestaches"><span>📂 Projet</span></a></li>
                         <li><a href="/"><span>🔄 Mot de Passe</span></a></li>
                     `;
                     } else if (user.role === 'manager') {

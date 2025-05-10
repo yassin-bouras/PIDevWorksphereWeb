@@ -2,44 +2,163 @@
 <html lang="fr">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="SEO Dream - Creative SEO HTML5 Template by TemplateMo">
-    <meta name="author" content="TemplateMo">
-    
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <meta name="description" content="SEO Dream - Creative SEO HTML5 Template by TemplateMo">
+  <meta name="author" content="TemplateMo">
 
-    <title>{% block title %} worksphere {% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&display=swap"
+    rel="stylesheet">
 
-    <!-- Bootstrap core CSS -->
-    <link href="{{ asset('front/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
+  <title>{% block title %} worksphere {% endblock %}</title>
+
+  <!-- Bootstrap core CSS -->
+  <link href="{{ asset('front/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
   <!-- Font-awesome core CSS -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    {% block css %} 
-    <!-- Additional CSS Files -->
-    <link rel="stylesheet" href="{{ asset('front/css/fontawesome.css') }}">
-    <link rel="stylesheet" href="{{ asset('front/css/templatemo-seo-dream.css') }}">
-    <link rel="stylesheet" href="{{ asset('front/css/animated.css') }}">
-    <link rel="stylesheet" href="{{ asset('front/css/owl.css') }}">
-    {% endblock %}
+  {% block css %}
+  <!-- Additional CSS Files -->
+  <link rel="stylesheet" href="{{ asset('front/css/fontawesome.css') }}">
+  <link rel="stylesheet" href="{{ asset('front/css/templatemo-seo-dream.css') }}">
+  <link rel="stylesheet" href="{{ asset('front/css/animated.css') }}">
+  <link rel="stylesheet" href="{{ asset('front/css/owl.css') }}">
+  <!-- Additional CSS Files -->
 
-    {% block stylesheets %}{% endblock %}
-    
-</head>
-  <!-- ***** Header Area Start ***** -->
-  {% include 'Home2/navbar.html.twig' %}
-  <!-- ***** Header Area End ***** -->
+  <style>
+    .recognition-facial-card {
+      background: linear-gradient(-45deg, #98d8ff 0%, #c68fc6 100%) !important;
+    }
 
-  {% block js %}
-  <!-- Scripts -->
-  <script src="{{ asset('front/vendor/jquery/jquery.min.js') }}"></script>
-  <script src="{{ asset('front/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
-  <script src="{{ asset('front/js/owl-carousel.js') }}"></script>
-  <script src="{{ asset('front/js/animation.js') }}"></script>
-  <script src="{{ asset('front/js/imagesloaded.js') }}"></script>
-  <script src="{{ asset('front/js/custom.js') }}"></script>
+    /* Make sure text is readable on gradient background */
+    .recognition-facial-card h4,
+    .recognition-facial-card p {
+      color: #fff;
+    }
+
+    /* New style for Meetings card */
+    .meetings-card {
+      background: linear-gradient(-45deg, #98d8ff 0%, #c68fc6 100%) !important;
+    }
+
+    /* Make sure text is readable on gradient background */
+    .meetings-card h4,
+    .meetings-card p {
+      color: #fff;
+    }
+
+    /* New style for Calendrier Intégré card */
+    .calendrier-card {
+      background: linear-gradient(-45deg, #98d8ff 0%, #c68fc6 100%) !important;
+    }
+
+    /* Make sure text is readable on gradient background */
+    .calendrier-card h4,
+    .calendrier-card p {
+      color: #fff;
+    }
+
+    /* New style for Génération de PDF card */
+    .pdf-generation-card {
+      background: linear-gradient(-45deg, #98d8ff 0%, #c68fc6 100%) !important;
+    }
+
+    /* Make sure text is readable on gradient background */
+    .pdf-generation-card h4,
+    .pdf-generation-card p {
+      color: #fff;
+    }
+
+    /* Apply to all service cards */
+    .service-item {
+      min-height: 280px !important;
+      /* Minimum height instead of fixed height */
+      margin-bottom: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Default gradient background for gradient cards */
+    .service-item:not(.white-card) {
+      background: linear-gradient(-45deg, #98d8ff 0%, #c68fc6 100%) !important;
+    }
+
+    /* White card style - needs to override the service-item style */
+    .white-card {
+      background: white !important;
+    }
+
+    /* Text color for gradient cards */
+    .service-item:not(.white-card) h4,
+    .service-item:not(.white-card) p {
+      color: #fff !important;
+    }
+
+    /* Text color for white cards */
+    .white-card h4 {
+      color: #333 !important;
+    }
+
+    .white-card p {
+      color: #666 !important;
+    }
+
+    /* Structure inside each service item */
+    .service-item .row {
+      height: 100%;
+      padding: 20px 0;
+    }
+
+    /* Icon container */
+    .service-item .icon {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding-top: 20px;
+    }
+
+    /* Content area */
+    .service-item .right-content {
+      display: flex;
+      flex-direction: column;
+      padding: 10px;
+    }
+
+    /* Force all cards in this row to have equal heights */
+    #services .row {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
+    #services .col-lg-4 {
+      display: flex;
+    }
+
+    #services .service-item {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+  </style>
   {% endblock %}
+
+  {% block stylesheets %}{% endblock %}
+
+</head>
+<!-- ***** Header Area Start ***** -->
+{% include 'Home2/navbar.html.twig' %}
+<!-- ***** Header Area End ***** -->
+
+{% block js %}
+<!-- Scripts -->
+<script src="{{ asset('front/vendor/jquery/jquery.min.js') }}"></script>
+<script src="{{ asset('front/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+<script src="{{ asset('front/js/owl-carousel.js') }}"></script>
+<script src="{{ asset('front/js/animation.js') }}"></script>
+<script src="{{ asset('front/js/imagesloaded.js') }}"></script>
+<script src="{{ asset('front/js/custom.js') }}"></script>
+{% endblock %}
+
 <body>
   {% block body %}
   <main>
@@ -68,11 +187,11 @@
                 </div>
               </div>
             </div>
-          </div>  
+          </div>
         </div>
       </div>
     </div>
-  
+
     <div id="features" class="features section">
       <div class="container">
         <div class="row">
@@ -80,26 +199,30 @@
             <div class="features-content">
               <div class="row">
                 <div class="col-lg-3">
-                  
-                  <div class="features-item first-feature wow fadeInUp" onclick="window.location.href='formation/front'" style="cursor: pointer;" data-wow-duration="1s" data-wow-delay="0s">
+
+                  <div class="features-item first-feature wow fadeInUp" onclick="window.location.href='formation/front'"
+                    style="cursor: pointer;" data-wow-duration="1s" data-wow-delay="0s">
                     <div class="first-number number">
                       <h6>01</h6>
                     </div>
                     <div class="icon"></div>
                     <h4>Trouver une formation</h4>
                     <div class="line-dec"></div>
-                    <p>Explorez une large sélection de formations adaptées à vos objectifs professionnels et développez de nouvelles compétences.</p>
+                    <p>Explorez une large sélection de formations adaptées à vos objectifs professionnels et développez
+                      de nouvelles compétences.</p>
                   </div>
                 </div>
                 <div class="col-lg-3">
-                  <div class="features-item second-feature wow fadeInUp"onclick="window.location.href='evennement'" style="cursor: pointer;" data-wow-duration="1s" data-wow-delay="0.2s">
+                  <div class="features-item second-feature wow fadeInUp" onclick="window.location.href='evennement'"
+                    style="cursor: pointer;" data-wow-duration="1s" data-wow-delay="0.2s">
                     <div class="second-number number">
                       <h6>02</h6>
                     </div>
                     <div class="icon"></div>
                     <h4>Participer à un événement</h4>
                     <div class="line-dec"></div>
-                    <p>Rejoignez des événements, ateliers ou webinaires pour élargir votre réseau et enrichir vos connaissances.</p>
+                    <p>Rejoignez des événements, ateliers ou webinaires pour élargir votre réseau et enrichir vos
+                      connaissances.</p>
                   </div>
                 </div>
                 <div class="col-lg-3">
@@ -110,11 +233,13 @@
                     <div class="icon"></div>
                     <h4>Trouver un emploi</h4>
                     <div class="line-dec"></div>
-                    <p>Accédez à des offres d’emploi ciblées et boostez votre carrière en quelques clics grâce à notre plateforme.</p>
+                    <p>Accédez à des offres d’emploi ciblées et boostez votre carrière en quelques clics grâce à notre
+                      plateforme.</p>
                   </div>
                 </div>
                 <div class="col-lg-3">
-                  <div class="features-item second-feature last-features-item wow fadeInUp" data-wow-duration="1s" data-wow-delay="0.6s">
+                  <div class="features-item second-feature last-features-item wow fadeInUp" data-wow-duration="1s"
+                    data-wow-delay="0.6s">
                     <div class="fourth-number number">
                       <h6>04</h6>
                     </div>
@@ -208,7 +333,7 @@
         </div>
       </div>
     </div>
-  
+
     <div id="about" class="about-us section">
       <div class="container">
         <div class="row">
@@ -220,7 +345,8 @@
           <div class="col-lg-6 align-self-center wow fadeInRight" data-wow-duration="1s" data-wow-delay="0.5s">
             <div class="section-heading">
               <h6 style="text-align: center;">About Us</h6>
-              <h2 style="text-align: center;">Le <em>Meilleur</em> site de RH consulter notre site web <span>avec nous</span></h2>
+              <h2 style="text-align: center;">Le <em>Meilleur</em> site de RH consulter notre site web <span>avec
+                  nous</span></h2>
             </div>
             <div class="row">
               <!-- <div class="col-lg-4 col-sm-4">
@@ -242,125 +368,137 @@
                 </div>
               </div>
             </div> -->
-            <p> <span style="color: rgb(83, 190, 190); font-weight: bold;">worksphere </span> Il s'agit d'un site web dédié à la gestion des tâches administratives. C’est une solution complète qui permet de gérer les offres d’emploi, les candidatures, les formations, les événements et les projets. </p>
-            <!-- <div class="main-green-button"><a href="#">Discover company</a></div> -->
-          </div>
-        </div>
-      </div>
-    </div>
-  
-    <div id="services" class="our-services section">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-6 offset-lg-3">
-            <div class="section-heading wow bounceIn" data-wow-duration="1s" data-wow-delay="0.2s">
-              <h6>Nos Service</h6>
-              <h2>Decrouvrir ce que notre site offre</h2>
+              <p> <span style="color: rgb(83, 190, 190); font-weight: bold;">worksphere </span> Il s'agit d'un site web
+                dédié à la gestion des tâches administratives. C’est une solution complète qui permet de gérer les
+                offres d’emploi, les candidatures, les formations, les événements et les projets. </p>
+              <!-- <div class="main-green-button"><a href="#">Discover company</a></div> -->
             </div>
           </div>
         </div>
       </div>
-      <div class="container-fluid">
-        <div class="row">
-          <div class="col-lg-4">
-            <div class="service-item wow bounceInUp" data-wow-duration="1s" data-wow-delay="0.3s">
-              <div class="row">
-                <div class="col-lg-4">
-                  <div class="icon">
-                    <img src="front/images/service-icon-01.png" alt="">
-                  </div>
-                </div>
-                <div class="col-lg-8">
-                  <div class="right-content">
-                    <h4>Reconnaissance Faciale</h4>
-                    <p >Grâce à notre API Face ID, bénéficiez d'une authentification rapide et sécurisée par reconnaissance faciale. Une technologie fiable pour renforcer la sécurité des accès.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="service-item wow bounceInUp" data-wow-duration="1s" data-wow-delay="0.4s">
-              <div class="row">
-                <div class="col-lg-4">
-                  <div class="icon">
-                    <img src="front/images/service-icon-02.png" alt="">
-                  </div>
-                </div>
-                <div class="col-lg-8">
-                  <div class="right-content">
-                    <h4>Meetings</h4>
-                    <p>Organisez vos réunions efficacement grâce à notre API Meetings. Assister à vos formations à distance,tout est automatisé pour optimiser votre temps.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="service-item wow bounceInUp" data-wow-duration="1s" data-wow-delay="0.5s">
-              <div class="row">
-                <div class="col-lg-4">
-                  <div class="icon">
-                    <img src="front/images/service-icon-03.png" alt="">
-                  </div>
-                </div>
-                <div class="col-lg-8">
-                  <div class="right-content">
-                    <h4>Calendrier Intégré</h4>
-                    <p>Planifiez vos événements en toute simplicité. Grâce à l’API Calendrier, gérez facilement vos entretiens et visualisez vos disponibilités en temps réel via une interface intuitive.
 
-                    </p>
+      <div id="services" class="our-services section">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-6 offset-lg-3">
+              <div class="section-heading wow bounceIn" data-wow-duration="1s" data-wow-delay="0.2s">
+                <h6>Nos Service</h6>
+                <h2>Decrouvrir ce que notre site offre</h2>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-lg-4">
+              <div class="service-item wow bounceInUp recognition-facial-card" data-wow-duration="1s"
+                data-wow-delay="0.3s">
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="icon">
+                      <img src="front/images/service-icon-01.png" alt="">
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="right-content">
+                      <h4>Reconnaissance Faciale</h4>
+                      <p>Grâce à notre API Face ID, bénéficiez d'une authentification rapide et sécurisée par
+                        reconnaissance faciale. Une technologie fiable pour renforcer la sécurité des accès.</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="service-item wow bounceInUp" data-wow-duration="1s" data-wow-delay="0.6s">
-              <div class="row">
-                <div class="col-lg-4">
-                  <div class="icon">
-                    <img src="front/images/service-icon-03.png" alt="">
+            <div class="col-lg-4">
+              <div class="service-item wow bounceInUp white-card" data-wow-duration="1s" data-wow-delay="0.4s">
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="icon">
+                      <img src="front/images/service-icon-02.png" alt="">
+                    </div>
                   </div>
-                </div>
-                <div class="col-lg-8">
-                  <div class="right-content">
-                    <h4>Envoi de SMS</h4>
-                    <p>Communiquez instantanément avec vos utilisateurs grâce à notre API SMS. Envois automatiques de messages pour confirmations, rappels ou alertes.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="service-item wow bounceInUp" data-wow-duration="1s" data-wow-delay="0.7s">
-              <div class="row">
-                <div class="col-lg-4">
-                  <div class="icon">
-                    <img src="front/images/service-icon-01.png" alt="">
-                  </div>
-                </div>
-                <div class="col-lg-8">
-                  <div class="right-content">
-                    <h4>Génération de PDF</h4>
-                    <p>Créez des rapports avec notre API de génération PDF. Un outil pratique pour produire et télécharger des fichiers personnalisés.</p>
+                  <div class="col-lg-8">
+                    <div class="right-content">
+                      <h4>Meetings</h4>
+                      <p>Organisez vos réunions efficacement grâce à notre API Meetings. Assister à vos formations à
+                        distance,tout est automatisé pour optimiser votre temps.</p>
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-          <div class="col-lg-4">
-            <div class="service-item wow bounceInUp" data-wow-duration="1s" data-wow-delay="0.8s">
-              <div class="row">
-                <div class="col-lg-4">
-                  <div class="icon">
-                    <img src="front/images/service-icon-02.png" alt="">
+            <div class="col-lg-4">
+              <div class="service-item wow bounceInUp calendrier-card" data-wow-duration="1s" data-wow-delay="0.5s">
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="icon">
+                      <img src="front/images/service-icon-03.png" alt="">
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="right-content">
+                      <h4>Calendrier Intégré</h4>
+                      <p>Planifiez vos événements en toute simplicité. Grâce à l'API Calendrier, gérez facilement vos
+                        entretiens et visualisez vos disponibilités en temps réel via une interface intuitive.</p>
+                    </div>
                   </div>
                 </div>
-                <div class="col-lg-8">
-                  <div class="right-content">
-                    <h4>Localisation en Temps Réel</h4>
-                    <p>Notre API permet d'afficher la localisation de l'événement, pour une expérience personnalisée et dynamique.</p>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="service-item wow bounceInUp white-card" data-wow-duration="1s" data-wow-delay="0.6s">
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="icon">
+                      <img src="front/images/service-icon-03.png" alt="">
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="right-content">
+                      <h4>Envoi de SMS</h4>
+                      <p>Communiquez instantanément avec vos utilisateurs grâce à notre API SMS. Envois automatiques de
+                        messages pour confirmations, rappels ou alertes.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="service-item wow bounceInUp pdf-generation-card" data-wow-duration="1s" data-wow-delay="0.7s">
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="icon">
+                      <img src="front/images/service-icon-01.png" alt="">
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="right-content">
+                      <h4>Filtrage intelligent de CV</h4>
+                      <p>Évaluez les candidatures en un clin d'oeil grâce à notre moteur de filtrage automatisé. Notre
+                        outil analyse les CV reçus, identifie les compétences clés, et attribue un pourcentage
+                        d’adéquation en fonction des critères du poste. Gagnez du temps tout en assurant une sélection
+                        plus pertinente.</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-lg-4">
+              <div class="service-item wow bounceInUp white-card" data-wow-duration="1s" data-wow-delay="0.8s">
+                <div class="row">
+                  <div class="col-lg-4">
+                    <div class="icon">
+                      <img src="front/images/service-icon-02.png" alt="">
+                    </div>
+                  </div>
+                  <div class="col-lg-8">
+                    <div class="right-content">
+                      <h4>Assistant IA 'JAHYME'</h4>
+                      <p>Discutez directement avec 'JAHYME', votre assistant IA, pour tout savoir sur les offres
+                        d'emploi disponibles sur notre plateforme. Que ce soit par écrit ou à l'oral, 'JAHYME' vous
+                        guide, répond à vos questions et vous aide à trouver les opportunités qui vous correspondent le
+                        mieux.</p>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -368,11 +506,10 @@
           </div>
         </div>
       </div>
-    </div>
-  
-    <div id="portfolio" class="our-portfolio section">
-      <div class="container">
-        <!-- <div class="row">
+
+      <div id="portfolio" class="our-portfolio section">
+        <div class="container">
+          <!-- <div class="row">
           <div class="col-lg-5">
             <div class="section-heading wow fadeInLeft" data-wow-duration="1s" data-wow-delay="0.3s">
               <h6>Our Portofolio</h6>
@@ -380,102 +517,119 @@
             </div>
           </div>
         </div> -->
-      </div>
-      <div class="container-fluid wow fadeIn" data-wow-duration="1s" data-wow-delay="0.7s">
-        <div class="row">
-          <div class="col-lg-12">
-            <div class="loop owl-carousel">
-              <div class="item">
-                <div class="portfolio-item">
-                  <div class="thumb">
-                    <img src="front/images/portfolio-01.jpg" alt="">
-                    <div class="hover-content">
-                      <div class="inner-content">
-                        <a href="#"><h4>Awesome Project 101</h4></a>
-                        <span>Marketing</span>
+        </div>
+        <div class="container-fluid wow fadeIn" data-wow-duration="1s" data-wow-delay="0.7s">
+          <div class="row">
+            <div class="col-lg-12">
+              <div class="loop owl-carousel">
+                <div class="item">
+                  <div class="portfolio-item">
+                    <div class="thumb">
+                      <img src="front/images/portfolio-01.jpg" alt="">
+                      <div class="hover-content">
+                        <div class="inner-content">
+                          <a href="#">
+                            <h4>Awesome Project 101</h4>
+                          </a>
+                          <span>Marketing</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="portfolio-item">
+                    <div class="thumb">
+                      <img src="front/images/portfolio-04.jpg" alt="">
+                      <div class="hover-content">
+                        <div class="inner-content">
+                          <a href="#">
+                            <h4>Awesome Project 102</h4>
+                          </a>
+                          <span>Branding</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="portfolio-item">
-                  <div class="thumb">
-                    <img src="front/images/portfolio-04.jpg" alt="">
-                    <div class="hover-content">
-                      <div class="inner-content">
-                        <a href="#"><h4>Awesome Project 102</h4></a>
-                        <span>Branding</span>
+                <div class="item">
+                  <div class="portfolio-item">
+                    <div class="thumb">
+                      <img src="front/images/portfolio-02.jpg" alt="">
+                      <div class="hover-content">
+                        <div class="inner-content">
+                          <a href="#">
+                            <h4>Awesome Project 103</h4>
+                          </a>
+                          <span>Consulting</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="portfolio-item">
+                    <div class="thumb">
+                      <img src="front/images/portfolio-05.jpg" alt="">
+                      <div class="hover-content">
+                        <div class="inner-content">
+                          <a href="#">
+                            <h4>Awesome Project 104</h4>
+                          </a>
+                          <span>Artwork</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-              <div class="item">
-                <div class="portfolio-item">
-                  <div class="thumb">
-                    <img src="front/images/portfolio-02.jpg" alt="">
-                    <div class="hover-content">
-                      <div class="inner-content">
-                        <a href="#"><h4>Awesome Project 103</h4></a>
-                        <span>Consulting</span>
+                <div class="item">
+                  <div class="portfolio-item">
+                    <div class="thumb">
+                      <img src="front/images/portfolio-03.jpg" alt="">
+                      <div class="hover-content">
+                        <div class="inner-content">
+                          <a href="#">
+                            <h4>Awesome Project 105</h4>
+                          </a>
+                          <span>Branding</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="portfolio-item">
+                    <div class="thumb">
+                      <img src="front/images/portfolio-06.jpg" alt="">
+                      <div class="hover-content">
+                        <div class="inner-content">
+                          <a href="#">
+                            <h4>Awesome Project 106</h4>
+                          </a>
+                          <span>Artwork</span>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div class="portfolio-item">
-                  <div class="thumb">
-                    <img src="front/images/portfolio-05.jpg" alt="">
-                    <div class="hover-content">
-                      <div class="inner-content">
-                        <a href="#"><h4>Awesome Project 104</h4></a>
-                        <span>Artwork</span>
+                <div class="item">
+                  <div class="portfolio-item">
+                    <div class="thumb">
+                      <img src="front/images/portfolio-04.jpg" alt="">
+                      <div class="hover-content">
+                        <div class="inner-content">
+                          <a href="#">
+                            <h4>Awesome Project 107</h4>
+                          </a>
+                          <span>Creative</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </div>
-              <div class="item">
-                <div class="portfolio-item">
-                  <div class="thumb">
-                    <img src="front/images/portfolio-03.jpg" alt="">
-                    <div class="hover-content">
-                      <div class="inner-content">
-                        <a href="#"><h4>Awesome Project 105</h4></a>
-                        <span>Branding</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="portfolio-item">
-                  <div class="thumb">
-                    <img src="front/images/portfolio-06.jpg" alt="">
-                    <div class="hover-content">
-                      <div class="inner-content">
-                        <a href="#"><h4>Awesome Project 106</h4></a>
-                        <span>Artwork</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div class="item">
-                <div class="portfolio-item">
-                  <div class="thumb">
-                    <img src="front/images/portfolio-04.jpg" alt="">
-                    <div class="hover-content">
-                      <div class="inner-content">
-                        <a href="#"><h4>Awesome Project 107</h4></a>
-                        <span>Creative</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div class="portfolio-item">
-                  <div class="thumb">
-                    <img src="front/images/portfolio-01.jpg" alt="">
-                    <div class="hover-content">
-                      <div class="inner-content">
-                        <a href="#"><h4>Awesome Project 108</h4></a>
-                        <span>Consulting</span>
+                  <div class="portfolio-item">
+                    <div class="thumb">
+                      <img src="front/images/portfolio-01.jpg" alt="">
+                      <div class="hover-content">
+                        <div class="inner-content">
+                          <a href="#">
+                            <h4>Awesome Project 108</h4>
+                          </a>
+                          <span>Consulting</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -485,90 +639,92 @@
           </div>
         </div>
       </div>
-    </div>
-  
-    <div id="contact" class="contact-us section">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-12 wow fadeInUp" data-wow-duration="0.5s" data-wow-delay="0.25s">
-            <form id="contact" action="" method="post">
-              <div class="row">
-                <div class="col-lg-6 offset-lg-3">
-                  <div class="section-heading">
-                    <h6>Contact Us</h6>
-                    <h2>Remplir ce formulaire</h2>
-                  </div>
-                </div>
-                <div class="col-lg-9">
-                  <div class="row">
-                    <div class="col-lg-6">
-                      <fieldset>
-                        <input type="name" name="name" id="name" placeholder="Nom" autocomplete="on" required>
-                      </fieldset>
-                    </div>
-                    <div class="col-lg-6">
-                      <fieldset>
-                        <input type="surname" name="surname" id="surname" placeholder="Prenom" autocomplete="on" required>
-                      </fieldset>
-                    </div>
-                    <div class="col-lg-6">
-                      <fieldset>
-                        <input type="text" name="email" id="email" pattern="[^ @]*@[^ @]*" placeholder="Email" required="">
-                      </fieldset>
-                    </div>
-                    <div class="col-lg-6">
-                      <fieldset>
-                        <input type="subject" name="subject" id="subject" placeholder="Sujet" autocomplete="on">
-                      </fieldset>
-                    </div>
-                    <div class="col-lg-12">
-                      <fieldset>
-                        <textarea name="message" type="text" class="form-control" id="message" placeholder="Message" required=""></textarea>  
-                      </fieldset>
-                    </div>
-                    <div class="col-lg-12">
-                      <fieldset>
-                        <button type="submit" id="form-submit" class="main-button ">Send Message Now</button>
-                      </fieldset>
-                    </div>
-                  </div>
-                </div>
-                <div class="col-lg-3">
-                  <div class="contact-info">
-                    <ul>
-                      <li>
-                        <div class="icon">
-                          <img src="front/images/contact-icon-01.png" alt="email icon">
-                        </div>
-                        <a href="mailto:worksphere12345@gmail.com">worksphere12345@gmail.com</a>
 
-                      </li>
-                      <li>
-                        <div class="icon">
-                          <img src="front/images/contact-icon-02.png" alt="phone">
-                        </div>
-                        <a href="#">+216-71-105-105</a>
-                      </li>
-                      <li>
-                        <div class="icon">
-                          <img src="front/images/contact-icon-03.png" alt="location">
-                        </div>
-                        <a href="#">26,Rue de dollar,Les berges du lac1 </a>
-                      </li>
-                    </ul>
+      <div id="contact" class="contact-us section">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-12 wow fadeInUp" data-wow-duration="0.5s" data-wow-delay="0.25s">
+              <form id="contact" action="" method="post">
+                <div class="row">
+                  <div class="col-lg-6 offset-lg-3">
+                    <div class="section-heading">
+                      <h6>Contact Us</h6>
+                      <h2>Remplir ce formulaire</h2>
+                    </div>
+                  </div>
+                  <div class="col-lg-9">
+                    <div class="row">
+                      <div class="col-lg-6">
+                        <fieldset>
+                          <input type="name" name="name" id="name" placeholder="Nom" autocomplete="on" required>
+                        </fieldset>
+                      </div>
+                      <div class="col-lg-6">
+                        <fieldset>
+                          <input type="surname" name="surname" id="surname" placeholder="Prenom" autocomplete="on"
+                            required>
+                        </fieldset>
+                      </div>
+                      <div class="col-lg-6">
+                        <fieldset>
+                          <input type="text" name="email" id="email" pattern="[^ @]*@[^ @]*" placeholder="Email"
+                            required="">
+                        </fieldset>
+                      </div>
+                      <div class="col-lg-6">
+                        <fieldset>
+                          <input type="subject" name="subject" id="subject" placeholder="Sujet" autocomplete="on">
+                        </fieldset>
+                      </div>
+                      <div class="col-lg-12">
+                        <fieldset>
+                          <textarea name="message" type="text" class="form-control" id="message" placeholder="Message"
+                            required=""></textarea>
+                        </fieldset>
+                      </div>
+                      <div class="col-lg-12">
+                        <fieldset>
+                          <button type="submit" id="form-submit" class="main-button ">Send Message Now</button>
+                        </fieldset>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-lg-3">
+                    <div class="contact-info">
+                      <ul>
+                        <li>
+                          <div class="icon">
+                            <img src="front/images/contact-icon-01.png" alt="email icon">
+                          </div>
+                          <a href="mailto:worksphere12345@gmail.com">worksphere12345@gmail.com</a>
+
+                        </li>
+                        <li>
+                          <div class="icon">
+                            <img src="front/images/contact-icon-02.png" alt="phone">
+                          </div>
+                          <a href="#">+216-71-105-105</a>
+                        </li>
+                        <li>
+                          <div class="icon">
+                            <img src="front/images/contact-icon-03.png" alt="location">
+                          </div>
+                          <a href="#">26,Rue de dollar,Les berges du lac1 </a>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </form>
+              </form>
+            </div>
           </div>
         </div>
       </div>
-    </div>
   </main>
- <!-- ***** Footer Area Start ***** -->
- {% include 'home/footer.html.twig' %}
- <!-- ***** Footer Area End ***** -->
- {% endblock %}
+  <!-- ***** Footer Area Start ***** -->
+  {% include 'home/footer.html.twig' %}
+  <!-- ***** Footer Area End ***** -->
+  {% endblock %}
 </body>
 
 </html>
