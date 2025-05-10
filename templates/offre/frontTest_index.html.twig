@@ -1,0 +1,4263 @@
+{% extends '/home/index.html.twig' %}
+{% block title %}Offres{% endblock %}
+
+{% block body %}
+<div class="wrapper">
+    <div class="inner" style="--quantity: 10;">
+        {% for i in 0..9 %}
+        <div class="card"
+            style="--index: {{ i }}; --color-card: {% set colors = ['142, 249, 252', '142, 252, 204', '142, 252, 157', '215, 252, 142', '252, 252, 142', '252, 208, 142', '252, 142, 142', '252, 142, 239', '204, 142, 252', '142, 202, 252'] %}{{ colors[i] }}">
+            <div class="img"></div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="container" style="margin-top:-35%;">
+    <!-- <h1 class="text-center mb-5" style="font-weight: 600; color: #333; margin-bottom: 30px;">Liste des Offres</h1> -->
+    <div style="margin-bottom: 100px;">
+        <h1 class="text-center mb-5" style="font-weight: 700; color: #333;">LISTE DES OFFRES</h1>
+    </div>
+
+    <div class="mb-4">
+        <form method="GET" action="{{ path('app_offre_front_index') }}">
+            <div class="filters-wrapper"
+                style="display: flex; flex-wrap: wrap; gap: 5px; justify-content: center; margin-bottom: 15px;">
+                <!-- Contract Type Filter -->
+                <div class="filter-container" style="max-width: 700px; margin: 8px 30px 15px 0; display: inline-block;">
+                    <label for="contract_type" style="font-weight: 600; color: #333; margin-left: -10px;">Filtrer par
+                        type
+                        de contrat :</label>
+                    <div class="custom-select-wrapper">
+                        <select name="contract_type" id="contract_type" class="form-select"
+                            style="max-width: 350px; display: inline-block;">
+                            <option value="">Tous les types</option>
+                            <option value="CDI" {% if contract_type is defined and contract_type=='CDI' %}selected{%
+                                endif %}>CDI</option>
+                            <option value="CDD" {% if contract_type is defined and contract_type=='CDD' %}selected{%
+                                endif %}>CDD</option>
+                            <option value="Stage" {% if contract_type is defined and contract_type=='Stage' %}selected{%
+                                endif %}>Stage</option>
+                            <option value="Freelance" {% if contract_type is defined and contract_type=='Freelance'
+                                %}selected{% endif %}>Freelance</option>
+                            <option value="Alternance" {% if contract_type is defined and contract_type=='Alternance'
+                                %}selected{% endif %}>Alternance</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="filter-container" style="max-width: 500px; margin: 8px 0 15px 30px; display: inline-block;">
+                    <label for="sort_by" style="font-weight: 600; color: #333; margin-right: -1px;">Trier par :</label>
+                    <div class="custom-select-wrapper">
+                        <select name="sort_by" id="sort_by" class="form-select"
+                            style="max-width: 350px; display: inline-block;">
+                            <option value="">Par défaut</option>
+                            <option value="date_pub_asc" {% if sort_by is defined and sort_by=='date_pub_asc'
+                                %}selected{% endif %}>Date de publication (croissant)</option>
+                            <option value="date_pub_desc" {% if sort_by is defined and sort_by=='date_pub_desc'
+                                %}selected{% endif %}>Date de publication (décroissant)</option>
+                            <option value="date_lim_asc" {% if sort_by is defined and sort_by=='date_lim_asc'
+                                %}selected{% endif %}>Date limite (croissant)</option>
+                            <option value="date_lim_desc" {% if sort_by is defined and sort_by=='date_lim_desc'
+                                %}selected{% endif %}>Date limite (décroissant)</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="input-group" style="max-width: 1050px; margin: 0 auto;">
+                    <input type="text" name="search" class="form-control" placeholder="Rechercher par titre d'offre..."
+                        value="{{ search|default('') }}"> <!-- Keep the search term in the input -->
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="submit">Recherche</button>
+                    </div>
+                </div>
+        </form>
+    </div>
+
+    <div class="row" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
+        {% for offre in offres %}
+        {% set hasApplied = userApplications[offre.idOffre] ?? false %}
+        <div class="flip-card" style="margin-top: 30px;">
+            <div class="flip-card-inner {% if hasApplied %}already-applied{% endif %}" {% if not hasApplied
+                %}onclick="window.location.href='{{ path('app_candidature_new', {'offre_id': offre.idOffre}) }}'" {%
+                endif %}>
+                <div class="flip-card-front">
+                    <p class="title">{{ offre.titre }}</p>
+                    <p><strong>Type:</strong> {{ offre.typeContrat }}</p>
+                    <p><strong>Lieu:</strong> {{ offre.lieuTravail }}</p>
+                    <p><strong>Salaire:</strong> {{ offre.salaire }}</p>
+                    <p><strong>Exp:</strong> {{ offre.experience }}</p>
+                    <p><strong>Date de publication:</strong> {{ offre.datePublication ?
+                        offre.datePublication|date('Y-m-d') : '' }}</p>
+                    <p><strong>Date Limite:</strong> {{ offre.dateLimite ? offre.dateLimite|date('Y-m-d') : '' }}</p>
+                    <p><strong>Status:</strong> {{ offre.statutOffre }}</p>
+                    {% if hasApplied %}
+                    <p class="applied-badge">Déjà postulé</p>
+                    {% endif %}
+                </div>
+                <div class="flip-card-back">
+                    <p style="max-height: 320px; overflow-y: auto; text-align: justify;">
+                        <strong>DESC : </strong> {{ offre.description }}
+                    </p>
+
+                    <div style="margin-top: 10px;">
+                        {% if hasApplied %}
+                        <span class="already-applied-text">Vous avez déjà postulé à cette offre</span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <p class="text-center" style="font-size: 1.2rem; color: #777;">Aucune offre trouvée.</p>
+        {% endfor %}
+    </div>
+</div>
+<link href="https://fonts.googleapis.com/css2?family=Roboto&family=Montserrat:wght@400;700&display=swap"
+    rel="stylesheet">
+
+<style>
+    html,
+    body {
+        height: 100%;
+    }
+
+    /* Make sure this CSS rule is properly set */
+    .jarvis-chat-window {
+        position: absolute;
+        bottom: 80px;
+        right: 0;
+        width: 350px;
+        height: 500px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+        display: none;
+        /* Ensure it starts hidden */
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    /* Animation CSS */
+    .wrapper {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        text-align: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+    }
+
+    .inner {
+        --w: 60px;
+        --h: 90px;
+        --translateZ: calc((var(--w) + var(--h)) + 0px);
+        --rotateX: -15deg;
+        --perspective: 1000px;
+        position: absolute;
+        width: var(--w);
+        height: var(--h);
+        top: 22%;
+        left: calc(25% - (var(--w) / 2) - 2.5px);
+        z-index: 2;
+        transform-style: preserve-3d;
+        transform: perspective(var(--perspective));
+        animation: rotating 20s linear infinite;
+        pointer-events: none;
+    }
+
+    @keyframes rotating {
+        from {
+            transform: perspective(var(--perspective)) rotateX(var(--rotateX)) rotateY(0);
+        }
+
+        to {
+            transform: perspective(var(--perspective)) rotateX(var(--rotateX)) rotateY(1turn);
+        }
+    }
+
+    .card {
+        position: absolute;
+        border: 2px solid rgba(var(--color-card));
+        border-radius: 12px;
+        overflow: hidden;
+        inset: 0;
+        transform: rotateY(calc((360deg / var(--quantity)) * var(--index))) translateZ(var(--translateZ));
+    }
+
+    .img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        background: #0000 radial-gradient(circle,
+                rgba(var(--color-card), 0.2) 0%,
+                rgba(var(--color-card), 0.6) 80%,
+                rgba(var(--color-card), 0.9) 100%);
+    }
+
+    .flip-card {
+        position: relative;
+        background-color: transparent;
+        width: 380px;
+        height: 460px;
+        perspective: 1000px;
+        font-family: sans-serif;
+        border-radius: 10px;
+    }
+
+    .flip-card::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        left: -5px;
+        margin: auto;
+        width: 300px;
+        height: 480px;
+        border-radius: 12px;
+        background: rgb(135, 135, 222);
+
+        /* background: linear-gradient(-45deg, #e81cff 0%, #40c9ff 100%); */
+        /* background: linear-gradient(-45deg, gold 0%, silver 100%); */
+        z-index: -10;
+        pointer-events: none;
+        transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .flip-card::after {
+        content: '';
+        z-index: -1;
+        position: absolute;
+        inset: 0;
+        background: rgb(0, 0, 128);
+
+        /* background: linear-gradient(-45deg, #fc00ff 0%, #00dbde 100%); */
+        /* background: linear-gradient(-45deg, gold 0%, silver 100%); */
+
+        transform: translate3d(0, 0, 0) scale(0.95);
+        filter: blur(20px);
+        border-radius: 12px;
+    }
+
+    .flip-card:hover::before {
+        transform: rotate(-90deg) scaleX(1.34) scaleY(0.77);
+    }
+
+    .flip-card:hover::after {
+        filter: blur(30px);
+    }
+
+    .flip-card:hover {
+        margin-bottom: 30px;
+        /* ou plus selon l'espace que tu veux */
+    }
+
+    .flip-card-inner {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        text-align: center;
+        transition: transform 0.8s;
+        transform-style: preserve-3d;
+        border-radius: 10px;
+        cursor: pointer;
+    }
+
+    .flip-card:hover .flip-card-inner {
+        transform: rotateY(180deg) scaleY(1.07);
+    }
+
+    /* Styles pour les offres déjà postulées */
+    .flip-card-inner.already-applied {
+        opacity: 0.8;
+        cursor: default;
+    }
+
+    .applied-badge {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        background-color: #bfe3f9;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 5px;
+        font-weight: bold;
+        font-size: 14px;
+        z-index: 10;
+    }
+
+    .already-applied-text {
+        display: inline-block;
+        background-color: #87CEFA;
+        color: white;
+        padding: 8px 12px;
+        border-radius: 5px;
+        font-weight: bold;
+        margin-top: 15px;
+    }
+
+    .flip-card-front,
+    .flip-card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        backface-visibility: hidden;
+        padding: 18px;
+        box-shadow: 0 8px 14px 0 rgba(0, 0, 0, 0.2);
+        /* background-color: #ffffff; */
+        /* background-image: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899); */
+        /* background-image: linear-gradient(-45deg, #fc00ff 0%, #00dbde 100%); */
+        background-image: linear-gradient(-45deg, #98d8ff 0%, #c68fc6 100%);
+        color: white;
+    }
+
+    .flip-card-front {
+        z-index: 2;
+    }
+
+    .flip-card-back {
+        transform: rotateY(180deg);
+        z-index: 1;
+        transition: transform 0.4s ease;
+    }
+
+    .flip-card-back {
+        overflow-y: auto;
+        /* Ajoute une barre de scroll si le texte dépasse */
+        max-height: 100%;
+        /* Empêche de dépasser la hauteur de la carte */
+    }
+
+
+    /* .title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+    } */
+    .flip-card-front .title {
+        font-size: 1.8rem;
+        font-weight: bold;
+        /* Le titre reste en gras */
+        margin-bottom: 10px;
+    }
+
+    .flip-card p {
+        font-size: 17px;
+        font-weight: normal;
+    }
+
+    .flip-card-front p.title {
+        font-weight: bold;
+    }
+
+    .flip-card p:last-child {
+        color: #3312ed;
+        font-weight: 600;
+    }
+
+
+    .btn {
+        background-color: #40c9ff;
+        color: white;
+        padding: 6px 12px;
+        border-radius: 5px;
+        text-decoration: none;
+        margin: 5px;
+        font-size: 14px;
+    }
+
+    .btn:hover {
+        background-color: #e81cff;
+        transform: translateY(-2px);
+    }
+
+    .flip-card-front p,
+    .flip-card-back p,
+    .flip-card-front strong,
+    .flip-card-back strong {
+        color: #000000;
+    }
+
+
+    .flip-card-front {
+        font-family: 'Montserrat', sans-serif;
+    }
+
+    .flip-card-front .title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 700;
+    }
+
+    .flip-card-front p {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 400;
+    }
+
+    .container a.btn {
+        position: relative;
+        z-index: 10;
+    }
+
+    .form-control {
+        border: 3px solid #4771cb;
+        /* Set the border color */
+        border-radius: 5px;
+        /* Optional: Add rounded corners */
+        padding: 10px;
+        /* Optional: Add padding for better appearance */
+        font-size: 1.2rem;
+        /* Increase font size */
+        width: 80%;
+        /* Ensure the input takes up the full width of its container */
+        transition: border-color 0.3s ease;
+        /* Smooth transition for hover/focus */
+    }
+
+    .form-control:focus {
+        border-color: #33ccc5;
+        /* Keep the same color on focus */
+        outline: none;
+        /* Remove the default outline */
+        box-shadow: 0 0 5px rgba(51, 204, 197, 0.5);
+        /* Optional: Add a glow effect */
+    }
+
+    .btn-outline-secondary {
+        background-color: transparent;
+        /* Remove the default blue background */
+
+        border: 3px solid #4771cb;
+        /* Match the border size with the search box */
+        color: #4771cb;
+        /* Set the text color */
+        padding: 10px 50px;
+        /* Increase padding for a larger button */
+        font-size: 1.39rem;
+        /* Increase font size */
+        border-radius: 6px;
+        /* Match the rounded corners with the search box */
+        /* width: 345px; */
+        transition: all 0.3s ease;
+
+    }
+
+    .btn-outline-secondary:hover {
+        border: 3px solid #30539f;
+
+        background-color: #4771cb;
+        /* Change background color on hover */
+        color: white;
+        /* Change text color on hover */
+        transform: scale(1.08);
+        /* Slightly enlarge the button on hover */
+        transition: all 0.2s ease;
+
+    }
+
+    .input-group {
+        display: flex;
+        align-items: center;
+        /* Ensure vertical alignment */
+        justify-content: center;
+        /* Center the input and button */
+        gap: 0;
+    }
+
+    .filter-container {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .custom-select-wrapper {
+        position: relative;
+        display: inline-block;
+    }
+
+    .form-select {
+        border: 3px solid #4771cb;
+        border-radius: 5px;
+        padding: 10px;
+        font-size: 1.1rem;
+        transition: border-color 0.3s ease;
+        background-color: white;
+        width: 400px;
+        /* Set a specific width */
+        max-width: 100%;
+        /* Allow it to be responsive */
+    }
+
+    .form-select:focus {
+        border-color: #33ccc5;
+        outline: none;
+        box-shadow: 0 0 5px rgba(51, 204, 197, 0.5);
+    }
+
+    .custom-select-wrapper::after {
+        content: "▼";
+        font-size: 20px;
+        color: #4771cb;
+        position: absolute;
+        right: 13px;
+        top: 50%;
+        transform: translateY(-40%);
+        pointer-events: none;
+        /* Make sure this doesn't block clicks */
+    }
+</style>
+
+<script>
+    // Ensure dropdown functions properly
+    document.addEventListener('DOMContentLoaded', function () {
+        const selectElement = document.getElementById('contract_type');
+
+        // Force the dropdown to be clickable
+        selectElement.addEventListener('mousedown', function (e) {
+            e.stopPropagation();
+        });
+
+        // Automatically submit form when selection changes
+        selectElement.addEventListener('change', function () {
+            this.form.submit();
+        });
+        // Add event listener for sort_by dropdown
+        const sortByElement = document.getElementById('sort_by');
+        sortByElement.addEventListener('change', function () {
+            this.form.submit();
+        });
+    });
+</script>
+
+
+<!-- /*****************************************************************************/ -->
+<!-- Your existing code -->
+
+
+<!-- Add this at the bottom of your page, before the closing </div> of the "container" -->
+<div id="jarvis-container" class="jarvis-container">
+    <div class="jarvis-button" id="jarvis-toggle">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <div class="jarvis-chat-window" id="jarvis-window">
+        <div class="jarvis-header">
+            <div class="jarvis-title">
+                <i class="fas fa-robot"></i> Jarvis AI Assistant
+            </div>
+            <div class="jarvis-close" id="jarvis-close">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+
+        <div class="jarvis-messages" id="jarvis-messages">
+            <div class="jarvis-message jarvis">
+                <div class="message-content">
+                    Bonjour, je suis Jarvis, votre assistant IA. Comment puis-je vous aider avec les offres d'emploi?
+                </div>
+            </div>
+        </div>
+
+        <!-- Add this near the jarvis-input div -->
+        <div class="jarvis-input">
+            <button id="jarvis-mic" class="mic-button">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <input type="text" id="jarvis-user-input" placeholder="Posez votre question ou cliquez sur le micro..." />
+            <button id="jarvis-send">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+        <div class="voice-wave" id="voice-wave">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <div class="jarvis-voice-animation" id="jarvis-voice-animation">
+            <div class="jarvis-circle-loader">
+                <div class="jarvis-circle"></div>
+                <div class="jarvis-circle"></div>
+                <div class="jarvis-circle"></div>
+                <div class="jarvis-hologram"></div>
+            </div>
+        
+            <div class="jarvis-scan-line"></div>
+            <div class="jarvis-scan-line"></div>
+        
+            <div class="jarvis-analysis-text">
+                Analyse vocale en cours...
+            </div>
+        
+            <div class="jarvis-status-text" id="jarvis-status-text">
+                Initialisation des modules de reconnaissance...
+            </div>
+        
+            <div class="jarvis-wave-visualizer">
+                <div class="jarvis-wave-bar"></div>
+                <div class="jarvis-wave-bar"></div>
+                <div class="jarvis-wave-bar"></div>
+                <div class="jarvis-wave-bar"></div>
+                <div class="jarvis-wave-bar"></div>
+                <div class="jarvis-wave-bar"></div>
+                <div class="jarvis-wave-bar"></div>
+                <div class="jarvis-wave-bar"></div>
+                <div class="jarvis-wave-bar"></div>
+                <div class="jarvis-wave-bar"></div>
+                <div class="jarvis-wave-bar"></div>
+                <div class="jarvis-wave-bar"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add this to your existing style section -->
+<style>
+    /* Innovative Holographic Jarvis Interface */
+
+    /* Base styles for the floating tech ring trigger */
+    /* Ensure the trigger is clickable */
+    .jarvis-trigger {
+        position: fixed;
+        bottom: 40px;
+        right: 40px;
+        width: 80px;
+        height: 80px;
+        z-index: 9999 !important;
+        /* Highest z-index to ensure it's above everything */
+        cursor: pointer;
+        transform-style: preserve-3d;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        pointer-events: all !important;
+    }
+
+    .jarvis-ring {
+        position: absolute;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        inset: 0;
+        transform-style: preserve-3d;
+        animation: rotate-ring 10s linear infinite;
+        pointer-events: none;
+    }
+
+    .jarvis-ring:nth-child(1) {
+        border-top: 3px solid #33ccc5;
+        border-bottom: 3px solid #4771cb;
+        filter: drop-shadow(0 0 10px rgba(51, 204, 197, 0.7));
+    }
+
+    .jarvis-ring:nth-child(2) {
+        inset: 10px;
+        border-left: 2px solid #33ccc5;
+        border-right: 2px solid #4771cb;
+        animation-direction: reverse;
+        animation-duration: 7s;
+    }
+
+    .jarvis-ring:nth-child(3) {
+        inset: 20px;
+        border-top: 1px solid #4771cb;
+        border-bottom: 1px solid #33ccc5;
+        animation-duration: 5s;
+    }
+
+    .jarvis-core {
+        position: absolute;
+        inset: 25px;
+        background: radial-gradient(circle, rgba(51, 204, 197, 0.8) 0%, rgba(71, 113, 203, 0.8) 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 22px;
+        box-shadow: 0 0 20px rgba(51, 204, 197, 0.7);
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+
+    .jarvis-trigger:hover {
+        transform: scale(1.1) rotate(5deg);
+    }
+
+    .jarvis-trigger:hover .jarvis-ring:nth-child(1) {
+        animation-duration: 5s;
+    }
+
+    .jarvis-trigger:hover .jarvis-ring:nth-child(2) {
+        animation-duration: 3s;
+    }
+
+    .jarvis-trigger:hover .jarvis-core {
+        box-shadow: 0 0 30px rgba(51, 204, 197, 0.9);
+    }
+
+    /* Ensure the hologram interface is visible when active */
+    .jarvis-hologram {
+        position: fixed !important;
+        bottom: 50px;
+        right: 50px;
+        width: 90vw;
+        max-width: 1200px;
+        height: 85vh;
+        border-radius: 20px;
+        background: rgba(0, 0, 0, 0.85) !important;
+        display: none !important;
+        /* Ensure hidden by default */
+        z-index: 9999 !important;
+        /* Very high z-index */
+        transform: perspective(1000px) rotateX(5deg);
+        box-shadow: 0 0 40px rgba(51, 204, 197, 0.3);
+        transform-origin: bottom right;
+    }
+
+    .jarvis-hologram::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 20px;
+        padding: 2px;
+        background: linear-gradient(135deg, #33ccc5 0%, #4771cb 100%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    /* Force display for active state with !important */
+    .jarvis-hologram.active {
+        display: grid !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+        grid-template-columns: 250px 1fr 300px;
+        grid-template-rows: 70px 1fr 80px;
+        grid-template-areas:
+            "sidebar header metrics"
+            "sidebar content metrics"
+            "sidebar input metrics";
+    }
+
+    .jarvis-hologram.closing {
+        animation: hologram-disappear 0.3s ease-in forwards;
+    }
+
+    /* Grid areas */
+    .jarvis-header {
+        grid-area: header;
+        background: linear-gradient(90deg, rgba(51, 204, 197, 0.2) 0%, rgba(71, 113, 203, 0.2) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        position: relative;
+        border-bottom: 1px solid rgba(51, 204, 197, 0.3);
+    }
+
+    .jarvis-header::before {
+        content: "";
+        position: absolute;
+        height: 1px;
+        width: 100%;
+        bottom: 0;
+        left: 0;
+        background: linear-gradient(90deg, transparent 0%, rgba(51, 204, 197, 0.7) 50%, transparent 100%);
+        animation: header-glow 3s ease-in-out infinite;
+    }
+
+    .jarvis-title {
+        color: white;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 20px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        text-shadow: 0 0 10px rgba(51, 204, 197, 0.7);
+    }
+
+    .jarvis-title-dot {
+        width: 10px;
+        height: 10px;
+        background: #33ccc5;
+        border-radius: 50%;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .jarvis-sidebar {
+        grid-area: sidebar;
+        background: rgba(10, 20, 30, 0.7);
+        border-right: 1px solid rgba(51, 204, 197, 0.3);
+        display: flex;
+        flex-direction: column;
+        padding: 20px;
+        gap: 15px;
+    }
+
+    .sidebar-item {
+        color: white;
+        padding: 12px 15px;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .sidebar-item:hover {
+        background: rgba(51, 204, 197, 0.2);
+    }
+
+    .sidebar-item.active {
+        background: linear-gradient(90deg, rgba(51, 204, 197, 0.3) 0%, rgba(71, 113, 203, 0.3) 100%);
+    }
+
+    .sidebar-item.active::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        height: 100%;
+        width: 3px;
+        background: #33ccc5;
+        box-shadow: 0 0 10px rgba(51, 204, 197, 0.7);
+    }
+
+    .sidebar-item i {
+        font-size: 18px;
+        color: #33ccc5;
+    }
+
+    .jarvis-content {
+        grid-area: content;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        scrollbar-width: thin;
+        scrollbar-color: #33ccc5 transparent;
+    }
+
+    .jarvis-content::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .jarvis-content::-webkit-scrollbar-thumb {
+        background: #33ccc5;
+        border-radius: 3px;
+    }
+
+    .jarvis-content::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .jarvis-message {
+        max-width: 85%;
+        padding: 15px 20px;
+        border-radius: 12px;
+        line-height: 1.5;
+        position: relative;
+        animation: message-appear 0.3s ease-out forwards;
+    }
+
+    .jarvis-message.jarvis {
+        background: rgba(51, 204, 197, 0.1);
+        color: #e0e0e0;
+        border-left: 3px solid #33ccc5;
+        align-self: flex-start;
+        transform-origin: top left;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .jarvis-message.jarvis::before {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: linear-gradient(90deg, rgba(51, 204, 197, 0.1) 0%, transparent 100%);
+        pointer-events: none;
+        border-radius: 12px;
+    }
+
+    .jarvis-message.user {
+        background: rgba(71, 113, 203, 0.2);
+        color: white;
+        border-right: 3px solid #4771cb;
+        align-self: flex-end;
+        transform-origin: top right;
+    }
+
+    .jarvis-input {
+        grid-area: input;
+        display: flex;
+        align-items: center;
+        padding: 15px 20px;
+        gap: 15px;
+        background: rgba(10, 20, 30, 0.7);
+        border-top: 1px solid rgba(51, 204, 197, 0.3);
+    }
+
+    .jarvis-input-field {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid rgba(51, 204, 197, 0.5);
+        border-radius: 30px;
+        color: white;
+        padding: 12px 20px;
+        font-size: 16px;
+        outline: none;
+        transition: all 0.3s ease;
+    }
+
+    .jarvis-input-field:focus {
+        border-color: #33ccc5;
+        box-shadow: 0 0 15px rgba(51, 204, 197, 0.3);
+    }
+
+    .jarvis-input-field::placeholder {
+        color: rgba(255, 255, 255, 0.5);
+    }
+
+    .jarvis-input-button {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #33ccc5 0%, #4771cb 100%);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 18px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .jarvis-input-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 15px rgba(51, 204, 197, 0.5);
+    }
+
+    .jarvis-input-button.voice {
+        background: linear-gradient(135deg, #4771cb 0%, #33ccc5 100%);
+    }
+
+    .jarvis-input-button.voice.active {
+        animation: recording-pulse 1.5s ease-in-out infinite;
+        background: linear-gradient(135deg, #ff3366 0%, #ff6633 100%);
+    }
+
+    .jarvis-metrics {
+        grid-area: metrics;
+        background: rgba(10, 20, 30, 0.7);
+        border-left: 1px solid rgba(51, 204, 197, 0.3);
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .metrics-header {
+        color: #33ccc5;
+        font-size: 18px;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 10px;
+        padding-bottom: 10px;
+        border-bottom: 1px solid rgba(51, 204, 197, 0.3);
+    }
+
+    .metrics-item {
+        background: rgba(51, 204, 197, 0.1);
+        border-radius: 10px;
+        padding: 15px;
+        color: white;
+    }
+
+    .metrics-item-title {
+        color: #33ccc5;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+    .metrics-item-value {
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    .metrics-chart {
+        flex: 1;
+        position: relative;
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 10px;
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-around;
+        padding: 15px;
+    }
+
+    .chart-bar {
+        width: 8px;
+        background: linear-gradient(to top, #33ccc5 0%, #4771cb 100%);
+        border-radius: 4px;
+        position: relative;
+        transition: height 0.5s ease;
+    }
+
+    .chart-bar:nth-child(1) {
+        height: 60%;
+    }
+
+    .chart-bar:nth-child(2) {
+        height: 80%;
+    }
+
+    .chart-bar:nth-child(3) {
+        height: 40%;
+    }
+
+    .chart-bar:nth-child(4) {
+        height: 70%;
+    }
+
+    .chart-bar:nth-child(5) {
+        height: 55%;
+    }
+
+    .chart-bar:nth-child(6) {
+        height: 85%;
+    }
+
+    .chart-bar:nth-child(7) {
+        height: 65%;
+    }
+
+    /* Voice visualization overlay */
+    .jarvis-voice-overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 10, 20, 0.8);
+        backdrop-filter: blur(10px);
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+    }
+
+    .jarvis-voice-overlay.active {
+        display: flex;
+        animation: fade-in 0.3s ease-out forwards;
+    }
+
+    .voice-analyzer {
+        width: 300px;
+        height: 300px;
+        position: relative;
+        margin-bottom: 40px;
+    }
+
+    .voice-circle {
+        position: absolute;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        animation: rotate-ring 5s linear infinite;
+    }
+
+    .voice-circle:nth-child(1) {
+        inset: 0;
+        border-top: 3px solid #33ccc5;
+        border-bottom: 3px solid #4771cb;
+    }
+
+    .voice-circle:nth-child(2) {
+        inset: 25px;
+        border-left: 2px solid #33ccc5;
+        border-right: 2px solid #4771cb;
+        animation-duration: 4s;
+        animation-direction: reverse;
+    }
+
+    .voice-circle:nth-child(3) {
+        inset: 50px;
+        border-top: 2px solid #4771cb;
+        border-bottom: 2px solid #33ccc5;
+        animation-duration: 7s;
+    }
+
+    .voice-core {
+        position: absolute;
+        inset: 75px;
+        background: radial-gradient(circle, #33ccc5 0%, #4771cb 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        color: white;
+        box-shadow: 0 0 30px rgba(51, 204, 197, 0.7);
+    }
+
+    .voice-bars {
+        display: flex;
+        gap: 6px;
+        height: 80px;
+        align-items: center;
+        margin-top: 30px;
+    }
+
+    .voice-bar {
+        width: 6px;
+        background: linear-gradient(to top, #33ccc5, #4771cb);
+        border-radius: 3px;
+        animation: voice-bar-animation 0.5s ease infinite alternate;
+    }
+
+    .voice-status {
+        color: white;
+        font-size: 20px;
+        margin-top: 30px;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+
+    /* Animations */
+    @keyframes rotate-ring {
+        from {
+            transform: rotate(0deg);
+        }
+
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 0.7;
+            transform: scale(1);
+        }
+
+        50% {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+    }
+
+    @keyframes header-glow {
+
+        0%,
+        100% {
+            opacity: 0.3;
+        }
+
+        50% {
+            opacity: 0.7;
+        }
+    }
+
+    @keyframes hologram-appear {
+        from {
+            opacity: 0;
+            transform: perspective(1000px) rotateX(5deg) scale(0.9);
+        }
+
+        to {
+            opacity: 1;
+            transform: perspective(1000px) rotateX(0deg) scale(1);
+        }
+    }
+
+    @keyframes hologram-disappear {
+        from {
+            opacity: 1;
+            transform: perspective(1000px) rotateX(0deg) scale(1);
+        }
+
+        to {
+            opacity: 0;
+            transform: perspective(1000px) rotateX(5deg) scale(0.9);
+        }
+    }
+
+    @keyframes message-appear {
+        from {
+            opacity: 0;
+            transform: translateY(10px) scale(0.95);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    @keyframes recording-pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.7);
+        }
+
+        70% {
+            box-shadow: 0 0 0 15px rgba(255, 51, 102, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(255, 51, 102, 0);
+        }
+    }
+
+    @keyframes voice-bar-animation {
+        0% {
+            height: 10px;
+        }
+
+        100% {
+            height: 70px;
+        }
+    }
+
+    @keyframes fade-in {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    /*************************************************************************************************/
+    /* JARVIS Voice Activation Animation */
+    /* Enhanced JARVIS Voice Activation Animation */
+    .jarvis-voice-animation {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.85);
+        background: linear-gradient(135deg, rgba(0, 0, 0, 0.9) 0%, rgba(7, 42, 91, 0.95) 100%);
+        border-radius: 15px;
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        overflow: hidden;
+        box-shadow: inset 0 0 30px rgba(51, 204, 197, 0.3);
+        backdrop-filter: blur(4px);
+    }
+
+    /* Add fancy glowing border */
+    .jarvis-voice-animation::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 15px;
+        padding: 2px;
+        background: linear-gradient(135deg, #33ccc5 0%, #4771cb 100%);
+        -webkit-mask:
+            linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0.7;
+        animation: border-glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes border-glow {
+        from {
+            opacity: 0.5;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    .jarvis-voice-animation.active {
+        display: flex;
+    }
+
+    /* Enhance the circle loader */
+    .jarvis-circle-loader {
+        position: relative;
+        width: 220px;
+        /* Larger size */
+        height: 220px;
+        margin-bottom: 30px;
+    }
+
+    /* Make circles more prominent with better colors */
+    .jarvis-circle {
+        position: absolute;
+        border-radius: 50%;
+        border: 3px solid rgba(255, 255, 255, 0.1);
+        animation: jarvis-spin 3s linear infinite;
+        box-shadow: 0 0 15px rgba(51, 204, 197, 0.3);
+    }
+
+    .jarvis-circle:nth-child(1) {
+        width: 100%;
+        height: 100%;
+        border-width: 4px;
+        border-top-color: #33ccc5;
+        border-right-color: transparent;
+        border-bottom-color: #4771cb;
+        border-left-color: transparent;
+        filter: drop-shadow(0 0 10px rgba(51, 204, 197, 0.5));
+    }
+
+    .jarvis-circle:nth-child(2) {
+        width: 80%;
+        height: 80%;
+        border-width: 3px;
+        border-top-color: transparent;
+        border-right-color: #33ccc5;
+        border-bottom-color: transparent;
+        border-left-color: #4771cb;
+        top: 10%;
+        left: 10%;
+        animation-duration: 2.5s;
+        animation-direction: reverse;
+    }
+
+    .jarvis-circle:nth-child(3) {
+        width: 60%;
+        height: 60%;
+        border-width: 2px;
+        border-top-color: #4771cb;
+        border-right-color: transparent;
+        border-bottom-color: #33ccc5;
+        border-left-color: transparent;
+        top: 20%;
+        left: 20%;
+        animation-duration: 2s;
+    }
+
+    /* Enhance hologram effect */
+    .jarvis-hologram {
+        position: absolute;
+        width: 50%;
+        height: 50%;
+        top: 25%;
+        left: 25%;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(51, 204, 197, 0.4) 0%, rgba(71, 113, 203, 0.2) 70%, transparent 100%);
+        animation: jarvis-pulse 2s ease-in-out infinite;
+        box-shadow: 0 0 30px rgba(51, 204, 197, 0.6);
+    }
+
+    /* Add a more high-tech circular grid pattern */
+    .jarvis-hologram::before {
+        content: "";
+        position: absolute;
+        inset: -20px;
+        border-radius: 50%;
+        background:
+            repeating-conic-gradient(rgba(51, 204, 197, 0.1) 0deg 10deg,
+                transparent 10deg 20deg);
+        opacity: 0.5;
+        animation: jarvis-spin 20s linear infinite reverse;
+    }
+
+    /* Enhanced scanning lines */
+    .jarvis-scan-line {
+        position: absolute;
+        width: 120%;
+        height: 2px;
+        left: -10%;
+        background: linear-gradient(to right,
+                transparent 0%,
+                rgba(51, 204, 197, 0.3) 20%,
+                rgba(51, 204, 197, 0.8) 50%,
+                rgba(51, 204, 197, 0.3) 80%,
+                transparent 100%);
+        box-shadow: 0 0 10px rgba(51, 204, 197, 0.5);
+        animation: jarvis-scan 3s ease-in-out infinite;
+    }
+
+    .jarvis-scan-line:nth-child(1) {
+        top: 30%;
+        animation-delay: 0s;
+    }
+
+    .jarvis-scan-line:nth-child(2) {
+        top: 70%;
+        animation-delay: 1s;
+    }
+
+    /* Text styling */
+    .jarvis-analysis-text {
+        margin-top: 20px;
+        color: white;
+        font-family: 'Montserrat', sans-serif;
+        font-size: 18px;
+        text-align: center;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-weight: 500;
+        text-shadow: 0 0 10px rgba(51, 204, 197, 0.7);
+        animation: jarvis-text-pulse 1.5s ease-in-out infinite;
+    }
+
+    /* Status text */
+    .jarvis-status-text {
+        margin-top: 10px;
+        color: rgba(255, 255, 255, 0.7);
+        font-family: 'Montserrat', sans-serif;
+        font-size: 14px;
+        text-align: center;
+    }
+
+    /* Extend the wave visualizer */
+    .jarvis-wave-visualizer {
+        margin-top: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 70px;
+        width: 80%;
+        max-width: 320px;
+        background: rgba(0, 0, 0, 0.4);
+        border: 1px solid rgba(51, 204, 197, 0.3);
+        border-radius: 8px;
+        padding: 0 15px;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .jarvis-wave-visualizer::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+            linear-gradient(90deg, transparent 0%, rgba(51, 204, 197, 0.05) 50%, transparent 100%),
+            repeating-linear-gradient(0deg, transparent 0px, transparent 5px, rgba(51, 204, 197, 0.05) 5px, rgba(51, 204, 197, 0.05) 6px);
+        border-radius: 8px;
+        box-shadow: 0 0 20px rgba(51, 204, 197, 0.2) inset;
+        pointer-events: none;
+    }
+
+    /* More dynamic wave bars */
+    .jarvis-wave-bar {
+        background: linear-gradient(to bottom, #33ccc5, #4771cb);
+        width: 5px;
+        margin: 0 3px;
+        border-radius: 3px;
+        height: 3px;
+        animation: jarvis-wave-animation 0.7s ease infinite alternate;
+        box-shadow: 0 0 10px rgba(51, 204, 197, 0.8);
+    }
+
+    /* Extended animations */
+    @keyframes jarvis-spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes jarvis-pulse {
+
+        0%,
+        100% {
+            opacity: 0.5;
+            transform: scale(1);
+        }
+
+        50% {
+            opacity: 0.8;
+            transform: scale(1.1);
+        }
+    }
+
+    @keyframes jarvis-text-pulse {
+
+        0%,
+        100% {
+            opacity: 0.8;
+        }
+
+        50% {
+            opacity: 1;
+        }
+    }
+
+    /* Add additional scan effect */
+    @keyframes jarvis-scan {
+        0% {
+            transform: translateY(-150px) scaleX(0.8);
+            opacity: 0;
+        }
+
+        50% {
+            transform: translateY(150px) scaleX(1);
+            opacity: 1;
+        }
+
+        100% {
+            transform: translateY(350px) scaleX(0.8);
+            opacity: 0;
+        }
+    }
+
+    @keyframes jarvis-wave-animation {
+        0% {
+            height: 3px;
+            opacity: 0.5;
+        }
+
+        100% {
+            height: 35px;
+            opacity: 1;
+        }
+    }
+
+    /* Add different delays for each bar */
+    .jarvis-wave-bar:nth-child(1) {
+        animation-delay: 0.0s;
+    }
+
+    .jarvis-wave-bar:nth-child(2) {
+        animation-delay: 0.1s;
+    }
+
+    .jarvis-wave-bar:nth-child(3) {
+        animation-delay: 0.2s;
+    }
+
+    .jarvis-wave-bar:nth-child(4) {
+        animation-delay: 0.3s;
+    }
+
+    .jarvis-wave-bar:nth-child(5) {
+        animation-delay: 0.4s;
+    }
+
+    .jarvis-wave-bar:nth-child(6) {
+        animation-delay: 0.3s;
+    }
+
+    .jarvis-wave-bar:nth-child(7) {
+        animation-delay: 0.2s;
+    }
+
+    .jarvis-wave-bar:nth-child(8) {
+        animation-delay: 0.1s;
+    }
+
+    .jarvis-wave-bar:nth-child(9) {
+        animation-delay: 0.2s;
+    }
+
+    .jarvis-wave-bar:nth-child(10) {
+        animation-delay: 0.3s;
+    }
+
+    .jarvis-wave-bar:nth-child(11) {
+        animation-delay: 0.4s;
+    }
+
+    .jarvis-wave-bar:nth-child(12) {
+        animation-delay: 0.3s;
+    }
+
+    /* Jarvis AI Assistant Styling */
+    /* Jarvis Chat Interface - Matched with Loading Animation */
+    .jarvis-container {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    /* Robot Button with Tech Design */
+    .jarvis-button {
+        width: 65px;
+        height: 65px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #33ccc5 0%, #4771cb 100%);
+        box-shadow: 0 0 20px rgba(51, 204, 197, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* Matched with the loading animation design */
+    .jarvis-button::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
+    }
+
+    /* Add tech ring effect like in loading animation */
+    .jarvis-button::after {
+        content: "";
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        border-top: 2px solid #33ccc5;
+        border-bottom: 2px solid #4771cb;
+        opacity: 0.7;
+        animation: spin 4s linear infinite;
+    }
+
+    .jarvis-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 30px rgba(51, 204, 197, 0.6);
+    }
+
+    .jarvis-button:hover::before {
+        opacity: 1;
+    }
+
+    /* Robot icon styling */
+    .jarvis-button i {
+        font-size: 28px;
+        color: white;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        animation: pulse 2s ease-in-out infinite alternate;
+    }
+
+    /* Chat Window styled like CV scanning card */
+    .jarvis-window {
+        position: absolute;
+        bottom: 85px;
+        right: 0;
+        width: 350px;
+        height: 480px;
+        background: linear-gradient(135deg, #000000, #0a1a20);
+        border-radius: 18px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 0 40px rgba(51, 204, 197, 0.3);
+        transform: translateY(20px);
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .jarvis-window.active {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+
+    /* Tech border like in the loading animation */
+    .jarvis-window::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 18px;
+        padding: 2px;
+        background: linear-gradient(135deg, #33ccc5 0%, #4771cb 100%);
+        -webkit-mask:
+            linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0.7;
+        animation: border-glow 2s ease-in-out infinite alternate;
+        pointer-events: none;
+    }
+
+    /* Header styled like scanning card label */
+    .jarvis-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background: linear-gradient(135deg, rgba(51, 204, 197, 0.2) 0%, rgba(71, 113, 203, 0.2) 100%);
+        border-bottom: 1px solid rgba(51, 204, 197, 0.3);
+        position: relative;
+    }
+
+    .jarvis-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background:
+            radial-gradient(circle at 10% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 25%),
+            linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
+        pointer-events: none;
+    }
+
+    .jarvis-title {
+        font-family: 'Courier New', monospace;
+        font-size: 16px;
+        font-weight: 600;
+        color: #e0e0e0;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-shadow: 0 0 10px rgba(51, 204, 197, 0.5);
+    }
+
+    .jarvis-title i {
+        font-size: 20px;
+        color: #33ccc5;
+        text-shadow: 0 0 8px rgba(51, 204, 197, 0.7);
+    }
+
+    .jarvis-close {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .jarvis-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: rotate(90deg);
+    }
+
+    .jarvis-close i {
+        color: #e0e0e0;
+        font-size: 14px;
+    }
+
+    /* Message area styled with tech background */
+    .jarvis-messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background: rgba(10, 20, 30, 0.95);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        scrollbar-width: thin;
+        scrollbar-color: #33ccc5 transparent;
+    }
+
+    .jarvis-messages::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .jarvis-messages::-webkit-scrollbar-thumb {
+        background: #33ccc5;
+        border-radius: 5px;
+    }
+
+    .jarvis-messages::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    /* Add scanning pattern to background */
+    .jarvis-messages::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.828-1.415 1.415L51.8 0h2.827zM5.373 0l-.83.828L5.96 2.243 8.2 0H5.374zM48.97 0l3.657 3.657-1.414 1.414L46.143 0h2.828zM11.03 0L7.372 3.657 8.787 5.07 13.857 0H11.03zm32.284 0L49.8 6.485 48.384 7.9l-7.9-7.9h2.83zM16.686 0L10.2 6.485 11.616 7.9l7.9-7.9h-2.83zm20.97 0l9.315 9.314-1.414 1.414L34.828 0h2.83zM22.344 0L13.03 9.314l1.414 1.414L25.172 0h-2.83zM32 0l12.142 12.142-1.414 1.414L30 0h2zM2 0l14.142 14.142L15.03 12.728 2 0h2zm28 0L42.142 14.142 40.73 15.556 28 0h2zm-14 0L28.142 14.142 26.73 15.556 14 0h2zM16.97 0L42.97 26 41.556 27.414 16.97 2.828 15.556 1.414 13.03 0h2.83L34.828 0H37.6L40.97 0h2.83l-12.728 12.728L41.556 25.414 40.142 26.83l5.657 5.656-1.414 1.414L36 25.514l-5.657 5.657-1.414-1.414L42.97 15.716l-9.9-9.9-18.627 18.628-1.414-1.414 7.07-7.07L2 0h2.83z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    /* Message bubbles styled with high-tech look */
+    .jarvis-message {
+        max-width: 80%;
+        padding: 15px 18px;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        position: relative;
+        color: #e0e0e0;
+        font-size: 14px;
+        line-height: 1.5;
+        animation: message-appear 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    /* Add techno border to messages */
+    .jarvis-message::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 15px;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(51, 204, 197, 0.5) 0%, rgba(71, 113, 203, 0.5) 100%);
+        -webkit-mask:
+            linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    .jarvis-message.jarvis {
+        align-self: flex-start;
+        background: rgba(51, 204, 197, 0.1);
+        border-top-left-radius: 5px;
+    }
+
+    .jarvis-message.user {
+        align-self: flex-end;
+        background: rgba(71, 113, 203, 0.1);
+        border-top-right-radius: 5px;
+    }
+
+    /* Input area with tech styling */
+    .jarvis-input {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 20px;
+        background: rgba(10, 20, 30, 0.9);
+        border-top: 1px solid rgba(51, 204, 197, 0.3);
+        position: relative;
+    }
+
+    /* Add particle effect to input area */
+    .jarvis-input::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, rgba(51, 204, 197, 0.1), transparent);
+        pointer-events: none;
+    }
+
+    /* Mic button styled like in scanning animation */
+    .mic-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: linear-gradient(135deg, #33ccc5 0%, #4771cb 100%);
+        border: none;
+        box-shadow: 0 0 15px rgba(51, 204, 197, 0.3);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mic-button::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+        opacity: 0.7;
+    }
+
+    .mic-button i {
+        color: white;
+        font-size: 16px;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+
+    .mic-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(51, 204, 197, 0.5);
+    }
+
+    .mic-button.listening {
+        background: linear-gradient(135deg, #ff5252, #ff7676);
+        animation: pulse 1.5s infinite;
+    }
+
+    /* Input field with tech styling */
+    .jarvis-input input {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(51, 204, 197, 0.3);
+        border-radius: 20px;
+        padding: 12px 15px;
+        color: #e0e0e0;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .jarvis-input input:focus {
+        outline: none;
+        border-color: #33ccc5;
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 15px rgba(51, 204, 197, 0.2);
+    }
+
+    .jarvis-input input::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Send button styled like other tech buttons */
+    #jarvis-send {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: linear-gradient(135deg, #33ccc5 0%, #4771cb 100%);
+        border: none;
+        box-shadow: 0 0 15px rgba(51, 204, 197, 0.3);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    #jarvis-send::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+        opacity: 0.7;
+    }
+
+    #jarvis-send i {
+        color: white;
+        font-size: 16px;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+
+    #jarvis-send:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(51, 204, 197, 0.5);
+    }
+
+    /* Voice wave animation - synced with loading style */
+    .voice-wave {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 10, 20, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 18px;
+        z-index: 10;
+    }
+
+    .voice-wave.active {
+        display: flex;
+    }
+
+    .voice-wave .bar {
+        display: inline-block;
+        width: 5px;
+        height: 20px;
+        background: linear-gradient(to top, #33ccc5, #4771cb);
+        margin: 0 3px;
+        border-radius: 3px;
+        animation: voice-bar-animation 0.5s ease infinite alternate;
+        box-shadow: 0 0 10px rgba(51, 204, 197, 0.5);
+    }
+
+    .voice-wave .bar:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .voice-wave .bar:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .voice-wave .bar:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .voice-wave .bar:nth-child(4) {
+        animation-delay: 0.4s;
+    }
+
+    .voice-wave .bar:nth-child(5) {
+        animation-delay: 0.5s;
+    }
+
+    .voice-wave .bar:nth-child(6) {
+        animation-delay: 0.4s;
+    }
+
+    .voice-wave .bar:nth-child(7) {
+        animation-delay: 0.3s;
+    }
+
+    .voice-wave .bar:nth-child(8) {
+        animation-delay: 0.2s;
+    }
+
+    .voice-wave .bar:nth-child(9) {
+        animation-delay: 0.1s;
+    }
+
+    /* Voice Scanning Animation - Matching the loading animation */
+    .jarvis-voice-animation {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 10, 20, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 18px;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 10;
+    }
+
+    .jarvis-voice-animation::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 15px;
+        padding: 2px;
+        background: linear-gradient(135deg, #33ccc5 0%, #4771cb 100%);
+        -webkit-mask:
+            linear-gradient(#fff 0 0) content-box,
+            linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0.7;
+        animation: border-glow 2s ease-in-out infinite alternate;
+    }
+
+    .jarvis-circle-loader {
+        position: relative;
+        width: 180px;
+        height: 180px;
+        margin-bottom: 30px;
+    }
+
+    .jarvis-circle {
+        position: absolute;
+        border-radius: 50%;
+        border: 3px solid transparent;
+        animation: spin 5s linear infinite;
+    }
+
+    .jarvis-circle:nth-child(1) {
+        inset: 0;
+        border-top: 3px solid #33ccc5;
+        border-bottom: 3px solid #4771cb;
+    }
+
+    .jarvis-circle:nth-child(2) {
+        inset: 20px;
+        border-left: 2px solid #33ccc5;
+        border-right: 2px solid #4771cb;
+        animation-direction: reverse;
+        animation-duration: 3s;
+    }
+
+    .jarvis-circle:nth-child(3) {
+        inset: 40px;
+        border-top: 2px solid #4771cb;
+        border-bottom: 2px solid #33ccc5;
+        animation-duration: 7s;
+    }
+
+    .jarvis-hologram {
+        position: absolute;
+        inset: 60px;
+        background: radial-gradient(circle, #33ccc5 0%, #4771cb 100%);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 30px;
+        color: white;
+        box-shadow: 0 0 30px rgba(51, 204, 197, 0.7);
+    }
+
+    .jarvis-scan-line {
+        width: 80%;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, #33ccc5, transparent);
+        position: absolute;
+        animation: scan-line 2s ease-in-out infinite alternate;
+        box-shadow: 0 0 10px rgba(51, 204, 197, 0.7);
+    }
+
+    .jarvis-scan-line:nth-child(1) {
+        top: 40%;
+        animation-delay: 0s;
+    }
+
+    .jarvis-scan-line:nth-child(2) {
+        top: 60%;
+        animation-delay: 1s;
+    }
+
+    .jarvis-analysis-text {
+        color: #e0e0e0;
+        font-family: 'Courier New', monospace;
+        font-size: 18px;
+        margin-top: 20px;
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        animation: blink 2s infinite;
+        text-shadow: 0 0 10px rgba(51, 204, 197, 0.7);
+    }
+
+    .jarvis-status-text {
+        color: #33ccc5;
+        font-family: 'Courier New', monospace;
+        font-size: 14px;
+        margin-top: 30px;
+        opacity: 0.8;
+    }
+
+    .jarvis-wave-visualizer {
+        display: flex;
+        gap: 6px;
+        height: 60px;
+        align-items: center;
+        margin-top: 30px;
+    }
+
+    .jarvis-wave-bar {
+        width: 5px;
+        background: linear-gradient(to top, #33ccc5, #4771cb);
+        border-radius: 3px;
+        animation: voice-bar-animation 0.5s ease infinite alternate;
+        box-shadow: 0 0 10px rgba(51, 204, 197, 0.5);
+    }
+
+    /* Animations */
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    @keyframes pulse {
+        0% {
+            box-shadow: 0 0 0 0 rgba(51, 204, 197, 0.7);
+        }
+
+        70% {
+            box-shadow: 0 0 0 15px rgba(51, 204, 197, 0);
+        }
+
+        100% {
+            box-shadow: 0 0 0 0 rgba(51, 204, 197, 0);
+        }
+    }
+
+    @keyframes message-appear {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes voice-bar-animation {
+        0% {
+            height: 10px;
+        }
+
+        100% {
+            height: 60px;
+        }
+    }
+
+    @keyframes scan-line {
+        0% {
+            transform: translateY(-20px);
+            opacity: 0;
+        }
+
+        20% {
+            opacity: 1;
+        }
+
+        80% {
+            opacity: 1;
+        }
+
+        100% {
+            transform: translateY(20px);
+            opacity: 0;
+        }
+    }
+
+    @keyframes blink {
+
+        0%,
+        100% {
+            opacity: 0.7;
+        }
+
+        50% {
+            opacity: 1;
+        }
+    }
+
+    @keyframes border-glow {
+        from {
+            opacity: 0.5;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+</style>
+<!-- Jarvis Floating Trigger -->
+<div class="jarvis-trigger" id="jarvis-trigger">
+    <div class="jarvis-ring"></div>
+    <div class="jarvis-ring"></div>
+    <div class="jarvis-ring"></div>
+    <div class="jarvis-core">
+        <i class="fas fa-microchip"></i>
+    </div>
+</div>
+
+<!-- Jarvis Holographic Interface -->
+<div class="jarvis-hologram" id="jarvis-hologram">
+    <!-- Header -->
+    <div class="jarvis-header">
+        <div class="jarvis-title">
+            <div class="jarvis-title-dot"></div>
+            J.A.R.V.I.S Interface
+        </div>
+        <div class="jarvis-controls">
+            <button class="jarvis-input-button" id="jarvis-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="jarvis-sidebar">
+        <div class="sidebar-item active">
+            <i class="fas fa-comment-alt"></i>
+            <span>Assistant</span>
+        </div>
+        <div class="sidebar-item">
+            <i class="fas fa-briefcase"></i>
+            <span>Offres d'emploi</span>
+        </div>
+        <div class="sidebar-item">
+            <i class="fas fa-map-marker-alt"></i>
+            <span>Locations</span>
+        </div>
+        <div class="sidebar-item">
+            <i class="fas fa-calendar-alt"></i>
+            <span>Deadlines</span>
+        </div>
+        <div class="sidebar-item">
+            <i class="fas fa-cog"></i>
+            <span>Paramètres</span>
+        </div>
+    </div>
+
+    <!-- Main content area -->
+    <div class="jarvis-content" id="jarvis-messages">
+        <div class="jarvis-message jarvis">
+            <div class="message-content">
+                Bienvenue dans l'interface J.A.R.V.I.S. Comment puis-je vous assister dans votre recherche d'emploi
+                aujourd'hui?
+            </div>
+        </div>
+    </div>
+
+    <!-- Input area -->
+    <div class="jarvis-input">
+        <button class="jarvis-input-button voice" id="jarvis-mic">
+            <i class="fas fa-microphone"></i>
+        </button>
+        <input type="text" class="jarvis-input-field" id="jarvis-user-input" placeholder="Interrogez J.A.R.V.I.S...">
+        <button class="jarvis-input-button" id="jarvis-send">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+
+    <!-- Metrics sidebar -->
+    <div class="jarvis-metrics">
+        <h3 class="metrics-header">Statistiques des offres</h3>
+
+        <div class="metrics-item">
+            <div class="metrics-item-title">Total des offres</div>
+            <div class="metrics-item-value" id="total-offers">27</div>
+        </div>
+
+        <div class="metrics-item">
+            <div class="metrics-item-title">Offres par type</div>
+            <div class="metrics-chart">
+                <div class="chart-bar" title="CDI: 12"></div>
+                <div class="chart-bar" title="CDD: 8"></div>
+                <div class="chart-bar" title="Stage: 4"></div>
+                <div class="chart-bar" title="Freelance: 3"></div>
+            </div>
+        </div>
+
+        <div class="metrics-item">
+            <div class="metrics-item-title">Deadline proche</div>
+            <div class="metrics-item-value" style="color: #ff3366; font-size: 18px;">3 offres</div>
+        </div>
+    </div>
+
+    <!-- Voice visualization overlay -->
+    <div class="jarvis-voice-overlay" id="jarvis-voice-overlay">
+        <div class="voice-analyzer">
+            <div class="voice-circle"></div>
+            <div class="voice-circle"></div>
+            <div class="voice-circle"></div>
+            <div class="voice-core">
+                <i class="fas fa-microphone"></i>
+            </div>
+        </div>
+
+        <div class="voice-bars">
+            <div class="voice-bar" style="animation-delay: 0.0s; height: 20px;"></div>
+            <div class="voice-bar" style="animation-delay: 0.1s; height: 40px;"></div>
+            <div class="voice-bar" style="animation-delay: 0.2s; height: 30px;"></div>
+            <div class="voice-bar" style="animation-delay: 0.3s; height: 60px;"></div>
+            <div class="voice-bar" style="animation-delay: 0.4s; height: 50px;"></div>
+            <div class="voice-bar" style="animation-delay: 0.3s; height: 40px;"></div>
+            <div class="voice-bar" style="animation-delay: 0.2s; height: 55px;"></div>
+            <div class="voice-bar" style="animation-delay: 0.1s; height: 25px;"></div>
+            <div class="voice-bar" style="animation-delay: 0.0s; height: 35px;"></div>
+        </div>
+
+        <div class="voice-status">Analyse en cours...</div>
+    </div>
+</div>
+<!-- /**********************************************************************************************/ -->
+
+
+
+<script>
+    // Add this near the top of your script to maintain conversation context
+    var conversationContext = {
+        lastIntent: null,
+        lastMatches: [],
+        waitingForConfirmation: false,
+        moreResultsAvailable: false,
+        currentPage: 0,
+        itemsPerPage: 3
+    };
+    var jobOffers = [];
+    // Add this function to your initialization code
+    function initJarvisVoice() {
+        // Force voice list loading - this is needed in some browsers
+        speechSynthesis.getVoices();
+
+        // Log available voices
+        setTimeout(() => {
+            const voices = speechSynthesis.getVoices();
+            console.log("Available voices for Jarvis:");
+            voices.forEach((voice, i) => {
+                console.log(`${i + 1}. ${voice.name} (${voice.lang}) - ${voice.localService ? 'Local' : 'Network'}`);
+            });
+
+            // Create a test message to ensure voice is ready
+            const testUtterance = new SpeechSynthesisUtterance("Voice system initialized");
+            testUtterance.volume = 0; // Silent test
+            speechSynthesis.speak(testUtterance);
+        }, 500);
+    }
+    // Replace the existing processUserMessage function with this more intelligent version
+    function processUserMessage(message) {
+        // First, check if we're waiting for a confirmation response
+        if (conversationContext.waitingForConfirmation) {
+            // Check if the response is affirmative
+            const affirmativeResponses = ['oui', 'bien sûr', 'yes', 'ok', 'je veux', 'oui je veux', 'affiche', 'montre', 'voir', 'afficher', 'montrer', 'pourquoi pas', 'd\'accord'];
+            const negativeResponses = ['non', 'no', 'pas maintenant', 'non merci', 'plus tard', 'ça ira', 'ça va'];
+
+            const isAffirmative = affirmativeResponses.some(resp => message.toLowerCase().includes(resp));
+            const isNegative = negativeResponses.some(resp => message.toLowerCase().includes(resp));
+
+            if (isAffirmative) {
+                conversationContext.waitingForConfirmation = false;
+
+                // Handle showing more results based on the last intent
+                if (conversationContext.lastIntent === 'specific_offer_with_experience' &&
+                    conversationContext.lastMatches.length > 0) {
+                    return showMoreExperienceMatches();
+                }
+
+                // Add other contexts here as needed
+                // ...
+            } else if (isNegative) {
+                // Reset context and acknowledge
+                conversationContext.waitingForConfirmation = false;
+                conversationContext.lastIntent = null;
+                conversationContext.lastMatches = [];
+
+                return "D'accord, n'hésitez pas si vous avez d'autres questions.";
+            }
+            // If neither affirmative nor negative, fall through to normal processing
+            conversationContext.waitingForConfirmation = false;
+        }
+        // Normalize the message - remove accents, lowercase, and clean up spaces
+        message = message.toLowerCase()
+            .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Remove accents
+            .replace(/[^\w\s]/g, ' ')  // Replace punctuation with spaces
+            .replace(/\s+/g, ' ').trim(); // Normalize spaces
+
+        // Context understanding - extract key entities
+        const entities = {
+            contractType: extractEntity(message, ['cdi', 'cdd', 'stage', 'freelance', 'alternance']),
+            location: extractLocation(message),
+            experience: extractExperience(message),
+            salary: extractSalaryInfo(message),
+            skill: extractSkill(message),
+            intent: determineIntent(message)
+        };
+
+        console.log("Extracted entities:", entities); // Debug
+        console.log("Processing message:", message);
+        console.log("Determined intent:", entities.intent);
+
+        // Handle based on primary intent
+        switch (entities.intent) {
+            case 'greeting':
+                return getGreetingResponse();
+
+            case 'help':
+                return getHelpResponse();
+
+            case 'list_all':
+                return getListAllResponse(jobOffers);
+
+            case 'latest':
+                return getLatestOffersResponse(jobOffers);
+
+            case 'specific_offer':
+                return getSpecificOfferDetails(message, jobOffers);
+
+            case 'specific_offer_with_experience':
+                return getSpecificOfferWithExperience(message, jobOffers);
+
+            case 'specific_skill':
+                return getOffersBySkill(message, jobOffers);
+
+            case 'contract_type':
+                return getOffersByContractType(entities.contractType, jobOffers);
+
+            case 'location':
+                return getOffersByLocation(entities.location, jobOffers);
+
+            case 'salary':
+                return getOffersBySalary(entities.salary, jobOffers);
+
+            case 'experience':
+                return getOffersByExperience(entities.experience, jobOffers);
+
+            case 'deadline':
+                return getDeadlineInfo(jobOffers);
+
+            case 'thanks':
+                return "Je vous en prie ! C'est un plaisir de vous aider. Avez-vous d'autres questions sur les offres d'emploi ?";
+
+            case 'goodbye':
+                return "Au revoir ! N'hésitez pas à revenir si vous avez d'autres questions sur les opportunités d'emploi.";
+
+            case 'identity':
+                return "Je suis Jarvis, votre assistant IA spécialisé dans la recherche d'emploi. Je peux vous aider à trouver les meilleures opportunités correspondant à vos compétences et préférences.";
+        }
+
+        // If we have some entities but no clear intent, try to use the entities
+        if (hasAnyEntity(entities)) {
+            return getResponseFromEntities(entities, jobOffers);
+        }
+
+        // Try to extract meaningful keywords for a search
+        const keywords = extractKeywords(message);
+        if (keywords.length > 0) {
+            return searchOffersByKeywords(keywords, jobOffers);
+        }
+
+        // Conversational fallback
+        return getSmartFallbackResponse(message);
+
+        // At the end, return the response
+        return response; // Make sure to return the response
+    }
+    // Add this new function to handle showing more experience matches
+    function showMoreExperienceMatches() {
+        if (conversationContext.lastMatches.length <= 1) {
+            return "Je n'ai pas d'autres offres correspondantes à vous montrer.";
+        }
+
+        // Skip the first result which was already shown
+        const remainingMatches = conversationContext.lastMatches.slice(1);
+
+        let response = `Voici les ${remainingMatches.length} autres offres correspondantes:<br><br>`;
+
+        remainingMatches.forEach((offer, index) => {
+            response += formatOfferDetails(offer);
+            if (index < remainingMatches.length - 1) {
+                response += "<br><br>";
+            }
+        });
+
+        // Reset context
+        conversationContext.waitingForConfirmation = false;
+        conversationContext.lastMatches = [];
+
+        return response;
+    }
+
+    // Intent detection function
+    function determineIntent(message) {
+        // Check for specific offer query patterns first
+        if (message.match(/est.ce qu.il y a (une|des|un) offre/i) ||
+            message.match(/est.ce qu.il existe (une|des|un) offre/i) ||
+            message.match(/je cherche (une|des|un) offre/i)) {
+
+            // If there's a specific job title mentioned
+            const specificTitles = ['developpeur', 'developer', 'ingenieur', 'engineer', 'technicien',
+                'marketing', 'commercial', 'directeur', 'designer', 'full stack',
+                'frontend', 'backend', 'web', 'mobile', 'qa', 'test', 'support'];
+
+            for (const title of specificTitles) {
+                if (message.toLowerCase().includes(title)) {
+                    return 'specific_offer';
+                }
+            }
+
+            // Handle experience query - differentiate between general and specific
+            if (message.includes('expérience') || message.includes('experience') || /\d+\s+an/.test(message)) {
+                // Check if asking for a specific offer
+                if (message.match(/une offre/) || message.match(/une poste/) ||
+                    message.match(/un poste/) || message.match(/une job/)) {
+                    return 'specific_offer_with_experience';
+                } else {
+                    return 'experience'; // General experience query
+                }
+            }
+
+            // Technology/skill specific query
+            if (message.match(/java|python|developer|développeur/i)) {
+                return 'specific_skill';
+            }
+
+            // Default to list if no specifics detected
+            return 'list_all';
+        }
+
+        // Check for deadline questions - Add more patterns
+        if (message.includes('deadline') ||
+            message.includes('date limite') ||
+            message.includes('dates limites') ||
+            message.includes('limité') ||
+            message.includes('jusqu a quand') ||
+            message.includes('date fin') ||
+            message.includes('dates fin') ||
+            message.includes('expiration') ||
+            message.includes('expiré') ||
+            message.includes('expirer') ||
+            message.includes('postuler avant') ||
+            message.includes('quand postuler') ||
+            (message.includes('date') && (message.includes('offre') || message.includes('offres'))) ||
+            (message.includes('quelle') && message.includes('date')) ||
+            (message.includes('quelles') && message.includes('dates')) ||
+            (message.includes('quand') && (message.includes('fin') || message.includes('termine')))) {
+            return 'deadline';
+        }
+        // Check for greetings
+        if (containsAny(message, ['bonjour', 'salut', 'hello', 'hi', 'hey', 'coucou', 'bonsoir', 'salutations', 'bienvenue', 'Bon Après Midi', 'bon matin', 'Good Morning', 'Good Afternoon', 'Good Evening', 'YO'])) {
+            return 'greeting';
+        }
+
+        // Check for help requests
+        if (containsAny(message, ['aide', 'help', 'peux tu', 'comment ca marche', 'que peux tu faire', 'fonctionnalites'])) {
+            return 'help';
+        }
+
+        // Check for listing all offers - ADD THESE NEW PATTERNS
+        if (containsAny(message, ['liste', 'toutes les offres', 'combien d offres', 'nombre d offres', 'montre moi', 'offres disponibles']) ||
+            (message.includes('nombre') && message.includes('offre')) ||
+            (message.includes('combien') && message.includes('offre')) ||
+            (message.includes('quel') && message.includes('nombre')) ||
+            message.includes('combien y a t il') ||
+            message.includes('total des offres')) {
+            return 'list_all';
+        }
+
+        // Check for latest offers
+        if (containsAny(message, ['dernieres', 'recentes', 'nouvelles', 'publication recente'])) {
+            return 'latest';
+        }
+
+        // Check for goodbye
+        if (containsAny(message, ['au revoir', 'bye', 'a plus', 'ciao', 'adieu', 'plus tard', 'toute à l heure', 'a bientot', 'a la prochaine', 'see you later', 'take care'])) {
+            return 'goodbye';
+        }
+
+        // Check for thanks
+        if (containsAny(message, ['merci', 'thanks', 'thank you', 'je te remercie'])) {
+            return 'thanks';
+        }
+
+        // Check for identity questions
+        if (message.includes('qui es tu') || message.includes('ton nom') || message.includes('appelles tu')) {
+            return 'identity';
+        }
+
+        // Check for contract type questions - Add more patterns
+        if (message.includes('type de contrat') ||
+            message.includes('type d offre') ||
+            message.includes('type des offres') ||
+            message.includes('type de offre') ||
+            message.includes('types de contrat') ||
+            message.includes('types d offre') ||
+            message.includes('types des offres') ||
+            message.includes('quels types') ||
+            message.includes('quelles types') ||
+            (message.includes('type') && message.includes('offre')) ||
+            (message.includes('quel') && message.includes('type')) ||
+            message.includes('cdi') ||
+            message.includes('cdd') ||
+            message.includes('stage') ||
+            message.includes('freelance') ||
+            message.includes('alternance')) {
+            return 'contract_type';
+        }
+        // Add this block early in the determineIntent function (before location check)
+        // Check for description questions
+        if ((message.includes('description') && message.includes('offre')) ||
+            (message.includes('parle') && message.includes('offre')) ||
+            (message.includes('detail') && message.includes('offre')) ||
+            (message.includes('info') && message.includes('offre')) ||
+            (message.includes('contenu') && message.includes('offre')) ||
+            (message.includes('plus') && message.includes('offre'))) {
+            return 'specific_offer';
+        }
+
+
+        // Check for location questions
+        if (message.includes('lieu') || message.includes('ville') || message.includes('region') ||
+            message.includes('pays') || message.includes('ou') || containsAny(message, ['a', 'en', 'au', 'dans'])) {
+            // Don't match if likely an experience or other specific query
+            if (message.includes('ans') || message.includes('expérience') ||
+                message.includes('experience') || /\d+\s+an/.test(message)) {
+                return null; // Let other detection handle it
+            }
+            return 'location';
+        }
+        // Add a catch-all for any experience-related queries that weren't caught earlier
+        if (/\d+\s*ans/.test(message) || message.includes('débutant') ||
+            message.includes('junior') || message.includes('senior')) {
+            return 'experience';
+        }
+
+        // Check for salary questions
+        if (message.includes('salaire') || message.includes('remuneration') || message.includes('paye') ||
+            message.includes('gagner') || message.includes('euros') || containsAny(message, ['combien', 'montant'])) {
+            return 'salary';
+        }
+
+        // Check for experience questions
+        if (message.includes('experience') || message.includes('annees') || message.includes('ans') ||
+            message.includes('senior') || message.includes('junior') || message.includes('debutant')) {
+            return 'experience';
+        }
+        // First check experience-related queries (higher priority)
+        if (message.includes('expérience') || message.includes('annees') || message.includes('ans') ||
+            message.includes('experience') || message.includes('senior') || message.includes('junior') || message.includes('debutant') ||
+            message.match(/\d+\s+an(s|née|nées)?/) || // Match numbers followed by year terms
+            (message.includes('ans') && /\d+/.test(message))) { // Has "ans" and any digits
+            return 'experience';
+        }
+
+        // // Check for deadline questions
+        // if (message.includes('deadline') || 
+        //     message.includes('date limite') || 
+        //     message.includes('dates limites') ||
+        //     message.includes('jusqu a quand') || 
+        //     message.includes('date fin') || 
+        //     message.includes('dates fin') ||
+        //     message.includes('postuler avant') ||
+        //     (message.includes('date') && message.includes('offre')) ||
+        //     (message.includes('quand') && message.includes('postuler'))) {
+        //     return 'deadline';
+        // }
+
+        // Check for specific offer details
+        if ((message.includes('details') || message.includes('informations') || message.includes('parle moi de')) &&
+            !message.includes('offres')) {
+            return 'specific_offer';
+        }
+
+        // If we can't determine a clear intent, return null
+        return null;
+
+
+        // Add to determineIntent function
+        // Check for simple questions without specific entities but with question words
+        if ((message.includes('quel') || message.includes('quelle') || message.includes('quels') ||
+            message.includes('quelles') || message.includes('comment') || message.includes('ou')) &&
+            message.length < 50) { // Short question
+
+            if (message.includes('type')) return 'contract_type';
+            if (message.includes('lieu') || message.includes('ou')) return 'location';
+            if (message.includes('date')) return 'deadline';
+            if (message.includes('salaire')) return 'salary';
+            if (message.includes('experience')) return 'experience';
+            if (message.includes('nombre') || message.includes('combien')) return 'list_all';
+
+            // // For general simple questions about offers
+            // if (message.includes('offre')) return 'list_all';
+
+            // Add a fallback intent detector at the end of determineIntent
+            if (message.includes('offre') || message.includes('offres') ||
+                message.includes('job') || message.includes('emploi') ||
+                message.includes('travail') || message.includes('poste')) {
+                return 'list_all'; // Default to showing all offers if unsure but job-related
+            }
+        }
+    }
+
+    // Helper function to extract contract type
+    function extractEntity(message, entities) {
+        for (const entity of entities) {
+            if (message.includes(entity)) {
+                return entity;
+            }
+        }
+        return null;
+    }
+
+    // Extract location from message
+    function extractLocation(message) {
+        // List of words to ignore as standalone locations
+        const ignoreWords = ['une', 'un', 'des', 'les', 'la', 'le', 'ce', 'cette', 'ces', 'nos', 'vos'];
+        // Look for common location patterns:
+        // 1. "à/en/au/aux [location]"
+        const prepositionMatch = message.match(/(?:a|en|au|aux|dans|sur)\s+([a-z\s]+?)(?:\s|$|\?|\.)/i);
+        if (prepositionMatch) return prepositionMatch[1].trim();
+
+        // 2. Common French cities/regions if mentioned directly
+        const commonLocations = ['paris', 'lyon', 'marseille', 'toulouse', 'nice', 'nantes',
+            'strasbourg', 'montpellier', 'bordeaux', 'lille', 'rennes', 'tunis', 'sfax', 'sousse', 'medenine', 'dubai', 'tunisie', 'emirats'];
+        for (const location of commonLocations) {
+            if (message.includes(location)) {
+                return location;
+            }
+        }
+
+        return null;
+    }
+
+    // Extract experience info
+    function extractExperience(message) {
+        // Look for patterns like "X ans d'expérience"
+        const experienceMatch = message.match(/(\d+)(?:\s+)?(?:an|ans|annees?|annee)/i);
+        if (experienceMatch) {
+            return parseInt(experienceMatch[1]);
+        }
+        // Also try to find just numbers followed by "ans"
+        const simpleYearMatch = message.match(/(\d+)\s*ans/);
+        if (simpleYearMatch) {
+            return parseInt(simpleYearMatch[1]);
+        }
+
+        // Look for keywords
+        if (message.includes('debutant') || message.includes('débutant') || message.includes('junior')) {
+            return 'junior';
+        }
+        if (message.includes('senior') || message.includes('experimente') || message.includes('expérimenté')) {
+            return 'senior';
+        }
+
+        return null;
+    }
+
+    // Extract salary information
+    function extractSalaryInfo(message) {
+        // Patterns: "salaire superieur a X", "salaire entre X et Y", etc.
+        const superiorMatch = message.match(/(?:superieur|plus|au dessus|au-dessus)\s+(?:a|de|que)\s+(\d+)/i);
+        if (superiorMatch) {
+            return { type: 'min', value: parseInt(superiorMatch[1].replace(/\s/g, '')) };
+        }
+
+        const inferiorMatch = message.match(/(?:inferieur|moins|en dessous)\s+(?:a|de|que)\s+(\d+)/i);
+        if (inferiorMatch) {
+            return { type: 'max', value: parseInt(inferiorMatch[1].replace(/\s/g, '')) };
+        }
+
+        const rangeMatch = message.match(/entre\s+(\d+)\s+et\s+(\d+)/i);
+        if (rangeMatch) {
+            return {
+                type: 'range',
+                min: parseInt(rangeMatch[1].replace(/\s/g, '')),
+                max: parseInt(rangeMatch[2].replace(/\s/g, ''))
+            };
+        }
+
+        // Direct mentions of salary
+        if (message.includes('salaire') || message.includes('remuneration') || message.includes('paye')) {
+            return { type: 'info' };
+        }
+
+        return null;
+    }
+
+    // Extract skills or job roles
+    function extractSkill(message) {
+        const skills = ['developpeur', 'programmeur', 'ingenieur', 'marketing', 'vente',
+            'designer', 'graphiste', 'comptable', 'finance', 'ressources humaines',
+            'informatique', 'web', 'mobile', 'full stack', 'front end', 'back end',
+            'devops', 'commercial', 'communication', 'projet', 'manager', 'directeur'];
+
+        for (const skill of skills) {
+            if (message.includes(skill)) {
+                return skill;
+            }
+        }
+
+        return null;
+    }
+
+    // Extract meaningful keywords
+    function extractKeywords(message) {
+        const stopWords = ['je', 'tu', 'il', 'elle', 'nous', 'vous', 'ils', 'elles', 'le', 'la', 'les',
+            'un', 'une', 'des', 'ce', 'cette', 'ces', 'mon', 'ton', 'son', 'notre', 'votre',
+            'leur', 'pour', 'dans', 'avec', 'sans', 'sur', 'sous', 'que', 'qui', 'quoi',
+            'comment', 'pourquoi', 'quand', 'est', 'sont', 'suis', 'es', 'sommes', 'etes',
+            'offre', 'offres', 'emploi', 'poste', 'cherche', 'recherche', 'trouve',
+            'quel', 'quelle', 'quels', 'quelles', 'nombre', 'combien', 'total',
+            'type', 'types', 'contrat', 'contrats', 'date', 'dates', 'limite', 'limites',
+            'disponible', 'disponibles', 'montrez', 'montre', 'affiche', 'afficher', 'voir'
+        ];
+
+        return message.split(' ')
+            .filter(word => word.length > 3 && !stopWords.includes(word))
+            .map(word => word.trim());
+    }
+
+    // Check if any entity was extracted
+    function hasAnyEntity(entities) {
+        return entities.contractType || entities.location || entities.experience ||
+            entities.salary || entities.skill;
+    }
+
+    // Get response based on extracted entities
+    function getResponseFromEntities(entities, jobOffers) {
+        let filteredOffers = [...jobOffers];
+        let responseDetails = [];
+
+        // Apply filters based on available entities
+        if (entities.contractType) {
+            filteredOffers = filteredOffers.filter(offer =>
+                offer.type.toLowerCase().includes(entities.contractType.toLowerCase())
+            );
+            responseDetails.push(`type de contrat "${entities.contractType}"`);
+        }
+
+        if (entities.location) {
+            filteredOffers = filteredOffers.filter(offer =>
+                offer.location.toLowerCase().includes(entities.location.toLowerCase())
+            );
+            responseDetails.push(`localisation "${entities.location}"`);
+        }
+
+        if (entities.experience) {
+            if (typeof entities.experience === 'number') {
+                filteredOffers = filteredOffers.filter(offer => {
+                    const offerExperienceMatch = offer.experience.match(/(\d+)/);
+                    if (offerExperienceMatch) {
+                        return parseInt(offerExperienceMatch[1]) <= entities.experience;
+                    }
+                    return offer.experience.toLowerCase().includes('debutant') && entities.experience <= 2;
+                });
+                responseDetails.push(`${entities.experience} ans d'expérience`);
+            } else {
+                filteredOffers = filteredOffers.filter(offer =>
+                    offer.experience.toLowerCase().includes(entities.experience.toLowerCase())
+                );
+                responseDetails.push(`niveau d'expérience "${entities.experience}"`);
+            }
+        }
+
+        if (entities.salary) {
+            if (entities.salary.type === 'min') {
+                filteredOffers = filteredOffers.filter(offer => {
+                    const salary = parseInt(offer.salary.replace(/[^0-9]/g, ''));
+                    return !isNaN(salary) && salary >= entities.salary.value;
+                });
+                responseDetails.push(`salaire minimum de ${entities.salary.value}`);
+            } else if (entities.salary.type === 'max') {
+                filteredOffers = filteredOffers.filter(offer => {
+                    const salary = parseInt(offer.salary.replace(/[^0-9]/g, ''));
+                    return !isNaN(salary) && salary <= entities.salary.value;
+                });
+                responseDetails.push(`salaire maximum de ${entities.salary.value}`);
+            } else if (entities.salary.type === 'range') {
+                filteredOffers = filteredOffers.filter(offer => {
+                    const salary = parseInt(offer.salary.replace(/[^0-9]/g, ''));
+                    return !isNaN(salary) && salary >= entities.salary.min && salary <= entities.salary.max;
+                });
+                responseDetails.push(`salaire entre ${entities.salary.min} et ${entities.salary.max}`);
+            }
+        }
+
+        if (entities.skill) {
+            filteredOffers = filteredOffers.filter(offer =>
+                offer.title.toLowerCase().includes(entities.skill.toLowerCase()) ||
+                offer.description.toLowerCase().includes(entities.skill.toLowerCase())
+            );
+            responseDetails.push(`compétence "${entities.skill}"`);
+        }
+
+        // Generate response based on filtered offers
+        if (filteredOffers.length === 0) {
+            return `Je n'ai trouvé aucune offre correspondant à vos critères (${responseDetails.join(', ')}).`;
+        } else {
+            let response = `J'ai trouvé ${filteredOffers.length} offre(s) correspondant à vos critères (${responseDetails.join(', ')}):<br>`;
+            filteredOffers.forEach(offer => {
+                response += `- ${offer.title} (${offer.type}) à ${offer.location}, salaire: ${offer.salary}<br>`;
+            });
+            return response;
+        }
+    }
+
+    // Search offers by keywords
+    function searchOffersByKeywords(keywords, jobOffers) {
+        if (keywords.length === 0) return getSmartFallbackResponse("");
+
+        const matchingOffers = jobOffers.filter(offer =>
+            keywords.some(keyword =>
+                offer.title.toLowerCase().includes(keyword) ||
+                offer.description.toLowerCase().includes(keyword) ||
+                offer.type.toLowerCase().includes(keyword) ||
+                offer.location.toLowerCase().includes(keyword)
+            )
+        );
+
+        if (matchingOffers.length === 0) {
+            return `Je n'ai trouvé aucune offre correspondant à votre recherche avec les mots-clés: ${keywords.join(', ')}.`;
+        } else {
+            let response = `J'ai trouvé ${matchingOffers.length} offre(s) qui pourraient correspondre à votre recherche:<br>`;
+            matchingOffers.forEach(offer => {
+                response += `- ${offer.title} (${offer.type}) à ${offer.location}<br>`;
+            });
+            return response;
+        }
+    }
+
+    // Utility function to check if message contains any of the words
+    function containsAny(message, words) {
+        return words.some(word => message.includes(word));
+    }
+
+    // Response generators for different intents
+    function getGreetingResponse() {
+        const greetings = [
+            "Bonjour ! Je suis Jarvis, votre assistant IA pour la recherche d'emploi. Comment puis-je vous aider aujourd'hui ?",
+            "Salut ! Je suis là pour vous aider à trouver les meilleures opportunités d'emploi. Que recherchez-vous ?",
+            "Bonjour ! Ravi de vous aider dans votre recherche d'emploi. Dites-moi ce que vous cherchez !",
+            "Hello ! Comment puis-je vous assister dans votre recherche professionnelle aujourd'hui ?"
+        ];
+        return greetings[Math.floor(Math.random() * greetings.length)];
+    }
+
+    function getHelpResponse() {
+        return `Je peux vous aider à explorer les offres d'emploi disponibles. Voici ce que vous pouvez me demander :
+            <br><br><strong>Questions générales :</strong>
+            <br>• "Quelles sont les offres disponibles ?"
+            <br>• "Montre-moi les dernières offres"
+            <br>• "Combien d'offres sont disponibles ?"
+            <br><br><strong>Filtrer par critères :</strong>
+            <br>• "Je cherche un CDI à Paris"
+            <br>• "Offres avec un salaire supérieur à 40000"
+            <br>• "Poste en marketing avec 3 ans d'expérience"
+            <br>• "Quelles sont les offres pour développeur ?"
+            <br><br><strong>Informations spécifiques :</strong>
+            <br>• "Dates limites des candidatures"
+            <br>• "Parle-moi du poste de développeur full stack"
+            <br>• "Quels types de contrats proposez-vous ?"
+            <br><br>N'hésitez pas à poser vos questions simplement, comme vous le feriez à un ami.`;
+    }
+
+    // function getListAllResponse(jobOffers) {
+    //     if (jobOffers.length === 0) {
+    //         return "Il n'y a actuellement aucune offre d'emploi disponible.";
+    //     }
+
+    //     let response = `Il y a actuellement ${jobOffers.length} offre(s) d'emploi disponible(s):<br><br>`;
+    //     jobOffers.forEach(offer => {
+    //         response += `- ${offer.title} (${offer.type}) à ${offer.location}<br>`;
+    //     });
+
+    //     return response;
+    // }
+    // Also enhance the getListAllResponse function to provide a clearer response
+    function getListAllResponse(jobOffers) {
+        if (jobOffers.length === 0) {
+            return "Il n'y a actuellement aucune offre d'emploi disponible.";
+        }
+
+        // If the question was likely asking just about the number
+        return `Il y a actuellement ${jobOffers.length} offre(s) d'emploi disponible(s).<br><br>` +
+            `Voici la liste:<br>` +
+            jobOffers.map(offer => `- ${offer.title} (${offer.type}) à ${offer.location}`).join('<br>');
+    }
+
+    function getLatestOffersResponse(jobOffers) {
+        if (jobOffers.length === 0) {
+            return "Il n'y a actuellement aucune offre d'emploi disponible.";
+        }
+
+        const sortedOffers = [...jobOffers].sort((a, b) => new Date(b.publishDate) - new Date(a.publishDate));
+        const latestOffers = sortedOffers.slice(0, 3);
+
+        let response = `Voici les offres les plus récentes :<br><br>`;
+        latestOffers.forEach(offer => {
+            response += `- ${offer.title} (${offer.type}) à ${offer.location}, publiée le ${offer.publishDate}<br>`;
+        });
+
+        return response;
+    }
+
+    function getOffersByContractType(contractType, jobOffers) {
+        // Always show available contract types
+        const contractTypes = [...new Set(jobOffers.map(offer => offer.type))];
+        if (!contractType) {
+            // If no specific type, list available types
+            const contractTypes = [...new Set(jobOffers.map(offer => offer.type))];
+            return `Les types de contrat disponibles sont : ${contractTypes.join(', ')}.`;
+        }
+
+        const matchingOffers = jobOffers.filter(offer =>
+            offer.type.toLowerCase().includes(contractType.toLowerCase())
+        );
+
+        if (matchingOffers.length === 0) {
+            return `Je n'ai trouvé aucune offre de type ${contractType}.<br><br>Les types disponibles sont : ${contractTypes.join(', ')}.`;
+        }
+
+        let response = `J'ai trouvé ${matchingOffers.length} offre(s) de type ${contractType}:<br><br>`;
+        matchingOffers.forEach(offer => {
+            response += `- ${offer.title} à ${offer.location} (${offer.type})<br>`;
+        });
+
+        return response;
+    }
+
+    function getOffersByLocation(location, jobOffers) {
+        if (!location) {
+            // If no specific location, list available locations
+            const locations = [...new Set(jobOffers.map(offer => offer.location))];
+            return `Les lieux de travail disponibles sont : ${locations.join(', ')}.`;
+        }
+
+        const matchingOffers = jobOffers.filter(offer =>
+            offer.location.toLowerCase().includes(location.toLowerCase())
+        );
+
+        if (matchingOffers.length === 0) {
+            return `Je n'ai trouvé aucune offre à ${location}.`;
+        }
+
+        let response = `J'ai trouvé ${matchingOffers.length} offre(s) à ${location}:<br><br>`;
+        matchingOffers.forEach(offer => {
+            response += `- ${offer.title} (${offer.type})<br>`;
+        });
+
+        return response;
+    }
+
+    function getOffersBySalary(salaryInfo, jobOffers) {
+        if (!salaryInfo) {
+            // If asking about salaries in general
+            let lowestSalary = Number.MAX_SAFE_INTEGER;
+            let highestSalary = 0;
+
+            jobOffers.forEach(offer => {
+                const salary = parseInt(offer.salary.replace(/[^0-9]/g, ''));
+                if (!isNaN(salary)) {
+                    lowestSalary = Math.min(lowestSalary, salary);
+                    highestSalary = Math.max(highestSalary, salary);
+                }
+            });
+
+            if (lowestSalary !== Number.MAX_SAFE_INTEGER) {
+                return `Les salaires des offres actuelles varient de ${lowestSalary} à ${highestSalary} euros.`;
+            } else {
+                return "Je n'ai pas trouvé d'information sur les salaires des offres actuelles.";
+            }
+        }
+
+        let matchingOffers = [];
+
+        if (salaryInfo.type === 'min') {
+            matchingOffers = jobOffers.filter(offer => {
+                const salary = parseInt(offer.salary.replace(/[^0-9]/g, ''));
+                return !isNaN(salary) && salary >= salaryInfo.value;
+            });
+
+            if (matchingOffers.length === 0) {
+                return `Je n'ai trouvé aucune offre avec un salaire supérieur à ${salaryInfo.value}.`;
+            }
+
+            let response = `J'ai trouvé ${matchingOffers.length} offre(s) avec un salaire supérieur à ${salaryInfo.value}:<br><br>`;
+            matchingOffers.forEach(offer => {
+                response += `- ${offer.title} (${offer.type}) à ${offer.location}, salaire: ${offer.salary}<br>`;
+            });
+
+            return response;
+        } else if (salaryInfo.type === 'max') {
+            matchingOffers = jobOffers.filter(offer => {
+                const salary = parseInt(offer.salary.replace(/[^0-9]/g, ''));
+                return !isNaN(salary) && salary <= salaryInfo.value;
+            });
+
+            if (matchingOffers.length === 0) {
+                return `Je n'ai trouvé aucune offre avec un salaire inférieur à ${salaryInfo.value}.`;
+            }
+
+            let response = `J'ai trouvé ${matchingOffers.length} offre(s) avec un salaire inférieur à ${salaryInfo.value}:<br><br>`;
+            matchingOffers.forEach(offer => {
+                response += `- ${offer.title} (${offer.type}) à ${offer.location}, salaire: ${offer.salary}<br>`;
+            });
+
+            return response;
+        } else if (salaryInfo.type === 'range') {
+            matchingOffers = jobOffers.filter(offer => {
+                const salary = parseInt(offer.salary.replace(/[^0-9]/g, ''));
+                return !isNaN(salary) && salary >= salaryInfo.min && salary <= salaryInfo.max;
+            });
+
+            if (matchingOffers.length === 0) {
+                return `Je n'ai trouvé aucune offre avec un salaire entre ${salaryInfo.min} et ${salaryInfo.max}.`;
+            }
+
+            let response = `J'ai trouvé ${matchingOffers.length} offre(s) avec un salaire entre ${salaryInfo.min} et ${salaryInfo.max}:<br><br>`;
+            matchingOffers.forEach(offer => {
+                response += `- ${offer.title} (${offer.type}) à ${offer.location}, salaire: ${offer.salary}<br>`;
+            });
+
+            return response;
+        }
+
+        return "Je n'ai pas pu comprendre votre demande concernant le salaire. Pourriez-vous reformuler ?";
+    }
+
+    function getOffersByExperience(experience, jobOffers) {
+        if (!experience) {
+            // If asking about experience in general
+            let response = "Voici les niveaux d'expérience requis pour les offres disponibles:<br><br>";
+            jobOffers.forEach(offer => {
+                response += `- ${offer.title}: ${offer.experience}<br>`;
+            });
+            return response;
+        }
+
+        let matchingOffers = [];
+
+        if (typeof experience === 'number') {
+            matchingOffers = jobOffers.filter(offer => {
+                const offerExperienceMatch = offer.experience.match(/(\d+)/);
+                if (offerExperienceMatch) {
+                    return parseInt(offerExperienceMatch[1]) <= experience;
+                }
+                return offer.experience.toLowerCase().includes('debutant') && experience <= 2;
+            });
+
+            if (matchingOffers.length === 0) {
+                return `Je n'ai trouvé aucune offre accessible avec ${experience} ans d'expérience.`;
+            }
+
+            let response = `J'ai trouvé ${matchingOffers.length} offre(s) accessibles avec ${experience} ans d'expérience:<br><br>`;
+            matchingOffers.forEach(offer => {
+                response += `- ${offer.title} (${offer.type}), expérience: ${offer.experience}<br>`;
+            });
+
+            return response;
+        } else {
+            matchingOffers = jobOffers.filter(offer =>
+                offer.experience.toLowerCase().includes(experience.toLowerCase())
+            );
+
+            if (matchingOffers.length === 0) {
+                return `Je n'ai trouvé aucune offre pour le niveau d'expérience "${experience}".`;
+            }
+
+            let response = `J'ai trouvé ${matchingOffers.length} offre(s) pour le niveau d'expérience "${experience}":<br><br>`;
+            matchingOffers.forEach(offer => {
+                response += `- ${offer.title} (${offer.type}), expérience: ${offer.experience}<br>`;
+            });
+
+            return response;
+        }
+    }
+
+    // Add a new function to handle technology/skill specific queries
+    function getOffersBySkill(message, jobOffers) {
+        // Extract the technology/skill from the message
+        const techKeywords = ['java', 'python', 'php', 'javascript', 'c++', 'ruby', '.net', 'react',
+            'angular', 'vue', 'node', 'developer', 'développeur', 'development',
+            'mobile', 'web', 'full stack', 'backend', 'frontend'];
+
+        let detectedSkill = null;
+        for (const keyword of techKeywords) {
+            if (message.toLowerCase().includes(keyword)) {
+                detectedSkill = keyword;
+                break;
+            }
+        }
+
+        if (!detectedSkill) {
+            return "Pourriez-vous préciser la technologie ou compétence que vous recherchez?";
+        }
+
+        console.log("Looking for skill:", detectedSkill);
+
+        // Find offers matching the skill
+        const matchingOffers = jobOffers.filter(offer =>
+            offer.title.toLowerCase().includes(detectedSkill) ||
+            offer.description.toLowerCase().includes(detectedSkill)
+        );
+
+        if (matchingOffers.length === 0) {
+            return `Je n'ai trouvé aucune offre correspondant à "${detectedSkill}".`;
+        }
+
+        let response = `J'ai trouvé ${matchingOffers.length} offre(s) correspondant à "${detectedSkill}":<br><br>`;
+        matchingOffers.forEach(offer => {
+            response += `- ${offer.title} (${offer.type}) à ${offer.location}<br>`;
+        });
+
+        return response;
+    }
+
+    function getDeadlineInfo(jobOffers) {
+        if (jobOffers.length === 0) {
+            return "Il n'y a actuellement aucune offre d'emploi disponible.";
+        }
+
+        let response = "Voici les dates limites de candidature pour les offres disponibles:<br><br>";
+        const today = new Date();
+
+        if (jobOffers.every(offer => !offer.deadline)) {
+            return "Aucune des offres actuelles ne mentionne de date limite précise.";
+        }
+
+        jobOffers.forEach(offer => {
+            if (offer.deadline) {
+                const deadlineDate = new Date(offer.deadline);
+                const daysLeft = Math.floor((deadlineDate - today) / (1000 * 60 * 60 * 24));
+
+                let timeStatus = "";
+                if (daysLeft < 0) {
+                    timeStatus = "(expirée)";
+                } else if (daysLeft === 0) {
+                    timeStatus = "<strong>(dernier jour !)</strong>";
+                } else if (daysLeft < 3) {
+                    timeStatus = `<strong>(urgent: ${daysLeft} jour${daysLeft > 1 ? 's' : ''} restant${daysLeft > 1 ? 's' : ''})</strong>`;
+                } else {
+                    timeStatus = `(${daysLeft} jours restants)`;
+                }
+
+                response += `- ${offer.title}: ${offer.deadline} ${timeStatus}<br>`;
+            } else {
+                response += `- ${offer.title}: Date non précisée<br>`;
+            }
+        });
+
+        return response;
+    }
+
+    function getSpecificOfferDetails(message, jobOffers) {
+        console.log("Processing specific offer request:", message);
+
+        // Extract potential job title from the query
+        let searchTitle = "";
+
+        // Check for specific description patterns
+        if (message.includes('description')) {
+            const descriptionMatch = message.match(/description\s+(?:de\s+)?(?:l'offre|du\s+poste|de|du)?\s+([a-z\s]+\s*(?:developer|développeur|ingénieur|engineer)?)(?:\s|\?|$|\.)/i);
+
+            if (descriptionMatch && descriptionMatch[1]) {
+                searchTitle = descriptionMatch[1].trim().toLowerCase();
+                console.log("Found title in description pattern:", searchTitle);
+            } else {
+                // If no direct match, extract meaningful words
+                const words = message.split(/\s+/);
+                for (const word of words) {
+                    if (word.length > 3 && !['description', 'offre', 'detail', 'info', 'quelle', 'quel', 'est', 'pour', 'avec', 'des', 'les', 'sur'].includes(word)) {
+                        searchTitle = word;
+                        console.log("Found word as potential title:", searchTitle);
+                    }
+                }
+
+                // Special case for multi-word job titles
+                const potentialTitles = ['full stack', 'full stack developer', 'frontend developer', 'backend developer', 'web developer', 'mobile developer'];
+                for (const title of potentialTitles) {
+                    if (message.includes(title)) {
+                        searchTitle = title;
+                        console.log("Found multi-word title:", searchTitle);
+                        break;
+                    }
+                }
+            }
+        } else {
+            // Non-description queries (details, info, etc.)
+            const titleMatch = message.match(/(details|informations|parle moi) (?:de|du poste|du|de la) ([a-z\s]+)(?:\?|$|\.|,)/i);
+            searchTitle = titleMatch ? titleMatch[2].trim().toLowerCase() : "";
+            console.log("Non-description query, extracted title:", searchTitle);
+        }
+
+        // If we have a title, search for it with flexible matching
+        if (searchTitle) {
+            console.log("Searching for offers with title containing:", searchTitle);
+
+            // First try exact match
+            let matchingOffer = jobOffers.find(offer =>
+                offer.title.toLowerCase() === searchTitle
+            );
+
+            // If no exact match, try partial match
+            if (!matchingOffer) {
+                matchingOffer = jobOffers.find(offer =>
+                    offer.title.toLowerCase().includes(searchTitle)
+                );
+            }
+
+            // If still no match, try word by word
+            if (!matchingOffer && searchTitle.includes(' ')) {
+                const titleWords = searchTitle.split(' ');
+                for (const word of titleWords) {
+                    if (word.length > 3) {
+                        matchingOffer = jobOffers.find(offer =>
+                            offer.title.toLowerCase().includes(word)
+                        );
+                        if (matchingOffer) break;
+                    }
+                }
+            }
+
+            if (matchingOffer) {
+                console.log("Found matching offer:", matchingOffer.title);
+                return formatOfferDetails(matchingOffer);
+            } else {
+                console.log("No match found for:", searchTitle);
+                return `Je n'ai pas trouvé d'offre correspondant à "${searchTitle}". Pourriez-vous vérifier le titre ou essayer avec un autre poste ?`;
+            }
+        }
+
+        // If no title found, try to match any common job title in the message
+        const jobTitles = [
+            'test', 'developpeur', 'developer', 'programmeur', 'ingenieur', 'marketing', 'designer',
+            'comptable', 'commercial', 'manager', 'directeur', 'chef de projet', 'full stack',
+            'frontend', 'backend', 'mobile', 'web'
+        ];
+
+        for (const title of jobTitles) {
+            if (message.includes(title)) {
+                const matchingOffer = jobOffers.find(offer =>
+                    offer.title.toLowerCase().includes(title)
+                );
+
+                if (matchingOffer) {
+                    console.log("Found match based on job title keyword:", title);
+                    return formatOfferDetails(matchingOffer);
+                }
+            }
+        }
+
+        // If we get here, we couldn't find a specific offer
+        return "Pourriez-vous préciser le titre de l'offre dont vous souhaitez avoir la description ? Par exemple: 'Quelle est la description de l'offre Test?'";
+
+        /********************************************************************************/
+
+        // Extract potential job title from the query
+        const titleMatch = message.match(/(details|informations|parle moi) (?:de|du poste|du|de la) ([a-z\s]+)(?:\?|$|\.|,)/i);
+        // const searchTitle = titleMatch ? titleMatch[2].trim().toLowerCase() : "";
+
+        if (!searchTitle) {
+            // Try to find a job title directly in the message
+            const jobTitles = [
+                'developpeur', 'programmeur', 'ingenieur', 'marketing', 'designer',
+                'comptable', 'commercial', 'manager', 'directeur', 'chef de projet'
+            ];
+
+            for (const title of jobTitles) {
+                if (message.includes(title)) {
+                    const matchingOffer = jobOffers.find(offer =>
+                        offer.title.toLowerCase().includes(title)
+                    );
+
+                    if (matchingOffer) {
+                        return formatOfferDetails(matchingOffer);
+                    }
+                }
+            }
+
+            return "Pourriez-vous préciser le titre du poste dont vous souhaitez avoir plus d'informations ?";
+        }
+
+        const matchingOffer = jobOffers.find(offer =>
+            offer.title.toLowerCase().includes(searchTitle)
+        );
+
+        if (matchingOffer) {
+            return formatOfferDetails(matchingOffer);
+        } else {
+            return `Je n'ai pas trouvé d'offre correspondant à "${searchTitle}". Pourriez-vous vérifier le titre ou essayer avec un autre poste ?`;
+        }
+    }
+
+    // Add a new handler for specific offer with experience
+    function getSpecificOfferWithExperience(message, jobOffers) {
+        // Extract experience years
+        const expMatch = message.match(/(\d+)\s+ans/);
+        const expYears = expMatch ? parseInt(expMatch[1]) : null;
+
+        if (!expYears) {
+            return "Pourriez-vous préciser le nombre d'années d'expérience recherché?";
+        }
+
+        // Find best matching offer for that specific experience level
+        const matchingOffers = jobOffers.filter(offer => {
+            const offerExpMatch = offer.experience.match(/(\d+)/);
+            if (offerExpMatch) {
+                const offerExp = parseInt(offerExpMatch[1]);
+                return offerExp === expYears; // Look for exact match first
+            }
+            return offer.experience.includes(expYears.toString());
+        });
+
+        if (matchingOffers.length === 0) {
+            return `Je n'ai pas trouvé d'offre spécifique demandant exactement ${expYears} ans d'expérience.`;
+        }
+
+        // Save matches in context for future reference
+        conversationContext.lastIntent = 'specific_offer_with_experience';
+        conversationContext.lastMatches = [...matchingOffers];
+
+        // If multiple matches, return the most relevant one
+        if (matchingOffers.length === 1) {
+            return `J'ai trouvé une offre correspondant exactement à ${expYears} ans d'expérience:<br><br>` +
+                formatOfferDetails(matchingOffers[0]);
+        } else {
+            // Set context to wait for confirmation
+            conversationContext.waitingForConfirmation = true;
+            return `J'ai trouvé ${matchingOffers.length} offres correspondant à ${expYears} ans d'expérience. Voici la plus pertinente:<br><br>` +
+                formatOfferDetails(matchingOffers[0]) +
+                `<br><br>Voulez-vous voir les autres offres correspondantes?`;
+        }
+    }
+
+    function formatOfferDetails(offer) {
+        return `
+            <div style="border: 1px solid #e0e0e0; border-radius: 8px; padding: 15px; background-color: #f9f9f9;">
+                <h4 style="color: #4771cb; margin-top: 0;">${offer.title}</h4>
+                <p><strong>Type de contrat:</strong> ${offer.type}</p>
+                <p><strong>Lieu:</strong> ${offer.location}</p>
+                <p><strong>Salaire:</strong> ${offer.salary}</p>
+                <p><strong>Expérience requise:</strong> ${offer.experience}</p>
+                <p><strong>Date de publication:</strong> ${offer.publishDate}</p>
+                <p><strong>Date limite:</strong> ${offer.deadline || 'Non précisée'}</p>
+                <p><strong>Statut:</strong> ${offer.status}</p>
+                <p><strong>Description:</strong> ${offer.description.length > 200 ?
+                offer.description.substring(0, 200) + '...' : offer.description}</p>
+            </div>
+        `;
+    }
+
+    function getSmartFallbackResponse(message) {
+        const fallbacks = [
+            "Je ne suis pas sûr de comprendre votre demande. Voulez-vous des informations sur les offres disponibles ?",
+            "Pourriez-vous reformuler votre question ? Je suis spécialisé dans les offres d'emploi et je peux vous aider à trouver celle qui vous convient.",
+            "Hmm, je n'ai pas bien saisi votre demande. Essayez de me demander des informations sur les types de contrat, les lieux de travail, ou les salaires des offres disponibles.",
+            "Je suis désolé, je n'ai pas compris. Vous pouvez par exemple me demander de vous montrer les offres à Paris, ou les postes en CDI.",
+            "Je ne comprends pas votre requête. Tapez 'aide' pour voir ce que je peux faire pour vous."
+        ];
+
+        return fallbacks[Math.floor(Math.random() * fallbacks.length)];
+    }
+
+    // Helper function to list all jobs
+    function listAllJobs(jobs) {
+        if (jobs.length === 0) return "Aucune offre disponible actuellement.";
+
+        let response = "";
+        jobs.forEach(offer => {
+            response += `- ${offer.title} (${offer.type}) à ${offer.location}<br>`;
+        });
+        return response;
+    }
+
+
+
+
+
+    // let jobOffers = [];
+    document.addEventListener('DOMContentLoaded', function () {
+        // First, clear any existing event listeners by replacing the elements
+        const jarvisTrigger = document.getElementById('jarvis-trigger');
+        if (jarvisTrigger) {
+            const newTrigger = jarvisTrigger.cloneNode(true);
+            jarvisTrigger.parentNode.replaceChild(newTrigger, jarvisTrigger);
+
+            // Add a single, clean event listener
+            document.getElementById('jarvis-trigger').addEventListener('click', function (e) {
+                console.log("TRIGGER CLICKED - activating hologram");
+                e.preventDefault();
+                e.stopPropagation();
+
+                const hologram = document.getElementById('jarvis-hologram');
+                if (hologram) {
+                    hologram.style.display = 'grid'; // Force display style first
+                    void hologram.offsetWidth; // Force reflow
+                    hologram.classList.add('active');
+                    console.log("Hologram should be visible now");
+
+                    // Hide old interface if it exists
+                    const oldWindow = document.getElementById('jarvis-window');
+                    if (oldWindow) {
+                        oldWindow.style.display = 'none';
+                    }
+                } else {
+                    console.error("Hologram element not found!");
+                }
+            });
+        } else {
+            console.error("Jarvis trigger element not found!");
+        }
+
+        // Also ensure the close button works properly
+        const jarvisClose = document.getElementById('jarvis-close');
+        if (jarvisClose) {
+            const newClose = jarvisClose.cloneNode(true);
+            jarvisClose.parentNode.replaceChild(newClose, jarvisClose);
+
+            document.getElementById('jarvis-close').addEventListener('click', function () {
+                console.log("CLOSE CLICKED");
+                const hologram = document.getElementById('jarvis-hologram');
+                if (hologram) {
+                    hologram.classList.add('closing');
+                    setTimeout(() => {
+                        hologram.classList.remove('active', 'closing');
+                        hologram.style.display = 'none'; // Ensure it's fully hidden
+                    }, 300);
+                }
+            });
+        }
+
+        // Rest of your existing code...
+        const jarvisMic = document.getElementById('jarvis-mic');
+        const jarvisVoiceOverlay = document.getElementById('jarvis-voice-overlay');
+        const jarvisMessages = document.getElementById('jarvis-messages');
+        const jarvisInput = document.getElementById('jarvis-user-input');
+        const jarvisSend = document.getElementById('jarvis-send');
+        const totalOffersElement = document.getElementById('total-offers');
+
+        // Update total offers count
+        if (totalOffersElement && typeof jobOffers !== 'undefined') {
+            totalOffersElement.textContent = jobOffers.length;
+        }
+
+        // Toggle jarvis interface - replace your existing toggle code with this
+        jarvisTrigger.addEventListener('click', function () {
+            jarvisHologram.classList.add('active');
+            // Hide the old interface if it exists
+            const oldWindow = document.getElementById('jarvis-window');
+            if (oldWindow) {
+                oldWindow.style.display = 'none';
+            }
+        });
+
+        // // Close jarvis interface - replace your existing close code
+        // jarvisClose.addEventListener('click', function () {
+        //     jarvisHologram.classList.add('closing');
+        //     setTimeout(() => {
+        //         jarvisHologram.classList.remove('active', 'closing');
+        //     }, 300);
+
+        //     if (synth && synth.speaking) {
+        //         synth.cancel();
+        //     }
+        // });
+
+        // Voice activation - modify your existing mic click handler
+        jarvisMic.addEventListener('click', function () {
+            if (!isListening) {
+                startListening();
+                jarvisMic.classList.add('active');
+                jarvisVoiceOverlay.classList.add('active');
+            } else {
+                stopListening();
+                jarvisMic.classList.remove('active');
+                jarvisVoiceOverlay.classList.remove('active');
+            }
+        });
+
+        // Make bars in voice visualizer animate realistically
+        function animateVoiceBars() {
+            const bars = jarvisVoiceOverlay.querySelectorAll('.voice-bar');
+
+            function animateBars() {
+                bars.forEach(bar => {
+                    const height = Math.floor(Math.random() * 60) + 10;
+                    bar.style.height = `${height}px`;
+                });
+            }
+
+            const interval = setInterval(animateBars, 100);
+            window.jarvisVoiceInterval = interval;
+        }
+
+        // Then find and replace your existing startListening function with this:
+        window.startListening = function () {
+            try {
+                // Show the voice overlay for the holographic interface
+                jarvisVoiceOverlay.classList.add('active');
+                animateVoiceBars();
+
+                // Rotate status messages
+                const statusElement = jarvisVoiceOverlay.querySelector('.voice-status');
+                const statusMessages = [
+                    "Analyse en cours...",
+                    "Traitement du signal...",
+                    "Reconnaissance active...",
+                    "Analyse sémantique...",
+                    "Interprétation..."
+                ];
+
+                let messageIndex = 0;
+                const statusInterval = setInterval(() => {
+                    messageIndex = (messageIndex + 1) % statusMessages.length;
+                    statusElement.textContent = statusMessages[messageIndex];
+                }, 1500);
+
+                window.jarvisStatusInterval = statusInterval;
+
+                // Start recognition
+                recognition.start();
+                isListening = true;
+            } catch (e) {
+                console.error('Speech recognition error:', e);
+                stopListening();
+            }
+        };
+
+        // Replace your existing stopListening function with this:
+        window.stopListening = function () {
+            isListening = false;
+            jarvisMic.classList.remove('active');
+            jarvisVoiceOverlay.classList.remove('active');
+
+            if (window.jarvisVoiceInterval) {
+                clearInterval(window.jarvisVoiceInterval);
+            }
+
+            if (window.jarvisStatusInterval) {
+                clearInterval(window.jarvisStatusInterval);
+            }
+
+            try {
+                recognition.stop();
+            } catch (e) {
+                console.error('Error stopping recognition:', e);
+            }
+        };
+
+        // Update processVoiceCommand to use the holographic interface
+        window.processVoiceCommand = function (transcript) {
+            jarvisVoiceOverlay.classList.remove('active');
+            jarvisMic.classList.remove('active');
+
+            // Add user message
+            addMessage(transcript, 'user');
+
+            // Show typing indicator
+            addTypingIndicator();
+
+            // Process and respond
+            setTimeout(() => {
+                removeTypingIndicator();
+                const response = processUserMessage(transcript);
+                addMessage(response, 'jarvis');
+
+                // Speak response
+                speakResponse(response);
+            }, 1000);
+        };
+        /**************************************************************************************************/
+        // Call voice initialization early in the document load process
+        forceLoadVoices();
+        // Ensure voices are loaded before attempting to use them
+        // Add this at the beginning of your DOMContentLoaded event
+        if (speechSynthesis.onvoiceschanged !== undefined) {
+            speechSynthesis.onvoiceschanged = function () {
+                console.log("Voices loaded, available voices:", speechSynthesis.getVoices().length);
+            };
+        }
+        // Debug info - check if all elements exist
+        console.log("Jarvis elements status:");
+        console.log("- Button:", document.getElementById('jarvis-toggle') ? "Found" : "NOT FOUND");
+        console.log("- Window:", document.getElementById('jarvis-window') ? "Found" : "NOT FOUND");
+        console.log("- Messages:", document.getElementById('jarvis-messages') ? "Found" : "NOT FOUND");
+        console.log("- Input:", document.getElementById('jarvis-user-input') ? "Found" : "NOT FOUND");
+        console.log("- Send button:", document.getElementById('jarvis-send') ? "Found" : "NOT FOUND");
+
+    
+        const jarvisWindow = document.getElementById('jarvis-window');
+        if (jarvisWindow) {
+            // Force its initial state to be hidden
+            jarvisWindow.style.display = 'none';
+        }
+
+        // // Fix: Improve the toggle button handler
+        // const jarvisButton = document.getElementById('jarvis-toggle');
+        // if (jarvisButton) {
+        //     jarvisButton.addEventListener('click', function (e) {
+        //         e.preventDefault(); // Prevent any default behavior
+        //         e.stopPropagation(); // Prevent event bubbling
+
+        //         if (jarvisWindow) {
+        //             // Simple toggle logic
+        //             if (jarvisWindow.style.display === 'none' || jarvisWindow.style.display === '') {
+        //                 jarvisWindow.style.display = 'flex';
+        //                 console.log('Showing Jarvis window');
+        //             } else {
+        //                 jarvisWindow.style.display = 'none';
+        //                 console.log('Hiding Jarvis window');
+        //             }
+        //         } else {
+        //             console.error('Jarvis window element not found!');
+        //         }
+        //     });
+        // } else {
+        //     console.error('Jarvis button element not found!');
+        // }
+
+        // Rest of your existing code...
+        ///////////////////////////////////////////////////////////////////////////////
+        // Collect all job offer data to make it available to Jarvis
+        jobOffers = [
+            {% for offre in offres %}
+            {
+            id: {{ offre.idOffre }},
+        title: "{{ offre.titre|e('js') }}",
+        type: "{{ offre.typeContrat|e('js') }}",
+        location: "{{ offre.lieuTravail|e('js') }}",
+        salary: "{{ offre.salaire|e('js') }}",
+        experience: "{{ offre.experience|e('js') }}",
+        publishDate: "{{ offre.datePublication ? offre.datePublication|date('Y-m-d') : '' }}",
+        deadline: "{{ offre.dateLimite ? offre.dateLimite|date('Y-m-d') : '' }}",
+        status: "{{ offre.statutOffre|e('js') }}",
+        description: "{{ offre.description|e('js') }}"
+            },
+        {% endfor %}
+        ];
+    console.log("Job offers loaded:", jobOffers.length);
+
+
+    // Toggle chat window
+    jarvisButton.addEventListener('click', function () {
+        jarvisWindow.style.display = jarvisWindow.style.display === 'flex' ? 'none' : 'flex';
+        console.log('Jarvis button clicked, display:', jarvisWindow.style.display); // Debug
+    });
+
+    // Close chat window
+    jarvisClose.addEventListener('click', function () {
+        jarvisWindow.style.display = 'none';
+        if (synth && synth.speaking) {
+            synth.cancel(); // Stop speaking when window is closed
+        }
+    });
+
+
+    function forceLoadVoices() {
+        console.log("Loading voices...");
+
+        // Create and remove an utterance to force loading voices in some browsers
+        const tempUtterance = new SpeechSynthesisUtterance("");
+        speechSynthesis.speak(tempUtterance);
+        speechSynthesis.cancel();
+
+        // Display all available voices for debugging
+        setTimeout(() => {
+            const voices = speechSynthesis.getVoices();
+            console.log("All available voices:");
+            voices.forEach((voice, i) => {
+                console.log(`${i + 1}. ${voice.name} (${voice.lang}) - ${voice.localService ? 'Local' : 'Network'}`);
+            });
+        }, 500);
+    }
+
+
+    // Add these missing functions
+    function sendMessage() {
+        const userMessage = jarvisInput.value.trim();
+        if (!userMessage) return;
+
+        // Add user message to chat
+        addMessage(userMessage, 'user');
+        jarvisInput.value = '';
+
+        // Show typing indicator
+        addTypingIndicator();
+
+        // Process the message and get AI response
+        setTimeout(() => {
+            removeTypingIndicator();
+            const response = processUserMessage(userMessage);
+            addMessage(response, 'jarvis');
+        }, 1000);
+    }
+
+    function addTypingIndicator() {
+        const indicator = document.createElement('div');
+        indicator.id = 'typing-indicator';
+        indicator.classList.add('jarvis-message', 'jarvis');
+        indicator.innerHTML = `
+                <div class="typing-indicator">
+                    <span></span><span></span><span></span>
+                </div>
+            `;
+        jarvisMessages.appendChild(indicator);
+        jarvisMessages.scrollTop = jarvisMessages.scrollHeight;
+    }
+
+    function removeTypingIndicator() {
+        const indicator = document.getElementById('typing-indicator');
+        if (indicator) {
+            indicator.remove();
+        }
+    }
+    ///////////////////////////////////////////////////////////////////////////////
+
+    // Voice interaction elements
+    const jarvisMic = document.getElementById('jarvis-mic');
+    const voiceWave = document.getElementById('voice-wave');
+
+    // Speech recognition setup
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.lang = 'fr-FR'; // Set to French
+    recognition.interimResults = false;
+
+    // Speech synthesis setup
+    const synth = window.speechSynthesis;
+
+    // Track if listening
+    let isListening = false;
+
+    // // Toggle listening
+    // jarvisMic.addEventListener('click', function () {
+    //     if (!isListening) {
+    //         startListening();
+    //     } else {
+    //         stopListening();
+    //     }
+    // });
+
+    // Speech recognition events
+    recognition.onstart = function () {
+        isListening = true;
+        jarvisMic.classList.add('listening');
+        voiceWave.classList.add('active');
+        jarvisInput.placeholder = "Je vous écoute...";
+    };
+
+    recognition.onresult = function (event) {
+        const transcript = event.results[0][0].transcript;
+        jarvisInput.value = transcript;
+
+        // Process the voice command
+        processVoiceCommand(transcript);
+    };
+
+    recognition.onend = function () {
+        stopListening();
+    };
+
+    recognition.onerror = function (event) {
+        console.error('Speech recognition error:', event.error);
+        stopListening();
+        addMessage("Je n'ai pas pu entendre votre question. Pourriez-vous réessayer?", 'jarvis');
+    };
+
+    // Update your startListening function with this enhanced version
+    function startListening() {
+        try {
+            // Show the JARVIS-style animation
+            const voiceAnimation = document.getElementById('jarvis-voice-animation');
+            if (voiceAnimation) {
+                voiceAnimation.classList.add('active');
+
+                // Dynamic analysis messages for main title
+                const analysisMessages = [
+                    "Analyse vocale en cours...",
+                    "Traitement de l'audio...",
+                    "Reconnaissance vocale active...",
+                    "Analyse sémantique...",
+                    "Interprétation des commandes..."
+                ];
+
+                // More technical status messages for the smaller text
+                const statusMessages = [
+                    "Initialisation des modules de reconnaissance...",
+                    "Calibration des algorithmes de traitement naturel...",
+                    "Analyse spectrale des fréquences vocales...",
+                    "Décodage phonétique en cours...",
+                    "Extraction des intentions utilisateur...",
+                    "Détection contextuelle activée...",
+                    "Comparaison avec la base de connaissances...",
+                    "Préparation de la réponse optimale..."
+                ];
+
+                const analysisText = voiceAnimation.querySelector('.jarvis-analysis-text');
+                const statusText = document.getElementById('jarvis-status-text');
+
+                let messageIndex = 0;
+                let statusIndex = 0;
+
+                // Change the main message every 1.5 seconds
+                const messageInterval = setInterval(() => {
+                    if (analysisText) {
+                        messageIndex = (messageIndex + 1) % analysisMessages.length;
+                        analysisText.textContent = analysisMessages[messageIndex];
+                    }
+                }, 1500);
+
+                // Change the status message more frequently for a tech feel
+                const statusInterval = setInterval(() => {
+                    if (statusText) {
+                        statusIndex = (statusIndex + 1) % statusMessages.length;
+                        statusText.textContent = statusMessages[statusIndex];
+                    }
+                }, 800);
+
+                // Store the intervals for cleanup
+                window.jarvisMessageInterval = messageInterval;
+                window.jarvisStatusInterval = statusInterval;
+            }
+
+            // Start the actual recognition
+            recognition.start();
+        } catch (e) {
+            console.error('Speech recognition error:', e);
+            stopListening();
+        }
+    }
+
+    // Update your stopListening function to clear both intervals
+    function stopListening() {
+        isListening = false;
+        jarvisMic.classList.remove('listening');
+        voiceWave.classList.remove('active');
+        jarvisInput.placeholder = "Posez votre question ou cliquez sur le micro...";
+
+        // Hide the JARVIS animation
+        const voiceAnimation = document.getElementById('jarvis-voice-animation');
+        if (voiceAnimation) {
+            voiceAnimation.classList.remove('active');
+        }
+
+        // Clear the message intervals
+        if (window.jarvisMessageInterval) {
+            clearInterval(window.jarvisMessageInterval);
+            window.jarvisMessageInterval = null;
+        }
+
+        if (window.jarvisStatusInterval) {
+            clearInterval(window.jarvisStatusInterval);
+            window.jarvisStatusInterval = null;
+        }
+
+        try {
+            recognition.stop();
+        } catch (e) {
+            console.error('Error stopping recognition:', e);
+        }
+    }
+
+    // Process voice command
+    function processVoiceCommand(transcript) {
+        // First, hide the animation overlay
+        const voiceAnimation = document.getElementById('jarvis-voice-animation');
+        if (voiceAnimation) {
+            voiceAnimation.classList.remove('active');
+        }
+
+        // Add user message to chat
+        addMessage(transcript, 'user');
+        jarvisInput.value = '';
+
+        // Show typing indicator
+        addTypingIndicator();
+
+        // Process the message and get AI response
+        setTimeout(() => {
+            removeTypingIndicator();
+            const response = processUserMessage(transcript);
+            addMessage(response, 'jarvis');
+
+            // Speak the response
+            speakResponse(response);
+        }, 1000);
+    }
+
+    // Speak the response
+    function speakResponse(text) {
+        // Cancel any ongoing speech
+        if (synth.speaking) {
+            synth.cancel();
+        }
+        // Clean up HTML tags for speech
+        const cleanText = text.replace(/<[^>]*>/g, '');
+
+        // Create speech synthesis utterance
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        // Get all available voices
+        const voices = synth.getVoices();
+        console.log("Searching for best French JARVIS voice among", voices.length, "voices");
+
+        // Try to find specific male voices known to sound deeper/more robotic
+        // Order of preference based on which sounds most like JARVIS
+        const preferredVoices = [
+            // French male voices (priority for French accent)
+            "Google français",
+            "Microsoft Paul - French (France)",
+            "Thomas (French)",
+            "French Male",
+            // Then English male voices that can handle French
+            "Google UK English Male",
+            "Microsoft David - English (United States)"
+        ];
+
+        let selectedVoice = null;
+
+        // First try to find one of our preferred voices
+        for (const voiceName of preferredVoices) {
+            const voice = voices.find(v => v.name === voiceName);
+            if (voice) {
+                selectedVoice = voice;
+                console.log("Found preferred voice with French accent:", voice.name);
+                break;
+            }
+        }
+
+        // If no preferred voice found, look for any French voice
+        if (!selectedVoice) {
+            selectedVoice = voices.find(voice =>
+                voice.lang.includes('fr')
+            );0
+
+            if (selectedVoice) {
+                console.log("Found French voice:", selectedVoice.name);
+            }
+        }
+
+        // Last resort - just pick any male voice if no French voice found
+        if (!selectedVoice) {
+            selectedVoice = voices.find(voice =>
+                voice.name.includes('Male') ||
+                voice.name.includes('David') ||
+                voice.name.includes('Mark')
+            );
+
+            if (selectedVoice) {
+                console.log("Fallback to non-French male voice:", selectedVoice.name);
+            } else {
+                // Ultimate fallback - use whatever's available
+                selectedVoice = voices[0];
+                console.log("No suitable voice found, using default:", selectedVoice?.name);
+            }
+        }
+
+        // Set the selected voice
+        if (selectedVoice) {
+            utterance.voice = selectedVoice;
+        }
+
+        // Always set French as the language to ensure proper pronunciation
+        utterance.lang = 'fr-FR';
+
+        // Adjust parameters for JARVIS-like voice with French accent
+        utterance.pitch = 0.6;       // Slightly higher pitch for French accent
+        utterance.rate = 0.9;        // Slightly slower rate for clearer pronunciation
+        utterance.volume = 1.0;      // Full volume
+
+        // Add event for when speech starts
+        utterance.onstart = function () {
+            console.log("Jarvis speaking with voice:", utterance.voice?.name || "Default");
+        };
+
+        // Speak
+        synth.speak(utterance);
+    }
+
+    // // Toggle chat window (existing code)
+    // jarvisButton.addEventListener('click', function () {
+    //     jarvisWindow.style.display = jarvisWindow.style.display === 'flex' ? 'none' : 'flex';
+    // });
+
+    // // Close chat window (existing code)
+    // jarvisClose.addEventListener('click', function () {
+    //     jarvisWindow.style.display = 'none';
+    //     if (synth.speaking) {
+    //         synth.cancel(); // Stop speaking when window is closed
+    //     }
+    // });
+
+    // Send message when button is clicked (existing code)
+    jarvisSend.addEventListener('click', sendMessage);
+
+    // Send message when Enter key is pressed (existing code)
+    jarvisInput.addEventListener('keypress', function (e) {
+        if (e.key === 'Enter') {
+            sendMessage();
+        }
+    });
+
+    // The rest of your existing functions...
+
+    // Modified addMessage function to check for special responses
+    function addMessage(message, sender) {
+        const messageDiv = document.createElement('div');
+        messageDiv.classList.add('jarvis-message', sender);
+
+        // Check if it's a special response with HTML formatting
+        if (sender === 'jarvis' && message.includes('<div style="border:')) {
+            // It's a formatted offer card
+            messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
+        } else {
+            messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
+        }
+
+        jarvisMessages.appendChild(messageDiv);
+        jarvisMessages.scrollTop = jarvisMessages.scrollHeight;
+    }
+    // Initialize Jarvis voice
+    initJarvisVoice();
+    });
+
+    // // Add this outside your DOMContentLoaded function to make it globally available
+    // function debugJarvis() {
+    //     console.clear();
+    //     console.log("=== JARVIS INTERFACE DEBUG ===");
+
+    //     // Check elements
+    //     const trigger = document.getElementById('jarvis-trigger');
+    //     const hologram = document.getElementById('jarvis-hologram');
+
+    //     console.log("Trigger element:", trigger ? "FOUND" : "NOT FOUND");
+    //     if (trigger) {
+    //         console.log("Trigger position:", trigger.getBoundingClientRect());
+    //         console.log("Trigger style:", window.getComputedStyle(trigger));
+    //         console.log("Trigger events:", trigger);
+    //     }
+
+    //     console.log("Hologram element:", hologram ? "FOUND" : "NOT FOUND");
+    //     if (hologram) {
+    //         console.log("Display style:", window.getComputedStyle(hologram).display);
+    //         console.log("Z-index:", window.getComputedStyle(hologram).zIndex);
+    //         console.log("Opacity:", window.getComputedStyle(hologram).opacity);
+    //         console.log("Classes:", hologram.className);
+    //     }
+
+    //     console.log("=== MANUAL TEST ===");
+    //     console.log("To force show the hologram, run: document.getElementById('jarvis-hologram').classList.add('active')");
+    //     console.log("To force hide the hologram, run: document.getElementById('jarvis-hologram').classList.remove('active')");
+    // }
+
+    // Call this after 3 seconds to diagnose any issues
+    setTimeout(debugJarvis, 3000);
+
+    // Add this function to test if the hologram can be shown
+    function testJarvisHologram() {
+        const hologram = document.getElementById('jarvis-hologram');
+        if (hologram) {
+            console.log("TEST: Forcing Jarvis hologram to appear");
+            hologram.classList.add('active');
+
+            // Set a timeout to hide it after 5 seconds
+            setTimeout(() => {
+                console.log("TEST: Hiding Jarvis hologram");
+                hologram.classList.remove('active');
+            }, 5000);
+        } else {
+            console.error("TEST: Could not find Jarvis hologram element");
+        }
+    }
+    // Simple test function
+    function testJarvisVisibility() {
+        const jarvisWindow = document.getElementById('jarvis-window');
+        const jarvisButton = document.getElementById('jarvis-toggle');
+
+        if (jarvisWindow && jarvisButton) {
+            // Force show the window
+            jarvisWindow.style.display = 'flex';
+            console.log("TEST: Jarvis window should now be visible");
+
+            // Hide it after 3 seconds
+            setTimeout(() => {
+                jarvisWindow.style.display = 'none';
+                console.log("TEST: Jarvis window should now be hidden");
+            }, 3000);
+        } else {
+            console.error("TEST: Could not find Jarvis elements");
+        }
+    }
+
+    // Uncomment this line to run the test on page load
+    // setTimeout(testJarvisVisibility, 2000);
+    // For debugging, also add this global function to check job offer data at any time
+    function checkJobOffers() {
+        console.log("Current job offers count:", jobOffers.length);
+        console.log("First job offer:", jobOffers[0]);
+    }
+
+    // Call this after 3 seconds to verify data is loaded
+    setTimeout(checkJobOffers, 3000);
+</script>
+
+
+{% endblock %}

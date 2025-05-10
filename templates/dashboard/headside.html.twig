@@ -433,15 +433,16 @@
                     `;
                     } else if (user.role === 'Candidat') {
                         sidebarLinks.innerHTML += `
-                        <li><a href="/"><span>💼 Offre Emploi</span></a></li>
+                        <li><a href="/offre/front"><span>💼 Offre Emploi</span></a></li>
                         <li><a href="/reclamation/user/${user.iduser}"><span>📄 Reclamation</span></a></li>
-                        <li><a href="/"><span>🗳️ Candidatures</span></a></li>
+                        <li><a href="/candidature"><span>🗳️ Mes Candidatures</span></a></li>
+                        <li><a href="{{ path('app_notification_index') }}"><span>🔔 Notifications</span></a></li>
                         <li><a href="/"><span>🔄 Changer Mot de Passe</span></a></li>
                     `;
                     } else if (user.role === 'Employe') {
                         sidebarLinks.innerHTML += `
                         <li class="active"><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
-                        <li><a href="/reclamation/user/${user.iduser}"><span>🔄 Reclamation</span></a></li>
+                        <li><a href="/reclamation/user/${user.iduser}"><span>📄 Reclamation</span></a></li>
                         <li><a href="/formation"><span>📢 Formation</span></a></li>
                         <li><a href="/"><span>🚀 Entretien Archive</span></a></li>
                         <li><a href="/entretien/employee"><span>🚀 Entretien</span></a></li>

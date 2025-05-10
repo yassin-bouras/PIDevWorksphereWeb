@@ -51,10 +51,14 @@
                         <select name="sort_by" id="sort_by" class="form-select"
                             style="max-width: 350px; display: inline-block;">
                             <option value="">Par défaut</option>
-                            <option value="date_pub_asc" {% if sort_by is defined and sort_by=='date_pub_asc' %}selected{% endif %}>Date de publication (croissant)</option>
-                            <option value="date_pub_desc" {% if sort_by is defined and sort_by=='date_pub_desc' %}selected{% endif %}>Date de publication (décroissant)</option>
-                            <option value="date_lim_asc" {% if sort_by is defined and sort_by=='date_lim_asc' %}selected{% endif %}>Date limite (croissant)</option>
-                            <option value="date_lim_desc" {% if sort_by is defined and sort_by=='date_lim_desc' %}selected{% endif %}>Date limite (décroissant)</option>
+                            <option value="date_pub_asc" {% if sort_by is defined and sort_by=='date_pub_asc'
+                                %}selected{% endif %}>Date de publication (croissant)</option>
+                            <option value="date_pub_desc" {% if sort_by is defined and sort_by=='date_pub_desc'
+                                %}selected{% endif %}>Date de publication (décroissant)</option>
+                            <option value="date_lim_asc" {% if sort_by is defined and sort_by=='date_lim_asc'
+                                %}selected{% endif %}>Date limite (croissant)</option>
+                            <option value="date_lim_desc" {% if sort_by is defined and sort_by=='date_lim_desc'
+                                %}selected{% endif %}>Date limite (décroissant)</option>
                         </select>
                     </div>
                 </div>
@@ -488,6 +492,495 @@
         pointer-events: none;
         /* Make sure this doesn't block clicks */
     }
+
+    /**********************************************************************/
+    /* Jarvis AI Assistant Styling */
+    .jarvis-container {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-end;
+    }
+
+    /* Robot Button with Tech Design */
+    .jarvis-button {
+        width: 65px;
+        height: 65px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #33ccc5 0%, #4771cb 100%);
+        box-shadow: 0 0 20px rgba(51, 204, 197, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        overflow: hidden;
+        position: relative;
+    }
+
+    /* Robot glow effect */
+    .jarvis-button::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+        opacity: 0.7;
+        transition: opacity 0.3s ease;
+    }
+
+    /* Add tech ring effect */
+    .jarvis-button::after {
+        content: "";
+        position: absolute;
+        inset: -3px;
+        border-radius: 50%;
+        border: 2px solid transparent;
+        border-top: 2px solid #33ccc5;
+        border-bottom: 2px solid #4771cb;
+        opacity: 0.7;
+        animation: spin 4s linear infinite;
+    }
+
+    @keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .jarvis-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 30px rgba(51, 204, 197, 0.6);
+    }
+
+    .jarvis-button:hover::before {
+        opacity: 1;
+    }
+
+    /* Robot icon styling */
+    .jarvis-button i {
+        font-size: 28px;
+        color: white;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        animation: pulse 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 0.7;
+            transform: scale(1);
+        }
+
+        50% {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+    }
+
+    /* Chat Window styled like CV scanning card */
+    .jarvis-chat-window {
+        position: absolute;
+        bottom: 85px;
+        right: 0;
+        width: 350px;
+        height: 480px;
+        background: linear-gradient(135deg, #000000, #0a1a20);
+        border-radius: 18px;
+        overflow: hidden;
+        display: none;
+        flex-direction: column;
+        box-shadow: 0 0 40px rgba(51, 204, 197, 0.3);
+        transform: translateY(20px);
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    /* Tech border animation */
+    .jarvis-chat-window::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 18px;
+        padding: 2px;
+        background: linear-gradient(135deg, #33ccc5 0%, #4771cb 100%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0.7;
+        animation: border-glow 2s ease-in-out infinite alternate;
+        pointer-events: none;
+    }
+
+    @keyframes border-glow {
+        from {
+            opacity: 0.5;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+
+    /* Header styled like scanning card label */
+    .jarvis-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 20px;
+        background: linear-gradient(135deg, rgba(51, 204, 197, 0.2) 0%, rgba(71, 113, 203, 0.2) 100%);
+        border-bottom: 1px solid rgba(51, 204, 197, 0.3);
+        position: relative;
+    }
+
+    .jarvis-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 10% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 25%),
+            linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.05) 50%, transparent 100%);
+        pointer-events: none;
+    }
+
+    .jarvis-title {
+        font-family: 'Courier New', monospace;
+        font-size: 16px;
+        font-weight: 600;
+        color: #e0e0e0;
+        letter-spacing: 1px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        text-shadow: 0 0 10px rgba(51, 204, 197, 0.5);
+    }
+
+    .jarvis-title i {
+        font-size: 20px;
+        color: #33ccc5;
+        text-shadow: 0 0 8px rgba(51, 204, 197, 0.7);
+    }
+
+    .jarvis-close {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.1);
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .jarvis-close:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: rotate(90deg);
+    }
+
+    .jarvis-close i {
+        color: #e0e0e0;
+        font-size: 14px;
+    }
+
+    /* Message area styled with tech background */
+    .jarvis-messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        background: rgba(10, 20, 30, 0.95);
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+        scrollbar-width: thin;
+        scrollbar-color: #33ccc5 transparent;
+    }
+
+    .jarvis-messages::-webkit-scrollbar {
+        width: 5px;
+    }
+
+    .jarvis-messages::-webkit-scrollbar-thumb {
+        background: #33ccc5;
+        border-radius: 5px;
+    }
+
+    .jarvis-messages::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    /* Add scanning pattern to background */
+    .jarvis-messages::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.828-1.415 1.415L51.8 0h2.827zM5.373 0l-.83.828L5.96 2.243 8.2 0H5.374zM48.97 0l3.657 3.657-1.414 1.414L46.143 0h2.828zM11.03 0L7.372 3.657 8.787 5.07 13.857 0H11.03zm32.284 0L49.8 6.485 48.384 7.9l-7.9-7.9h2.83zM16.686 0L10.2 6.485 11.616 7.9l7.9-7.9h-2.83zm20.97 0l9.315 9.314-1.414 1.414L34.828 0h2.83zM22.344 0L13.03 9.314l1.414 1.414L25.172 0h-2.83zM32 0l12.142 12.142-1.414 1.414L30 0h2zM2 0l14.142 14.142L15.03 12.728 2 0h2zm28 0L42.142 14.142 40.73 15.556 28 0h2zm-14 0L28.142 14.142 26.73 15.556 14 0h2zM16.97 0L42.97 26 41.556 27.414 16.97 2.828 15.556 1.414 13.03 0h2.83L34.828 0H37.6L40.97 0h2.83l-12.728 12.728L41.556 25.414 40.142 26.83l5.657 5.656-1.414 1.414L36 25.514l-5.657 5.657-1.414-1.414L42.97 15.716l-9.9-9.9-18.627 18.628-1.414-1.414 7.07-7.07L2 0h2.83z' fill='%23ffffff' fill-opacity='0.05' fill-rule='evenodd'/%3E%3C/svg%3E");
+        opacity: 0.5;
+        pointer-events: none;
+    }
+
+    /* Message bubbles styled with high-tech look */
+    .jarvis-message {
+        max-width: 80%;
+        padding: 15px 18px;
+        border-radius: 15px;
+        background: rgba(255, 255, 255, 0.05);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        position: relative;
+        color: #e0e0e0;
+        font-size: 14px;
+        line-height: 1.5;
+        animation: message-appear 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes message-appear {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    /* Add techno border to messages */
+    .jarvis-message::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        border-radius: 15px;
+        padding: 1px;
+        background: linear-gradient(135deg, rgba(51, 204, 197, 0.5) 0%, rgba(71, 113, 203, 0.5) 100%);
+        -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+        -webkit-mask-composite: xor;
+        mask-composite: exclude;
+        opacity: 0.7;
+        pointer-events: none;
+    }
+
+    .jarvis-message.jarvis {
+        align-self: flex-start;
+        background: rgba(51, 204, 197, 0.1);
+        border-top-left-radius: 5px;
+    }
+
+    .jarvis-message.user {
+        align-self: flex-end;
+        background: rgba(71, 113, 203, 0.1);
+        border-top-right-radius: 5px;
+    }
+
+    /* Input area with tech styling */
+    .jarvis-input {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 15px 20px;
+        background: rgba(10, 20, 30, 0.9);
+        border-top: 1px solid rgba(51, 204, 197, 0.3);
+        position: relative;
+    }
+
+    /* Add particle effect to input area */
+    .jarvis-input::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to bottom, rgba(51, 204, 197, 0.1), transparent);
+        pointer-events: none;
+    }
+
+    /* Mic button styled like in scanning animation */
+    .mic-button {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: linear-gradient(135deg, #33ccc5 0%, #4771cb 100%);
+        border: none;
+        box-shadow: 0 0 15px rgba(51, 204, 197, 0.3);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .mic-button::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+        opacity: 0.7;
+    }
+
+    .mic-button i {
+        color: white;
+        font-size: 16px;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+
+    .mic-button:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(51, 204, 197, 0.5);
+    }
+
+    .mic-button.listening {
+        background: linear-gradient(135deg, #ff5252, #ff7676);
+        animation: pulse 1.5s infinite;
+    }
+
+    /* Input field with tech styling */
+    .jarvis-input input {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(51, 204, 197, 0.3);
+        border-radius: 20px;
+        padding: 12px 15px;
+        color: #e0e0e0;
+        font-size: 14px;
+        transition: all 0.3s ease;
+    }
+
+    .jarvis-input input:focus {
+        outline: none;
+        border-color: #33ccc5;
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0 0 15px rgba(51, 204, 197, 0.2);
+    }
+
+    .jarvis-input input::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* Send button styled like other tech buttons */
+    #jarvis-send {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: linear-gradient(135deg, #33ccc5 0%, #4771cb 100%);
+        border: none;
+        box-shadow: 0 0 15px rgba(51, 204, 197, 0.3);
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    #jarvis-send::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+        opacity: 0.7;
+    }
+
+    #jarvis-send i {
+        color: white;
+        font-size: 16px;
+        text-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+    }
+
+    #jarvis-send:hover {
+        transform: scale(1.1);
+        box-shadow: 0 0 20px rgba(51, 204, 197, 0.5);
+    }
+
+    /* Voice wave animation */
+    .voice-wave {
+        position: absolute;
+        inset: 0;
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 10, 20, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 18px;
+        z-index: 999;
+    }
+
+    .voice-wave.active {
+        display: flex;
+    }
+
+    .voice-wave .bar {
+        display: inline-block;
+        width: 5px;
+        height: 20px;
+        background: linear-gradient(to top, #33ccc5, #4771cb);
+        margin: 0 3px;
+        border-radius: 3px;
+        animation: voice-bar-animation 0.5s ease infinite alternate;
+        box-shadow: 0 0 10px rgba(51, 204, 197, 0.5);
+    }
+
+    @keyframes voice-bar-animation {
+        0% {
+            height: 10px;
+        }
+
+        100% {
+            height: 60px;
+        }
+    }
+
+    .voice-wave .bar:nth-child(1) {
+        animation-delay: 0.1s;
+    }
+
+    .voice-wave .bar:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .voice-wave .bar:nth-child(3) {
+        animation-delay: 0.3s;
+    }
+
+    .voice-wave .bar:nth-child(4) {
+        animation-delay: 0.4s;
+    }
+
+    .voice-wave .bar:nth-child(5) {
+        animation-delay: 0.5s;
+    }
+
+    .voice-wave .bar:nth-child(6) {
+        animation-delay: 0.4s;
+    }
+
+    .voice-wave .bar:nth-child(7) {
+        animation-delay: 0.3s;
+    }
+
+    .voice-wave .bar:nth-child(8) {
+        animation-delay: 0.2s;
+    }
+
+    .voice-wave .bar:nth-child(9) {
+        animation-delay: 0.1s;
+    }
+
+    .voice-wave .bar:nth-child(10) {
+        animation-delay: 0.2s;
+    }
 </style>
 <script>
     // Ensure dropdown functions properly
@@ -509,5 +1002,1159 @@
             this.form.submit();
         });
     });
+
+    /**********************************************************************/
+    // Jarvis AI Assistant Script
+    let lastSearchResults = []; // Add this variable at the top of your script
+    document.addEventListener('DOMContentLoaded', function () {
+        // Get elements
+        const jarvisButton = document.getElementById('jarvis-toggle');
+        const jarvisWindow = document.getElementById('jarvis-window');
+        const jarvisClose = document.getElementById('jarvis-close');
+        const jarvisMic = document.getElementById('jarvis-mic');
+        const voiceWave = document.getElementById('voice-wave');
+        const jarvisMessages = document.getElementById('jarvis-messages');
+        const jarvisInput = document.getElementById('jarvis-user-input');
+        const jarvisSend = document.getElementById('jarvis-send');
+
+        // Initialize variables
+        let isListening = false;
+        const synth = window.speechSynthesis;
+        let recognition = null;
+
+        // Set up speech recognition if available
+        if (window.SpeechRecognition || window.webkitSpeechRecognition) {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.lang = 'fr-FR';
+            recognition.interimResults = false;
+        }
+
+        // Toggle chat window
+        jarvisButton.addEventListener('click', function () {
+            jarvisWindow.style.display = jarvisWindow.style.display === 'flex' ? 'none' : 'flex';
+            console.log("Jarvis toggled:", jarvisWindow.style.display);
+        });
+
+        // Close chat window
+        jarvisClose.addEventListener('click', function () {
+            jarvisWindow.style.display = 'none';
+            if (synth && synth.speaking) {
+                synth.cancel(); // Stop speaking when window is closed
+            }
+        });
+
+        // Send message when button is clicked
+        jarvisSend.addEventListener('click', sendMessage);
+
+        // Send message when Enter key is pressed
+        jarvisInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Toggle voice recognition
+        if (jarvisMic && recognition) {
+            jarvisMic.addEventListener('click', function () {
+                if (!isListening) {
+                    startListening();
+                } else {
+                    stopListening();
+                }
+            });
+        } else if (jarvisMic) {
+            jarvisMic.addEventListener('click', function () {
+                addMessage("La reconnaissance vocale n'est pas disponible sur votre navigateur.", 'jarvis');
+            });
+        }
+
+        // Setup speech recognition events if available
+        if (recognition) {
+            recognition.onstart = function () {
+                isListening = true;
+                jarvisMic.classList.add('listening');
+                voiceWave.classList.add('active');
+                jarvisInput.placeholder = "Je vous écoute...";
+            };
+
+            recognition.onresult = function (event) {
+                const transcript = event.results[0][0].transcript;
+                jarvisInput.value = transcript;
+                processVoiceCommand(transcript);
+            };
+
+            recognition.onend = function () {
+                stopListening();
+            };
+
+            recognition.onerror = function (event) {
+                console.error('Speech recognition error:', event.error);
+                stopListening();
+                addMessage("Je n'ai pas pu entendre votre question. Pourriez-vous réessayer?", 'jarvis');
+            };
+        }
+
+        // Add this function to your initialization code
+        function initJarvisVoice() {
+            // More aggressive voice loading
+            console.log("Initializing JARVIS voice system...");
+
+            // Force voice loading in different ways for better browser compatibility
+            let voiceInterval;
+
+            // Try to load voices in multiple ways
+            function loadVoices() {
+                const voices = speechSynthesis.getVoices();
+                if (voices.length > 0) {
+                    clearInterval(voiceInterval);
+                    console.log(`Successfully loaded ${voices.length} voices`);
+                    console.log("Available voices for Jarvis:");
+
+                    let frenchVoices = [];
+                    let maleVoices = [];
+
+                    voices.forEach((voice, i) => {
+                        console.log(`${i + 1}. ${voice.name} (${voice.lang}) - ${voice.localService ? 'Local' : 'Network'}`);
+
+                        if (voice.lang.includes('fr')) {
+                            frenchVoices.push(voice);
+                        }
+
+                        if (voice.name.toLowerCase().includes('male') ||
+                            (voice.name.includes('Google') && voice.lang.includes('fr'))) {
+                            maleVoices.push(voice);
+                        }
+                    });
+
+                    console.log(`Found ${frenchVoices.length} French voices`);
+                    console.log(`Found ${maleVoices.length} potential male voices`);
+
+                    // Filter for possible Jarvis-like voices
+                    const jarvisVoices = frenchVoices.filter(v =>
+                        !v.name.toLowerCase().includes('female') &&
+                        !v.name.toLowerCase().includes('femme')
+                    );
+
+                    console.log(`Found ${jarvisVoices.length} potential Jarvis-like French voices`);
+                    jarvisVoices.forEach(v => console.log(`Potential Jarvis voice: ${v.name}`));
+
+                    // Create a silent test utterance to initialize the voice system
+                    const testUtterance = new SpeechSynthesisUtterance("");
+                    testUtterance.volume = 0;
+                    testUtterance.onend = () => console.log("Voice system initialized");
+                    speechSynthesis.speak(testUtterance);
+                }
+            }
+
+            // Initial attempt to load voices
+            loadVoices();
+
+            // Keep trying to load voices every 100ms for up to 3 seconds
+            if (speechSynthesis.getVoices().length === 0) {
+                let attempts = 0;
+                voiceInterval = setInterval(() => {
+                    loadVoices();
+                    attempts++;
+                    if (attempts > 30) { // 30 * 100ms = 3 seconds
+                        clearInterval(voiceInterval);
+                        console.log("Voice loading timeout - using whatever is available");
+                    }
+                }, 100);
+            }
+
+            // Return true when loaded
+            return speechSynthesis.getVoices().length > 0;
+        }
+
+        // Function to start listening
+        function startListening() {
+            try {
+                recognition.start();
+            } catch (e) {
+                console.error('Recognition start error:', e);
+                addMessage("Impossible de démarrer la reconnaissance vocale. Veuillez réessayer.", 'jarvis');
+                stopListening();
+            }
+        }
+
+        // Function to stop listening
+        function stopListening() {
+            isListening = false;
+            jarvisMic.classList.remove('listening');
+            voiceWave.classList.remove('active');
+            jarvisInput.placeholder = "Posez votre question ou cliquez sur le micro...";
+
+            try {
+                recognition.stop();
+            } catch (e) {
+                console.error('Recognition stop error:', e);
+            }
+        }
+
+        // Process voice command
+        function processVoiceCommand(transcript) {
+            // Add user message to chat
+            addMessage(transcript, 'user');
+            jarvisInput.value = '';
+
+            // Process the message and get response
+            setTimeout(() => {
+                const response = processUserMessage(transcript);
+                addMessage(response, 'jarvis');
+                speakResponse(response);
+            }, 1000);
+        }
+
+        // Basic message processor
+        // Enhanced job search handling for Jarvis
+        function processUserMessage(message) {
+            // Simple responses
+            message = message.toLowerCase();
+
+            if (message.includes('bonjour') || message.includes('salut') || message.includes('Good Morning') || message.includes('hello') ||
+                message.includes('hi') || message.includes('hey') || message.includes('salutations') || message.includes('Yo') || message.includes('Bon après-midi') ||
+                message.includes('Good Afternoon') || message.includes('Good Evening') || message.includes('Bonsoir')) {
+                return "Salut ! Je suis ' JAHYME ', votre assistant pour les offres d'emploi. Comment puis-je vous aider?";
+            }
+
+            if (message.includes('merci') || message.includes('thanks') || message.includes('thank you') || message.includes('Merci beaucoup') ||
+                message.includes('Merci infiniment') || message.includes('Merci bien') || message.includes('Merci pour votre aide') || message.includes('Merci pour votre assistance') ||
+                message.includes('Merci pour votre soutien') || message.includes('Merci pour votre temps') || message.includes('Merci pour votre réponse') || message.includes('Merci pour votre compréhension') ||
+                message.includes('Merci pour votre patience') || message.includes('Merci pour votre coopération') || message.includes('Merci pour votre service') ||
+                message.includes('Merci pour votre aide précieuse') || message.includes('Merci pour votre aide rapide') || message.includes('Merci pour votre aide efficace')) {
+                return "Je vous en prie! N'hésitez pas si vous avez d'autres questions.";
+            }
+
+            if (message.includes('au revoir') || message.includes('bye') || message.includes('à bientôt') || message.includes('à la prochaine') ||
+                message.includes('adieu') || message.includes('salut') || message.includes('À plus tard') || message.includes('À la prochaine fois')) {
+                return "Au revoir! N'hésitez pas à revenir si vous avez d'autres questions.";
+            }
+            if (message.includes('comment ça va') || message.includes('comment vas-tu') || message.includes('comment allez-vous') ||
+                message.includes('ça va') || message.includes('ça roule') || message.includes('tout va bien')) {
+                return "Je vais bien, merci! Et vous?";
+            }
+            if (message.includes('qui es-tu') || message.includes('qui est tu') || message.includes('qui es tu') ||
+                message.includes('qui est-ce') || message.includes('qui est ce') || message.includes('qui es ce')) {
+                return "Je suis ' JAHYME ', votre assistant pour les offres d'emploi. Je suis là pour vous aider à trouver le poste idéal.";
+            }
+            // Improved greeting detector that handles case-insensitive checking
+            if (message.includes('à tout') ||
+                message.includes('a tout') ||
+                message.includes('au revoir') ||
+                message.includes('bye')) {
+                return "Au revoir! N'hésitez pas à revenir si vous avez d'autres questions concernant les offres d'emploi.";
+            }
+            /**********************************************************/
+            // Add this condition for location-based queries
+            if (message.includes('lieu') || message.includes('où') || message.includes('pays') ||
+                message.includes('ville') || message.includes('région') || message.includes('endroit') ||
+                message.includes('location')) {
+
+                // Get all offer cards
+                const offerCards = document.querySelectorAll('.flip-card');
+
+                // If no offers found
+                if (offerCards.length === 0) {
+                    return "Je ne trouve actuellement aucune offre d'emploi disponible.";
+                }
+
+                // Extract and count all locations
+                const locations = {};
+
+                for (let i = 0; i < offerCards.length; i++) {
+                    const card = offerCards[i];
+                    const location = card.querySelector('.flip-card-front p:nth-child(3)')?.textContent || '';
+
+                    // Clean up the location text
+                    const cleanLocation = location.replace(/Lieu:|lieu:|Location:|location:|:\s*/g, '').trim();
+
+                    if (cleanLocation) {
+                        if (locations[cleanLocation]) {
+                            locations[cleanLocation].count++;
+                            locations[cleanLocation].offers.push({
+                                card: card,
+                                title: card.querySelector('.title')?.textContent || '',
+                                index: i
+                            });
+                        } else {
+                            locations[cleanLocation] = {
+                                count: 1,
+                                offers: [{
+                                    card: card,
+                                    title: card.querySelector('.title')?.textContent || '',
+                                    index: i
+                                }]
+                            };
+                        }
+                    }
+                }
+
+                // Sort locations by frequency
+                const sortedLocations = Object.entries(locations)
+                    .sort((a, b) => b[1].count - a[1].count)
+                    .map(([location, data]) => ({ location, count: data.count, offers: data.offers }));
+
+                // Create the response
+                let response = "Voici les lieux de travail disponibles:<br><br>";
+
+                sortedLocations.forEach((item, index) => {
+                    response += `<strong>${index + 1}. ${item.location}</strong> (${item.count} offre${item.count > 1 ? 's' : ''})<br>`;
+
+                    // Show the first 2 offers for each location as examples
+                    item.offers.slice(0, 2).forEach((offer, offerIndex) => {
+                        response += `   - ${offer.title}<br>`;
+                    });
+
+                    if (item.offers.length > 2) {
+                        response += `   - <em>... et ${item.offers.length - 2} autres offres</em><br>`;
+                    }
+
+                    response += "<br>";
+                });
+
+                response += "Vous pouvez me demander de voir les offres disponibles à un lieu spécifique en disant par exemple: \"Montrez-moi les offres en Tunisie\"";
+
+                // Store the results for follow-up questions
+                lastSearchResults = sortedLocations.flatMap(item => item.offers);
+
+                return response;
+            }
+            /***************************************************/
+            // Add this condition to handle specific location inquiries
+            if ((message.includes('lieu') || message.includes('où') || message.includes('situé') || message.includes('travail')) &&
+                (message.includes('offre') || message.includes('poste'))) {
+
+                // Try to find a specific offer name in the query
+                const offerCards = document.querySelectorAll('.flip-card');
+                let specificOffer = null;
+                let offerName = '';
+
+                // Extract potential offer name from message
+                // Similar to how we did it for deadline queries
+                let searchText = '';
+
+                if (message.match(/lieu de (la |l'|du |des |de )?(.+?)(\?|$)/i)) {
+                    searchText = message.match(/lieu de (la |l'|du |des |de )?(.+?)(\?|$)/i)[2].trim();
+                } else if (message.match(/travail de (la |l'|du |des |de )?(.+?)(\?|$)/i)) {
+                    searchText = message.match(/travail de (la |l'|du |des |de )?(.+?)(\?|$)/i)[2].trim();
+                } else {
+                    // If no clear pattern, just remove the common phrases
+                    searchText = message.replace(/quel est le lieu (de l'|de la |du |des |de )?/i, '')
+                        .replace(/où (est|se trouve) (l'|la |le |les |)?/i, '')
+                        .replace(/lieu de travail/i, '')
+                        .replace(/où/i, '')
+                        .replace(/offre/i, '')
+                        .replace(/poste/i, '')
+                        .replace(/de /i, '')
+                        .replace(/du /i, '')
+                        .trim();
+                }
+
+                console.log("Looking for specific offer location for:", searchText);
+
+                // Create an array to hold all potential matches with scores - reuse the scoring logic
+                const potentialMatches = [];
+
+                // Look for matching offers with the same sophisticated scoring as deadline queries
+                for (let i = 0; i < offerCards.length; i++) {
+                    const card = offerCards[i];
+                    const title = card.querySelector('.title')?.textContent || '';
+                    const titleLower = title.toLowerCase();
+                    const searchTextLower = searchText.toLowerCase();
+
+                    // Calculate various matching scores - same logic as deadline queries
+                    let score = 0;
+
+                    // Exact match gets highest score
+                    if (titleLower === searchTextLower) {
+                        score += 100;
+                    }
+                    // Full word containment 
+                    else if (titleLower.includes(searchTextLower)) {
+                        score += 75;
+                    }
+                    // Partial match with longer titles should score higher
+                    else if (searchTextLower.includes("developer") && titleLower.includes("developer")) {
+                        score += 60;
+                    }
+                    // Partial word match
+                    else if (titleLower.split(" ").some(word => searchTextLower.includes(word))) {
+                        score += 40;
+                    }
+                    // If search text has multiple words, check if multiple words match
+                    else if (searchTextLower.split(" ").length > 1 &&
+                        searchTextLower.split(" ").filter(word => titleLower.includes(word)).length > 0) {
+                        score += 30;
+                    }
+
+                    // Add bonus for longer titles that match (more specific)
+                    if (score > 0 && title.length > 10) {
+                        score += 10;
+                    }
+
+                    // If we have any kind of match, add it to potential matches
+                    if (score > 0) {
+                        potentialMatches.push({
+                            card,
+                            title,
+                            score,
+                            index: i
+                        });
+                    }
+                }
+
+                // Sort by score descending
+                potentialMatches.sort((a, b) => b.score - a.score);
+
+                console.log("Potential matches:", potentialMatches.map(m => `${m.title} (score: ${m.score})`));
+
+                // Use the highest scoring match if any
+                if (potentialMatches.length > 0) {
+                    specificOffer = potentialMatches[0].card;
+                    offerName = potentialMatches[0].title;
+                    console.log(`Selected best match: "${offerName}" with score ${potentialMatches[0].score}`);
+                }
+
+                // If we found a specific offer
+                if (specificOffer) {
+                    const location = specificOffer.querySelector('.flip-card-front p:nth-child(3)')?.textContent || '';
+                    const type = specificOffer.querySelector('.flip-card-front p:nth-child(2)')?.textContent || '';
+
+                    return `<strong>Lieu de travail pour l'offre "${offerName}":</strong><br><br>` +
+                        `${type}<br>` +
+                        `${location}<br><br>` +
+                        `Souhaitez-vous voir tous les détails de cette offre?`;
+                } else {
+                    return "Je ne trouve pas d'offre correspondant à votre recherche. Pouvez-vous être plus précis ou me demander de lister toutes les offres disponibles?";
+                }
+
+                // If no specific offer was found, fall back to showing all locations
+                // Continue to the existing location code
+            }
+            /*************************************************************/
+            // Improved matching for specific offers with better handling of similar titles
+            if ((message.includes('date limite') || message.includes('deadline')) &&
+                (message.includes('offre') || message.includes('poste'))) {
+
+                // Try to find a specific offer name in the query
+                const offerCards = document.querySelectorAll('.flip-card');
+                let specificOffer = null;
+                let offerName = '';
+
+                // Extract potential offer name from message
+                let searchText = '';
+
+                if (message.match(/date limite de (la |l'|du |des |de )?(.+?)(\?|$)/i)) {
+                    searchText = message.match(/date limite de (la |l'|du |des |de )?(.+?)(\?|$)/i)[2].trim();
+                } else if (message.match(/deadline (de |pour |of |for )?(.+?)(\?|$)/i)) {
+                    searchText = message.match(/deadline (de |pour |of |for )?(.+?)(\?|$)/i)[2].trim();
+                } else {
+                    // If no clear pattern, just remove the common phrases
+                    searchText = message.replace(/quelle est la date limite (de l'|de la |du |des |de )?/i, '')
+                        .replace(/deadline (de l'|de la |du |des |de )?/i, '')
+                        .replace(/date limite/i, '')
+                        .replace(/deadline/i, '')
+                        .replace(/offre/i, '')
+                        .replace(/poste/i, '')
+                        .replace(/de /i, '')
+                        .replace(/pour /i, '')
+                        .trim();
+                }
+
+                console.log("Looking for specific offer deadline for:", searchText);
+
+                // Create an array to hold all potential matches with scores
+                const potentialMatches = [];
+
+                // Look for matching offers with more sophisticated scoring
+                for (let i = 0; i < offerCards.length; i++) {
+                    const card = offerCards[i];
+                    const title = card.querySelector('.title')?.textContent || '';
+                    const titleLower = title.toLowerCase();
+                    const searchTextLower = searchText.toLowerCase();
+
+                    // Calculate various matching scores
+                    let score = 0;
+
+                    // Exact match gets highest score
+                    if (titleLower === searchTextLower) {
+                        score += 100;
+                    }
+                    // Full word containment (e.g. searching for "java developer" and finding "JAVA DEVELOPER")
+                    else if (titleLower.includes(searchTextLower)) {
+                        score += 75;
+                    }
+                    // Partial match with longer titles should score higher than exact match with shorter titles
+                    // when the search text is longer/more specific (e.g. "java developer" should prefer "JAVA DEVELOPER" over just "java")
+                    else if (searchTextLower.includes("developer") && titleLower.includes("developer")) {
+                        score += 60;
+                    }
+                    // Partial word match
+                    else if (titleLower.split(" ").some(word => searchTextLower.includes(word))) {
+                        score += 40;
+                    }
+                    // If search text has multiple words, check if multiple words match
+                    else if (searchTextLower.split(" ").length > 1 &&
+                        searchTextLower.split(" ").filter(word => titleLower.includes(word)).length > 0) {
+                        score += 30;
+                    }
+
+                    // Add bonus for longer titles that match (more specific)
+                    if (score > 0 && title.length > 10) {
+                        score += 10;
+                    }
+
+                    // If we have any kind of match, add it to potential matches
+                    if (score > 0) {
+                        potentialMatches.push({
+                            card,
+                            title,
+                            score,
+                            index: i
+                        });
+                    }
+                }
+
+                // Sort by score descending
+                potentialMatches.sort((a, b) => b.score - a.score);
+
+                console.log("Potential matches:", potentialMatches.map(m => `${m.title} (score: ${m.score})`));
+
+                // Use the highest scoring match if any
+                if (potentialMatches.length > 0) {
+                    specificOffer = potentialMatches[0].card;
+                    offerName = potentialMatches[0].title;
+                    console.log(`Selected best match: "${offerName}" with score ${potentialMatches[0].score}`);
+                }
+
+                // If we found a specific offer
+                if (specificOffer) {
+                    const deadline = specificOffer.querySelector('.flip-card-front p:nth-child(7)')?.textContent || '';
+                    const type = specificOffer.querySelector('.flip-card-front p:nth-child(2)')?.textContent || '';
+                    const location = specificOffer.querySelector('.flip-card-front p:nth-child(3)')?.textContent || '';
+
+                    return `<strong>Date limite pour l'offre "${offerName}":</strong><br><br>` +
+                        `${type}<br>` +
+                        `${location}<br>` +
+                        `${deadline}<br><br>` +
+                        `Souhaitez-vous voir plus de détails sur cette offre?`;
+                } else {
+                    console.log("No specific offer found for:", searchText);
+                }
+
+                // If no specific offer was found, fall back to showing all deadlines
+            }
+            ////******************************// Add this new condition for deadline inquiries
+            if (message.includes('date limite') ||
+                message.includes('deadline') ||
+                message.includes('expiration') ||
+                (message.includes('quand') && message.includes('expire')) ||
+                (message.includes('quand') && message.includes('termine')) ||
+                (message.includes('jusqu') && message.includes('quand'))) {
+
+                // Get all offer cards
+                const offerCards = document.querySelectorAll('.flip-card');
+
+                // If no offers found
+                if (offerCards.length === 0) {
+                    return "Je ne trouve actuellement aucune offre d'emploi disponible.";
+                }
+
+                // Create response with deadlines
+                let response = "Voici les dates limites des offres disponibles:<br><br>";
+
+                // Sort offers by deadline (closest first)
+                const offerData = [];
+
+                for (let i = 0; i < offerCards.length; i++) {
+                    const card = offerCards[i];
+                    const title = card.querySelector('.title')?.textContent || 'Offre sans titre';
+                    const deadline = card.querySelector('.flip-card-front p:nth-child(7)')?.textContent || '';
+                    const dateMatch = deadline.match(/(\d{4}-\d{2}-\d{2})/);
+
+                    if (dateMatch) {
+                        const dateStr = dateMatch[1];
+                        offerData.push({
+                            title: title,
+                            deadline: dateStr,
+                            deadlineDate: new Date(dateStr),
+                            index: i,
+                            card: card
+                        });
+                    } else {
+                        offerData.push({
+                            title: title,
+                            deadline: deadline,
+                            deadlineDate: new Date('2099-12-31'), // Put offers without dates at the end
+                            index: i,
+                            card: card
+                        });
+                    }
+                }
+
+                // Sort by deadline (closest first)
+                offerData.sort((a, b) => a.deadlineDate - b.deadlineDate);
+
+                // Store for reference in follow-up questions
+                lastSearchResults = offerData;
+
+                // Display results
+                for (let i = 0; i < offerData.length; i++) {
+                    const title = offerData[i].title;
+                    const deadline = offerData[i].deadline;
+                    const type = offerData[i].card.querySelector('.flip-card-front p:nth-child(2)')?.textContent || '';
+
+                    response += `<strong>${i + 1}. ${title}</strong><br>`;
+                    response += `${type}<br>`;
+                    response += `${deadline}<br><br>`;
+                }
+
+                response += "Vous pouvez me demander plus de détails sur une de ces offres en disant par exemple: \"Je veux l'offre numéro 1\"";
+                return response;
+            }
+            /**********************************************/
+
+            // Add this at the beginning of your processUserMessage function - before any other conditions
+            if (message.includes('tous les offres') ||
+                message.includes('toutes les offres') ||
+                message.includes('tous les postes') ||
+                message.includes('voir tous') ||
+                message.includes('voir toutes') ||
+                message.includes('liste complète') ||
+                (message.includes('toutes') && message.includes('offres')) ||
+                (message.includes('je veux') && message.includes('toutes les offres'))) {
+
+                // Get all offer cards from the page
+                const offerCards = document.querySelectorAll('.flip-card');
+
+                // If no offers found
+                if (offerCards.length === 0) {
+                    return "Je ne trouve actuellement aucune offre d'emploi disponible.";
+                }
+
+                // Create response with ALL offers (not limited)
+                let response = "Voici la liste complète des offres d'emploi disponibles:<br><br>";
+
+                // Show all offers
+                for (let i = 0; i < offerCards.length; i++) {
+                    const card = offerCards[i];
+                    const title = card.querySelector('.title')?.textContent || 'Offre sans titre';
+                    const type = card.querySelector('.flip-card-front p:nth-child(2)')?.textContent || '';
+                    const location = card.querySelector('.flip-card-front p:nth-child(3)')?.textContent || '';
+                    const salary = card.querySelector('.flip-card-front p:nth-child(4)')?.textContent || '';
+
+                    response += `<strong>${i + 1}. ${title}</strong><br>`;
+                    response += `${type}<br>`;
+                    response += `${location}<br>`;
+                    response += `${salary}<br><br>`;
+                }
+
+                response += "Vous pouvez me demander plus de détails sur une offre spécifique en disant par exemple: \"Je veux l'offre numéro 3\"";
+                return response;
+            }
+
+            // FIRST: Check for specific job offer requests BUT exclude numerical references
+            if ((message.includes('détail') && message.includes('offre') && !message.includes('numéro')) ||
+                (message.includes('je veux') && message.includes('offre') && !message.includes('numéro') && !message.includes('toutes')) ||
+                (message.includes('information') && message.includes('poste')) ||
+                (message.includes('parle moi de') && message.includes('offre'))) {
+
+                const offerCards = document.querySelectorAll('.flip-card');
+                const matchingOffers = [];
+
+                // Common keywords that might be in the query
+                const keywords = ['java', 'full', 'stack', 'four', 'developer', 'qa', 'engineer'];
+                let searchTerms = [];
+
+                // Extract the actual search terms from the user query
+                keywords.forEach(keyword => {
+                    if (message.includes(keyword)) {
+                        searchTerms.push(keyword);
+                    }
+                });
+
+                // If we have no search terms, try to extract any word after "offre", "détail", etc.
+                if (searchTerms.length === 0) {
+                    const possibleTerms = message.split(/offre|détail|poste|information/);
+                    if (possibleTerms.length > 1) {
+                        // Take the part after the keyword, clean it up and extract words
+                        const words = possibleTerms[1].replace(/[^\w\s]/gi, '').trim().split(/\s+/);
+                        // Use words that are at least 3 characters as potential search terms
+                        searchTerms = words.filter(word => word.length >= 3);
+                    }
+                }
+
+                console.log("Searching for terms:", searchTerms);
+
+                // Loop through all offers to find matching ones
+                for (let i = 0; i < offerCards.length; i++) {
+                    const card = offerCards[i];
+                    const title = card.querySelector('.title')?.textContent || '';
+                    const titleLower = title.toLowerCase();
+
+                    // Check if any search term is in the title
+                    const matchesSearchTerm = searchTerms.some(term => titleLower.includes(term));
+
+                    if (matchesSearchTerm) {
+                        matchingOffers.push({
+                            card: card,
+                            title: title,
+                            index: i
+                        });
+                    }
+                }
+
+                // If multiple matching offers were found
+                // Update your multiple matching offers section to store the results
+                if (matchingOffers.length > 1) {
+                    let response = "J'ai trouvé plusieurs offres qui correspondent à votre recherche:<br><br>";
+
+                    // Store the current search results globally so we can reference them later
+                    lastSearchResults = matchingOffers;
+
+                    matchingOffers.forEach((offer, index) => {
+                        const type = offer.card.querySelector('.flip-card-front p:nth-child(2)')?.textContent || '';
+                        const location = offer.card.querySelector('.flip-card-front p:nth-child(3)')?.textContent || '';
+
+                        response += `<strong>${index + 1}. ${offer.title}</strong><br>`;
+                        response += `${type}<br>`;
+                        response += `${location}<br><br>`;
+                    });
+
+                    response += "Pouvez-vous préciser laquelle vous intéresse? Par exemple: \"Je veux l'offre numéro 1\" ou \"Plus de détails sur " + matchingOffers[0].title + "\"";
+                    return response;
+                }
+                // If exactly one matching offer was found
+                else if (matchingOffers.length === 1) {
+                    const foundOffer = matchingOffers[0].card;
+                    const title = foundOffer.querySelector('.title')?.textContent || 'Offre sans titre';
+                    const type = foundOffer.querySelector('.flip-card-front p:nth-child(2)')?.textContent || '';
+                    const location = foundOffer.querySelector('.flip-card-front p:nth-child(3)')?.textContent || '';
+                    const salary = foundOffer.querySelector('.flip-card-front p:nth-child(4)')?.textContent || '';
+                    const experience = foundOffer.querySelector('.flip-card-front p:nth-child(5)')?.textContent || '';
+                    const pubDate = foundOffer.querySelector('.flip-card-front p:nth-child(6)')?.textContent || '';
+                    const deadline = foundOffer.querySelector('.flip-card-front p:nth-child(7)')?.textContent || '';
+                    const status = foundOffer.querySelector('.flip-card-front p:nth-child(8)')?.textContent || '';
+                    const description = foundOffer.querySelector('.flip-card-back p')?.textContent || '';
+
+                    let response = `<strong>Détails de l'offre: ${title}</strong><br><br>`;
+                    response += `${type}<br>`;
+                    response += `${location}<br>`;
+                    response += `${salary}<br>`;
+                    response += `${experience}<br>`;
+                    response += `${pubDate}<br>`;
+                    response += `${deadline}<br>`;
+                    response += `${status}<br><br>`;
+                    response += `${description}<br><br>`;
+                    response += `Souhaitez-vous postuler à cette offre ou voir d'autres offres similaires?`;
+
+                    return response;
+                }
+                // If no matching offers were found
+                else {
+                    return "Je ne trouve pas d'offre correspondant à votre recherche. Pouvez-vous essayer avec d'autres termes ou me demander de lister toutes les offres disponibles?";
+                }
+            }
+
+            // Check if this is a response to a list of offers (e.g. "numéro 1" or "la première")
+            // Modify your offer selection condition to better handle various phrasings including written numbers
+            if ((message.includes('numéro') || message.includes('numero') || message.includes('offre numéro')) &&
+                ((/[0-9]/.test(message)) ||
+                    message.includes(' un') || message.includes('première') ||
+                    message.includes('deux') || message.includes('deuxième') ||
+                    message.includes('trois') || message.includes('troisième') ||
+                    message.includes('quatre') || message.includes('quatrième') ||
+                    message.includes('cinq') || message.includes('cinquième')) ||
+                message.match(/^numéro\s+\d+$/i) ||
+                (message.includes('je veux') && message.includes('offre') &&
+                    (message.includes('numéro') || message.includes('premier') || message.includes('première')))) {
+
+                let offerIndex = -1;
+
+                // Try to extract a number - first check for digits
+                const numberMatch = message.match(/[0-9]+/);
+                if (numberMatch) {
+                    offerIndex = parseInt(numberMatch[0]) - 1; // Convert to zero-based index
+                }
+                // If no digits, check for written numbers
+                else if (message.includes(' un') || message.includes('première') || message.includes('premier')) {
+                    offerIndex = 0; // First offer
+                } else if (message.includes('deux') || message.includes('deuxième')) {
+                    offerIndex = 1; // Second offer
+                } else if (message.includes('trois') || message.includes('troisième')) {
+                    offerIndex = 2; // Third offer
+                } else if (message.includes('quatre') || message.includes('quatrième')) {
+                    offerIndex = 3; // Fourth offer
+                } else if (message.includes('cinq') || message.includes('cinquième')) {
+                    offerIndex = 4; // Fifth offer
+                }
+
+                // Check if we're responding to a previous search result list
+                if (lastSearchResults.length > 0 && offerIndex >= 0 && offerIndex < lastSearchResults.length) {
+                    // Use the card from the previous search results
+                    const foundOffer = lastSearchResults[offerIndex].card;
+                    const title = foundOffer.querySelector('.title')?.textContent || 'Offre sans titre';
+                    const type = foundOffer.querySelector('.flip-card-front p:nth-child(2)')?.textContent || '';
+                    const location = foundOffer.querySelector('.flip-card-front p:nth-child(3)')?.textContent || '';
+                    const salary = foundOffer.querySelector('.flip-card-front p:nth-child(4)')?.textContent || '';
+                    const experience = foundOffer.querySelector('.flip-card-front p:nth-child(5)')?.textContent || '';
+                    const pubDate = foundOffer.querySelector('.flip-card-front p:nth-child(6)')?.textContent || '';
+                    const deadline = foundOffer.querySelector('.flip-card-front p:nth-child(7)')?.textContent || '';
+                    const status = foundOffer.querySelector('.flip-card-front p:nth-child(8)')?.textContent || '';
+                    const description = foundOffer.querySelector('.flip-card-back p')?.textContent || '';
+
+                    let response = `<strong>Détails de l'offre: ${title}</strong><br><br>`;
+                    response += `${type}<br>`;
+                    response += `${location}<br>`;
+                    response += `${salary}<br>`;
+                    response += `${experience}<br>`;
+                    response += `${pubDate}<br>`;
+                    response += `${deadline}<br>`;
+                    response += `${status}<br><br>`;
+                    response += `${description}<br><br>`;
+                    response += `Souhaitez-vous postuler à cette offre ou voir d'autres offres similaires?`;
+
+                    // Clear lastSearchResults after using it
+                    lastSearchResults = [];
+
+                    return response;
+                }
+
+                // If not responding to lastSearchResults, use all offers
+                const offerCards = document.querySelectorAll('.flip-card');
+                if (offerIndex >= 0 && offerIndex < offerCards.length) {
+                    const foundOffer = offerCards[offerIndex];
+                    const title = foundOffer.querySelector('.title')?.textContent || 'Offre sans titre';
+                    const type = foundOffer.querySelector('.flip-card-front p:nth-child(2)')?.textContent || '';
+                    const location = foundOffer.querySelector('.flip-card-front p:nth-child(3)')?.textContent || '';
+                    const salary = foundOffer.querySelector('.flip-card-front p:nth-child(4)')?.textContent || '';
+                    const experience = foundOffer.querySelector('.flip-card-front p:nth-child(5)')?.textContent || '';
+                    const pubDate = foundOffer.querySelector('.flip-card-front p:nth-child(6)')?.textContent || '';
+                    const deadline = foundOffer.querySelector('.flip-card-front p:nth-child(7)')?.textContent || '';
+                    const status = foundOffer.querySelector('.flip-card-front p:nth-child(8)')?.textContent || '';
+                    const description = foundOffer.querySelector('.flip-card-back p')?.textContent || '';
+
+                    let response = `<strong>Détails de l'offre: ${title}</strong><br><br>`;
+                    response += `${type}<br>`;
+                    response += `${location}<br>`;
+                    response += `${salary}<br>`;
+                    response += `${experience}<br>`;
+                    response += `${pubDate}<br>`;
+                    response += `${deadline}<br>`;
+                    response += `${status}<br><br>`;
+                    response += `${description}<br><br>`;
+                    response += `Souhaitez-vous postuler à cette offre ou voir d'autres offres similaires?`;
+
+                    return response;
+                }
+            }
+
+
+
+            // Rest of your existing code for other responses...
+            if (message.includes('quel') && message.includes('offres disponibles') ||
+                message.includes('quelles sont les offres') ||
+                message.includes('offres existantes') ||
+                message.includes('liste des offres') ||
+                (message.includes('voir') && message.includes('offres'))) {
+
+                // Get all offer cards from the page
+                const offerCards = document.querySelectorAll('.flip-card');
+
+                // If no offers found
+                if (offerCards.length === 0) {
+                    return "Je ne trouve actuellement aucune offre d'emploi disponible.";
+                }
+
+                // Create response with actual offers (limited to first 5 for readability)
+                let response = "Voici les offres d'emploi actuellement disponibles:<br><br>";
+
+                const maxOffersToShow = Math.min(offerCards.length, 5);
+
+                for (let i = 0; i < maxOffersToShow; i++) {
+                    const card = offerCards[i];
+                    const title = card.querySelector('.title')?.textContent || 'Offre sans titre';
+                    const type = card.querySelector('.flip-card-front p:nth-child(2)')?.textContent || '';
+                    const location = card.querySelector('.flip-card-front p:nth-child(3)')?.textContent || '';
+                    const salary = card.querySelector('.flip-card-front p:nth-child(4)')?.textContent || '';
+
+                    response += `<strong>${i + 1}. ${title}</strong><br>`;
+                    response += `${type}<br>`;
+                    response += `${location}<br>`;
+                    response += `${salary}<br><br>`;
+                }
+
+                if (offerCards.length > 5) {
+                    response += `<em>... et ${offerCards.length - 5} autres offres disponibles.</em><br><br>`;
+                }
+
+                response += "Vous pouvez me demander plus de détails sur une offre spécifique ou filtrer par type de contrat, lieu ou expérience.";
+                return response;
+            }
+
+            // Add this new condition for filtering by contract type
+            // Updated contract type filtering code
+            if ((message.includes('type') && (message.includes('cdi') || message.includes('cdd') || message.includes('stage') || message.includes('freelance') || message.includes('alternance'))) ||
+                (message.includes('offres') && (message.includes('cdi') || message.includes('cdd') || message.includes('stage') || message.includes('freelance') || message.includes('alternance'))) ||
+                (message.includes('je veux') && message.includes('offres') && (message.includes('cdi') || message.includes('cdd') || message.includes('stage') || message.includes('freelance') || message.includes('alternance'))) ||
+                (message.includes('filtre') && (message.includes('cdi') || message.includes('cdd') || message.includes('stage') || message.includes('freelance') || message.includes('alternance')))) {
+
+                // Determine which contract type is being asked for
+                let contractType = '';
+                if (message.includes('cdi')) contractType = 'CDI';
+                else if (message.includes('cdd')) contractType = 'CDD';
+                else if (message.includes('stage')) contractType = 'Stage';
+                else if (message.includes('freelance') || message.includes('freelancer')) contractType = 'FreeLance';
+                else if (message.includes('alternance')) contractType = 'Alternance';
+
+                // Get all offer cards
+                const offerCards = document.querySelectorAll('.flip-card');
+                const matchingOffers = [];
+
+                // Find offers with the matching contract type - FIX THIS PART
+                for (let i = 0; i < offerCards.length; i++) {
+                    const card = offerCards[i];
+                    // Get the contract type text from the card
+                    const typeElement = card.querySelector('.flip-card-front p:nth-child(2)');
+                    const typeText = typeElement ? typeElement.textContent : '';
+
+                    // Debug the exact values (add this for troubleshooting)
+                    console.log(`Checking offer ${i}: Type text="${typeText}", Looking for="${contractType}"`);
+
+                    // Check if the type text contains our contract type (case insensitive)
+                    if (typeText.toLowerCase().includes(contractType.toLowerCase())) {
+                        const title = card.querySelector('.title')?.textContent || 'Offre sans titre';
+                        matchingOffers.push({
+                            card: card,
+                            title: title,
+                            type: typeText,
+                            index: i
+                        });
+                        // Debug what was matched (add this for troubleshooting)
+                        console.log(`Match found: ${title} with type ${typeText}`);
+                    }
+                }
+
+                // If no matching offers found
+                if (matchingOffers.length === 0) {
+                    return `Je ne trouve actuellement aucune offre de type ${contractType}. Souhaitez-vous voir tous les types d'offres disponibles?`;
+                }
+
+                // Store results for follow-up questions
+                lastSearchResults = matchingOffers;
+
+                // Create response with matching offers
+                let response = `Voici les offres de type ${contractType}:<br><br>`;
+
+                matchingOffers.forEach((offer, index) => {
+                    const title = offer.title;
+                    const type = offer.type;
+                    const location = offer.card.querySelector('.flip-card-front p:nth-child(3)')?.textContent || '';
+                    const salary = offer.card.querySelector('.flip-card-front p:nth-child(4)')?.textContent || '';
+
+                    response += `<strong>${index + 1}. ${title}</strong><br>`;
+                    response += `${type}<br>`;
+                    response += `${location}<br>`;
+                    response += `${salary}<br><br>`;
+                });
+
+                response += "Vous pouvez me demander plus de détails sur une de ces offres en disant par exemple: \"Je veux l'offre numéro 1\"";
+                return response;
+            }
+
+            // General responses remain the same
+            if (message.includes('offres') || message.includes('emploi')) {
+                return "Je peux vous aider à trouver les meilleures offres d'emploi. Vous pouvez me demander de filtrer par type de contrat, lieu ou expérience.";
+            }
+
+            if (message.includes('aide') || message.includes('assistance') || message.includes('support')) {
+                return "Je suis là pour vous aider! Que puis-je faire pour vous?";
+            }
+
+            if (message.includes('au revoir') || message.includes('bye')) {
+                return "Au revoir! Bonne chance dans votre recherche d'emploi!";
+            }
+
+            // Default response
+            return "Je ne suis pas sûr de comprendre. Pouvez-vous reformuler votre question concernant les offres d'emploi?";
+        }
+
+        // Add message to chat
+        function addMessage(message, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('jarvis-message', sender);
+            messageDiv.innerHTML = `<div class="message-content">${message}</div>`;
+            jarvisMessages.appendChild(messageDiv);
+            jarvisMessages.scrollTop = jarvisMessages.scrollHeight;
+        }
+
+        // Send message function
+        function sendMessage() {
+            const userMessage = jarvisInput.value.trim();
+            if (!userMessage) return;
+
+            // Add user message to chat
+            addMessage(userMessage, 'user');
+            jarvisInput.value = '';
+
+            // Process message and get response
+            setTimeout(() => {
+                const response = processUserMessage(userMessage);
+                addMessage(response, 'jarvis');
+                speakResponse(response);
+            }, 1000);
+        }
+
+        // Speak response function
+        function speakResponse(text) {
+            if (!synth) return;
+
+            // Cancel any ongoing speech
+            if (synth.speaking) {
+                synth.cancel();
+            }
+
+            // Clean up HTML tags for speech
+            const cleanText = text.replace(/<[^>]*>/g, '');
+
+            // Create speech synthesis utterance
+            const utterance = new SpeechSynthesisUtterance(cleanText);
+
+            // Get available voices
+            const voices = synth.getVoices();
+            console.log("STRICTLY searching for MALE French voice:", voices.length, "voices available");
+
+            // Explicitly identify all definitely male voices
+            const maleIdentifiers = ['male', 'homme', 'masculin', 'thomas', 'nicolas', 'paul', 'daniel', 'claude', 'google français'];
+            const femaleIdentifiers = ['female', 'femme', 'féminin', 'feminine', 'marie', 'amelie', 'audrey', 'isabelle', 'sophie', 'joanna'];
+
+            // Force selection of known male French voices
+            const explicitMaleVoices = voices.filter(v =>
+                v.lang.includes('fr') &&
+                maleIdentifiers.some(id => v.name.toLowerCase().includes(id)) &&
+                !femaleIdentifiers.some(id => v.name.toLowerCase().includes(id))
+            );
+
+            console.log(`Found ${explicitMaleVoices.length} explicitly male French voices`);
+            explicitMaleVoices.forEach((v, i) => {
+                console.log(`Male French Voice ${i}: ${v.name} (${v.lang})`);
+            });
+
+            // Select the voice - prioritize explicit male voices
+            let selectedVoice = null;
+
+            if (explicitMaleVoices.length > 0) {
+                // Choose the first explicit male voice
+                selectedVoice = explicitMaleVoices[0];
+                console.log(`Selected explicit male voice: ${selectedVoice.name}`);
+            } else {
+                // No explicit male voice found, try to find a deep-pitched voice
+                const anyFrenchVoice = voices.find(v =>
+                    v.lang.includes('fr') &&
+                    !femaleIdentifiers.some(id => v.name.toLowerCase().includes(id))
+                );
+
+                if (anyFrenchVoice) {
+                    selectedVoice = anyFrenchVoice;
+                    console.log(`No explicit male voice found, using: ${selectedVoice.name}`);
+                } else {
+                    // Last resort - just use any French voice
+                    const frenchVoice = voices.find(v => v.lang.includes('fr'));
+                    if (frenchVoice) {
+                        selectedVoice = frenchVoice;
+                        console.log(`Using any French voice: ${selectedVoice.name}`);
+                    }
+                }
+            }
+
+            // Set the selected voice
+            if (selectedVoice) {
+                utterance.voice = selectedVoice;
+                console.log(`Using voice: ${selectedVoice.name} (${selectedVoice.lang})`);
+            } else {
+                console.log("No suitable French voice found. Using default voice");
+            }
+
+            // CRITICAL: Always enforce French language
+            utterance.lang = 'fr-FR';
+
+            // ADJUST THESE PARAMETERS TO MAKE IT MORE MASCULINE
+            utterance.pitch = 0.6;       // Lower pitch for more masculine sound (0.8 was too high)
+            utterance.rate = 0.85;       // Slightly slower for more authoritative sound
+            utterance.volume = 1.0;      // Full volume
+
+            // Debugging
+            utterance.onstart = function () {
+                console.log("Jarvis speaking with MALE French voice");
+            };
+
+            // Speak
+            synth.speak(utterance);
+        }
+
+        // Make sure Jarvis window starts hidden
+        if (jarvisWindow) {
+            jarvisWindow.style.display = 'none';
+        }
+
+        // Initialize Jarvis voice system
+        initJarvisVoice();
+    });
 </script>
+
+<!-- /********************************************************************************/ -->
+<!-- Jarvis AI Assistant Container -->
+<div id="jarvis-container" class="jarvis-container">
+    <div class="jarvis-button" id="jarvis-toggle">
+        <i class="fas fa-robot"></i>
+    </div>
+
+    <div class="jarvis-chat-window" id="jarvis-window">
+        <div class="jarvis-header">
+            <div class="jarvis-title">
+                <i class="fas fa-robot"></i> J - A - H - Y - M - E - ---- AI Assistant ----
+            </div>
+            <div class="jarvis-close" id="jarvis-close">
+                <i class="fas fa-times"></i>
+            </div>
+        </div>
+
+        <div class="jarvis-messages" id="jarvis-messages">
+            <div class="jarvis-message jarvis">
+                <div class="message-content">
+                    Bonjour, je suis Jarvis, votre assistant IA. Comment puis-je vous aider avec les offres d'emploi?
+                </div>
+            </div>
+        </div>
+
+        <div class="jarvis-input">
+            <button id="jarvis-mic" class="mic-button">
+                <i class="fas fa-microphone"></i>
+            </button>
+            <input type="text" id="jarvis-user-input" placeholder="Posez votre question ou cliquez sur le micro..." />
+            <button id="jarvis-send">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Voice wave animation for Jarvis -->
+<div class="voice-wave" id="voice-wave">
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+    <div class="bar"></div>
+</div>
+
+<!-- Add Font Awesome for icons -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 {% endblock %}
