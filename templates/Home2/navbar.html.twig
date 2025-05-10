@@ -97,7 +97,7 @@
                         </li>
                         <li class="scroll-to-section"><a href="{{ path('app_candidature_index') }}">Mes Candidatures</a>
                         </li>
-                        <li class="scroll-to-section"><a href="/dashboardcandidat">Profil</a></li>
+                        <li class="scroll-to-section"><a href="/user/${user.iduser}">>Profil</a></li>
 
                         <!-- Login button that will be replaced after authentication -->
                         <li class="scroll-to-section" id="default-login-button">
@@ -126,124 +126,62 @@
     document.addEventListener('DOMContentLoaded', function () {
         const token = getCookie('BEARER');
         const loginButton = document.getElementById('default-login-button');
+        const profileLink = document.querySelector('a[href="/user/${user.iduser}"]');
         const loadingOverlay = document.getElementById('auth-loading-overlay');
 
-        // Get the profile link
-        const profileLink = document.querySelector('a[href="/dashboardcandidat"]');
-
-        // Fix: Add event listener to profile link to ensure proper redirection
-        if (profileLink) {
-            profileLink.addEventListener('click', function(e) {
-                // If no token, redirect to login
-                if (!token) {
-                    e.preventDefault();
-                    window.location.href = '/login';
-                }
-            });
+        // Function to hide the loading overlay
+        function hideLoadingOverlay() {
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
+            }
         }
 
         if (!token) {
-            // No token, show login button
+            // No token, show login button and hide loading overlay
             if (loginButton) {
                 loginButton.classList.add('loaded');
             }
-            // Hide the loading overlay
-            if (loadingOverlay) {
-                loadingOverlay.style.opacity = '0';
-                setTimeout(() => {
-                    loadingOverlay.style.display = 'none';
-                }, 500);
-            }
-
-            // If not logged in, profile link should go to login
-            if (profileLink) {
-                profileLink.href = '/login';
-            }
-
+            hideLoadingOverlay();
             return;
         }
 
-        // Check authentication status
+        // Fetch user data from the /jwt/user endpoint
         fetch('/jwt/user', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ token: token })
+            body: JSON.stringify({ token: token }) // Pass the token from cookies
         })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success && loginButton) {
-                    const user = data.user;
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const user = data.user;
 
-                    // Replace login button with logout button
+                // Update the profile link
+                if (profileLink) {
+                    profileLink.href = `/user/${user.iduser}`;
+                }
+
+                // Replace login button with logout button
+                if (loginButton) {
                     loginButton.innerHTML = `
-                <div class="main-blue-button">
-                    <a href="/logout">Se déconnecter</a>
-                </div>
-            `;
-
-                    // Fix: Update profile link based on user role
-                    // Use the exact path format from your DashboardController routes
-                    if (profileLink) {
-                        if (user.role === 'Candidat') {
-                            profileLink.href = '/dashboardcandidat';
-                        } else if (user.role === 'Employe') {
-                            profileLink.href = '/dashboardemploye';  // Fixed path
-                        } else if (user.role === 'RH') {
-                            profileLink.href = '/dashboard';
-                        } else if (user.role === 'manager') {
-                            profileLink.href = '/dashboardmanager';  // Fixed path
-                        }
-                    }
-
-                    // Role-specific additions here
-                    if (user.role === 'Employe') {
-                        // Find position before login/logout button
-                        const sidebarLinks = document.getElementById('sidebar-links');
-
-                        // Create and insert employee-specific links
-                        const reclamationItem = document.createElement('li');
-                        reclamationItem.className = 'scroll-to-section';
-                        reclamationItem.innerHTML = `<a href="/reclamation/user/${user.iduser}">Reclamation</a>`;
-
-                        const entretienItem = document.createElement('li');
-                        entretienItem.className = 'scroll-to-section';
-                        entretienItem.innerHTML = `<a href="/entretien/employee">Entretien</a>`;
-
-                        sidebarLinks.insertBefore(reclamationItem, loginButton);
-                        sidebarLinks.insertBefore(entretienItem, loginButton);
-                    }
+                        <div class="main-blue-button">
+                            <a href="/logout">Se déconnecter</a>
+                        </div>
+                    `;
                 }
-
-                // Show the login/logout button
-                if (loginButton) {
-                    loginButton.classList.add('loaded');
-                }
-
-                // Hide the loading overlay
-                if (loadingOverlay) {
-                    loadingOverlay.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingOverlay.style.display = 'none';
-                    }, 500);
-                }
-            })
-            .catch(error => {
-                console.error('Fetch error:', error);
-
-                // On error, still show login button and hide loading
-                if (loginButton) {
-                    loginButton.classList.add('loaded');
-                }
-
-                if (loadingOverlay) {
-                    loadingOverlay.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingOverlay.style.display = 'none';
-                    }, 500);
-                }
-            });
+            } else {
+                console.error('Failed to fetch user data:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+        })
+        .finally(() => {
+            // Hide the loading overlay regardless of success or failure
+            hideLoadingOverlay();
+        });
     });
 </script>
 </header>

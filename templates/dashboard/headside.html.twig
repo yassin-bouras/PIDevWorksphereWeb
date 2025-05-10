@@ -138,7 +138,7 @@
             <li class="nav-item dropdown has-arrow main-drop">
                 <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
                     <span class="user-img">
-                        <img id="user-profile-image" src="{{ asset('back/img/profile.jpg') }}" alt="">
+                   <img id="user-profile-image" src="img/681cbc5443e87.jpg" alt="User Image">
                         <span class="status online"></span>
                     </span>
                     <span id="user-full-name">Guest</span>
@@ -193,9 +193,38 @@
             .then(data => {
                 if (data.success) {
                     const user = data.user;
-                    document.getElementById('user-profile-image').src = user.imageprofil || '{{ asset('back / img / profile.jpg') }}';
-                    document.getElementById('user-full-name').textContent = user.nom + ' ' + user.prenom;
-                    document.getElementById('user-profile-link').href = '/user/' + user.iduser;
+
+
+if (user && user.image) {
+    let rawPath = user.image;
+
+    // Strip "htdocs/" if it exists
+    let cleanedPath = rawPath.startsWith('htdocs/')
+        ? rawPath.replace('htdocs/', '')
+        : rawPath;
+
+    // Ensure it starts with a single slash
+    cleanedPath = '/' + cleanedPath.replace(/^\/+/, '');
+
+    // Set the image src
+    //document.getElementById('user-profile-image').src = cleanedPath;
+
+    // Optional: log what’s actually being applied
+    console.log("✔ Final image URL set to:", cleanedPath);
+} else {
+    // Fallback image
+    document.getElementById('user-profile-image').src = '{{ asset("back/img/profile.jpg") }}';
+    console.log("❗ No image found for user, using default.");
+}
+
+// Set name and link
+document.getElementById('user-full-name').textContent = user.nom + ' ' + user.prenom;
+document.getElementById('user-profile-link').href = '/user/' + user.iduser;
+
+    // Ensure the path starts with a single /
+
+
+
 
                     /**********************************************************************************************************************
                                                     // Populate role-specific notifications
