@@ -166,7 +166,7 @@ public function filter2(Request $request, FormationRepository $formationReposito
  #[Route('/new', name: 'app_formation_new', methods: ['GET', 'POST'])]
 public function new(Request $request, EntityManagerInterface $entityManager): Response
 {
-    // Récupérer le token dans les cookies
+   
     $token = $request->cookies->get('BEARER');
 
     if (!$token) {
@@ -195,14 +195,51 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
 
         if ($form->isSubmitted() && $form->isValid()) {
             $photoFile = $form->get('photo')->getData();
-            if ($photoFile) {
+            /*if ($photoFile) {
                 $newFilename = uniqid() . '.' . $photoFile->guessExtension();
                 $photoFile->move(
                     $this->getParameter('kernel.project_dir') . '/public/img',
                     $newFilename
                 );
                 $formation->setPhoto('img/' . $newFilename);
-            }
+            }*/
+
+          if ($photoFile) {
+   
+    $oldPhoto = $formation->getPhoto();
+    if ($oldPhoto) {
+        $oldFilename = basename($oldPhoto);
+        
+       
+        $oldPathPublic = $this->getParameter('kernel.project_dir') . '/public/' . $oldPhoto;
+        if (file_exists($oldPathPublic)) {
+            unlink($oldPathPublic);
+        }
+        
+      
+        $oldPathSecondary = 'C:/xampp/htdocs/img/' . $oldFilename;
+        if (file_exists($oldPathSecondary)) {
+            unlink($oldPathSecondary);
+        }
+    }
+
+   
+    $originalFilename = pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME);
+    $newFilename = time().'_'.preg_replace('/[^A-Za-z0-9_\-]/', '_', $originalFilename).'.'.$photoFile->guessExtension();
+    
+    $destination = $this->getParameter('kernel.project_dir') . '/public/img';
+    
+  
+    $photoFile->move($destination, $newFilename);
+    $formation->setPhoto('img/' . $newFilename);
+    
+  
+    $secondaryDestination = 'C:/xampp/htdocs/img';
+    copy(
+        $destination . '/' . $newFilename,
+        $secondaryDestination . '/' . $newFilename
+    );
+}
 
          
             $formation->setIdUser($user->getIduser());
@@ -247,7 +284,7 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
 
         if ($form->isSubmitted() && $form->isValid()) {
             $photoFile = $form->get('photo')->getData();
-            if ($photoFile) {
+            /*if ($photoFile) {
                 $oldPhoto = $formation->getPhoto();
                 if ($oldPhoto) {
                     $oldPath = $this->getParameter('kernel.project_dir') . '/public/' . $oldPhoto;
@@ -262,7 +299,41 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
                     $newFilename
                 );
                 $formation->setPhoto('img/' . $newFilename);
+            }*/
+            if ($photoFile) {
+        
+            $oldPhoto = $formation->getPhoto();
+            if ($oldPhoto) {
+                $oldFilename = basename($oldPhoto);
+                
+             
+                $oldPathPublic = $this->getParameter('kernel.project_dir') . '/public/' . $oldPhoto;
+                if (file_exists($oldPathPublic)) {
+                    unlink($oldPathPublic);
+                }
+                
+               
+                $oldPathSecondary = 'C:/xampp/htdocs/img/' . $oldFilename;
+                if (file_exists($oldPathSecondary)) {
+                    unlink($oldPathSecondary);
+                }
             }
+
+ 
+            $newFilename = uniqid() . '.' . $photoFile->guessExtension();
+            $destination = $this->getParameter('kernel.project_dir') . '/public/img';
+            
+       
+            $photoFile->move($destination, $newFilename);
+            $formation->setPhoto('img/' . $newFilename);
+            
+         
+            $secondaryDestination = 'C:/xampp/htdocs/img';
+            copy(
+                $destination . '/' . $newFilename,
+                $secondaryDestination . '/' . $newFilename
+            );
+        }
 
             $entityManager->flush();
 
