@@ -3,6 +3,7 @@
 {% block title %}Assigner un cours{% endblock %}
 
 {% block content %}
+<div class="content container-fluid" style="margin-top: -52%;">
 <div class="container mt-5">
     <h2 class="mb-4">Assigner un cours à la formation : <strong>{{ formation.titre }}</strong></h2>
 
@@ -19,5 +20,6 @@
         <button type="submit" class="btn btn-success">Assigner</button>
         <a href="{{ path('app_formation_index') }}" class="btn btn-secondary">Annuler</a>
     </form>
+</div>
 </div>
 {% endblock %}

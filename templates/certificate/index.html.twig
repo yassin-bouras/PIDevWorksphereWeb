@@ -3,7 +3,8 @@
 {% block title %}Générer un Certificat{% endblock %}
 
 {% block content %}
-    <h1>Générer un certificat de formation</h1>
+<div class="content container-fluid" style="margin-top: -52%;">
+    <h1>Générer un certificat de formation </h1>
 
     {# Messages d'erreur #}
     {% for label, messages in app.flashes %}
@@ -31,5 +32,6 @@
         <button type="submit" class="btn btn-success">Imprimer le certificat</button>
     </form>
 
-    <a href="{{ path('app_home') }}" class="btn btn-secondary mt-3">Retour à l'accueil</a>
-{% endblock %}
+    <a href="/formation" class="btn btn-secondary mt-3">Retour à l'accueil</a>
+</div>
+    {% endblock %}

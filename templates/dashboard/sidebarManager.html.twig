@@ -5,20 +5,315 @@
 <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/all.min.css') }}">
 <link rel="stylesheet" href="{{ asset('back/css/style.css') }}">
 
+<style>
+    .notification-time {
+        color: #0eaedf !important;
+        font-weight: 600;
+    }
+
+    .notification-message.unread {
+        background-color: #adefef;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    .badge-pill {
+        background-color: #ff0000;
+        color: white;
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        font-size: 10px;
+        width: 20px !important;
+        height: 20px !important;
+        border-radius: 50% !important;
+        font-weight: 600;
+        border: 2px solid #ffffff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0 !important;
+        text-align: center !important;
+        line-height: normal !important;
+        box-sizing: border-box !important;
+    }
+
+    .badge-pill.double-digit {
+        width: 24px !important;
+    }
+
+    #sidebar-loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(4px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        z-index: 999;
+        transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+
+    .sidebar {
+        background: linear-gradient(165deg, #f0f7ff 0%, #e6f2ff 100%);
+        box-shadow: 0 3px 30px rgba(0, 0, 0, 0.08);
+        border-right: none;
+        transition: all 0.3s ease;
+        overflow: hidden;
+        position: relative;
+    }
+    
+    .sidebar::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%234771cb' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.4;
+        pointer-events: none;
+    }
+    
+    .sidebar-inner.slimscroll::-webkit-scrollbar {
+        width: 5px;
+    }
+    .sidebar-inner.slimscroll::-webkit-scrollbar-track {
+        background: rgba(255, 255, 255, 0.3);
+        border-radius: 10px;
+    }
+    .sidebar-inner.slimscroll::-webkit-scrollbar-thumb {
+        background: rgba(71, 113, 203, 0.25);
+        border-radius: 10px;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    .sidebar-inner.slimscroll::-webkit-scrollbar-thumb:hover {
+        background: rgba(71, 113, 203, 0.4);
+    }
+    
+    @keyframes subtle-glow {
+        0%, 100% { box-shadow: 0 4px 12px rgba(71, 113, 203, 0.1); }
+        50% { box-shadow: 0 6px 15px rgba(71, 113, 203, 0.2); }
+    }
+
+    #sidebar-menu ul li a {
+        padding: 11px 15px;
+        color: #4a5568;
+        font-weight: 500;
+        font-size: 14px;
+        border-radius: 8px;
+        margin: 4px 10px;
+        transition: all 0.3s ease;
+        background: rgba(255, 255, 255, 0.6);
+        position: relative;
+        display: flex;
+        align-items: center;
+        overflow: visible;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        box-shadow: 0 1px 3px rgba(71, 113, 203, 0.1);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+
+    #sidebar-menu ul li a:hover {
+        color: #3a5998;
+        background: rgba(255, 255, 255, 0.8);
+        transform: translateX(3px) translateY(-1px);
+        box-shadow: 0 4px 12px rgba(71, 113, 203, 0.15);
+        border: 1px solid rgba(71, 113, 203, 0.2);
+    }
+
+    #sidebar-menu ul li.active a {
+        background: linear-gradient(135deg, rgba(71, 113, 203, 0.15), rgba(71, 113, 203, 0.05));
+        color: #3a5998;
+        font-weight: 600;
+        border-left: 3px solid #4771cb;
+        box-shadow: 0 4px 15px rgba(71, 113, 203, 0.15);
+        border: 1px solid rgba(71, 113, 203, 0.2);
+    }
+
+    #sidebar-menu ul li a span:first-child {
+        font-size: 16px;
+        margin-right: 12px;
+        min-width: 22px;
+        display: inline-block;
+        text-align: center;
+        transition: all 0.3s ease;
+        position: relative;
+        filter: drop-shadow(0 1px 2px rgba(71, 113, 203, 0.2));
+    }
+    
+    .highlight-item a {
+        animation: subtle-glow 3s infinite ease-in-out;
+    }
+    
+    .menu-category {
+        padding: 12px 15px 4px;
+        color: #4771cb;
+        font-size: 10.5px;
+        text-transform: uppercase;
+        letter-spacing: 1.3px;
+        font-weight: 700;
+        margin-top: 15px;
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+    }
+    
+    .menu-category:after {
+        content: '';
+        flex-grow: 1;
+        height: 1px;
+        margin-left: 10px;
+        background: linear-gradient(90deg, 
+            rgba(51, 204, 197, 0.7), 
+            rgba(71, 113, 203, 0.5), 
+            rgba(71, 113, 203, 0.1));
+        transition: all 0.3s ease;
+    }
+
+    .menu-separator {
+        margin: 12px 15px;
+        height: 1px;
+        background: linear-gradient(90deg, 
+            rgba(71, 113, 203, 0.2), 
+            rgba(71, 113, 203, 0.05), 
+            transparent);
+        position: relative;
+    }
+    
+    .menu-separator:after {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 1px;
+        width: 100%;
+        height: 1px;
+        background: linear-gradient(90deg, 
+            rgba(255, 255, 255, 0.7), 
+            rgba(255, 255, 255, 0.5), 
+            transparent);
+    }
+
+    .sidebar-menu .logout {
+        margin-top: 30px;
+        padding-top: 10px;
+        border-top: 1px solid rgba(71, 113, 203, 0.1);
+    }
+
+    .sidebar-menu .logout li a {
+        background: linear-gradient(90deg, rgba(255, 77, 79, 0.03), transparent);
+        color: #ff4d4f;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+    }
+
+    .sidebar-menu .logout li a:hover {
+        background: rgba(255, 77, 79, 0.08);
+        transform: translateX(3px);
+        box-shadow: 0 2px 8px rgba(255, 77, 79, 0.08);
+    }
+    
+    #sidebar-menu ul li a:hover span:first-child {
+        transform: scale(1.1) translateY(-1px);
+        filter: drop-shadow(0 2px 4px rgba(71, 113, 203, 0.3));
+    }
+    
+    #sidebar-menu ul li.active a::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        box-shadow: inset 3px 0 0 rgba(71, 113, 203, 0.7);
+        border-radius: 8px;
+        z-index: 0;
+    }
+    
+    .header-left a.logo {
+        display: flex;
+        align-items: center;
+    }
+    
+    .fade-out {
+        opacity: 0;
+        transform: translateY(-15px) scale(0.98);
+        transition: all 0.6s cubic-bezier(0.19, 1, 0.22, 1);
+    }
+    
+    .sidebar-loader-container {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100px;
+        height: 100px;
+    }
+    
+    .sidebar-spinner {
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        background: conic-gradient(from 0deg,
+                transparent 0%,
+                transparent 5%,
+                rgba(51, 204, 197, 0.3) 5%,
+                rgba(51, 204, 197, 1) 30%,
+                rgba(71, 113, 203, 1) 70%,
+                rgba(71, 113, 203, 0.3) 95%,
+                transparent 95%);
+        animation: sidebar-spin 1.2s linear infinite;
+        box-shadow:
+            0 6px 20px rgba(71, 113, 203, 0.2),
+            0 2px 8px rgba(51, 204, 197, 0.1),
+            inset 0 0 0 1px rgba(255, 255, 255, 0.1);
+    }
+    
+    @keyframes sidebar-spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+</style>
+
 {% endblock %}
 
 <div class="main-wrapper">
-
-
     <div class="header">
         <div class="header-left">
-            <a href="/" class="logo">
-                <img src="{{ asset('back/img/logo.png') }}" alt="Logo">
+            <a href="javascript:void(0);" class="logo">
+                <div style="display: flex; align-items: center; height: 50px;">
+                    <div
+                        style="background: linear-gradient(135deg, #33ccc5, #4771cb); padding: 6px; border-radius: 8px; margin-right: 4px; margin-top: 6%; box-shadow: 0 3px 8px rgba(71, 113, 203, 0.2); display: flex; align-items: center; justify-content: center; width: 36px; height: 36px;">
+                        <span style="color: white; font-weight: bold; font-size: 18px; letter-spacing: 1px;">W</span>
+                    </div>
+                    <h4
+                        style="margin-top: 6%; font-size: 22px; font-weight: 750; background: linear-gradient(90deg, #33ccc5, #4771cb); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 0.5px;">
+                        WorkSphere
+                    </h4>
+                </div>
             </a>
-            <a href="/" class="logo logo-small">
-                <img src="{{ asset('back/img/logo-small.png') }}" alt="Logo" width="30" height="30">
+            <a href="javascript:void(0);" class="logo logo-small">
+                <div
+                    style="background: linear-gradient(135deg, #33ccc5, #4771cb); width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; border-radius: 6px; box-shadow: 0 2px 5px rgba(71, 113, 203, 0.3); position: relative; margin-top: 15px;">
+                    <span
+                        style="color: white; font-weight: bold; font-size: 16px; letter-spacing: 1px; position: relative; top: 0px;">W</span>
+                </div>
             </a>
-            <a href="javascript:void(0);" id="toggle_btn">
+            <a href="javascript:void(0);" id="toggle_btn" style="margin-left: 11px;">
                 <span class="bar-icon">
                     <span></span>
                     <span></span>
@@ -74,7 +369,6 @@
             <li class="nav-item dropdown has-arrow main-drop">
                 <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
                     <span class="user-img">
-                      
                         <span class="status online"></span>
                     </span>
                     <span id="user-full-name"></span>
@@ -84,92 +378,99 @@
                         <i data-feather="user" class="mr-1"></i> Profile
                     </a>
                     <a class="dropdown-item" href="#"><i data-feather="settings" class="mr-1"></i> Settings</a>
-             </div>
+                </div>
             </li>
         </ul>
     </div>
 
-
-
-
-
-<div class="sidebar" id="sidebar">
-<div class="sidebar-inner slimscroll">
-<div class="sidebar-contents">
-<div id="sidebar-menu" class="sidebar-menu">
-<div class="mobile-show">
-<div class="offcanvas-menu">
-<div class="user-info align-center bg-theme text-center">
-<span class="lnr lnr-cross  text-white" id="mobile_btn_close">X</span>
-<a href="javascript:void(0)" class="d-block menu-style text-white">
-<div class="user-avatar d-inline-block mr-3">
-	
-	<img src="{{ asset('back/img/profiles/avatar-18.jpg') }}" alt="user avatar" class="rounded-circle" width="50">
-
-</div>
-</a>
-</div>
-</div>
-
-<div class="sidebar-input">
-    <div class="top-nav-search">
-    <form>
-    <input type="text" class="form-control" placeholder="Search here">
-    <button class="btn" type="submit"><i class="fas fa-search"></i></button>
-    </form>
-    </div>
-    </div>
-     </div>
-    <ul>
-      <li class="active">
-        <a href="/profile">
-          <span>👤 Profile</span>
-        </a>
-      </li>
-      <li>
-        <a href="/equipe">
-          <span>👥 Equipe</span>
-        </a>
-      </li>
-      <li>
-        <a href="/projet">
-          <span>📢 Projet</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="/tache">
-          <span>📊 Kanban</span>
-        </a>
-      </li>
-
-      <li>
-        <a href="/changer-mot-de-passe">
-          <span>🔄 Mot de Passe</span>
-        </a>
-      </li>
-     
-      </li>
-    </ul>
-                    <ul class="logout">
-                        <li><a href="/logout"><span>🚪 Log out</span></a></li>
+    <div class="sidebar" id="sidebar">
+        <div id="sidebar-loading-overlay">
+            <div class="sidebar-loader-container">
+                <div class="sidebar-pulse"></div>
+                <div class="sidebar-spinner"></div>
+            </div>
+            <div class="sidebar-loading-text">WorkSphere Dashboard ...</div>
+        </div>
+        <div class="sidebar-inner slimscroll">
+            <div class="sidebar-contents">
+                <div id="sidebar-menu" class="sidebar-menu">
+                    <div class="mobile-show">
+                        <div class="offcanvas-menu">
+                            <div class="user-info align-center bg-theme text-center">
+                                <span class="lnr lnr-cross text-white" id="mobile_btn_close">X</span>
+                                <a href="javascript:void(0)" class="d-block menu-style text-white">
+                                    <div class="user-avatar d-inline-block mr-3">
+                                        <img src="{{ asset('back/img/profiles/avatar-18.jpg') }}" alt="user avatar" class="rounded-circle" width="50">
+                                    </div>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="sidebar-input">
+                            <div class="top-nav-search">
+                                <form>
+                                    <input type="text" class="form-control" placeholder="Search here">
+                                    <button class="btn" type="submit"><i class="fas fa-search"></i></button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    <ul id="sidebar-links">
+                        <!-- Sidebar links will be populated here -->
                     </ul>
-    
-    
-    </div>
-    </div>
-    </div>
-    
+                    <ul>
+                        <li class="active">
+                            <a href="/profile">
+                                <span>👤 Profile</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/equipe">
+                                <span>👥 Equipe</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/projet">
+                                <span>📢 Projet</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/tache">
+                                <span>📊 Kanban</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="/changer-mot-de-passe">
+                                <span>🔄 Mot de Passe</span>
+                            </a>
+                        </li>
+                    </ul>
+                    <div class="menu-separator"></div>
+                    <ul class="logout">
+                        <li><a href="{{ path('app_logout') }}"><span>🚪 Se déconnecter</span></a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
       document.addEventListener('DOMContentLoaded', function() {
+          const sidebarLoadingOverlay = document.getElementById('sidebar-loading-overlay');
+          
+          function hideSidebarLoading() {
+              if (sidebarLoadingOverlay) {
+                  sidebarLoadingOverlay.classList.add('fade-out');
+                  setTimeout(() => {
+                      sidebarLoadingOverlay.style.display = 'none';
+                  }, 300);
+              }
+          }
+          
           function getCookie(name) {
               let cookieArray = document.cookie.split('; ');
               let cookie = cookieArray.find(row => row.startsWith(name + '='));
               return cookie ? cookie.split('=')[1] : null;
           }
-  
   
           fetch('/jwt/user', {
               method: 'POST',
@@ -220,21 +521,34 @@
                           <li><a href="/"><span>📂 Projet</span></a></li>
                           <li><a href="/"><span>🔄 Mot de Passe</span></a></li>
                       `;
-                  } else if (user.role === 'manager') {
-                    sidebarLinks.innerHTML += `
-                       <li><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
-                    <li><a href="/equipe"><span>👥 Équipe</span></a></li>
-                    <li><a href="/projet"><span>📂 Projet</span></a></li>
-                     <li><a href="/tache"><span>📊 Kanban</span></a></li>
-                     <li><a href="/mdp"><span>🔄 Mot de Passe</span></a></li>
-                    `;
                   }
+                //   } else if (user.role === 'manager' || user.role === 'Manager') {
+                //     sidebarLinks.innerHTML += `
+                //        <li><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
+                //     <li><a href="/equipe"><span>👥 Équipe</span></a></li>
+                //     <li><a href="/projet"><span>📂 Projet</span></a></li>
+                //      <li><a href="/tache"><span>📊 Kanban</span></a></li>
+                //      <li><a href="/mdp"><span>🔄 Mot de Passe</span></a></li>
+                     
+                //      <div class="menu-separator"></div>
+                //      <div class="logout">
+                //          <li><a href="{{ path('app_logout') }}" title="Se déconnecter">
+                //              <span style="color: #ff4d4f;">🚪</span><span>Se déconnecter</span>
+                //          </a></li>
+                //      </div>
+                //     `;
+                //   }
+                  
+                  // Hide loading overlay
+                  hideSidebarLoading();
               } else {
                   console.error('Failed to fetch user data:', data.error);
+                  hideSidebarLoading();
               }
           })
           .catch(error => {
               console.error('Error fetching user data:', error);
+              hideSidebarLoading();
           });
       });
   </script>
@@ -248,5 +562,4 @@
     <script src="{{ asset('back/plugins/apexchart/apexcharts.min.js') }}"></script>
     <script src="{{ asset('back/plugins/apexchart/chart-data.js') }}"></script>
     <script src="{{ asset('back/js/script.js') }}"></script>
-    
     {% endblock %}

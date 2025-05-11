@@ -1,4 +1,5 @@
 <header class="header-area header-sticky wow slideInDown" data-wow-duration="0.75s" data-wow-delay="0s">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Add styles for loading overlay -->
     <style>
         /* Full page loading overlay */
@@ -15,7 +16,7 @@
             z-index: 9999;
             transition: opacity 0.5s ease;
         }
-        
+
         .auth-spinner {
             width: 70px;
             height: 70px;
@@ -25,7 +26,7 @@
             border-bottom: 4px solid #33ccc5;
             animation: auth-spin 1.2s linear infinite;
         }
-        
+
         .auth-spinner::after {
             content: "";
             position: absolute;
@@ -39,30 +40,132 @@
             left: 5px;
             animation: auth-spin-reverse 0.8s linear infinite;
         }
-        
+
         @keyframes auth-spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
         }
-        
+
         @keyframes auth-spin-reverse {
-            0% { transform: rotate(360deg); }
-            100% { transform: rotate(0deg); }
+            0% {
+                transform: rotate(360deg);
+            }
+
+            100% {
+                transform: rotate(0deg);
+            }
         }
-        
+
         /* Hide the login button initially */
         #default-login-button {
             opacity: 0;
             transition: opacity 0.3s ease;
         }
-        
+
         #default-login-button.loaded {
             opacity: 1;
         }
-        
+
         /* Smooth transition for button text change */
         .main-blue-button a {
             transition: all 0.3s ease;
+        }
+
+        /* Enhanced hover effects for navbar links */
+        .scroll-to-section a {
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin: 0 5px;
+            font-weight: 500;
+        }
+
+        /* Create a background highlight effect on hover */
+        .scroll-to-section a:hover {
+            color: #fff;
+            background: linear-gradient(90deg, #33ccc5, #4771cb);
+            box-shadow: 0 5px 15px rgba(71, 113, 203, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Special styling for the active link */
+        .scroll-to-section a.active {
+            color: #fff;
+            background: linear-gradient(90deg, #33ccc5, #4771cb);
+            box-shadow: 0 5px 15px rgba(71, 113, 203, 0.3);
+        }
+
+        /* Add a small icon before each menu item */
+        .scroll-to-section a::before {
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-right: 8px;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .scroll-to-section a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Specific icons for each menu item */
+        .scroll-to-section:nth-child(1) a::before {
+            content: '\f015';
+            /* Home icon */
+        }
+
+        .scroll-to-section:nth-child(2) a::before {
+            content: '\f0b1';
+            /* Briefcase icon */
+        }
+
+        .scroll-to-section:nth-child(3) a::before {
+            content: '\f15c';
+            /* Document icon */
+        }
+
+        .scroll-to-section:nth-child(4) a::before {
+            content: '\f007';
+            /* User icon */
+        }
+
+        /* Login/Logout button styling */
+        .main-blue-button {
+            transition: all 0.3s ease;
+        }
+
+        .main-blue-button:hover {
+            transform: scale(1.05);
+        }
+
+        .main-blue-button a {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .main-blue-button a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.4s ease;
+            z-index: -1;
+        }
+
+        .main-blue-button:hover a::before {
+            left: 100%;
         }
     </style>
 
@@ -79,24 +182,24 @@
                         <h4>Worksphere <img src="{{ asset('front/images/logo-icon.png') }}" alt=""></h4>
                     </a>
                     <!-- ***** Logo End ***** -->
+
                     <!-- ***** Menu Start ***** -->
                     <ul class="nav" id="sidebar-links">
-                       
                         <li class="scroll-to-section"><a href="{{ path('app_home') }}">Home</a></li>
-                        <!-- <li class="scroll-to-section"><a href="#">Formations</a></li> -->
-                        <!-- <li class="scroll-to-section"><a href="{{ path('app_evennement_index') }}">Evénements</a></li> -->
-                        <li class="scroll-to-section"><a href="{{ path('app_offre_front_index') }}">Offre d'Emploi</a></li>
-                        <li class="scroll-to-section"><a href="{{ path('app_candidature_index') }}">Mes Candidatures</a></li>
-                        <!-- <li class="scroll-to-section"><a href="{{ path('AfficherEquipeFront') }}">Equipe</a></li> -->
-                        
+                        <li class="scroll-to-section"><a href="{{ path('app_offre_front_index') }}">Offre d'Emploi</a>
+                        </li>
+                        <li class="scroll-to-section"><a href="{{ path('app_candidature_index') }}">Mes Candidatures</a>
+                        </li>
+                        <li class="scroll-to-section" id="profile-link" style="display: none;"><a
+                                href="/notification">Profil</a></li>
+
                         <!-- Login button that will be replaced after authentication -->
                         <li class="scroll-to-section" id="default-login-button">
                             <div class="main-blue-button">
                                 <a href="/login">Se Connecter</a>
                             </div>
-                        </li> 
-                        
-                    </ul>        
+                        </li>
+                    </ul>
                     <a class="menu-trigger">
                         <span>Menu</span>
                     </a>
@@ -113,95 +216,89 @@
             let cookie = cookieArray.find(row => row.startsWith(name + '='));
             return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
         }
-        
-        document.addEventListener('DOMContentLoaded', function() {
+
+        document.addEventListener('DOMContentLoaded', function () {
             const token = getCookie('BEARER');
             const loginButton = document.getElementById('default-login-button');
+            const profileLink = document.getElementById('profile-link'); // Get profile link by ID
             const loadingOverlay = document.getElementById('auth-loading-overlay');
-            
+
+            // Function to hide the loading overlay
+            function hideLoadingOverlay() {
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'none';
+                }
+            }
+
             if (!token) {
-                // No token, show login button
+                // No token, show login button and hide loading overlay
                 if (loginButton) {
                     loginButton.classList.add('loaded');
                 }
-                // Hide the loading overlay
-                if (loadingOverlay) {
-                    loadingOverlay.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingOverlay.style.display = 'none';
-                    }, 500);
-                }
+                hideLoadingOverlay();
                 return;
             }
-            
-            // Check authentication status
+            // User has token, show profile link
+            if (profileLink) {
+                profileLink.style.display = 'inline-block';
+            }
+
+            // Fetch user data from the /jwt/user endpoint
             fetch('/jwt/user', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ token: token })
+                body: JSON.stringify({ token: token }) // Pass the token from cookies
             })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success && loginButton) {
-                    const user = data.user;
-                    
-                    // Replace login button with logout button
-                    loginButton.innerHTML = `
-                        <div class="main-blue-button">
-                            <a href="/logout">Se déconnecter</a>
-                        </div>
-                    `;
-                    
-                    // Role-specific additions here
-                    if (user.role === 'Employe') {
-                        // Find position before login/logout button
-                        const sidebarLinks = document.getElementById('sidebar-links');
-                        
-                        // Create and insert employee-specific links
-                        const reclamationItem = document.createElement('li');
-                        reclamationItem.className = 'scroll-to-section';
-                        reclamationItem.innerHTML = `<a href="/reclamation/user/${user.iduser}">Reclamation</a>`;
-                        
-                        const entretienItem = document.createElement('li');
-                        entretienItem.className = 'scroll-to-section';
-                        entretienItem.innerHTML = `<a href="/entretien/employee">Entretien</a>`;
-                        
-                        sidebarLinks.insertBefore(reclamationItem, loginButton);
-                        sidebarLinks.insertBefore(entretienItem, loginButton);
+                .then(response => response.json())
+                <!-- Update this section in your script (around line 160) -->
+                .then(data => {
+                    if (data.success) {
+                        const user = data.user;
+
+                        // Update the profile link
+                        // if (profileLink) {
+                        //     profileLink.href = `/user/${user.iduser}`;
+                        // }
+                        // Update the profile link URL to point to user profile
+                        if (profileLink && profileLink.querySelector('a')) {
+                            profileLink.querySelector('a').href = "{{ path('app_notification_index') }}";
+                        }
+
+                        // Replace login button with logout button
+                        if (loginButton) {
+                            loginButton.innerHTML = `
+                <div class="main-blue-button">
+                    <a href="/logout">Se déconnecter</a>
+                </div>
+            `;
+                            // Add this line to make the button visible:
+                            loginButton.classList.add('loaded');
+                        }
+                    } else {
+                        console.error('Failed to fetch user data:', data.error);
+                        // Hide profile on error
+                        if (profileLink) {
+                            profileLink.style.display = 'none';
+                        }
+                        // Still make button visible even on error
+                        if (loginButton) {
+                            loginButton.classList.add('loaded');
+                        }
                     }
-                }
-                
-                // Show the login/logout button
-                if (loginButton) {
-                    loginButton.classList.add('loaded');
-                }
-                
-                // Hide the loading overlay
-                if (loadingOverlay) {
-                    loadingOverlay.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingOverlay.style.display = 'none';
-                    }, 500);
-                }
-            })
-            .catch(error => {
-                console.error('Fetch error:', error);
-                
-                // On error, still show login button and hide loading
-                if (loginButton) {
-                    loginButton.classList.add('loaded');
-                }
-                
-                if (loadingOverlay) {
-                    loadingOverlay.style.opacity = '0';
-                    setTimeout(() => {
-                        loadingOverlay.style.display = 'none';
-                    }, 500);
-                }
-            });
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                    // Hide profile on error
+                    if (profileLink) {
+                        profileLink.style.display = 'none';
+                    }
+                })
+                .finally(() => {
+                    // Hide the loading overlay regardless of success or failure
+                    hideLoadingOverlay();
+                });
         });
     </script>
 </header>
-<!-- ***** Header Area End ***** -->

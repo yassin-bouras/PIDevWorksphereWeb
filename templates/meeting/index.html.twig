@@ -2,11 +2,12 @@
 
 
 {% block content %}
+<div class="content container-fluid" style="margin-top: -52%;">
     <h1>Bienvenue dans la salle {{ roomName }}</h1>
     <iframe src="https://meet.jit.si/{{ roomName }}" 
             style="width: 100%; height: 600px; border: 0;" 
             allow="camera; microphone; fullscreen; display-capture"></iframe>
 
     <a href="{{ path('app_formation_index') }}" class="btn btn-secondary mt-4 d-block mx-auto">Quitter la salle</a>
-   
+</div>
 {% endblock %}

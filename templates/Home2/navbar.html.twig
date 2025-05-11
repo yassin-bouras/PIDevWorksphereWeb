@@ -1,4 +1,5 @@
 <header class="header-area header-sticky wow slideInDown" data-wow-duration="0.75s" data-wow-delay="0s">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <!-- Add styles for loading overlay -->
     <style>
         /* Full page loading overlay */
@@ -74,6 +75,98 @@
         .main-blue-button a {
             transition: all 0.3s ease;
         }
+
+        /* Enhanced hover effects for navbar links */
+        .scroll-to-section a {
+            position: relative;
+            transition: all 0.3s ease;
+            padding: 10px 15px;
+            border-radius: 20px;
+            margin: 0 5px;
+            font-weight: 500;
+        }
+
+        /* Create a background highlight effect on hover */
+        .scroll-to-section a:hover {
+            color: #fff;
+            background: linear-gradient(90deg, #33ccc5, #4771cb);
+            box-shadow: 0 5px 15px rgba(71, 113, 203, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Special styling for the active link */
+        .scroll-to-section a.active {
+            color: #fff;
+            background: linear-gradient(90deg, #33ccc5, #4771cb);
+            box-shadow: 0 5px 15px rgba(71, 113, 203, 0.3);
+        }
+
+        /* Add a small icon before each menu item */
+        .scroll-to-section a::before {
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            margin-right: 8px;
+            opacity: 0;
+            transform: translateX(-10px);
+            transition: all 0.3s ease;
+        }
+
+        .scroll-to-section a:hover::before {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        /* Specific icons for each menu item */
+        .scroll-to-section:nth-child(1) a::before {
+            content: '\f015';
+            /* Home icon */
+        }
+
+        .scroll-to-section:nth-child(2) a::before {
+            content: '\f0b1';
+            /* Briefcase icon */
+        }
+
+        .scroll-to-section:nth-child(3) a::before {
+            content: '\f15c';
+            /* Document icon */
+        }
+
+        .scroll-to-section:nth-child(4) a::before {
+            content: '\f007';
+            /* User icon */
+        }
+
+        /* Login/Logout button styling */
+        .main-blue-button {
+            transition: all 0.3s ease;
+        }
+
+        .main-blue-button:hover {
+            transform: scale(1.05);
+        }
+
+        .main-blue-button a {
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .main-blue-button a::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), transparent);
+            transition: all 0.4s ease;
+            z-index: -1;
+        }
+
+        .main-blue-button:hover a::before {
+            left: 100%;
+        }
     </style>
 
     <!-- Full page loading overlay -->
@@ -97,7 +190,8 @@
                         </li>
                         <li class="scroll-to-section"><a href="{{ path('app_candidature_index') }}">Mes Candidatures</a>
                         </li>
-                        <li class="scroll-to-section"><a href="/user/${user.iduser}">>Profil</a></li>
+                        <li class="scroll-to-section" id="profile-link" style="display: none;"><a
+                                href="/notification">Profil</a></li>
 
                         <!-- Login button that will be replaced after authentication -->
                         <li class="scroll-to-section" id="default-login-button">
@@ -116,72 +210,95 @@
     </div>
 
     <script>
-    // Utility function to get cookies
-    function getCookie(name) {
-        let cookieArray = document.cookie.split('; ');
-        let cookie = cookieArray.find(row => row.startsWith(name + '='));
-        return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
-    }
-
-    document.addEventListener('DOMContentLoaded', function () {
-        const token = getCookie('BEARER');
-        const loginButton = document.getElementById('default-login-button');
-        const profileLink = document.querySelector('a[href="/user/${user.iduser}"]');
-        const loadingOverlay = document.getElementById('auth-loading-overlay');
-
-        // Function to hide the loading overlay
-        function hideLoadingOverlay() {
-            if (loadingOverlay) {
-                loadingOverlay.style.display = 'none';
-            }
+        // Utility function to get cookies
+        function getCookie(name) {
+            let cookieArray = document.cookie.split('; ');
+            let cookie = cookieArray.find(row => row.startsWith(name + '='));
+            return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
         }
 
-        if (!token) {
-            // No token, show login button and hide loading overlay
-            if (loginButton) {
-                loginButton.classList.add('loaded');
-            }
-            hideLoadingOverlay();
-            return;
-        }
+        document.addEventListener('DOMContentLoaded', function () {
+            const token = getCookie('BEARER');
+            const loginButton = document.getElementById('default-login-button');
+            const profileLink = document.getElementById('profile-link'); // Get profile link by ID
+            const loadingOverlay = document.getElementById('auth-loading-overlay');
 
-        // Fetch user data from the /jwt/user endpoint
-        fetch('/jwt/user', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ token: token }) // Pass the token from cookies
-        })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                const user = data.user;
-
-                // Update the profile link
-                if (profileLink) {
-                    profileLink.href = `/user/${user.iduser}`;
+            // Function to hide the loading overlay
+            function hideLoadingOverlay() {
+                if (loadingOverlay) {
+                    loadingOverlay.style.display = 'none';
                 }
+            }
 
-                // Replace login button with logout button
+            if (!token) {
+                // No token, show login button and hide loading overlay
                 if (loginButton) {
-                    loginButton.innerHTML = `
-                        <div class="main-blue-button">
-                            <a href="/logout">Se déconnecter</a>
-                        </div>
-                    `;
+                    loginButton.classList.add('loaded');
                 }
-            } else {
-                console.error('Failed to fetch user data:', data.error);
+                hideLoadingOverlay();
+                return;
             }
-        })
-        .catch(error => {
-            console.error('Error fetching user data:', error);
-        })
-        .finally(() => {
-            // Hide the loading overlay regardless of success or failure
-            hideLoadingOverlay();
+            // User has token, show profile link
+            if (profileLink) {
+                profileLink.style.display = 'inline-block';
+            }
+
+            // Fetch user data from the /jwt/user endpoint
+            fetch('/jwt/user', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ token: token }) // Pass the token from cookies
+            })
+                .then(response => response.json())
+                <!-- Update this section in your script (around line 160) -->
+                .then(data => {
+                    if (data.success) {
+                        const user = data.user;
+
+                        // Update the profile link
+                        // if (profileLink) {
+                        //     profileLink.href = `/user/${user.iduser}`;
+                        // }
+                        // Update the profile link URL to point to user profile
+                        if (profileLink && profileLink.querySelector('a')) {
+                            profileLink.querySelector('a').href = "{{ path('app_notification_index') }}";
+                        }
+
+                        // Replace login button with logout button
+                        if (loginButton) {
+                            loginButton.innerHTML = `
+                <div class="main-blue-button">
+                    <a href="/logout">Se déconnecter</a>
+                </div>
+            `;
+                            // Add this line to make the button visible:
+                            loginButton.classList.add('loaded');
+                        }
+                    } else {
+                        console.error('Failed to fetch user data:', data.error);
+                        // Hide profile on error
+                        if (profileLink) {
+                            profileLink.style.display = 'none';
+                        }
+                        // Still make button visible even on error
+                        if (loginButton) {
+                            loginButton.classList.add('loaded');
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error fetching user data:', error);
+                    // Hide profile on error
+                    if (profileLink) {
+                        profileLink.style.display = 'none';
+                    }
+                })
+                .finally(() => {
+                    // Hide the loading overlay regardless of success or failure
+                    hideLoadingOverlay();
+                });
         });
-    });
-</script>
+    </script>
 </header>
