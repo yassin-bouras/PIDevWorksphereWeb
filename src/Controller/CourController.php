@@ -22,45 +22,64 @@ final class CourController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_cour_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $cour = new Cours();
-        $form = $this->createForm(CoursType::class, $cour);
-        $form->handleRequest($request);
-    
-        if ($form->isSubmitted() && $form->isValid()) {
-            $photoFile = $form->get('photo')->getData();
-            if ($photoFile) {
-                // Supprimer l'ancienne image si elle existe
-                $oldPhoto = $cour->getPhoto();
-                if ($oldPhoto) {
-                    $oldPath = $this->getParameter('kernel.project_dir') . '/public/' . $oldPhoto;
-                    if (file_exists($oldPath)) {
-                        unlink($oldPath);
-                    }
+   #[Route('/new', name: 'app_cour_new', methods: ['GET', 'POST'])]
+public function new(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $cour = new Cours();
+    $form = $this->createForm(CoursType::class, $cour);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $photoFile = $form->get('photo')->getData();
+
+        if ($photoFile) {
+            // Supprimer l'ancienne image si elle existe
+            $oldPhoto = $cour->getPhoto();
+            if ($oldPhoto) {
+                $oldFilename = basename($oldPhoto);
+
+                // Supprimer dans /public
+                $oldPathPublic = $this->getParameter('kernel.project_dir') . '/public/' . $oldPhoto;
+                if (file_exists($oldPathPublic)) {
+                    unlink($oldPathPublic);
                 }
 
-                $newFilename = uniqid() . '.' . $photoFile->guessExtension();
-                $photoFile->move(
-                    $this->getParameter('kernel.project_dir') . '/public/img',
-                    $newFilename
-                );
-                $cour->setPhoto('img/' . $newFilename);
+                // Supprimer dans le dossier secondaire
+                $oldPathSecondary = 'C:/xampp/htdocs/img/' . $oldFilename;
+                if (file_exists($oldPathSecondary)) {
+                    unlink($oldPathSecondary);
+                }
             }
 
-            $entityManager->persist($cour);
-            $entityManager->flush();
-    
-            return $this->redirectToRoute('app_cour_index', [], Response::HTTP_SEE_OTHER);
+            // Générer le nouveau nom de fichier propre et unique
+            $originalFilename = pathinfo($photoFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $newFilename = time() . '_' . preg_replace('/[^A-Za-z0-9_\-]/', '_', $originalFilename) . '.' . $photoFile->guessExtension();
+
+            // Destination principale (public)
+            $destination = $this->getParameter('kernel.project_dir') . '/public/img';
+            $photoFile->move($destination, $newFilename);
+
+            $cour->setPhoto('img/' . $newFilename);
+
+            // Copie vers le dossier secondaire
+            $secondaryDestination = 'C:/xampp/htdocs/img';
+            copy(
+                $destination . '/' . $newFilename,
+                $secondaryDestination . '/' . $newFilename
+            );
         }
-    
-        return $this->render('cour/new.html.twig', [
-            'form' => $form->createView(),
-            'cour' => $cour,
-        ]);
+
+        $entityManager->persist($cour);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_cour_index', [], Response::HTTP_SEE_OTHER);
     }
 
+    return $this->render('cour/new.html.twig', [
+        'form' => $form->createView(),
+        'cour' => $cour,
+    ]);
+}
 
     #[Route('/{id_c}', name: 'app_cour_show', methods: ['GET'])]
     public function show(Cours $cour): Response
@@ -129,44 +148,59 @@ final class CourController extends AbstractController
         ]);
     }
     
-    #[Route('/{id_c}/edit', name: 'app_cour_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Cours $cour, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(CoursType::class, $cour);
-        $form->handleRequest($request);
+   #[Route('/{id_c}/edit', name: 'app_cour_edit', methods: ['GET', 'POST'])]
+public function edit(Request $request, Cours $cour, EntityManagerInterface $entityManager): Response
+{
+    $form = $this->createForm(CoursType::class, $cour);
+    $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $photoFile = $form->get('photo')->getData();
-            if ($photoFile) {
-                // Supprimer l'ancienne image si elle existe
-                $oldPhoto = $cour->getPhoto();
-                if ($oldPhoto) {
-                    $oldPath = $this->getParameter('kernel.project_dir') . '/public/' . $oldPhoto;
-                    if (file_exists($oldPath)) {
-                        unlink($oldPath);
-                    }
+    if ($form->isSubmitted() && $form->isValid()) {
+        $photoFile = $form->get('photo')->getData();
+
+        if ($photoFile) {
+            $oldPhoto = $cour->getPhoto();
+            if ($oldPhoto) {
+                $oldFilename = basename($oldPhoto);
+
+                // Supprimer l'image dans /public
+                $oldPathPublic = $this->getParameter('kernel.project_dir') . '/public/' . $oldPhoto;
+                if (file_exists($oldPathPublic)) {
+                    unlink($oldPathPublic);
                 }
 
-                $newFilename = uniqid() . '.' . $photoFile->guessExtension();
-                $photoFile->move(
-                    $this->getParameter('kernel.project_dir') . '/public/img',
-                    $newFilename
-                );
-                $cour->setPhoto('img/' . $newFilename);
+                // Supprimer l'image dans C:/xampp/htdocs/img
+                $oldPathSecondary = 'C:/xampp/htdocs/img/' . $oldFilename;
+                if (file_exists($oldPathSecondary)) {
+                    unlink($oldPathSecondary);
+                }
             }
+
+            // Génération du nouveau nom
+            $newFilename = uniqid() . '.' . $photoFile->guessExtension();
+
+            // Chemin principal
+            $destination = $this->getParameter('kernel.project_dir') . '/public/img';
+            $photoFile->move($destination, $newFilename);
+            $cour->setPhoto('img/' . $newFilename);
+
+            // Copie vers le dossier secondaire
+            $secondaryDestination = 'C:/xampp/htdocs/img';
+            copy(
+                $destination . '/' . $newFilename,
+                $secondaryDestination . '/' . $newFilename
+            );
         }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush();
+        $entityManager->flush();
 
-            return $this->redirectToRoute('app_cour_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('cour/edit.html.twig', [
-            'cour' => $cour,
-            'form' => $form,
-        ]);
+        return $this->redirectToRoute('app_cour_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    return $this->render('cour/edit.html.twig', [
+        'cour' => $cour,
+        'form' => $form,
+    ]);
+}
 
     #[Route('/{id_c}', name: 'app_cour_delete', methods: ['POST'])]
     public function delete(Request $request, Cours $cour, EntityManagerInterface $entityManager): Response

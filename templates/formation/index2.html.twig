@@ -49,8 +49,8 @@
 
             <select name="type" class="form-select w-auto">
                 <option value="">Type</option>
-                <option value="présentiel" {% if app.request.get('type') == 'présentiel' %}selected{% endif %}>Présentiel</option>
-                <option value="distanciel" {% if app.request.get('type') == 'distanciel' %}selected{% endif %}>Distanciel</option>
+                <option value="présentiel" {% if app.request.get('type') == 'Présentiel' %}selected{% endif %}>Présentiel</option>
+                <option value="distanciel" {% if app.request.get('type') == 'Distanciel' %}selected{% endif %}>Distanciel</option>
             </select>
 
             <select name="langue" class="form-select w-auto">

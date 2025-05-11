@@ -44,10 +44,10 @@ class FormationType extends AbstractType
                 ]
             ])
             ->add('type', ChoiceType::class, [
-                'choices' => [
-                    'Présentiel' => 'présentiel',
-                    'Distanciel' => 'distanciel',
-                ],
+                 'choices' => [
+                   'Présentiel' => 'Présentiel',
+                   'Distanciel' => 'Distanciel',
+                 ],
                 'expanded' => false,
                 'multiple' => false,
                 'required' => true,

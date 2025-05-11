@@ -94,12 +94,12 @@
                             <a class="btn" href="{{ path('app_formation_show', {'id_f': formation.idF}) }}" style="background-color: #4771cb; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Voir details <i data-feather="eye"></i> </a>
                             <a class="btn" href="{{ path('app_formation_edit', {'id_f': formation.idF}) }}" style="background-color: #f88f33; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Modifier<i data-feather="edit-3"></i></a>
                             <a class="btn" href="{{ path('app_formation_assign_cours', {'id_f': formation.idF}) }}" style="background-color: #00882E; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;"> Assigner <i data-feather="plus-square"></i></a>
-                            {% if formation.type == 'distanciel' %}
-                            <a class="btn" href="{{ path('app_meeting', {'roomName': 'formation-' ~ formation.idF}) }}"
-                            style="background-color: #007BFF; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">
-                             Meet <i data-feather="video"></i>
-                         </a>
-                        {% endif %}
+                           {% if formation.type == 'Distanciel' %}
+    <a class="btn" href="{{ path('app_meeting', {'roomName': 'formation-' ~ formation.idF}) }}"
+       style="background-color: #007BFF; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">
+        Meet <i data-feather="video"></i>
+    </a>
+{% endif %}
                         </div>
                     </div>
                 </div>

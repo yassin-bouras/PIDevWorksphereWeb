@@ -38,7 +38,7 @@ class Formation
     private ?int $nbPlace = null;
 
     #[ORM\Column(type: 'string', length: 20)]
-    #[Assert\Choice(choices: ['présentiel', 'distanciel'], message: "Le type doit être 'présentiel' ou 'distanciel'.")]
+    #[Assert\Choice(choices: ['Présentiel', 'Distanciel'], message: "Le type doit être 'présentiel' ou 'distanciel'.")]
     private ?string $type = null;
 
     #[ORM\Column(type: 'integer', nullable: true)]
@@ -210,28 +210,7 @@ class Formation
     }
 
 
-
-    // #[ORM\ManyToMany(targetEntity: Cours::class, inversedBy: 'formations')]
-    // private Collection $cours;
-    // public function getCours(): Collection
-    // {
-    //     return $this->cours;
-    // }
-
-    // public function addCour(Cours $cour): self
-    // {
-    //     if (!$this->cours->contains($cour)) {
-    //         $this->cours[] = $cour;
-    //     }
-
-    //     return $this;
-    // }
-
-    // public function removeCour(Cours $cour): self
-    // {
-    //     $this->cours->removeElement($cour);
-    //     return $this;
-    // }
+    
 
     #[ORM\OneToMany(mappedBy: 'formation', targetEntity: Cours::class, orphanRemoval: true)]
     private Collection $cours;
@@ -285,4 +264,6 @@ class Formation
 
         return $this;
     }
+
+
 }
