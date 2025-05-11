@@ -1,4 +1,8 @@
-
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('back/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/fontawesome.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/all.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('back/css/style.css') }}">
     <style>
         .form-group {
             margin-bottom: 20px; /* Increased from 12px */
@@ -32,7 +36,9 @@
             margin-bottom: 5px;
         }
     </style>
+{% endblock %}
 
+{% block content %}
 <div class="content container-fluid">
     <div class="row">
         <div class="col-xl-12 col-sm-12 col-12">
@@ -204,3 +210,4 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+{% endblock %}

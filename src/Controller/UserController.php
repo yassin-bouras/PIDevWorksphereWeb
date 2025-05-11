@@ -73,17 +73,32 @@ final class UserController extends AbstractController
                 $user->setMdp($hashedPassword);
             }
 
+            $imageFile = $form->get('imageprofil')->getData();
+            if ($imageFile) {
+                // Define the path to the XAMPP htdocs directory
+                $uploadsDir = 'C:/xampp/htdocs/img';
+                if (!is_dir($uploadsDir)) {
+                    mkdir($uploadsDir, 0777, true);
+                }
+
+                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+                $imageFile->move($uploadsDir, $newFilename);
+
+                // Save the relative path to the database
+                $user->setImageprofil('htdocs/img/' . $newFilename);
+            }
+
             $entityManager->persist($user);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_login', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_login');
         }
-
         return $this->render('user/new.html.twig', [
             'user' => $user,
             'form' => $form->createView(),
         ]);
     }
+
 
     #[Route('/{iduser}', name: 'app_user_show', methods: ['GET'])]
     public function show(User $user): Response

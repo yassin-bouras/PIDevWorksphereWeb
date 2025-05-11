@@ -104,24 +104,24 @@
                     <div class="noti-content">
                         <ul class="notification-list">
                             <li class="notification-message">
-                               <button class="btn btn-success" id="openWebSocketBtn">
-                <i class="bi bi-broadcast"></i> Open Communication Port
-            </button>
-                                    <div class="media">
-                                        <span class="avatar avatar-sm">
-                                            <img class="avatar-img rounded-circle" alt="Photo de profil"
-                                                src="{{ asset('back/img/profiles/avatar-02.jpg') }}">
-                                        </span>
-                                        <div class="media-body">
-                                            <p class="noti-details">
-                                                <span class="noti-title">Brian Johnson</span> paid the invoice <span
-                                                    class="noti-title">#DF65485</span>
-                                            </p>
-                                            <p class="noti-time">
-                                                <span class="notification-time">4 mins ago</span>
-                                            </p>
-                                        </div>
+                                <button class="btn btn-success" id="openWebSocketBtn">
+                                    <i class="bi bi-broadcast"></i> Open Communication Port
+                                </button>
+                                <div class="media">
+                                    <span class="avatar avatar-sm">
+                                        <img class="avatar-img rounded-circle" alt="Photo de profil"
+                                            src="{{ asset('back/img/profiles/avatar-02.jpg') }}">
+                                    </span>
+                                    <div class="media-body">
+                                        <p class="noti-details">
+                                            <span class="noti-title">Brian Johnson</span> paid the invoice <span
+                                                class="noti-title">#DF65485</span>
+                                        </p>
+                                        <p class="noti-time">
+                                            <span class="notification-time">4 mins ago</span>
+                                        </p>
                                     </div>
+                                </div>
                                 </a>
                             </li>
                         </ul>
@@ -138,7 +138,7 @@
             <li class="nav-item dropdown has-arrow main-drop">
                 <a href="#" class="dropdown-toggle nav-link" data-toggle="dropdown">
                     <span class="user-img">
-                        <img id="user-profile-image" src="{{ asset('back/img/profile.jpg') }}" alt="">
+                   <img id="user-profile-image" src="img/681cbc5443e87.jpg" alt="User Image">
                         <span class="status online"></span>
                     </span>
                     <span id="user-full-name">Guest</span>
@@ -170,10 +170,10 @@
 </div>
 
 <script>
-        document.getElementById('openWebSocketBtn').addEventListener('click', function() {
-            window.location.href = '{{ path("admin_websocket_communication") }}';
-        });
-    
+    document.getElementById('openWebSocketBtn').addEventListener('click', function () {
+        window.location.href = '{{ path("admin_websocket_communication") }}';
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
         function getCookie(name) {
             let cookieArray = document.cookie.split('; ');
@@ -193,9 +193,38 @@
             .then(data => {
                 if (data.success) {
                     const user = data.user;
-                    document.getElementById('user-profile-image').src = user.imageprofil || '{{ asset('back / img / profile.jpg') }}';
-                    document.getElementById('user-full-name').textContent = user.nom + ' ' + user.prenom;
-                    document.getElementById('user-profile-link').href = '/user/' + user.iduser;
+
+
+if (user && user.image) {
+    let rawPath = user.image;
+
+    // Strip "htdocs/" if it exists
+    let cleanedPath = rawPath.startsWith('htdocs/')
+        ? rawPath.replace('htdocs/', '')
+        : rawPath;
+
+    // Ensure it starts with a single slash
+    cleanedPath = '/' + cleanedPath.replace(/^\/+/, '');
+
+    // Set the image src
+    //document.getElementById('user-profile-image').src = cleanedPath;
+
+    // Optional: log what’s actually being applied
+    console.log("✔ Final image URL set to:", cleanedPath);
+} else {
+    // Fallback image
+    document.getElementById('user-profile-image').src = '{{ asset("back/img/profile.jpg") }}';
+    console.log("❗ No image found for user, using default.");
+}
+
+// Set name and link
+document.getElementById('user-full-name').textContent = user.nom + ' ' + user.prenom;
+document.getElementById('user-profile-link').href = '/user/' + user.iduser;
+
+    // Ensure the path starts with a single /
+
+
+
 
                     /**********************************************************************************************************************
                                                     // Populate role-specific notifications
@@ -375,7 +404,6 @@
 
                                         notificationList.innerHTML = notificationHtml;
                                     } else {
-                                        // No notifications - ensure badge is removed
                                         if (badgeElement) {
                                             badgeElement.textContent = '';
                                             badgeElement.classList.remove('badge-pill');
@@ -400,7 +428,6 @@
                             });
                     }
 
-                    // Function to calculate time ago
                     function getTimeAgo(date) {
                         const seconds = Math.floor((new Date() - date) / 1000);
 
@@ -428,35 +455,36 @@
                     if (user.role === 'RH') {
                         sidebarLinks.innerHTML += `
                         <li><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
-                        <li><a href="/contrat"><span>📜 Contrat</span></a></li>
-                        <li><a href="/sponsor"><span>📢 Gestion Sponsor</span></a></li>
+                        <li><a href="/contrat"><span>✍️ Contrat</span></a></li>
+                        <li><a href="/sponsor"><span>🤝 Gestion Sponsor</span></a></li>
                         <li><a href="/user"><span>👥 Gestion User</span></a></li>
-                        <li><a href="/evennement"><span>✅ Evenements</span></a></li>
-                        <li><a href="/formation"><span>📢 Formations</span></a></li>
-                        <li><a href="/offre"><span>🎯 Offres Emploi</span></a></li>
-                        <li><a href="/entretien"><span>🔥 Entretien</span></a></li>
+                        <li><a href="/evennement"><span>🎉 Evenements</span></a></li>
+                        <li><a href="/formation"><span>🧑‍🏫 Formations</span></a></li>
+                        <li><a href="/offre"><span>💼 Offres Emploi</span></a></li>
+                        <li><a href="/entretien"><span>💬 Entretien</span></a></li>
                        <li><a href="/history"><span>📜 historique entretien</span></a></li>
                         <li><a href="/entretien/news"><span>📰 voir Last news</span></a></li>
-                        
                         <li><a href="/mdp"><span>🔄 Mot de Passe</span></a></li>
                     `;
                     } else if (user.role === 'Candidat') {
                         sidebarLinks.innerHTML += `
-                        <li><a href="/"><span>💼 Offre Emploi</span></a></li>
+                        <li><a href="/offre/front"><span>💼 Offre Emploi</span></a></li>
                         <li><a href="/reclamation/user/${user.iduser}"><span>📄 Reclamation</span></a></li>
-                        <li><a href="/"><span>🗳️ Candidatures</span></a></li>
+                        <li><a href="/candidature"><span>🗳️ Mes Candidatures</span></a></li>
+                        <li><a href="{{ path('app_notification_index') }}"><span>🔔 Notifications</span></a></li>
                         <li><a href="/"><span>🔄 Changer Mot de Passe</span></a></li>
                     `;
+                    
                     } else if (user.role === 'Employe') {
                         sidebarLinks.innerHTML += `
                         <li class="active"><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
                         <li><a href="/reclamation/user/${user.iduser}"><span>🔄 Reclamation</span></a></li>
                         <li><a href="/formation"><span>📢 Formation</span></a></li>
                         <li><a href="/entretien/employees"><span>🚀 Entretien Archive</span></a></li>
-                        <li><a href="/entretien/employee"><span>🚀 Entretien</span></a></li>
+                        <li><a href="/entretien/employee"><span>📜 Entretien</span></a></li>
                         <li><a href="/"><span>🎯 Mes Reservations</span></a></li>
-<li><a href="/formation/employe"><span>📢 Formation</span></a></li>
-<li><a href="/tache/tache/mestaches"><span>📂 Projet</span></a></li>
+                        <li><a href="/formation/employe"><span>📢 Formation</span></a></li>
+                        <li><a href="/tache/tache/mestaches"><span>📂 Projet</span></a></li>
                         <li><a href="/"><span>🔄 Mot de Passe</span></a></li>
                     `;
                     } else if (user.role === 'manager') {

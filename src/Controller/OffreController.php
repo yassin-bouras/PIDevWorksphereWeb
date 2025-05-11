@@ -23,12 +23,24 @@ final class OffreController extends AbstractController
     private $jwtEncoder;
     private $userRepository;
     private $cvAnalyzerService;
-
-    public function __construct(JWTEncoderInterface $jwtEncoder, UserRepository $userRepository, CvAnalyzerService $cvAnalyzerService)
-    {
+    private $offreRepository;
+    private $candidatureRepository;
+    private $logger;
+    
+    public function __construct(
+        JWTEncoderInterface $jwtEncoder, 
+        UserRepository $userRepository, 
+        CvAnalyzerService $cvAnalyzerService,
+        OffreRepository $offreRepository,
+        CandidatureRepository $candidatureRepository,
+        \Psr\Log\LoggerInterface $logger
+    ) {
         $this->jwtEncoder = $jwtEncoder;
         $this->userRepository = $userRepository;
         $this->cvAnalyzerService = $cvAnalyzerService;
+        $this->offreRepository = $offreRepository;
+        $this->candidatureRepository = $candidatureRepository;
+        $this->logger = $logger;
     }
 
     #[Route(name: 'app_offre_index', methods: ['GET'])]
@@ -55,7 +67,7 @@ final class OffreController extends AbstractController
     {
         // Get all offers
         $offres = $offreRepository->findAll();
-        
+
         // Initialize data arrays for charts
         $chartData = [
             'contractType' => [
@@ -77,53 +89,53 @@ final class OffreController extends AbstractController
                 'type' => 'pie'
             ]
         ];
-        
+
         // Temporary arrays to count occurrences
         $counts = [
             'contractTypes' => [],
             'locations' => [],
             'experiences' => []
         ];
-        
+
         // Process data for charts
         foreach ($offres as $offre) {
             $contractType = $offre->getTypecontrat();
             $location = $offre->getLieutravail();
             $experience = $offre->getExperience();
-            
+
             // Count occurrences
             if (!isset($counts['contractTypes'][$contractType])) {
                 $counts['contractTypes'][$contractType] = 0;
             }
             $counts['contractTypes'][$contractType]++;
-            
+
             if (!isset($counts['locations'][$location])) {
                 $counts['locations'][$location] = 0;
             }
             $counts['locations'][$location]++;
-            
+
             if (!isset($counts['experiences'][$experience])) {
                 $counts['experiences'][$experience] = 0;
             }
             $counts['experiences'][$experience]++;
         }
-        
+
         // Prepare data for charts
         foreach ($counts['contractTypes'] as $type => $count) {
             $chartData['contractType']['labels'][] = $type;
             $chartData['contractType']['data'][] = $count;
         }
-        
+
         foreach ($counts['locations'] as $location => $count) {
             $chartData['location']['labels'][] = $location;
             $chartData['location']['data'][] = $count;
         }
-        
+
         foreach ($counts['experiences'] as $experience => $count) {
             $chartData['experience']['labels'][] = $experience;
             $chartData['experience']['data'][] = $count;
-        }  
-        
+        }
+
         // Create contract type chart (doughnut)
         $contractTypeChart = $chartBuilder->createChart(Chart::TYPE_DOUGHNUT);
         $contractTypeChart->setData([
@@ -150,7 +162,7 @@ final class OffreController extends AbstractController
                 ],
             ],
         ]);
-        
+
         // Create location chart (bar)
         $locationChart = $chartBuilder->createChart(Chart::TYPE_BAR);
         $locationChart->setData([
@@ -177,7 +189,7 @@ final class OffreController extends AbstractController
                 ],
             ],
         ]);
-        
+
         // Create experience chart (pie)
         $experienceChart = $chartBuilder->createChart(Chart::TYPE_PIE);
         $experienceChart->setData([
@@ -204,11 +216,11 @@ final class OffreController extends AbstractController
                 ],
             ],
         ]);
-        
+
         // Create offers by date chart
         $dates = [];
         $offersByDate = [];
-        
+
         // Group offers by month
         foreach ($offres as $offer) {
             $date = $offer->getDatepublication();
@@ -221,16 +233,16 @@ final class OffreController extends AbstractController
                 $offersByDate[$yearMonth]++;
             }
         }
-        
+
         // Sort dates chronologically
         sort($dates);
-        
+
         // Prepare data array in the same order as sorted dates
         $dateData = [];
         foreach ($dates as $date) {
             $dateData[] = $offersByDate[$date];
         }
-        
+
         // Create date chart (line)
         $dateChart = $chartBuilder->createChart(Chart::TYPE_LINE);
         $dateChart->setData([
@@ -279,20 +291,20 @@ final class OffreController extends AbstractController
         // Récupérer l'utilisateur actuel
         $currentUser = null;
         $userApplications = [];
-        
+
         $token = $request->cookies->get('BEARER');
         if ($token && $this->jwtEncoder && $this->userRepository) {
             try {
                 $decodedData = $this->jwtEncoder->decode($token);
                 $email = $decodedData['username'] ?? null;
-                
+
                 if ($email) {
                     $currentUser = $this->userRepository->findOneBy(['email' => $email]);
-                    
+
                     // Pour chaque offre, vérifier si l'utilisateur a déjà postulé
                     if ($currentUser) {
                         foreach ($offres as $offre) {
-                            $userApplications[$offre->getId_offre()] = 
+                            $userApplications[$offre->getId_offre()] =
                                 $candidatureRepository->hasUserAppliedToOffer($currentUser, $offre->getId_offre());
                         }
                     }
@@ -378,38 +390,38 @@ final class OffreController extends AbstractController
         return $this->redirectToRoute('app_offre_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/{id_offre}/candidatures', name: 'app_offre_candidatures', methods: ['GET'])]
-    public function candidatures(Offre $offre, CandidatureRepository $candidatureRepository): Response
-    {
-        $candidatures = $candidatureRepository->findBy(['offre' => $offre]);
+    // #[Route('/{id_offre}/candidatures', name: 'app_offre_candidatures', methods: ['GET'])]
+    // public function candidatures(Offre $offre, CandidatureRepository $candidatureRepository): Response
+    // {
+    //     $candidatures = $candidatureRepository->findBy(['offre' => $offre]);
 
-        return $this->render('offre/candidatures.html.twig', [
-            'offre' => $offre,
-            'candidatures' => $candidatures,
-        ]);
-    }
-    
+    //     return $this->render('offre/candidatures.html.twig', [
+    //         'offre' => $offre,
+    //         'candidatures' => $candidatures,
+    //     ]);
+    // }
+
     #[Route('/{id_offre}/compare-cv/{id_candidature}', name: 'app_offre_compare_cv', methods: ['GET'])]
     public function compareCv(Offre $offre, $id_candidature, EntityManagerInterface $entityManager): Response
     {
         $candidature = $entityManager->getRepository('App\Entity\Candidature')->find($id_candidature);
-        
+
         if (!$candidature) {
             throw $this->createNotFoundException('Candidature not found');
         }
-        
+
         // Get offer description
         $offreDescription = $offre->getDescription();
-        
+
         // Use both description and experience for a more comprehensive comparison
         $jobRequirements = $offre->getExperience();
-        
+
         // Get candidate CV path
         $cvPath = $candidature->getCv();
         $fullCvPath = $this->getParameter('uploads_directory') . '/' . $cvPath;
-        
+
         $analysisResult = [];
-        
+
         if (file_exists($fullCvPath) && is_readable($fullCvPath)) {
             // Extract text from the PDF CV
             $cvContent = $this->cvAnalyzerService->extractTextFromPdf($fullCvPath);
@@ -428,7 +440,7 @@ final class OffreController extends AbstractController
                 'assessment' => 'CV file not found or not readable'
             ];
         }
-        
+
         return $this->render('offre/compare_cv.html.twig', [
             'offre' => $offre,
             'candidature' => $candidature,
@@ -444,31 +456,31 @@ final class OffreController extends AbstractController
     public function translateCv(Request $request, Offre $offre, $id_candidature, EntityManagerInterface $entityManager): Response
     {
         $candidature = $entityManager->getRepository('App\Entity\Candidature')->find($id_candidature);
-        
+
         if (!$candidature) {
             throw $this->createNotFoundException('Candidature not found');
         }
-        
+
         // Get candidate CV path
         $cvPath = $candidature->getCv();
         $fullCvPath = $this->getParameter('uploads_directory') . '/' . $cvPath;
-        
+
         $targetLanguage = $request->query->get('language', '');
         $translatedContent = '';
         $error = null;
         $success = false;
-        
+
         // Only proceed if a language is specified
         if ($request->isMethod('POST') && $request->request->has('language')) {
             $targetLanguage = $request->request->get('language');
-            
+
             if (file_exists($fullCvPath) && is_readable($fullCvPath)) {
                 // Extract text from the PDF CV
                 $cvContent = $this->cvAnalyzerService->extractTextFromPdf($fullCvPath);
-                
+
                 // Translate CV to target language
                 $result = $this->cvAnalyzerService->translateCv($cvContent, $targetLanguage);
-                
+
                 if ($result['success']) {
                     $translatedContent = $result['translatedContent'];
                     $success = true;
@@ -479,7 +491,7 @@ final class OffreController extends AbstractController
                 $error = 'CV file not found or not readable';
             }
         }
-        
+
         return $this->render('offre/translate_cv.html.twig', [
             'offre' => $offre,
             'candidature' => $candidature,
@@ -504,4 +516,56 @@ final class OffreController extends AbstractController
     }
 
 
+
+    /**
+     * @Route("/candidatures/{id_offre}", name="app_offre_candidatures", methods={"GET"})
+     */
+    #[Route('/{id_offre}/candidatures', name: 'app_offre_candidatures', methods: ['GET'])]
+    public function candidatures(int $id_offre, CvAnalyzerService $cvAnalyzerService): Response
+    {
+        $offre = $this->offreRepository->find($id_offre);
+
+        if (!$offre) {
+            throw $this->createNotFoundException('Offre non trouvée');
+        }
+
+        $candidatures = $this->candidatureRepository->findBy(['offre' => $offre]);
+
+        // Add match percentages to candidatures
+        foreach ($candidatures as $candidature) {
+            // Default to 0 if no CV
+            $matchPercentage = 0;
+
+            // Only calculate if CV exists
+            if ($candidature->getCv()) {
+                $cvPath = $this->getParameter('uploads_directory') . '/' . $candidature->getCv();
+
+                if (file_exists($cvPath)) {
+                    try {
+                        // Extract text from CV and compare with job requirements
+                        $cvContent = $cvAnalyzerService->extractTextFromPdf($cvPath);
+                        $result = $cvAnalyzerService->compareCvWithJobRequirements(
+                            $cvContent,
+                            $offre->getDescription(),
+                            $offre->getExperience()
+                        );
+
+                        // Store match percentage in candidature object (temporary, not saved to DB)
+                        $matchPercentage = $result['matchPercentage'] ?? 0;
+                    } catch (\Exception $e) {
+                        // Log error but continue processing
+                        $this->logger->error('Error analyzing CV: ' . $e->getMessage());
+                    }
+                }
+            }
+
+            // Attach the match percentage to the candidature object
+            $candidature->matchPercentage = $matchPercentage;
+        }
+
+        return $this->render('offre/candidatures.html.twig', [
+            'offre' => $offre,
+            'candidatures' => $candidatures,
+        ]);
+    }
 }

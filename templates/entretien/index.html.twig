@@ -2,349 +2,674 @@
 
 {% block title %}Entretiens{% endblock %}
 
-{% block content  %}
-    <div class="container" style="margin-top:-55%;">
-        <h1 class="text-center mb-5" style="font-weight: 600; color: #333;">Liste des Entretiens</h1>
-
-        <div class="text-center mb-4">
-            <a href="{{ path('app_entretien_new') }}" class="btn" style="background-color: #4a6fa5; color: white; padding: 10px 20px; border-radius: 5px; text-decoration: none;">Créer un nouvel entretien</a>
+{% block content %}
+    <div class="container" style="margin-top:-50%;">
+        <div class="entretien-header">
+            <h1 class="entretien-title">Gestion des Entretiens</h1>
+            <p class="entretien-subtitle">Suivez et organisez tous vos entretiens en un seul endroit</p>
         </div>
 
-        <form method="get" action="{{ path('app_entretien_index') }}" class="mb-4">
-    <div class="input-group">
-        <input type="text" 
-               name="search" 
-               class="form-control" 
-               placeholder="Rechercher par titre..."
-                value="{{ app.request.query.get('search') }}">
-        <button type="submit" class="btn btn-primary">
-            <i class="fas fa-search"></i> Rechercher
-        </button>
-            <a href="{{ path('app_entretien_index') }}" class="btn btn-outline-secondary">
-                <i class="fas fa-times"></i> Effacer
+        <div class="entretien-actions">
+            <a href="{{ path('app_entretien_new') }}" class="btn-create">
+                <i class="fas fa-plus-circle"></i> Créer un nouvel entretien
             </a>
-    </div>
-</form>
+            
+            <div class="search-filter-container">
+                <form method="get" action="{{ path('app_entretien_index') }}" class="search-form">
+                    <div class="search-input-group">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" name="search" class="search-input" 
+                               placeholder="Rechercher par titre..." 
+                               value="{{ app.request.query.get('search') }}">
+                        <button type="submit" class="search-button">
+                            Rechercher
+                        </button>
+                        <a href="{{ path('app_entretien_index') }}" class="clear-button">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    </div>
+                </form>
 
-       <form method="get" action="{{ path('filtrer_entretiens') }}" class="mb-5" style="max-width: 800px; margin: 0 auto;">
-    <input type="hidden" name="page" value="1"> {# Réinitialise à la page 1 lors d'un nouveau filtre #}
-    
-    <div class="filter-container" style="display: flex; align-items: center; gap: 15px; background: #f8f9fa; padding: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-        <div class="filter-group" style="flex: 1; display: flex; align-items: center; gap: 10px;">
-            <label for="start_date" style="min-width: 80px; font-weight: 500; color: #495057;">Date début</label>
-            <input type="date" id="start_date" name="start_date" 
-                   value="{{ app.request.query.get('start_date') }}" 
-                   class="form-control" 
-                   style="flex: 1; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; background-color: white;" 
-                   required>
+                <form method="get" action="{{ path('filtrer_entretiens') }}" class="filter-form">
+                    <input type="hidden" name="page" value="1">
+                    
+                    <div class="filter-group">
+                        <div class="date-filter">
+                            <label for="start_date" class="filter-label">
+                                <i class="far fa-calendar-alt"></i> Date début
+                            </label>
+                            <input type="date" id="start_date" name="start_date" 
+                                   value="{{ app.request.query.get('start_date') }}" 
+                                   class="date-input" required>
+                        </div>
+                        
+                        <div class="date-filter">
+                            <label for="end_date" class="filter-label">
+                                <i class="far fa-calendar-alt"></i> Date fin
+                            </label>
+                            <input type="date" id="end_date" name="end_date" 
+                                   value="{{ app.request.query.get('end_date') }}" 
+                                   class="date-input" required>
+                        </div>
+                        
+                        <button type="submit" class="filter-button">
+                            <i class="fas fa-filter"></i> Appliquer
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
-        
-        <div class="filter-group" style="flex: 1; display: flex; align-items: center; gap: 10px;">
-            <label for="end_date" style="min-width: 80px; font-weight: 500; color: #495057;">Date fin</label>
-            <input type="date" id="end_date" name="end_date" 
-                   value="{{ app.request.query.get('end_date') }}" 
-                   class="form-control" 
-                   style="flex: 1; padding: 8px 12px; border: 1px solid #ced4da; border-radius: 4px; background-color: white;" 
-                   required>
-        </div>
-        
-        <button type="submit" class="btn" style="background-color: #4a6fa5; color: white; padding: 8px 20px; border-radius: 4px; border: none; cursor: pointer; transition: all 0.3s ease;">
-            <i class="fas fa-filter"></i> Filtrer
-        </button>
-    </div>
-</form>
 
-
-
-
-        <div class="event-grid" style="max-width: 1060px; margin: 0 auto;">
+        {% if entretiens|length > 0 %}
+        <div class="entretien-grid">
             {% for entretien in entretiens %}
-                <div class="event-card" style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 25px;">
-                    <div class="event-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                        <h2 style="margin: 0; font-size: 1.5rem; color: #333;">{{ entretien.titre }}</h2>
-                        <span style="background-color: #f0f0f0; padding: 5px 10px; border-radius: 4px; font-size: 0.9rem;">Type: {{ entretien.typeEntretien }}</span>
+                <div class="entretien-card" data-status="{{ entretien.status ? 'active' : 'inactive' }}">
+                    <div class="card-header">
+                        <div class="card-badge">
+                            <span class="badge-type">{{ entretien.typeEntretien }}</span>
+                            <span class="badge-status">{{ entretien.status ? 'Confirmé' : 'En attente' }}</span>
+                        </div>
+                        <h3 class="card-title">{{ entretien.titre }}</h3>
+                        <div class="card-date">
+                            <i class="far fa-calendar"></i>
+                            {{ entretien.dateEntretien ? entretien.dateEntretien|date('d M Y') : 'N/A' }}
+                            <i class="far fa-clock"></i>
+                            {{ entretien.heureEntretien ? entretien.heureEntretien|date('H:i') : 'N/A' }}
+                        </div>
                     </div>
                     
-                    <div class="event-info" style="margin-bottom: 15px;">
-                        <p style="margin: 5px 0; color: #555;"><strong>Description:</strong> {{ entretien.description }}</p>
-                        <p style="margin: 5px 0; color: #555;"><strong>Date:</strong> {{ entretien.dateEntretien ? entretien.dateEntretien|date('Y-m-d') : 'N/A' }}</p>
-                        <p style="margin: 5px 0; color: #555;"><strong>Heure:</strong> {{ entretien.heureEntretien ? entretien.heureEntretien|date('H:i:s') : 'N/A' }}</p>
-                        <p style="margin: 5px 0; color: #555;"><strong>Status:</strong> {{ entretien.status ? 'Yes' : 'No' }}</p>
-                        <p style="margin: 5px 0; color: #555;">
-                            <strong>Entretien affecté chez employé :</strong> 
-                            {{ entretien.user.nom ~ ' ' ~ entretien.user.prenom }}
-                        </p>                   
+                    <div class="card-body">
+                        <p class="card-description">{{ entretien.description }}</p>
                         
-                         </div>
+                        <div class="card-assignee">
+                            <div class="assignee-avatar">
+                                {{ entretien.user.nom|first|upper }}{{ entretien.user.prenom|first|upper }}
+                            </div>
+                            <div class="assignee-info">
+                                <span class="assignee-name">{{ entretien.user.nom }} {{ entretien.user.prenom }}</span>
+                            </div>
+                        </div>
+                    </div>
                     
-                    <div class="event-actions" style="display: flex; gap: 10px;">
-                        <a class="btn" href="{{ path('app_entretien_show', {'id': entretien.id}) }}" style="background-color: #4a6fa5; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Voir details entretien</a>
-                        <a class="btn" href="{{ path('app_entretien_edit', {'id': entretien.id}) }}" style="background-color: #2D6E13FF; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Modifier</a>
-                        {# {% if entretien.feedback is  null %}
-                        <a class="btn" href="{{ path('app_feedback_news', {'id': entretien.id}) }}" style="background-color: #FF8C00; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">Ajouter Feedback</a>
-                        {% else %}
-                        <a class="btn" href="{{ path('app_feedback_edit', {'id': entretien.feedback.id}) }}" style="background-color: #FF8C00; color: white; padding: 8px 15px; border-radius: 5px; text-decoration: none; font-size: 0.9rem;">modifier   Feedback</a>
-                        {% endif %} #}
-                        <form method="post" action="{{ path('app_entretien_delete', {'id': entretien.id}) }}" onsubmit="return confirm('Are you sure you want to delete this Entretien?');" style="display: inline; margin-left: auto;">
+                    <div class="card-actions">
+                        <a href="{{ path('app_entretien_show', {'id': entretien.id}) }}" class="action-btn view-btn">
+                            <i class="fas fa-eye"></i> Détails
+                        </a>
+                        <a href="{{ path('app_entretien_edit', {'id': entretien.id}) }}" class="action-btn edit-btn">
+                            <i class="fas fa-edit"></i> Modifier
+                        </a>
+                        <form method="post" action="{{ path('app_entretien_delete', {'id': entretien.id}) }}" 
+                              onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet entretien?');">
                             <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ entretien.id) }}">
-                            <button type="submit" class="btn" style="background-color: #E74412FF; color: white; padding: 8px 15px; border-radius: 5px; font-size: 0.9rem; border: none; cursor: pointer;">
-                                Delete Entretien
+                            <button type="submit" class="action-btn delete-btn">
+                                <i class="fas fa-trash-alt"></i> Supprimer
                             </button>
                         </form>
-
-
-                       
                     </div>
-                </div>
-            {% else %}
-                <div class="no-events" style="text-align: center; padding: 40px; background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
-                    <p style="font-size: 1.2rem; color: #777;">Aucun entretien trouvé</p>
                 </div>
             {% endfor %}
         </div>
+        {% else %}
+        <div class="no-entretiens">
+            <img src="{{ asset('images/no-data.svg') }}" alt="Aucun entretien" class="no-data-img">
+            <h3>Aucun entretien trouvé</h3>
+            
+        </div>
+        {% endif %}
+
+        {% if entretiens|length > 0 %}
+        <div class="pagination-container">
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    {% if entretiens.currentPageNumber != 1 %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': entretiens.currentPageNumber-1})) }}" aria-label="Previous">
+                                <i class="fas fa-chevron-left"></i>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="fas fa-chevron-left"></i></span>
+                        </li>
+                    {% endif %}
+
+                    {% for page in 1..entretiens.pageCount %}
+                        <li class="page-item {% if page == entretiens.currentPageNumber %}active{% endif %}">
+                            <a class="page-link" href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': page})) }}">
+                                {{ page }}
+                            </a>
+                        </li>
+                    {% endfor %}
+
+                    {% if entretiens.currentPageNumber != entretiens.pageCount %}
+                        <li class="page-item">
+                            <a class="page-link" href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': entretiens.currentPageNumber+1})) }}" aria-label="Next">
+                                <i class="fas fa-chevron-right"></i>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <span class="page-link"><i class="fas fa-chevron-right"></i></span>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+        {% endif %}
     </div>
 
-<nav aria-label="Page navigation" class="mt-4">
-    <ul class="pagination justify-content-center">
-        {% if entretiens.currentPageNumber != 1 %}
-            <li class="page-item">
-                <a class="page-link" href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': entretiens.currentPageNumber-1})) }}" aria-label="Previous">
-                    <span aria-hidden="true">&laquo;</span>
-                </a>
-            </li>
-        {% else %}
-            <li class="page-item disabled">
-                <span class="page-link" aria-hidden="true">&laquo;</span>
-            </li>
-        {% endif %}
-
-        {% for page in 1..entretiens.pageCount %}
-            <li class="page-item {% if page == entretiens.currentPageNumber %}active{% endif %}">
-                <a class="page-link" href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': page})) }}">
-                    {{ page }}
-                </a>
-            </li>
-        {% endfor %}
-
-        {% if entretiens.currentPageNumber != entretiens.pageCount %}
-            <li class="page-item">
-                <a class="page-link" href="{{ path(app.request.attributes.get('_route'), app.request.query.all|merge({'page': entretiens.currentPageNumber+1})) }}" aria-label="Next">
-                    <span aria-hidden="true">&raquo;</span>
-                </a>
-            </li>
-        {% else %}
-            <li class="page-item disabled">
-                <span class="page-link" aria-hidden="true">&raquo;</span>
-            </li>
-        {% endif %}
-    </ul>
-</nav>
-
-   
-
     <style>
-        .btn:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
+
+     :root {
+            --primary-color: #33ccc5;  /* Changed to your teal color */
+            --secondary-color: #2aa8a2; /* Slightly darker teal */
+            --accent-color: #4895ef;
+            --danger-color: #f72585;
+            --success-color: #4cc9f0;
+            --warning-color: #6fe5b6;
+            --light-color: #f8f9fa;
+            --dark-color: #212529;
+            --gray-color: #6c757d;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.08);
+            --transition: all 0.3s ease;
         }
-        .event-card {
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+        /* [Rest of your CSS remains the same] */
+
+                .btn-create {
+                display: inline-flex;
+                align-items: center;
+                padding: 0.8rem 1.5rem;
+                background-color: #33ccc5 !important; /* Your teal color */
+                color: white !important; /* Ensure text stays white */
+                border-radius: 50px;
+                text-decoration: none;
+                font-weight: 500;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 6px rgba(51, 204, 197, 0.2);
+                margin-bottom: 1.5rem;
+                border: none !important; /* Remove any default button borders */
+            }
+
+            .btn-create:hover {
+                background-color: #2aa8a2; /* Slightly darker teal */
+                transform: translateY(-2px);
+                box-shadow: 0 6px 12px rgba(51, 204, 197, 0.25);
+            }
+
+            .btn-create i {
+                margin-right: 0.5rem;
+                color: white !important; /* Ensure icon is white */
+            }
+                
+
+        .entretien-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
         }
-        .event-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+
+        .entretien-header {
+            text-align: center;
+            margin-bottom: 3rem;
         }
 
-         .pagination {
-        gap: 8px;
-    }
-    
-    .page-item .page-link {
-        min-width: 40px;
-        height: 40px;
-        padding: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: #4a6fa5;
-        border: 1px solid #dee2e6;
-        border-radius: 4px !important;
-        font-weight: 500;
-    }
-    
-    .page-item.active .page-link {
-        background-color: #4a6fa5;
-        border-color: #4a6fa5;
-        color: white;
-    }
-    
-    .page-item.disabled .page-link {
-        color: #6c757d;
-        pointer-events: none;
-        background-color: #f8f9fa;
-        border-color: #dee2e6;
-    }
-    
-    .page-link:hover {
-        background-color: #e9ecef;
-    }
+        .entretien-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
+        .entretien-subtitle {
+            font-size: 1.1rem;
+            color: var(--gray-color);
+        }
 
-    /* Style for the search form */
-.search-form {
-    max-width: 600px; /* Limit form width for better readability */
-    margin: 0 auto; /* Center the form */
-}
-
-/* Input group styling */
-.search-form .input-group {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    border-radius: 8px; /* Rounded corners */
-    overflow: hidden; /* Ensure buttons align with input */
-}
-
-/* Input field styling */
-.search-form .form-control {
-    border: 1px solid #ced4da; /* Consistent border */
-    height: 48px; /* Fixed height for consistency */
-    font-size: 16px; /* Readable font size */
-    padding: 10px 15px; /* Comfortable padding */
-    transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
-}
-
-.search-form .form-control:focus {
-    border-color: #007bff; /* Bootstrap primary color on focus */
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.2); /* Subtle focus glow */
-    outline: none; /* Remove default outline */
-}
-
-/* Button styling */
-.search-form .btn {
-    height: 48px; /* Match input height */
-    display: flex; /* Center icon vertically */
-    align-items: center; /* Center icon vertically */
-    justify-content: center; /* Center icon horizontally */
-    font-size: 16px; /* Match input font size */
-    padding: 0 20px; /* Consistent padding */
-    border: none; /* Remove default border */
-    transition: background-color 0.3s ease, transform 0.2s ease; /* Smooth hover effects */
-}
-
-/* Primary button (Search) */
-.search-form .btn-primary {
-    background-color: #007bff; /* Bootstrap primary color */
-    border-radius: 0 8px 8px 0; /* Rounded only on the right */
-}
-
-.search-form .btn-primary:hover {
-    background-color: #0056b3; /* Darker shade on hover */
-    transform: translateY(-1px); /* Slight lift effect */
-}
-
-/* Secondary button (Effacer) */
-.search-form .btn-outline-secondary {
-    border: 1px solid #ced4da; /* Match input border */
-    color: #6c757d; /* Bootstrap secondary color */
-    background-color: #fff; /* White background */
-    border-radius: 8px 0 0 8px; /* Rounded only on the left */
-}
-
-.search-form .btn-outline-secondary:hover {
-    background-color: #f8f9fa; /* Light gray on hover */
-    color: #495057; /* Darker text on hover */
-    transform: translateY(-1px); /* Slight lift effect */
-}
-
-/* Icon alignment */
-.search-form .fas {
-    font-size: 18px; /* Slightly larger icons */
-}
-
-/* Responsive adjustments */
-@media (max-width: 576px) {
-    .search-form .form-control,
-    .search-form .btn {
-        height: 40px; /* Smaller height on mobile */
-        font-size: 14px; /* Smaller font on mobile */
-    }
-    .search-form .fas {
-        font-size: 16px; /* Smaller icons on mobile */
-    }
-}
+        .entretien-actions {
+            margin-bottom: 2rem;
+        }
 
         
+        .search-filter-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 2rem;
+        }
 
-      
+        .search-form {
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input-group {
+            display: flex;
+            align-items: center;
+            border-radius: 50px;
+            overflow: hidden;
+            border: 1px solid #e0e0e0;
+            transition: var(--transition);
+        }
+
+        .search-input-group:focus-within {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+        }
+
+        .search-icon {
+            padding: 0 1rem;
+            color: var(--gray-color);
+        }
+
+        .search-input {
+            flex: 1;
+            border: none;
+            padding: 0.8rem 0;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .search-button {
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .search-button:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .clear-button {
+            padding: 0.8rem 1rem;
+            background-color: #f5f5f5;
+            color: var(--gray-color);
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .clear-button:hover {
+            color: var(--danger-color);
+            background-color: #f0f0f0;
+        }
+
+        .filter-form {
+            margin-top: 1.5rem;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .date-filter {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--gray-color);
+            font-weight: 500;
+        }
+
+        .filter-label i {
+            margin-right: 0.5rem;
+        }
+
+        .date-input {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .date-input:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+            outline: none;
+        }
+
+        .filter-button {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            margin-top: 1.5rem;
+        }
+
+        .filter-button:hover {
+            background-color: #3a7bc8;
+            transform: translateY(-2px);
+        }
+
+        .filter-button i {
+            margin-right: 0.5rem;
+        }
+
+        .entretien-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .entretien-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+            border-top: 4px solid var(--primary-color);
+        }
+
+        .entretien-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+        }
+
+        .entretien-card[data-status="active"] {
+            border-top-color: var(--success-color);
+        }
+
+        .entretien-card[data-status="inactive"] {
+            border-top-color: var(--warning-color);
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .card-badge {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .badge-type {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .badge-status {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success-color);
+            padding: 0.3rem 0.8rem;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .entretien-card[data-status="inactive"] .badge-status {
+            background-color: rgba(248, 150, 30, 0.1);
+            color: var(--warning-color);
+        }
+
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-date {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            color: var(--gray-color);
+            font-size: 0.9rem;
+        }
+
+        .card-date i {
+            width: 16px;
+            text-align: center;
+        }
+
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        .card-description {
+            color: var(--gray-color);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-assignee {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            background-color: #f9f9f9;
+            padding: 0.8rem;
+            border-radius: 8px;
+        }
+
+        .assignee-avatar {
+            width: 40px;
+            height: 40px;
+            background-color: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+        }
+
+        .assignee-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .assignee-name {
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .assignee-role {
+            font-size: 0.8rem;
+            color: var(--gray-color);
+        }
+
+        .card-actions {
+            display: flex;
+            padding: 0 1.5rem 1.5rem;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition);
+        }
+
+        .action-btn i {
+            margin-right: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .view-btn {
+            background-color: rgba(67, 97, 238, 0.1);
+            color: var(--primary-color);
+        }
+
+        .view-btn:hover {
+            background-color: rgba(67, 97, 238, 0.2);
+        }
+
+        .edit-btn {
+            background-color: rgba(76, 201, 240, 0.1);
+            color: var(--success-color);
+        }
+
+        .edit-btn:hover {
+            background-color: rgba(76, 201, 240, 0.2);
+        }
+
+        .delete-btn {
+            background-color: rgba(247, 37, 133, 0.1);
+            color: var(--danger-color);
+            border: none;
+            cursor: pointer;
+        }
+
+        .delete-btn:hover {
+            background-color: rgba(247, 37, 133, 0.2);
+        }
+
+        .no-entretiens {
+            text-align: center;
+            padding: 3rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+        }
+
+        .no-data-img {
+            max-width: 250px;
+            margin-bottom: 1.5rem;
+            opacity: 0.7;
+        }
+
+        .no-entretiens h3 {
+            font-size: 1.5rem;
+            color: var(--dark-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .no-entretiens p {
+            color: var(--gray-color);
+            margin-bottom: 1.5rem;
+        }
+
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 2rem;
+        }
+
+        .pagination {
+            display: flex;
+            gap: 0.5rem;
+            list-style: none;
+            padding: 0;
+        }
+
+        .page-item {
+            margin: 0;
+        }
+
+        .page-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px !important;
+            color: var(--primary-color);
+            font-weight: 500;
+            text-decoration: none;
+            transition: var(--transition);
+            border: 1px solid #e0e0e0;
+        }
+
+        .page-item.active .page-link {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .page-item.disabled .page-link {
+            color: #d0d0d0;
+            pointer-events: none;
+        }
+
+        .page-link:hover {
+            background-color: #f5f5f5;
+        }
+
+        @media (max-width: 768px) {
+            .entretien-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .filter-group {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            .date-filter {
+                width: 100%;
+            }
+            
+            .filter-button {
+                width: 100%;
+                justify-content: center;
+            }
+        }
     </style>
 
-
     <script>
-
-    document.addEventListener('DOMContentLoaded', function () {
-    const searchInput = document.getElementById('search');
-    const form = document.getElementById('search-form');
-    const entretienList = document.getElementById('entretien-list');
-
-    
-});
-
-
-
-
-
-
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add animation to cards when they come into view
+            const cards = document.querySelectorAll('.entretien-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = 1;
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, { threshold: 0.1 });
+            
+            cards.forEach((card, index) => {
+                card.style.opacity = 0;
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = `opacity 0.5s ease ${index * 0.1}s, transform 0.5s ease ${index * 0.1}s`;
+                observer.observe(card);
+            });
+            
+            // Add hover effect to buttons
+            const buttons = document.querySelectorAll('.action-btn');
+            buttons.forEach(button => {
+                button.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+                button.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+        });
     </script>
-
-
-
-
-
 {% endblock %}
-
-
-
-
-
-
-
-
-    {# <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Titre</th>
-                <th>Description</th>
-                <th>Date_entretien</th>
-                <th>Heure_entretien</th>
-                <th>Type_entretien</th>
-                <th>Status</th>
-                <th>CandidatId</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for entretien in entretiens %}
-            <tr>
-                <td>{{ entretien.id }}</td>
-                <td>{{ entretien.titre }}</td>
-                <td>{{ entretien.description }}</td>
-                <td>{{ entretien.dateEntretien ? entretien.dateEntretien|date('Y-m-d') : '' }}</td>
-                <td>{{ entretien.heureentretien ? entretien.heureentretien|date('H:i:s') : '' }}</td>
-                <td>{{ entretien.typeEntretien }}</td>
-                <td>{{ entretien.status ? 'Yes' : 'No' }}</td>
-                <td>{{ entretien.candidatId }}</td>
-                <td>
-                    <a href="{{ path('app_entretien_show', {'id': entretien.id}) }}">show</a>
-                    <a href="{{ path('app_entretien_edit', {'id': entretien.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="9">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('app_entretien_new') }}">Create new</a>
-{% endblock %} #}

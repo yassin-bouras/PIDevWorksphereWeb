@@ -1,0 +1,160 @@
+{% extends '/dashboard/base2.html.twig' %}
+
+{% block title %}Détails de l'Utilisateur{% endblock %}
+
+{% block content %}
+<div class="content container-fluid" style="margin-top: -58%;">
+    <div class="page-header">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="page-title">Détails de l'Utilisateur</h3>
+                <ul class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Dashboard</a></li>
+                    <li class="breadcrumb-item"><a href="{{ path('app_user_index') }}">Utilisateurs</a></li>
+                    <li class="breadcrumb-item active">Détails</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="card-title text-center">{{ user.nom }} {{ user.prenom }}</h4>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered">
+                        <tbody>
+                            <tr>
+                                <th>ID Utilisateur</th>
+                                <td>{{ user.idUser }}</td>
+                            </tr>
+                            <tr>
+                                <th>Nom</th>
+                                <td>{{ user.nom }}</td>
+                            </tr>
+                            <tr>
+                                <th>Prénom</th>
+                                <td>{{ user.prenom }}</td>
+                            </tr>
+                            <tr>
+                                <th>Email</th>
+                                <td>{{ user.email }}</td>
+                            </tr>
+                            <tr>
+                                <th>Mot de Passe</th>
+                                <td>******</td> <!-- Masked for security -->
+                            </tr>
+                            <tr>
+                                <th>Rôle</th>
+                                <td>{{ user.role }}</td>
+                            </tr>
+                            <tr>
+                                <th>Adresse</th>
+                                <td>
+                                    <p style="white-space: pre-wrap;">{{ user.adresse }}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Sexe</th>
+                                <td>{{ user.sexe }}</td>
+                            </tr>
+                            <tr>
+                                <th>Image de Profil</th>
+                                <td>{{ user.imageProfil ?: 'Non spécifiée' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Statut</th>
+                                <td>{{ user.status ?: 'Non spécifié' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Salaire Attendu</th>
+                                <td>{{ user.salaireAttendu ? user.salaireAttendu ~ ' €' : 'Non spécifié' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Poste</th>
+                                <td>{{ user.poste ?: 'Non spécifié' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Salaire</th>
+                                <td>{{ user.salaire ? user.salaire ~ ' €' : 'Non spécifié' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Expérience de Travail</th>
+                                <td>{{ user.experienceTravail ? user.experienceTravail ~ ' ans' : 'Non spécifié' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Département</th>
+                                <td>{{ user.departement ?: 'Non spécifié' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Compétence</th>
+                                <td>
+                                    <p style="white-space: pre-wrap;">{{ user.competence ?: 'Non spécifié' }}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Nombre de Projets</th>
+                                <td>{{ user.nombreProjet ?: 'Non spécifié' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Budget</th>
+                                <td>{{ user.budget ? user.budget ~ ' €' : 'Non spécifié' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Département Géré</th>
+                                <td>{{ user.departementgere ?: 'Non spécifié' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Années d'Expérience</th>
+                                <td>{{ user.ansExperience ? user.ansExperience ~ ' ans' : 'Non spécifié' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Spécialisation</th>
+                                <td>{{ user.specialisation ?: 'Non spécifié' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Banni</th>
+                                <td>{{ user.banned ? 'Oui' : 'Non' }}</td>
+                            </tr>
+                            <tr>
+                                <th>Message de Réclamation</th>
+                                <td>
+                                    <p style="white-space: pre-wrap;">{{ user.messagereclamation ?: 'Non spécifié' }}</p>
+                                </td>
+                            </tr>
+                            <tr>
+                                <th>Numéro de Téléphone</th>
+                                <td>{{ user.numtel ?: 'Non spécifié' }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="card-footer text-center">
+                    <a href="{{ path('app_user_index') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Retour à la liste
+                    </a>
+                    <a href="{{ path('app_user_edit', {'iduser': user.idUser}) }}" class="btn btn-warning">
+                        <i class="far fa-edit"></i> Modifier
+                    </a>
+                    <form method="post" action="{{ path('app_user_delete', {'iduser': user.idUser}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.idUser) }}">
+                        <button class="btn btn-danger">
+                            <i class="far fa-trash-alt"></i> Supprimer
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-danger:hover {
+        background-color: #980808; /* Dark red color */
+        border-color: #a80000; /* Match the border color */
+        color: white; /* Ensure the text remains visible */
+    }
+</style>
+{% endblock %}

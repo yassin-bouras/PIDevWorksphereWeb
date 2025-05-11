@@ -26,6 +26,7 @@ use Knp\Snappy\Pdf;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
+
 #[Route('/entretien')]
 final class EntretienController extends AbstractController
 {
@@ -70,7 +71,7 @@ public function index(
     $entretiens = $paginator->paginate(
         $queryBuilder->getQuery(),
         $request->query->getInt('page', 1), 
-        2 
+        3
     );
 
     return $this->render('entretien/index.html.twig', [

@@ -1,8 +1,89 @@
 <header class="header-area header-sticky wow slideInDown" data-wow-duration="0.75s" data-wow-delay="0s">
+    <!-- Add styles for loading overlay -->
+    <style>
+        /* Full page loading overlay */
+        #auth-loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .auth-spinner {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-top: 4px solid #4771cb;
+            border-bottom: 4px solid #33ccc5;
+            animation: auth-spin 1.2s linear infinite;
+        }
+
+        .auth-spinner::after {
+            content: "";
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            border-left: 4px solid #4771cb;
+            border-right: 4px solid #33ccc5;
+            top: 5px;
+            left: 5px;
+            animation: auth-spin-reverse 0.8s linear infinite;
+        }
+
+        @keyframes auth-spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes auth-spin-reverse {
+            0% {
+                transform: rotate(360deg);
+            }
+
+            100% {
+                transform: rotate(0deg);
+            }
+        }
+
+        /* Hide the login button initially */
+        #default-login-button {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #default-login-button.loaded {
+            opacity: 1;
+        }
+
+        /* Smooth transition for button text change */
+        .main-blue-button a {
+            transition: all 0.3s ease;
+        }
+    </style>
+
+    <!-- Full page loading overlay -->
+    <div id="auth-loading-overlay">
+        <div class="auth-spinner"></div>
+    </div>
     <div class="container">
         <div class="row">
             <div class="col-12">
-                <nav class="main-nav d-flex align-items-center justify-content-between">
+                <nav class="main-nav">
                     <!-- ***** Logo Start ***** -->
                     <a href="{{ path('app_home') }}" class="logo">
                         <h4>Worksphere <img src="{{ asset('front/images/logo-icon.png') }}" alt=""></h4>
@@ -10,11 +91,18 @@
                     <!-- ***** Logo End ***** -->
 
                     <!-- ***** Menu Start ***** -->
-                    <ul class="nav align-items-center" id="sidebar-links">
-                        <!-- Dynamic content will be injected here -->
+                    <ul class="nav" id="sidebar-links">
+                        <li class="scroll-to-section"><a href="{{ path('app_home') }}">Home</a></li>
+                        <li class="scroll-to-section"><a href="{{ path('app_offre_front_index') }}">Offre d'Emploi</a>
+                        </li>
+                        <li class="scroll-to-section"><a href="{{ path('app_candidature_index') }}">Mes Candidatures</a>
+                        </li>
+                        <li class="scroll-to-section"><a href="/user/${user.iduser}">>Profil</a></li>
+
+                        <!-- Login button that will be replaced after authentication -->
                         <li class="scroll-to-section" id="default-login-button">
                             <div class="main-blue-button">
-                                <a href="/login">Se connecter</a>
+                                <a href="/login">Se Connecter</a>
                             </div>
                         </li>
                     </ul>
@@ -28,81 +116,72 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            function getCookie(name) {
-                let cookieArray = document.cookie.split('; ');
-                let cookie = cookieArray.find(row => row.startsWith(name + '='));
-                return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
+    // Utility function to get cookies
+    function getCookie(name) {
+        let cookieArray = document.cookie.split('; ');
+        let cookie = cookieArray.find(row => row.startsWith(name + '='));
+        return cookie ? decodeURIComponent(cookie.split('=')[1]) : null;
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const token = getCookie('BEARER');
+        const loginButton = document.getElementById('default-login-button');
+        const profileLink = document.querySelector('a[href="/user/${user.iduser}"]');
+        const loadingOverlay = document.getElementById('auth-loading-overlay');
+
+        // Function to hide the loading overlay
+        function hideLoadingOverlay() {
+            if (loadingOverlay) {
+                loadingOverlay.style.display = 'none';
             }
+        }
 
-            const token = getCookie('BEARER');
-
-            if (!token) {
-                console.warn('No BEARER token found.');
-                return;
+        if (!token) {
+            // No token, show login button and hide loading overlay
+            if (loginButton) {
+                loginButton.classList.add('loaded');
             }
+            hideLoadingOverlay();
+            return;
+        }
 
-            fetch('/jwt/user', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ token: token })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    const user = data.user;
-                    const sidebarLinks = document.getElementById('sidebar-links');
-                    const loginButton = document.getElementById('default-login-button');
-                    if (loginButton) loginButton.remove();
+        // Fetch user data from the /jwt/user endpoint
+        fetch('/jwt/user', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ token: token }) // Pass the token from cookies
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                const user = data.user;
 
-                    sidebarLinks.innerHTML = ''; // Clear old items
-
-                    const commonItems = [
-                       
-                    ];
-
-                    const candidatItems = [
-                        `<li class="scroll-to-section"><a href="/contrat">📜 Contrat</a></li>`,
-                        `<li class="scroll-to-section"><a href="/offre">🎯 Offres Emploi</a></li>`,
-                        `<li class="scroll-to-section"><a href="/entretien">🔥 Entretien</a></li>`,
-                        `<li class="scroll-to-section"><a href="/reclamation/user/${user.iduser}"><span>📄 Reclamation</span></a></li>`,
-                       
-                    ];
-
-                    const employeItems = [
-                        `<li class="scroll-to-section"><a href="/reclamation/user/${user.iduser}">🔄 Reclamation</a></li>`,
-                        `<li class="scroll-to-section"><a href="/entretien/employee">🚀 Entretien</a></li>`,
-                        `<li class="scroll-to-section"><a href="#">🎯 Mes Reservations</a></li>`,
-                        `<li class="scroll-to-section"><a href="#">👥 Équipe</a></li>`,
-                        `<li class="scroll-to-section"><a href="#">📂 Projet</a></li>`,
-                        `<li class="scroll-to-section"><a href="#">🔄 Mot de Passe</a></li>`
-                    ];
-
-                    const logoutBtn = `
-                        <li class="scroll-to-section">
-                            <div class="main-blue-button">
-                                <a href="/logout">Se déconnecter</a>
-                            </div>
-                        </li>
-                    `;
-
-                    // Append items
-                    sidebarLinks.innerHTML += commonItems.join('');
-                    if (user.role === 'Candidat') {
-                        sidebarLinks.innerHTML += candidatItems.join('');
-                    } else if (user.role === 'Employe') {
-                        sidebarLinks.innerHTML += employeItems.join('');
-                    }
-                    sidebarLinks.innerHTML += logoutBtn;
-                } else {
-                    console.error('Failed to fetch user:', data.error);
+                // Update the profile link
+                if (profileLink) {
+                    profileLink.href = `/user/${user.iduser}`;
                 }
-            })
-            .catch(error => {
-                console.error('Fetch error:', error);
-            });
+
+                // Replace login button with logout button
+                if (loginButton) {
+                    loginButton.innerHTML = `
+                        <div class="main-blue-button">
+                            <a href="/logout">Se déconnecter</a>
+                        </div>
+                    `;
+                }
+            } else {
+                console.error('Failed to fetch user data:', data.error);
+            }
+        })
+        .catch(error => {
+            console.error('Error fetching user data:', error);
+        })
+        .finally(() => {
+            // Hide the loading overlay regardless of success or failure
+            hideLoadingOverlay();
         });
-    </script>
+    });
+</script>
 </header>
