@@ -117,14 +117,32 @@ public function new(Request $request, EntityManagerInterface $entityManager): Re
          
             $imageFile = $form->get('imageProjet')->getData();
             
-            if ($imageFile) {
+            /*if ($imageFile) {
                 $newFilename = uniqid() . '.' . $imageFile->guessExtension();
                 $destination = $this->getParameter('image_directory');
                 $imageFile->move($destination, $newFilename);
                 $projet->setImageProjet('img/' . $newFilename);  
+            }*/
+
+             if ($imageFile) {
+                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+                
+             
+                $destination = $this->getParameter('image_directory');
+                $imageFile->move($destination, $newFilename);
+                $projet->setImageProjet('img/' . $newFilename);
+      
+                $secondaryDestination = 'C:/xampp/htdocs/img';
+                if (!file_exists($secondaryDestination)) {
+                    mkdir($secondaryDestination, 0777, true);
+                }
+                copy(
+                    $destination . '/' . $newFilename,
+                    $secondaryDestination . '/' . $newFilename
+                );
             }
 
-            // Mise à jour du nombre de projets pour chaque équipe
+          
             foreach ($projet->getEquipes() as $equipe) {
                 $currentCount = $equipe->getNbrProjet() ?? 0;
                 $equipe->setNbrProjet($currentCount + 1);
@@ -173,10 +191,29 @@ public function edit(Request $request, Projet $projet, EntityManagerInterface $e
     if ($form->isSubmitted() && $form->isValid()) {
         $imageFile = $form->get('imageProjet')->getData();
         
-        if ($imageFile) {
+        /*if ($imageFile) {
             $newFilename = uniqid() . '.' . $imageFile->guessExtension();
             $imageFile->move($this->getParameter('image_directory'), $newFilename);
             $projet->setImageProjet('img/' . $newFilename);
+        }*/
+
+         if ($imageFile) {
+            $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+            
+         
+            $destination = $this->getParameter('image_directory');
+            $imageFile->move($destination, $newFilename);
+            $projet->setImageProjet('img/' . $newFilename);
+            
+           
+            $secondaryDestination = 'C:/xampp/htdocs/img';
+            if (!file_exists($secondaryDestination)) {
+                mkdir($secondaryDestination, 0777, true);
+            }
+            copy(
+                $destination . '/' . $newFilename,
+                $secondaryDestination . '/' . $newFilename
+            );
         }
 
      

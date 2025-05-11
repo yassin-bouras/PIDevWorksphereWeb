@@ -102,63 +102,74 @@ final class EquipeController extends AbstractController
     }
 
 
-    #[Route('/new', name: 'app_equipe_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $token = $request->cookies->get('BEARER');
+#[Route('/new', name: 'app_equipe_new', methods: ['GET', 'POST'])]
+public function new(Request $request, EntityManagerInterface $entityManager): Response
+{
+    $token = $request->cookies->get('BEARER');
 
-        if (!$token) {
-            return $this->redirectToRoute('app_login');
-        }
-
-        try {
-            $decodedData = $this->jwtEncoder->decode($token);
-            $email = $decodedData['username'] ?? null;
-
-            if (!$email) {
-                $this->addFlash('error', 'Email non trouvé dans le token.');
-                return $this->redirectToRoute('app_login');
-            }
-
-            $user = $this->userRepository->findOneBy(['email' => $email]);
-
-            if (!$user) {
-                $this->addFlash('error', 'Utilisateur non trouvé.');
-                return $this->redirectToRoute('app_login');
-            }
-
-            $equipe = new Equipe();
-            $form = $this->createForm(EquipeType::class, $equipe);
-            $form->handleRequest($request);
-
-            if ($form->isSubmitted() && $form->isValid()) {
-
-                $equipe->setIdUser($user->getIduser());
-
-                $imageFile = $form->get('imageEquipe')->getData();
-
-                if ($imageFile) {
-                    $newFilename = uniqid() . '.' . $imageFile->guessExtension();
-                    $destination = $this->getParameter('image_directory');
-                    $imageFile->move($destination, $newFilename);
-                    $equipe->setImageEquipe('img/' . $newFilename);
-                }
-
-                $entityManager->persist($equipe);
-                $entityManager->flush();
-
-                return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
-            }
-
-            return $this->render('equipe/new.html.twig', [
-                'equipe' => $equipe,
-                'form' => $form,
-            ]);
-        } catch (\Exception $e) {
-            $this->addFlash('error', 'Token invalide ou expiré.');
-            return $this->redirectToRoute('app_login');
-        }
+    if (!$token) {
+        return $this->redirectToRoute('app_login');
     }
+
+    try {
+        $decodedData = $this->jwtEncoder->decode($token);
+        $email = $decodedData['username'] ?? null;
+
+        if (!$email) {
+            $this->addFlash('error', 'Email non trouvé dans le token.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        $user = $this->userRepository->findOneBy(['email' => $email]);
+
+        if (!$user) {
+            $this->addFlash('error', 'Utilisateur non trouvé.');
+            return $this->redirectToRoute('app_login');
+        }
+
+        $equipe = new Equipe();
+        $form = $this->createForm(EquipeType::class, $equipe);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $equipe->setIdUser($user->getIduser());
+
+            $imageFile = $form->get('imageEquipe')->getData();
+
+           if ($imageFile) {
+                // Nouveau nom de fichier avec timestamp + nom original
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $newFilename = time().'_'.preg_replace('/[^A-Za-z0-9_\-]/', '_', $originalFilename).'.'.$imageFile->guessExtension();
+                
+                $destination = $this->getParameter('image_directory');
+                $imageFile->move($destination, $newFilename);
+                $equipe->setImageEquipe('img/'.$newFilename);
+      
+                $secondaryDestination = 'C:/xampp/htdocs/img';
+                if (!file_exists($secondaryDestination)) {
+                    mkdir($secondaryDestination, 0777, true);
+                }
+                copy(
+                    $destination.'/'.$newFilename,
+                    $secondaryDestination.'/'.$newFilename
+                );
+            }
+
+            $entityManager->persist($equipe);
+            $entityManager->flush();
+
+            return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->render('equipe/new.html.twig', [
+            'equipe' => $equipe,
+            'form' => $form,
+        ]);
+    } catch (\Exception $e) {
+        $this->addFlash('error', 'Token invalide ou expiré.');
+        return $this->redirectToRoute('app_login');
+    }
+}
 
     #[Route('/{id}', name: 'app_equipe_show', methods: ['GET'])]
     public function show(Equipe $equipe): Response
@@ -169,37 +180,44 @@ final class EquipeController extends AbstractController
     }
 
 
+#[Route('/{id}/edit', name: 'app_equipe_edit', methods: ['GET', 'POST'])]
+public function edit(Request $request, Equipe $equipe, EntityManagerInterface $entityManager): Response
+{
+    $form = $this->createForm(EquipeType::class, $equipe);
+    $form->handleRequest($request);
 
-    #[Route('/{id}/edit', name: 'app_equipe_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Equipe $equipe, EntityManagerInterface $entityManager): Response
-    {
-        $form = $this->createForm(EquipeType::class, $equipe);
-        $form->handleRequest($request);
+    if ($form->isSubmitted() && $form->isValid()) {
+        $imageFile = $form->get('imageEquipe')->getData();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $imageFile = $form->get('imageEquipe')->getData();
-
-            if ($imageFile) {
-                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
-
-                $imageFile->move(
-                    $this->getParameter('image_directory'),
-                    $newFilename
-                );
-
-                $equipe->setImageEquipe('img/' . $newFilename);
+        if ($imageFile) {
+            $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+            
+         
+            $destination = $this->getParameter('image_directory');
+            $imageFile->move($destination, $newFilename);
+            $equipe->setImageEquipe('img/' . $newFilename);
+            
+           
+            $secondaryDestination = 'C:/xampp/htdocs/img';
+            if (!file_exists($secondaryDestination)) {
+                mkdir($secondaryDestination, 0777, true);
             }
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
+            copy(
+                $destination . '/' . $newFilename,
+                $secondaryDestination . '/' . $newFilename
+            );
         }
 
-        return $this->render('equipe/edit.html.twig', [
-            'equipe' => $equipe,
-            'form' => $form,
-        ]);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_equipe_index', [], Response::HTTP_SEE_OTHER);
     }
 
+    return $this->render('equipe/edit.html.twig', [
+        'equipe' => $equipe,
+        'form' => $form,
+    ]);
+}
 
 
     #[Route('/{id}', name: 'app_equipe_delete', methods: ['POST'])]
