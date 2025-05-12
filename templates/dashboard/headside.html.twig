@@ -86,12 +86,13 @@
         border-right: none;
         transition: all 0.3s ease;
         overflow: hidden;
-        position: relative;
+      
+        position: fixed;
     }
     /* Add subtle pattern overlay for more texture */
     .sidebar::before {
         content: '';
-        position: absolute;
+        position: fixed;
         top: 0;
         left: 0;
         width: 100%;
@@ -772,28 +773,8 @@
                 if (data.success) {
                     const user = data.user;
 
+                        document.getElementById('user-profile-image').src =user.imageprofil  || '{{ asset("back/img/profile.jpg") }}';
 
-                    if (user && user.image) {
-                        let rawPath = user.image;
-
-                        // Strip "htdocs/" if it exists
-                        let cleanedPath = rawPath.startsWith('htdocs/')
-                            ? rawPath.replace('htdocs/', '')
-                            : rawPath;
-
-                        // Ensure it starts with a single slash
-                        cleanedPath = '/' + cleanedPath.replace(/^\/+/, '');
-
-                        // Set the image src
-                        //document.getElementById('user-profile-image').src = cleanedPath;
-
-                        // Optional: log what’s actually being applied
-                        console.log("✔ Final image URL set to:", cleanedPath);
-                    } else {
-                        // Fallback image
-                        document.getElementById('user-profile-image').src = '{{ asset("back/img/profile.jpg") }}';
-                        console.log("❗ No image found for user, using default.");
-                    }
 
                     // Set name and link
                     document.getElementById('user-full-name').textContent = user.nom + ' ' + user.prenom;

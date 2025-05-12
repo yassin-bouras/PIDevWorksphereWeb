@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,121 +9,626 @@
     <link rel="stylesheet" href="{{ asset('back/css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/fontawesome.min.css') }}">
     <link rel="stylesheet" href="{{ asset('back/plugins/fontawesome/css/all.min.css') }}">
-    <link rel="stylesheet" href="{{ asset('back/css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
+        :root {
+            --primary: #4a9fff;
+            --primary-light: #e6f3ff;
+            --primary-dark: #2b7cd3;
+            --secondary: #64b5f6;
+            --accent: #90caf9;
+            --light: #f8f9fa;
+            --dark: #546e7a;
+            --danger: #ef5350;
+            --success: #66bb6a;
+            --warning: #ffca28;
+            --info: #29b6f6;
+            --light-blue: #bbdefb;
+            --blue-grey: #eceff1;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            height: 100vh;
+            margin: 0;
+            overflow-x: hidden;
+        }
+        
+        .particles-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translate(0, 0) rotate(0deg) scale(1);
+                opacity: 0;
+            }
+            25% {
+                opacity: 0.5;
+            }
+            50% {
+                transform: translate(100px, -100px) rotate(180deg) scale(1.5);
+                opacity: 0.2;
+            }
+            75% {
+                opacity: 0.5;
+            }
+        }
+        
+        .login-container {
+            display: flex;
+            min-height: 100vh;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            padding: 20px;
+        }
+        
+        .login-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(75, 159, 255, 0.15);
+            overflow: hidden;
+            width: 100%;
+            max-width: 1000px;
+            display: flex;
+            min-height: 600px;
+        }
+        
+        .login-sidebar {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            width: 40%;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .login-sidebar::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 8s infinite;
+        }
+        
+        @keyframes shine {
+            0% {
+                top: -50%;
+                left: -50%;
+            }
+            100% {
+                top: 150%;
+                left: 150%;
+            }
+        }
+        
+        .sidebar-content {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .login-logo {
+            width: 100%;
+            max-width: 180px;
+            margin-bottom: 30px;
+            transition: transform 0.3s;
+        }
+        
+        .login-logo:hover {
+            transform: scale(1.05);
+        }
+        
+        .sidebar-text {
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        
+        .login-form {
+            padding: 40px;
+            width: 60%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        
+        .form-title {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .form-subtitle {
+            color: #78909c;
+            margin-bottom: 30px;
+        }
+        
+        .input-group {
+            position: relative;
+            margin-bottom: 25px;
+        }
+        
+        .input-group label {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            color: #90a4ae;
+            transition: all 0.3s;
+            pointer-events: none;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e3f2fd;
+            border-radius: 10px;
+            background: white;
+            font-size: 16px;
+            transition: all 0.3s;
+        }
+        
+        .form-input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 159, 255, 0.2);
+            outline: none;
+        }
+        
+        .form-input:focus + label,
+        .form-input:not(:placeholder-shown) + label {
+            top: -10px;
+            left: 10px;
+            font-size: 12px;
+            background: white;
+            padding: 0 5px;
+            color: var(--primary);
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            cursor: pointer;
+            color: #90a4ae;
+            transition: color 0.3s;
+        }
+        
+        .toggle-password:hover {
+            color: var(--primary);
+        }
+        
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+        }
+        
+        .custom-checkbox {
+            display: flex;
+            align-items: center;
+        }
+        
+        .custom-checkbox input {
+            width: 18px;
+            height: 18px;
+            margin-right: 8px;
+        }
+        
+        .forgot-links {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+        }
+        
+        .forgot-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 14px;
+            margin-bottom: 8px;
+            transition: color 0.3s;
+        }
+        
+        .forgot-link:hover {
+            color: var(--primary-dark);
+            text-decoration: underline;
+        }
+        
+        .login-btn {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(74, 159, 255, 0.3);
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(74, 159, 255, 0.4);
+        }
+        
+        .login-btn:active {
+            transform: translateY(0);
+        }
+        
+        .login-btn:disabled {
+            background: #cfd8dc;
+            cursor: not-allowed;
+            box-shadow: none;
+        }
+        
+        .social-login {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .social-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            padding: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        
+        .social-btn i {
+            margin-right: 10px;
+            font-size: 20px;
+        }
+        
+        .google-btn {
+            background: white;
+            color: #DB4437;
+            border: 2px solid #DB4437;
+        }
+        
+        .google-btn:hover {
+            background: #DB4437;
+            color: white;
+        }
+        
+        .face-btn {
+            background: white;
+            color: var(--info);
+            border: 2px solid var(--info);
+        }
+        
+        .face-btn:hover {
+            background: var(--info);
+            color: white;
+        }
+        
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            animation: fadeIn 0.5s;
+        }
+        
+        .alert-danger {
+            background-color: #ffebee;
+            border-left: 4px solid var(--danger);
+            color: #c62828;
+        }
+        
+        .alert-success {
+            background-color: #e8f5e9;
+            border-left: 4px solid var(--success);
+            color: #2e7d32;
+        }
+        
+        /* Modal styles */
         .modal-custom {
             position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.6);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
             display: none;
             align-items: center;
             justify-content: center;
             z-index: 1050;
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s;
         }
+        
         .modal-content-custom {
-            background: #fff;
-            padding: 20px 30px;
-            border-radius: 10px;
+            background: white;
+            padding: 30px;
+            border-radius: 20px;
             width: 90%;
-            max-width: 400px;
+            max-width: 500px;
             text-align: center;
-            box-shadow: 0 0 10px rgba(0,0,0,0.3);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            transform: scale(0.8);
+            animation: zoomIn 0.3s forwards;
         }
+        
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+        
         .modal-content-custom h5 {
-            margin-top: 0;
-            color: #c0392b;
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: var(--dark);
         }
+        
+        .modal-content-custom p {
+            margin-bottom: 20px;
+            color: #78909c;
+        }
+        
         .modal-content-custom textarea {
             width: 100%;
-            height: 100px;
+            height: 120px;
             margin: 15px 0;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #ccc;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #e3f2fd;
             resize: none;
+            font-family: inherit;
+            transition: all 0.3s;
         }
-        .modal-content-custom .btn {
-            margin: 5px;
+        
+        .modal-content-custom textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(74, 159, 255, 0.2);
+            outline: none;
         }
-        #faceAuthModal {
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+        
+        .modal-btn-success {
+            background: var(--success);
+            color: white;
+        }
+        
+        .modal-btn-success:hover {
+            background: #43a047;
+            transform: translateY(-2px);
+        }
+        
+        .modal-btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        
+        .modal-btn-danger:hover {
+            background: #e53935;
+            transform: translateY(-2px);
+        }
+        
+        /* Face auth modal */
+        #faceAuthModal .modal-content-custom {
             max-width: 600px;
         }
-        #faceAuthModal video, #faceAuthModal canvas {
+        
+        #video, #canvas {
             width: 100%;
-            max-width: 100%;
-            border-radius: 8px;
-            margin-bottom: 10px;
+            max-width: 480px;
+            border-radius: 15px;
+            margin: 0 auto 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
-        .h-captcha {
+        
+        #video {
+            display: block;
+        }
+        
+        #canvas {
+            display: none;
+        }
+        
+        .spinner {
+            display: inline-block;
+            width: 80px;
+            height: 80px;
+            border: 5px solid rgba(144, 202, 249, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+        
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        
+        .status-text {
+            color: var(--primary);
+            font-weight: 600;
             margin: 15px 0;
+            min-height: 24px;
         }
-        .alert {
-            margin-bottom: 15px;
+        
+        /* Responsive adjustments */
+        @media (max-width: 992px) {
+            .login-card {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .login-sidebar, .login-form {
+                width: 100%;
+            }
+            
+            .login-sidebar {
+                padding: 30px;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .login-form, .login-sidebar {
+                padding: 20px;
+            }
+            
+            .form-title {
+                font-size: 24px;
+            }
+            
+            .social-login {
+                flex-direction: column;
+            }
+            
+            .remember-forgot {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+            
+            .forgot-links {
+                align-items: flex-start;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="main-wrapper login-body">
-        <div class="login-wrapper">
-            <div class="container">
-                <img class="img-fluid logo-dark mb-2" src="{{ asset('Images/logo.png') }}" alt="Logo">
-                <div class="loginbox">
-                    <div class="login-right">
-                        <div class="login-right-wrap">
-                            <h1>Login</h1>
-                            <p class="account-subtitle">Access to our dashboard</p>
-
-                            {% if is_banned %}
-                                <div class="alert alert-danger">
-                                    Too many failed login attempts. Please try again after {{ ban_until|date('Y-m-d H:i:s') }}.
-                                </div>
-                            {% endif %}
-
-                            {% if hcaptcha_error %}
-                                <div class="alert alert-danger">{{ hcaptcha_error }}</div>
-                            {% endif %}
-
-                            <form id="loginForm" method="post">
-                                <div class="form-group">
-                                    <label class="form-control-label">Email Address</label>
-                                    <input type="email" class="form-control" name="email" required autofocus>
-                                </div>
-                                <div class="form-group">
-                                    <label class="form-control-label">Password</label>
-                                    <div class="pass-group">
-                                        <input type="password" class="form-control pass-input" name="password" required>
-                                        <span class="fas fa-eye toggle-password"></span>
-                                    </div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="h-captcha" data-sitekey="{{ hcaptcha_site_key }}"></div>
-                                </div>
-                                <div class="form-group">
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <div class="custom-control custom-checkbox">
-                                                <input type="checkbox" class="custom-control-input" id="remember_me" name="_remember_me">
-                                                <label class="custom-control-label" for="remember_me">Remember me</label>
-                                            </div>
-                                        </div>
-                                        <div class="col-6 text-right">
-                                            <a class="forgot-link" href="/user/new">Don't have an account?</a>
-                                            <a class="forgot-link" href="/forgot">Forgot password?</a>
-                                            <a href="{{ path('connect_google') }}" class="btn btn-danger">
-                                                <i class="fab fa-google"></i> Login with Google
-                                            </a>
-                                            <a href="#" id="faceAuthLink" class="btn btn-info mt-2">
-                                                <i class="fas fa-camera"></i> Login with Face ID
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <button class="btn btn-lg btn-block btn-primary" type="submit" {% if is_banned %}disabled{% endif %}>Login</button>
-                            </form>
+    <!-- Animated background particles -->
+    <div class="particles-container" id="particles-container"></div>
+    
+    <div class="login-container">
+        <div class="login-card animate__animated animate__fadeIn">
+            <!-- Left sidebar with logo and info -->
+            <div class="login-sidebar">
+                <div class="sidebar-content animate__animated animate__fadeInLeft">
+                    <img class="login-logo" src="{{ asset('Images/logo.png') }}" alt="Dleohr Logo">
+                    <p class="sidebar-text">Log in to access your personalized dashboard and start managing your HR operations.</p>
+                </div>
+            </div>
+            
+            <!-- Right side login form -->
+            <div class="login-form animate__animated animate__fadeInRight">
+                <div id="alerts-container"></div>
+                
+                {% if is_banned %}
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i> Too many failed login attempts. Please try again after {{ ban_until|date('Y-m-d H:i:s') }}.
+                </div>
+                {% endif %}
+                
+                {% if hcaptcha_error %}
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-circle"></i> {{ hcaptcha_error }}
+                </div>
+                {% endif %}
+                
+                <h2 class="form-title">Login</h2>
+                <p class="form-subtitle">Access to our dashboard</p>
+                
+                <form id="loginForm" method="post">
+                    <div class="input-group">
+                        <input type="email" class="form-input" name="email" id="email" placeholder=" " required autofocus>
+                        <label for="email">Email Address</label>
+                    </div>
+                    
+                    <div class="input-group">
+                        <input type="password" class="form-input" name="password" id="password" placeholder=" " required>
+                        <label for="password">Password</label>
+                        <span class="fas fa-eye toggle-password"></span>
+                    </div>
+                    
+                    <div class="h-captcha" data-sitekey="{{ hcaptcha_site_key }}"></div>
+                    
+                    <div class="remember-forgot">
+                        <div class="custom-checkbox">
+                            <input type="checkbox" id="remember_me" name="_remember_me">
+                            <label for="remember_me">Remember me</label>
+                        </div>
+                        
+                        <div class="forgot-links">
+                            <a class="forgot-link" href="/user/new">Don't have an account?</a>
+                            <a class="forgot-link" href="/forgot">Forgot password?</a>
                         </div>
                     </div>
-                </div>
+                    
+                    <button class="login-btn animate__animated" type="submit" id="loginButton" 
+                            {% if is_banned %}disabled{% endif %}>
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </button>
+                    
+                    <div class="social-login">
+                        <a href="{{ path('connect_google') }}" class="social-btn google-btn">
+                            <i class="fab fa-google"></i> Login with Google
+                        </a>
+                        
+                        <a href="#" id="faceAuthLink" class="social-btn face-btn">
+                            <i class="fas fa-camera"></i> Login with Face ID
+                        </a>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -130,12 +636,16 @@
     <!-- Reclamation Modal -->
     <div id="reclamationModal" class="modal-custom">
         <div class="modal-content-custom">
-            <h5>You are banned</h5>
-            <p>Please write your reclamation message:</p>
+            <h5><i class="fas fa-exclamation-triangle"></i> Account Restricted</h5>
+            <p>Your account has been temporarily restricted. Please submit your reclamation message below:</p>
             <textarea id="reclamationMessage" placeholder="Enter your message..."></textarea>
-            <div>
-                <button id="submitReclamation" class="btn btn-success">Submit</button>
-                <button id="cancelReclamation" class="btn btn-danger">Cancel</button>
+            <div class="modal-buttons">
+                <button id="submitReclamation" class="modal-btn modal-btn-success">
+                    <i class="fas fa-paper-plane"></i> Submit
+                </button>
+                <button id="cancelReclamation" class="modal-btn modal-btn-danger">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
             </div>
         </div>
     </div>
@@ -143,15 +653,20 @@
     <!-- Face Auth Modal -->
     <div id="faceAuthModal" class="modal-custom">
         <div class="modal-content-custom">
-            <h5>Face Authentication</h5>
-            <p>Position your face in front of the camera.</p>
+            <h5><i class="fas fa-camera"></i> Face Authentication</h5>
+            <p>Position your face in front of the camera for identification.</p>
             <video id="video" autoplay></video>
-            <canvas id="canvas" style="display: none;"></canvas>
-            <div>
-                <button id="cancelFaceAuth" class="btn btn-danger">Cancel</button>
+            <canvas id="canvas"></canvas>
+            <div class="spinner" id="faceAuthSpinner"></div>
+            <p class="status-text" id="faceAuthStatus"></p>
+            <div class="modal-buttons">
+                <button id="cancelFaceAuth" class="modal-btn modal-btn-danger">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
             </div>
         </div>
     </div>
+
 
     <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
     <script src="https://js.hcaptcha.com/1/api.js" async defer></script>

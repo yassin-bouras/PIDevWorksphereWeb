@@ -63,6 +63,7 @@ final class UserController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $user = new User();
+        $user->setRole('Candidat'); // Set default role as 'CANDIDAT'
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
 
@@ -75,17 +76,19 @@ final class UserController extends AbstractController
 
             $imageFile = $form->get('imageprofil')->getData();
             if ($imageFile) {
-                // Define the path to the XAMPP htdocs directory
-                $uploadsDir = 'C:/xampp/htdocs/img';
-                if (!is_dir($uploadsDir)) {
-                    mkdir($uploadsDir, 0777, true);
+                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+
+                // Move to Symfony public folder
+                $symfonyPath = $this->getParameter('kernel.project_dir') . '/public/images/' . $newFilename;
+                $imageFile->move(dirname($symfonyPath), $newFilename);
+
+                // Copy to XAMPP htdocs
+                $xamppPath = 'C:/xampp/htdocs/img/' . $newFilename;
+                if (!copy($symfonyPath, $xamppPath)) {
+                    throw new \Exception('Failed to copy image to XAMPP htdocs');
                 }
 
-                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
-                $imageFile->move($uploadsDir, $newFilename);
-
-                // Save the relative path to the database
-                $user->setImageprofil('htdocs/img/' . $newFilename);
+                $user->setImageprofil('/images/' . $newFilename);
             }
 
             $entityManager->persist($user);
@@ -121,9 +124,29 @@ final class UserController extends AbstractController
                 $user->setMdp($hashedPassword);
             }
 
+            // Handle image upload
+            $imageFile = $form->get('imageprofil')->getData();
+            if ($imageFile) {
+                $newFilename = uniqid() . '.' . $imageFile->guessExtension();
+
+                // Move to Symfony public folder
+                $symfonyPath = $this->getParameter('kernel.project_dir') . '/public/images/' . $newFilename;
+                $imageFile->move(dirname($symfonyPath), $newFilename);
+
+                // Copy to XAMPP htdocs
+                $xamppPath = 'C:/xampp/htdocs/img/' . $newFilename;
+                if (!copy($symfonyPath, $xamppPath)) {
+                    throw new \Exception('Failed to copy image to XAMPP htdocs');
+                }
+
+                $user->setImageprofil('/images/' . $newFilename);
+            }
+
             $entityManager->flush();
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
+
+            return $this->redirectToRoute('app_user_show', ['iduser' => $user->getIduser()]);
         }
+
 
         return $this->render('user/edit.html.twig', [
             'user' => $user,

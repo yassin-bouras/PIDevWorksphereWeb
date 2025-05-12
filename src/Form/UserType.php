@@ -40,10 +40,7 @@ class UserType extends AbstractType
                 'mapped' => false,
                 'required' => false,
             ])
-            ->add('role', HiddenType::class, [
-                'data' => 'Candidat',
-                'mapped' => true,
-            ]);
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void
