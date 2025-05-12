@@ -440,8 +440,18 @@
                     <div class="menu-separator"></div>
                     <ul class="logout">
                        <li>
-    <a href="{{ path('app_logout') }}">
-      <span>🚪 Se déconnecter</span>
+    <form action="#" method="post" style="display: inline;" onsubmit="event.preventDefault(); logoutUser();">
+        <button type="submit" style="background: none; border: none; color: inherit; cursor: pointer; padding: 0;">
+            🚪 Se déconnecter
+        </button>
+    </form>
+    <script>
+        function logoutUser() {
+            document.cookie = 'BEARER=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            window.location.href = '/';
+        }
+    </script>
+      
     </a>
   </li>
                     </ul>

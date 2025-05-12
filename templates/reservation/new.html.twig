@@ -1,10 +1,27 @@
 {% extends '/dashboard/base2.html.twig' %}
 
 
-{% block title %}Nouvelle réservation{% endblock %}
+{% block title %}Nouvelle réservation
+
+{% endblock %}
 
 {% block content %}
-    <h1 style="text-align: center; margin-top: -50.5%;">Ajouter Résérvation</h1>
+{# 
+    <h1 style="text-align: center; margin-top: -5.5%;">Ajouter Résérvation</h1> #}
+
+    <div class="content container-fluid" style="margin-top: -55.5%;">
+                <div class="row">
+                    <div class="col-xl-12 col-sm-12 col-12">
+                        <div class="breadcrumb-path mb-4">
+                            <ul class="breadcrumb">
+                             
+                                <li class="breadcrumb-item"><a href="{{ path('app_projet_index') }}">Réservation</a></li>
+                                <li class="breadcrumb-item active">Ajouter Résérvation</li>
+                            </ul>
+                            <h3>Ajouter Résérvation</h3>
+                        </div>
+                    </div>
+                </div>
 
        {{ include('reservation/_form.html.twig') }}
       <div style="display: flex; justify-content: center; gap:10px;">
