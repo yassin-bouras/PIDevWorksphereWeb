@@ -1,7 +1,7 @@
 {% extends '/dashboard/manager.html.twig' %}
 
 {% block content %}
-<div class="content container-fluid" style="margin-top: -50.5%;">
+<!-- <div class="content container-fluid" style="margin-top: 2.5%;">
     <div class="page-header">
         <div class="row">
             <div class="col-sm-12">
@@ -11,6 +11,23 @@
                     <li class="breadcrumb-item active">Tâches</li>
                 </ul>
             </div>
+        </div>
+    </div> -->
+
+                
+<div class="content container-fluid" style="margin-top: 2.5%;">
+
+    <div class="row">
+        <div class="col-xl-12 col-sm-12 col-12 mb-4">
+        <h3 class="page-title">Liste des Equipes</h3>
+        <div class="breadcrumb-path ">
+        <ul class="breadcrumb">
+              <li class="breadcrumb-item"><a href="{{ path('app_dashboard_manager') }}">Accueil</a></li>
+        </li>
+         <li class="breadcrumb-item active">Tâches</li>
+    </ul>
+        <h3>Tâches</h3>
+        </div>
         </div>
     </div>
 
