@@ -640,7 +640,7 @@
                     <span class="user-img">
                         <div class="user-image-loading"></div>
                         <img id="user-profile-image" src="{{ asset('back/img/profile.jpg') }}" alt="User Image"
-                            style="display: none;">
+                            style="display: none; width: 36px; height: 36px; object-fit: cover; border-radius: 50%;">
                         <span class="status online" style="display: none;"></span>
                     </span>
                     <span class="user-name-loading"></span>
@@ -1017,7 +1017,6 @@
                         sidebarLinks.innerHTML += `
                         <li class="active"><a href="/dashboard"><span>📊 Dashboard</span></a></li>
                         <li><a href="/user/${user.iduser}"><span>👤 Profile</span></a></li>
-                        <li><a href="/contrat"><span>✍️ Contrat</span></a></li>
                         <li><a href="/sponsor"><span>🤝 Gestion Sponsor</span></a></li>
                         <li><a href="/user"><span>👥 Gestion User</span></a></li>
                         <li><a href="/evennement"><span>🎉 Evenements</span></a></li>

@@ -135,6 +135,7 @@ final class ReclamationController extends AbstractController
     {
         return $this->render('reclamation/show.html.twig', [
             'reclamation' => $reclamation,
+            'role' => $reclamation->getUser()->getRole(),
         ]);
     }
 

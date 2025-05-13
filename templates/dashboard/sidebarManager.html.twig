@@ -332,10 +332,14 @@
             <i class="fas fa-bars"></i>
         </a>
         <ul class="nav user-menu">
+             <span class="user-img">
+                        <div ></div>
+                        <img src="{{ asset('back/img/profile.jpg') }}" alt="User Image"
+                            style="display: none; width: 36px; height: 36px; object-fit: cover; border-radius: 50%;">
+                        <span  style="display: none;"></span>
+                    </span>
             <li class="nav-item dropdown">
-                <a href="#" class="dropdown-toggle nav-link pr-0" data-toggle="dropdown">
-                    <i data-feather="bell"></i> <span class="badge badge-pill"></span>
-                </a>
+            
                 <div class="dropdown-menu notifications">
                     <div class="topnav-dropdown-header">
                         <span class="notification-title">Notifications</span>
