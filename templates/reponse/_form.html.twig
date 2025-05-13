@@ -1,4 +1,204 @@
-{{ form_start(form) }}
+{{ form_start(form, {'attr': {'id': 'reclamationForm', 'class': 'modern-form'}}) }}
+<div >
+<div class="form-content">
     {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+</div>
+
+<div class="form-actions">
+    <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> {{ button_label|default('Enregistrer') }}
+    </button>
+</div>
+</div>
 {{ form_end(form) }}
+
+<style>
+    /* Modern Form Styling */
+    .modern-form {
+        margin-bottom: 1.5rem;
+    }
+    
+    /* Override Symfony's default form styling */
+    .modern-form div > label {
+        display: block;
+        margin-bottom: 0.75rem;
+        font-weight: 500;
+        color: #343a40;
+        font-size: 1rem;
+    }
+    
+    .modern-form div > input[type="text"],
+    .modern-form div > input[type="email"],
+    .modern-form div > input[type="password"],
+    .modern-form div > input[type="number"],
+    .modern-form div > input[type="date"],
+    .modern-form div > input[type="time"],
+    .modern-form div > input[type="tel"],
+    .modern-form div > input[type="url"],
+    .modern-form div > select,
+    .modern-form div > textarea {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        margin-bottom: 1.75rem;
+    }
+    
+    .modern-form div > input:focus,
+    .modern-form div > select:focus,
+    .modern-form div > textarea:focus {
+        color: #495057;
+        background-color: #fff;
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    .modern-form div > textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    .modern-form div > select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+        padding-right: 2rem;
+    }
+    
+    /* Style for checkbox and radio inputs */
+    .modern-form div > input[type="checkbox"],
+    .modern-form div > input[type="radio"] {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-right: 0.5rem;
+        cursor: pointer;
+    }
+    
+    /* Form validation */
+    .modern-form .form-error {
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: -1.5rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .modern-form .form-error ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .modern-form .invalid-feedback {
+        display: block;
+        width: 100%;
+        margin-top: -1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.875rem;
+        color: #dc3545;
+    }
+    
+    /* Form groups styling */
+    .modern-form div {
+        margin-bottom: 0.25rem;
+    }
+    
+    /* Action buttons */
+    .modern-form .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .modern-form .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        border-radius: 8px;
+        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, 
+                   border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    
+    .modern-form .btn-primary {
+        color: #fff;
+        background-color: #4361ee;
+        border-color: #4361ee;
+    }
+    
+    .modern-form .btn-primary:hover {
+        background-color: #3a56d8;
+        border-color: #3a56d8;
+    }
+    
+    /* Collection styling (for collections of sub-forms) */
+    .modern-form div[id$="_collection"] > div {
+        background-color: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.25rem;
+        margin-bottom: 1.25rem;
+        border: 1px solid #e9ecef;
+    }
+    
+    /* Help blocks */
+    .modern-form .help-block {
+        margin-top: -1.5rem;
+        margin-bottom: 1.75rem;
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 768px) {
+        .modern-form .form-actions {
+            flex-direction: column;
+        }
+        
+        .modern-form .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add FontAwesome icon to button if it doesn't have one
+        const submitBtn = document.querySelector('#reclamationForm button[type="submit"]');
+        if (submitBtn && !submitBtn.querySelector('i')) {
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-save';
+            submitBtn.prepend(icon);
+            submitBtn.insertBefore(document.createTextNode(' '), submitBtn.childNodes[1]);
+        }
+        
+        // Ensure button has proper classes
+        if (submitBtn && !submitBtn.classList.contains('btn-primary')) {
+            submitBtn.className = 'btn btn-primary';
+        }
+        
+        // Add spacing between form fields
+        const formDivs = document.querySelectorAll('#reclamationForm > div');
+        formDivs.forEach(div => {
+            if (!div.classList.contains('form-actions')) {
+                div.style.marginBottom = '1.5rem';
+            }
+        });
+    });
+</script>

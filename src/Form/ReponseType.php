@@ -13,7 +13,17 @@ class ReponseType extends AbstractType
     {
         $builder
             ->add('message')
-            ->add('status');
+
+            ->add('status', \Symfony\Component\Form\Extension\Core\Type\ChoiceType::class, [
+                'choices' => [
+                    'En attente' => 'en attente',
+                    'En cours' => 'en cours',
+                    'Résolu' => 'résolu',
+                ],
+            ])
+
+
+        ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -1,5 +1,7 @@
+{% extends '/dashboard/base2.html.twig' %}
 
-{% block body %}
+{% block content %}
+<div style="margin-top: -56%;">
     <h1>Edit Reponse</h1>
 
     {{ include('reponse/_form.html.twig', {'button_label': 'Update'}) }}
@@ -7,4 +9,5 @@
     <a href="{{ path('reclamations_by_user', {'id': id_user}) }}">Retour à mes réclamations</a>
 
     {{ include('reponse/_delete_form.html.twig') }}
+</div>
 {% endblock %}

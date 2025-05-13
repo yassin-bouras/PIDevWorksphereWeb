@@ -1,4 +1,190 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_start(form, {'attr': {'id': 'reclamationForm', 'class': 'modern-form'}}) }}
+
+{# Check if form has global errors #}
+{% if form.vars.errors|length > 0 %}
+    <div class="alert-danger" style="display: block;">
+        <ul>
+            {% for error in form.vars.errors %}
+                <li>{{ error.message }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endif %}
+
+{# Loop through form fields to style them individually #}
+{% for field in form %}
+    {% if field.vars.name != '_token' %}
+        <div class="form-group">
+            {{ form_label(field, null, {'label_attr': {'class': 'form-label'}}) }}
+            
+            {# Add appropriate CSS classes based on field type #}
+            {% if field.vars.block_prefixes[1] == 'textarea' %}
+                {{ form_widget(field, {'attr': {'class': 'form-control', 'rows': 5}}) }}
+            {% elseif field.vars.block_prefixes[1] == 'choice' %}
+                {{ form_widget(field, {'attr': {'class': 'form-control form-select'}}) }}
+            {% elseif field.vars.block_prefixes[1] == 'checkbox' %}
+                <div class="checkbox-wrapper">
+                    {{ form_widget(field, {'attr': {'class': 'form-check-input'}}) }}
+                </div>
+            {% else %}
+                {{ form_widget(field, {'attr': {'class': 'form-control'}}) }}
+            {% endif %}
+            
+            {# Display field-specific errors #}
+            {% if field.vars.errors|length > 0 %}
+                <div class="form-error">
+                    <ul>
+                        {% for error in field.vars.errors %}
+                            <li>{{ error.message }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+{% endfor %}
+
+<div class="form-actions">
+    <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i> {{ button_label|default('Enregistrer') }}
+    </button>
+</div>
+
 {{ form_end(form) }}
+
+<style>
+    /* Form Styling */
+    .modern-form .form-group {
+        margin-bottom: 1.75rem;
+    }
+    
+    .modern-form .form-label {
+        display: block;
+        margin-bottom: 0.75rem;
+        font-weight: 500;
+        color: #343a40;
+    }
+    
+    .modern-form .form-control {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        font-weight: 400;
+        line-height: 1.5;
+        color: #495057;
+        background-color: #fff;
+        background-clip: padding-box;
+        border: 1px solid #ced4da;
+        border-radius: 8px;
+        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    
+    .modern-form .form-control:focus {
+        color: #495057;
+        background-color: #fff;
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+    
+    .modern-form textarea.form-control {
+        min-height: 120px;
+        resize: vertical;
+    }
+    
+    .modern-form .form-select {
+        appearance: none;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px 12px;
+        padding-right: 2rem;
+    }
+    
+    .modern-form .checkbox-wrapper {
+        display: flex;
+        align-items: center;
+    }
+    
+    .modern-form .form-check-input {
+        width: 1.25rem;
+        height: 1.25rem;
+        margin-right: 0.5rem;
+        cursor: pointer;
+    }
+    
+    .modern-form .form-error {
+        margin-top: 0.5rem;
+        color: #dc3545;
+        font-size: 0.875rem;
+    }
+    
+    .modern-form .form-error ul {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    
+    .modern-form .form-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+    
+    .modern-form .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        text-align: center;
+        vertical-align: middle;
+        cursor: pointer;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        line-height: 1.5;
+        border-radius: 8px;
+        transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, 
+                   border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    }
+    
+    .modern-form .btn-primary {
+        color: #fff;
+        background-color: #4361ee;
+        border-color: #4361ee;
+    }
+    
+    .modern-form .btn-primary:hover {
+        background-color: #3a56d8;
+        border-color: #3a56d8;
+    }
+    
+    @media (max-width: 768px) {
+        .modern-form .form-actions {
+            flex-direction: column;
+        }
+        
+        .modern-form .btn {
+            width: 100%;
+            justify-content: center;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add FontAwesome icon to button if it doesn't have one
+        const submitBtn = document.querySelector('#reclamationForm button[type="submit"]');
+        if (submitBtn && !submitBtn.querySelector('i')) {
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-save';
+            submitBtn.prepend(icon);
+            submitBtn.insertBefore(document.createTextNode(' '), submitBtn.childNodes[1]);
+        }
+        
+        // Ensure button has proper classes
+        if (submitBtn && !submitBtn.classList.contains('btn-primary')) {
+            submitBtn.className = 'btn btn-primary';
+        }
+    });
+</script>

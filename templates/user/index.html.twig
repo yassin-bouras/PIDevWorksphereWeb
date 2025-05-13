@@ -214,7 +214,7 @@
                                         <td>{{ user.sexe }}</td>
                                         <td>{{ user.status ?: 'Non spécifié' }}</td>
                                         <td>
-                                            <div class="d-flex flex-wrap gap-2">
+                                            <div class="">
                                                 <a href="{{ path('app_user_show', {'iduser': user.idUser}) }}" class="btn btn-sm btn-outline-primary action-btn" title="Voir">
                                                     <i class="far fa-eye"></i>
                                                 </a>
@@ -241,14 +241,25 @@
                                                     </form>
                                                 {% endif %}
                                                 {% if user.banned and user.messageReclamation %}
-                                                    <a href="{{ path('app_user_reclamations', {'iduser': user.idUser}) }}" class="btn btn-sm btn-outline-info action-btn" title="Voir réclamations">
-                                                        <i class="fas fa-exclamation-circle"></i>
-                                                    </a>
-                                                {% endif %}
-                                                <form method="post" action="{{ path('app_user_promote', {'id': user.idUser}) }}" onsubmit="return confirm('Promouvoir cet utilisateur ?');" class="d-inline">
-                                                    <button class="btn btn-sm btn-outline-secondary action-btn" title="Promouvoir">
-                                                        <i class="fas fa-level-up-alt"></i>
+                                                    <button type="button" class="btn btn-sm btn-outline-info action-btn" title="Voir la raison du bannissement" data-bs-toggle="tooltip" data-bs-placement="top" onclick="alert('{{ user.messageReclamation }}')">
+                                                        <i class="fas fa-question-circle"></i>
                                                     </button>
+                                                {% endif %}
+<form method="post" action="{{ path('app_user_promote', {'id': user.idUser}) }}" class="d-inline promote-form">
+    <button type="button" class="btn btn-sm btn-outline-secondary action-btn promote-btn" data-user-id="{{ user.idUser }}">
+        <i class="fas fa-level-up-alt"></i> Promouvoir
+    </button>
+<div class="role-select mt-2 d-none" id="select-{{ user.idUser }}">
+    <select name="role" class="form-control form-control-sm">
+        {% for roleOption in ['Employe', 'Manager', 'Candidat', 'RH'] %}
+            {% if roleOption != user.role %}
+                <option value="{{ roleOption }}">{{ roleOption }}</option>
+            {% endif %}
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-sm btn-success mt-1">Confirmer</button>
+</div>
+</form>
                                                 </form>
                                             </div>
                                         </td>
@@ -270,4 +281,15 @@
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.promote-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const userId = this.getAttribute('data-user-id');
+                const selectDiv = document.getElementById('select-' + userId);
+                selectDiv.classList.toggle('d-none');
+            });
+        });
+    });
+</script>
 {% endblock %}

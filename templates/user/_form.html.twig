@@ -1,4 +1,151 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Styled Form</title>
+    <style>
+        :root {
+            --primary-color: #4a6cf7;
+            --primary-hover: #3a5ad9;
+            --text-color: #333;
+            --light-bg: #f5f7fa;
+            --border-color: #ddd;
+            --error-color: #e74c3c;
+            --success-color: #2ecc71;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--light-bg);
+            padding: 20px;
+        }
+
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 30px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-title {
+            margin-top: 0;
+            margin-bottom: 25px;
+            color: var(--primary-color);
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            box-sizing: border-box;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(74, 108, 247, 0.2);
+        }
+
+        .form-help {
+            display: block;
+            margin-top: 5px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .form-actions {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .invalid-feedback {
+            display: block;
+            width: 100%;
+            margin-top: 5px;
+            font-size: 14px;
+            color: var(--error-color);
+        }
+
+        .is-invalid {
+            border-color: var(--error-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2 class="form-title">USERe</h2>
+        
+        {{ form_start(form, {'attr': {'class': 'needs-validation'}}) }}
+            
+            {# Display the form errors if there are any #}
+            {% if form_errors(form) %}
+                <div class="alert alert-danger">
+                    {{ form_errors(form) }}
+                </div>
+            {% endif %}
+            
+            {# Iterate through each form field and render it with styling #}
+            {% for field in form %}
+                {% if not field.vars.compound and field.vars.name != '_token' %}
+                    <div class="form-group">
+                        {{ form_label(field) }}
+                        {{ form_widget(field, {'attr': {'class': 'form-control' ~ (field.vars.valid ? '' : ' is-invalid')}}) }}
+                        
+                        {% if field.vars.help %}
+                            <small class="form-help">{{ field.vars.help }}</small>
+                        {% endif %}
+                        
+                        {% if not field.vars.valid %}
+                            <div class="invalid-feedback">
+                                {{ form_errors(field) }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+            
+            <div class="form-actions">
+                <button type="submit" class="btn">{{ button_label|default('Save') }}</button>
+            </div>
+            
+        {{ form_end(form) }}
+    </div>
+</body>
+</html>

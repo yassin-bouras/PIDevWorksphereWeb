@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\TelType;
 
 class UserType extends AbstractType
 {
@@ -35,11 +36,21 @@ class UserType extends AbstractType
                 'html5' => true,
                 'attr' => ['step' => '0.01'],
             ])
+            ->add('numtel', TelType::class, [
+                'label' => 'Numéro de téléphone',
+                'required' => false,
+                'attr' => [
+                    'placeholder' => 'Votre numéro de téléphone',
+                    'pattern' => '[0-9]*',
+                    'inputmode' => 'numeric'
+                ]
+            ])
             ->add('imageprofil', FileType::class, [
                 'label' => 'Image de profil',
                 'mapped' => false,
                 'required' => false,
             ])
+
         ;
     }
 

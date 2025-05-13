@@ -565,7 +565,7 @@
             <div class="login-sidebar">
                 <div class="sidebar-content animate__animated animate__fadeInLeft">
                     <img class="login-logo" src="{{ asset('Images/logo.png') }}" alt="Dleohr Logo">
-                    <p class="sidebar-text">Log in to access your personalized dashboard and start managing your HR operations.</p>
+                    <p class="sidebar-text">Connectez-vous pour accéder à votre tableau de bord personnalisé et commencez à gérer vos opérations RH.</p>
                 </div>
             </div>
             
@@ -586,49 +586,52 @@
                 {% endif %}
                 
                 <h2 class="form-title">Login</h2>
-                <p class="form-subtitle">Access to our dashboard</p>
+                <p class="form-subtitle">Accès à notre tableau de bord</p>
                 
-                <form id="loginForm" method="post">
-                    <div class="input-group">
-                        <input type="email" class="form-input" name="email" id="email" placeholder=" " required autofocus>
-                        <label for="email">Email Address</label>
-                    </div>
+<form id="loginForm" method="post">
+    <div class="input-group">
+        <input type="email" class="form-input" name="email" id="email" placeholder=" " required autofocus>
+        <label for="email"> Addresse Email</label>
+    </div>
+    
+    <div class="input-group password-group hidden">
+        <input type="password" class="form-input pass-input" name="password" id="password" placeholder=" " required>
+        <label for="password">Password</label>
+        <span class="fas fa-eye toggle-password"></span>
+    </div>
+    
+    <div class="h-captcha" data-sitekey="{{ hcaptcha_site_key }}" data-callback="onCaptchaVerified"></div>
+    
+    <div class="remember-forgot">
+        <div class="custom-checkbox">
+            <input type="checkbox" id="remember_me" name="_remember_me">
+            <label for="remember_me">Remember me</label>
+        </div>
+        
+        <div class="forgot-links">
+            <a class="forgot-link" href="/user/new">Vous n'avez pas de compte?</a>
+            <a class="forgot-link" href="/forgot">mot de passe oublié?</a>
+        </div>
+    </div>
+    
+    <button class="login-btn animate__animated" type="button" id="loginButton" 
+            {% if is_banned %}disabled{% else %}disabled{% endif %}>
+        <i class="fas fa-sign-in-alt"></i> Login
+    </button>
+    
+    <div class="social-login">
+        <a href="{{ path('connect_google') }}" class="social-btn google-btn">
+            <i class="fab fa-google"></i> Login with Google
+        </a>
+        
+        <a href="#" id="faceAuthLink" class="social-btn face-btn">
+            <i class="fas fa-camera"></i> Login with Face ID
+        </a>
+    </div>
+</form>          
+                
                     
-                    <div class="input-group">
-                        <input type="password" class="form-input" name="password" id="password" placeholder=" " required>
-                        <label for="password">Password</label>
-                        <span class="fas fa-eye toggle-password"></span>
-                    </div>
-                    
-                    <div class="h-captcha" data-sitekey="{{ hcaptcha_site_key }}"></div>
-                    
-                    <div class="remember-forgot">
-                        <div class="custom-checkbox">
-                            <input type="checkbox" id="remember_me" name="_remember_me">
-                            <label for="remember_me">Remember me</label>
-                        </div>
-                        
-                        <div class="forgot-links">
-                            <a class="forgot-link" href="/user/new">Don't have an account?</a>
-                            <a class="forgot-link" href="/forgot">Forgot password?</a>
-                        </div>
-                    </div>
-                    
-                    <button class="login-btn animate__animated" type="submit" id="loginButton" 
-                            {% if is_banned %}disabled{% endif %}>
-                        <i class="fas fa-sign-in-alt"></i> Login
-                    </button>
-                    
-                    <div class="social-login">
-                        <a href="{{ path('connect_google') }}" class="social-btn google-btn">
-                            <i class="fab fa-google"></i> Login with Google
-                        </a>
-                        
-                        <a href="#" id="faceAuthLink" class="social-btn face-btn">
-                            <i class="fas fa-camera"></i> Login with Face ID
-                        </a>
-                    </div>
-                </form>
+          
             </div>
         </div>
     </div>
@@ -668,215 +671,241 @@
     </div>
 
 
-    <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
-    <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
-    <script>
-        $(document).ready(function () {
-            // Handle regular login form submission
-            $('#loginForm').on('submit', function (e) {
-                e.preventDefault();
+   <script src="{{ asset('back/js/jquery-3.6.0.min.js') }}"></script>
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
+<script>
+    $(document).ready(function () {
+        // Handle password visibility toggle
+        $('.toggle-password').click(function () {
+            const input = $(this).siblings('.pass-input');
+            const isPassword = input.attr('type') === 'password';
+            input.attr('type', isPassword ? 'text' : 'password');
+            $(this).toggleClass('fa-eye fa-eye-slash');
+        });
 
-                const email = $('input[name="email"]').val();
-                const password = $('input[name="password"]').val();
-                const hcaptchaResponse = $('[name="h-captcha-response"]').val();
-                const data = {
-                    email: email,
-                    password: password,
-                    'h-captcha-response': hcaptchaResponse
-                };
-
-                $.ajax({
-                    url: '/login',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(data),
-                    success: function (response) {
-                        if (response.token) {
-                            handleSuccessfulLogin(response.token);
-                        }
-                    },
-                    error: function (xhr) {
-                        const errorMessage = xhr.responseJSON?.error || 'Login failed';
-                        $('.login-right-wrap').prepend(`<div class="alert alert-danger">${errorMessage}</div>`);
-                        hcaptcha.reset(); // Reset hCaptcha on error
-                    }
-                });
-            });
-
-            // Handle password visibility toggle
-            $('.toggle-password').click(function () {
-                const input = $(this).siblings('.pass-input');
-                input.attr('type', input.attr('type') === 'password' ? 'text' : 'password');
-                $(this).toggleClass('fa-eye fa-eye-slash');
-            });
-
-            let stream = null;
-            let faceCheckInterval = null;
-            const video = document.getElementById('video');
-            const canvas = document.getElementById('canvas');
-            const cancelFaceAuth = document.getElementById('cancelFaceAuth');
-            const faceAuthModal = $('#faceAuthModal');
-            const CHECK_INTERVAL = 5000;
-
-            $('#faceAuthLink').click(function (e) {
-                e.preventDefault();
-                faceAuthModal.fadeIn();
-                startVideo();
-            });
-
-            function startVideo() {
-                navigator.mediaDevices.getUserMedia({ video: true })
-                    .then(function (mediaStream) {
-                        stream = mediaStream;
-                        video.srcObject = stream;
-                        // Start periodic face checking
-                        startFaceChecking();
-                    })
-                    .catch(function (err) {
-                        stopFaceChecking();
-                        faceAuthModal.fadeOut();
-                        $('.login-right-wrap').prepend('<div class="alert alert-danger">Camera access denied or unavailable.</div>');
-                    });
+        // CAPTCHA verification callback
+        window.onCaptchaVerified = function (token) {
+            if (token) {
+                $('.password-group').removeClass('hidden');
+                $('#loginButton').prop('disabled', false);
+                $('#alerts-container').html('<div class="alert alert-success"><i class="fas fa-check-circle"></i> CAPTCHA verified. Please enter your password.</div>');
+                $('#password').focus();
+                hcaptcha.reset();
             }
+        };
 
-            function startFaceChecking() {
-                // Clear any existing interval
-                stopFaceChecking();
-                // Start checking every CHECK_INTERVAL milliseconds
-                faceCheckInterval = setInterval(checkFace, CHECK_INTERVAL);
+        // Handle login button click
+        $('#loginButton').click(function (e) {
+            e.preventDefault();
+            const email = $('#email').val().trim();
+            if (!email) {
+                $('#alerts-container').html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> Please enter your email.</div>');
+                return;
             }
-
-            function stopFaceChecking() {
-                if (faceCheckInterval) {
-                    clearInterval(faceCheckInterval);
-                    faceCheckInterval = null;
-                }
-            }
-
-            function checkFace() {
-                if (!stream || !faceAuthModal.is(':visible')) {
-                    stopFaceChecking();
-                    return;
-                }
-
-                canvas.width = video.videoWidth;
-                canvas.height = video.videoHeight;
-                canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
-                const imageData = canvas.toDataURL('image/png');
-
-                // Send the captured image to the face-auth endpoint
-                $.ajax({
-                    url: '{{ path('face_auth') }}',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({ image: imageData }),
-                    success: function (response) {
-                        if (response.token) {
-                            stopFaceChecking();
-                            stopVideoStream();
-                            faceAuthModal.fadeOut();
-                            handleSuccessfulLogin(response.token);
-                        }
-                    },
-                    error: function (xhr) {
-                        // Do not display error immediately; allow retries
-                        // Optionally, limit retries or show error after a certain number of failures
-                    }
-                });
-            }
-
-            function stopVideoStream() {
-                if (stream) {
-                    stream.getTracks().forEach(track => track.stop());
-                    stream = null;
-                }
-            }
-
-            cancelFaceAuth.addEventListener('click', function () {
-                stopFaceChecking();
-                stopVideoStream();
-                faceAuthModal.fadeOut();
-            });
-
-            // Ensure cleanup when modal is hidden (e.g., via external means)
-            faceAuthModal.on('hidden', function () {
-                stopFaceChecking();
-                stopVideoStream();
-            });
-
-            // Handle successful login (for both password and face auth)
-            function handleSuccessfulLogin(token) {
-                document.cookie = `BEARER=${token}; Path=/; SameSite=Strict`;
-
-                const payload = JSON.parse(atob(token.split('.')[1]));
-                const userRole = payload.roles && payload.roles.length > 0 ? payload.roles[0].toLowerCase() : null;
-
-                $.ajax({
-                    url: '/jwt/user',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({ token: token }),
-                    success: function (res) {
-                        const user = res.user;
-
-                        if (user.banned) {
-                            if (user.reclamation) {
-                                $('.login-right-wrap').prepend('<div class="alert alert-danger">You are banned. Reclamation already submitted.</div>');
-                            } else {
-                                $('#reclamationModal').fadeIn();
-
-                                $('#submitReclamation').one('click', function () {
-                                    const msg = $('#reclamationMessage').val().trim();
-                                    if (msg) {
-                                        $.ajax({
-                                            url: "{{ path('app_lr_reclamation') }}",
-                                            method: 'POST',
-                                            contentType: 'application/json',
-                                            data: JSON.stringify({
-                                                email: user.email,
-                                                message: msg
-                                            }),
-                                            success: function () {
-                                                $('#reclamationModal').fadeOut();
-                                                $('.login-right-wrap').prepend('<div class="alert alert-success">Reclamation submitted successfully.</div>');
-                                            },
-                                            error: function (xhr) {
-                                                const err = xhr.responseJSON?.error || "Error saving reclamation.";
-                                                $('.login-right-wrap').prepend(`<div class="alert alert-danger">${err}</div>`);
-                                            }
-                                        });
-                                    } else {
-                                        alert("Please write a message before submitting.");
-                                    }
-                                });
-
-                                $('#cancelReclamation').one('click', function () {
-                                    $('#reclamationModal').fadeOut();
-                                });
-                            }
-                            return;
-                        }
-
-                        switch (userRole) {
-                            case 'candidat':
-                                window.location.href = '/dashboardcandidat';
-                                break;
-                            case 'rh':
-                                window.location.href = '/dashboard';
-                                break;
-                            case 'employe':
-                                window.location.href = '/dashboardemploye';
-                                break;
-                            case 'manager':
-                                window.location.href = '/dashboardmanager';
-                                break;
-                            default:
-                                $('.login-right-wrap').prepend('<div class="alert alert-danger">Unknown role</div>');
-                        }
-                    }
-                });
+            if ($('.password-group').hasClass('hidden')) {
+                hcaptcha.execute();
+            } else {
+                submitLoginForm();
             }
         });
-    </script>
+
+        // Handle form submission
+        function submitLoginForm() {
+            const email = $('#email').val().trim();
+            const password = $('#password').val().trim();
+            const hcaptchaResponse = $('[name="h-captcha-response"]').val();
+
+            if (!password) {
+                $('#alerts-container').html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> Please enter your password.</div>');
+                return;
+            }
+
+            const data = {
+                email: email,
+                password: password,
+                'h-captcha-response': hcaptchaResponse
+            };
+
+            $.ajax({
+                url: '/login',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(data),
+                success: function (response) {
+                    if (response.token) {
+                        handleSuccessfulLogin(response.token);
+                    }
+                },
+                error: function (xhr) {
+                    const errorMessage = xhr.responseJSON?.error || 'Login failed';
+                    $('#alerts-container').html(`<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> ${errorMessage}</div>`);
+                    hcaptcha.reset();
+                    $('.password-group').addClass('hidden');
+                    $('#loginButton').prop('disabled', true);
+                }
+            });
+        }
+
+        let stream = null;
+        let faceCheckInterval = null;
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const cancelFaceAuth = document.getElementById('cancelFaceAuth');
+        const faceAuthModal = $('#faceAuthModal');
+        const CHECK_INTERVAL = 5000;
+
+        $('#faceAuthLink').click(function (e) {
+            e.preventDefault();
+            faceAuthModal.fadeIn();
+            startVideo();
+        });
+
+        function startVideo() {
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function (mediaStream) {
+                    stream = mediaStream;
+                    video.srcObject = stream;
+                    startFaceChecking();
+                })
+                .catch(function (err) {
+                    stopFaceChecking();
+                    faceAuthModal.fadeOut();
+                    $('#alerts-container').html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> Camera access denied or unavailable.</div>');
+                });
+        }
+
+        function startFaceChecking() {
+            stopFaceChecking();
+            faceCheckInterval = setInterval(checkFace, CHECK_INTERVAL);
+        }
+
+        function stopFaceChecking() {
+            if (faceCheckInterval) {
+                clearInterval(faceCheckInterval);
+                faceCheckInterval = null;
+            }
+        }
+
+        function checkFace() {
+            if (!stream || !faceAuthModal.is(':visible')) {
+                stopFaceChecking();
+                return;
+            }
+
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+            const imageData = canvas.toDataURL('image/png');
+
+            $.ajax({
+                url: '{{ path('face_auth') }}',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ image: imageData }),
+                success: function (response) {
+                    if (response.token) {
+                        stopFaceChecking();
+                        stopVideoStream();
+                        faceAuthModal.fadeOut();
+                        handleSuccessfulLogin(response.token);
+                    }
+                },
+                error: function (xhr) {
+                    // Allow retries without immediate error
+                }
+            });
+        }
+
+        function stopVideoStream() {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+                stream = null;
+            }
+        }
+
+        cancelFaceAuth.addEventListener('click', function () {
+            stopFaceChecking();
+            stopVideoStream();
+            faceAuthModal.fadeOut();
+        });
+
+        faceAuthModal.on('hidden', function () {
+            stopFaceChecking();
+            stopVideoStream();
+        });
+
+        function handleSuccessfulLogin(token) {
+            document.cookie = `BEARER=${token}; Path=/; SameSite=Strict`;
+
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            const userRole = payload.roles && payload.roles.length > 0 ? payload.roles[0].toLowerCase() : null;
+
+            $.ajax({
+                url: '/jwt/user',
+                method: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ token: token }),
+                success: function (res) {
+                    const user = res.user;
+
+                    if (user.banned) {
+                        if (user.reclamation) {
+                            $('#alerts-container').html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> You are banned. Reclamation already submitted.</div>');
+                        } else {
+                            $('#reclamationModal').fadeIn();
+
+                            $('#submitReclamation').one('click', function () {
+                                const msg = $('#reclamationMessage').val().trim();
+                                if (msg) {
+                                    $.ajax({
+                                        url: "{{ path('app_lr_reclamation') }}",
+                                        method: 'POST',
+                                        contentType: 'application/json',
+                                        data: JSON.stringify({
+                                            email: user.email,
+                                            message: msg
+                                        }),
+                                        success: function () {
+                                            $('#reclamationModal').fadeOut();
+                                            $('#alerts-container').html('<div class="alert alert-success"><i class="fas fa-check-circle"></i> Reclamation submitted successfully.</div>');
+                                        },
+                                        error: function (xhr) {
+                                            const err = xhr.responseJSON?.error || "Error saving reclamation.";
+                                            $('#alerts-container').html(`<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> ${err}</div>`);
+                                        }
+                                    });
+                                } else {
+                                    alert("Please write a message before submitting.");
+                                }
+                            });
+
+                            $('#cancelReclamation').one('click', function () {
+                                $('#reclamationModal').fadeOut();
+                            });
+                        }
+                        return;
+                    }
+
+                    switch (userRole) {
+                        case 'candidat':
+                            window.location.href = '/dashboardcandidat';
+                            break;
+                        case 'rh':
+                            window.location.href = '/dashboard';
+                            break;
+                        case 'employe':
+                            window.location.href = '/dashboardemploye';
+                            break;
+                        case 'manager':
+                            window.location.href = '/dashboardmanager';
+                            break;
+                        default:
+                            $('#alerts-container').html('<div class="alert alert-danger"><i class="fas fa-exclamation-circle"></i> Unknown role</div>');
+                    }
+                }
+            });
+        }
+    });
+</script>
 </body>
 </html>

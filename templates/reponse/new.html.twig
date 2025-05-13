@@ -40,7 +40,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="content container-fluid">
+<div class="content container-fluid" style="margin-top: -58%;">
     <div class="row">
         <div class="col-xl-12 col-sm-12 col-12">
             <div class="breadcrumb-path mb-4">
@@ -76,25 +76,16 @@
                             {{ form_widget(form.message, {'attr': {'class': 'form-control', 'placeholder': 'Message de la réponse', 'rows': 4}}) }}
                         </div>
 
-                        <div class="form-group">
-                            {{ form_label(form.datedepot) }}
-                            {{ form_widget(form.datedepot, {'attr': {'class': 'form-control'}}) }}
-                        </div>
+                 
 
-                        <div class="form-group">
+                      <div class="form-group">
                             {{ form_label(form.status) }}
                             {{ form_widget(form.status, {'attr': {'class': 'form-control'}}) }}
                         </div>
 
-                        <div class="form-group">
-                            {{ form_label(form.reclamation) }}
-                            {{ form_widget(form.reclamation, {'attr': {'class': 'form-control', 'disabled': 'disabled'}}) }}
-                        </div>
+                 
 
-                        <div class="form-group">
-                            {{ form_label(form.user) }}
-                            {{ form_widget(form.user, {'attr': {'class': 'form-control', 'disabled': 'disabled'}}) }}
-                        </div>
+                   
 
                         <div class="form-btn">
                             <button type="submit" class="btn btn-apply w-auto">

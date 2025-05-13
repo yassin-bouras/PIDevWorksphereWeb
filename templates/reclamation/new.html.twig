@@ -5,110 +5,356 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
+        /* Modern Form Styling */
+        .reclamation-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .page-header {
+            padding-bottom: 1.5rem;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .page-header h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .page-header p {
+            color: #6c757d;
+            font-size: 1rem;
+        }
+        
+        .form-card {
+            background-color: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(149, 157, 165, 0.15);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .form-card:hover {
+            box-shadow: 0 12px 30px rgba(149, 157, 165, 0.2);
+        }
+        
+        .form-card-header {
+            background-color: #f8f9fa;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .form-card-header h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 0.5rem;
+        }
+        
+        .form-card-header p {
+            color: #6c757d;
+            margin-bottom: 0;
+        }
+        
+        .form-card-body {
+            padding: 2rem;
+        }
+        
         .form-group {
-            margin-bottom: 20px; /* Increased from 12px */
-            padding: 10px 0; /* Add padding for spacing */
+            margin-bottom: 1.75rem;
         }
-        .form-row {
-            margin-bottom: 20px; /* Add spacing below paired fields */
-            padding: 0 10px; /* Add horizontal padding */
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+            color: #343a40;
         }
-        .form-col {
-            padding: 0 15px; /* Add padding inside columns */
+        
+        .form-control {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem;
+            font-size: 1rem;
+            font-weight: 400;
+            line-height: 1.5;
+            color: #495057;
+            background-color: #fff;
+            background-clip: padding-box;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
         }
-        .form-btn {
-            margin-top: 30px; /* Increased spacing above buttons */
-            padding: 10px 0; /* Add padding for balance */
+        
+        .form-control:focus {
+            color: #495057;
+            background-color: #fff;
+            border-color: #80bdff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
         }
+        
+        .form-control::placeholder {
+            color: #adb5bd;
+            opacity: 1;
+        }
+        
+        .form-control:disabled, .form-control[readonly] {
+            background-color: #e9ecef;
+            opacity: 1;
+        }
+        
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+        
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 16px 12px;
+            padding-right: 2rem;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid #e9ecef;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            text-align: center;
+            vertical-align: middle;
+            cursor: pointer;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            line-height: 1.5;
+            border-radius: 8px;
+            transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, 
+                       border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+        }
+        
+        .btn-primary {
+            color: #fff;
+            background-color: #4361ee;
+            border-color: #4361ee;
+        }
+        
+        .btn-primary:hover {
+            background-color: #3a56d8;
+            border-color: #3a56d8;
+        }
+        
+        .btn-secondary {
+            color: #fff;
+            background-color: #6c757d;
+            border-color: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+        
+        .btn i {
+            font-size: 1rem;
+        }
+        
+        .breadcrumb-section {
+            margin-bottom: 2rem;
+        }
+        
+        .breadcrumb {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 0.75rem 0;
+            margin-bottom: 1rem;
+            list-style: none;
+            background-color: transparent;
+            border-radius: 0.25rem;
+        }
+        
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+        }
+        
+        .breadcrumb-item + .breadcrumb-item {
+            padding-left: 0.5rem;
+        }
+        
+        .breadcrumb-item + .breadcrumb-item::before {
+            display: inline-block;
+            padding-right: 0.5rem;
+            color: #6c757d;
+            content: "/";
+        }
+        
+        .breadcrumb-item a {
+            color: #4361ee;
+            text-decoration: none;
+            transition: color 0.15s ease-in-out;
+        }
+        
+        .breadcrumb-item a:hover {
+            color: #3a56d8;
+            text-decoration: underline;
+        }
+        
+        .breadcrumb-item.active {
+            color: #6c757d;
+        }
+        
         .alert-danger {
+            color: #721c24;
             background-color: #f8d7da;
-            border: 1px solid #dc3545;
-            color: #dc3545;
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 20px;
+            border: 1px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
             display: none;
         }
+        
         .alert-danger ul {
-            margin: 0;
-            padding-left: 20px;
+            margin: 0.5rem 0 0 0;
+            padding-left: 1.5rem;
         }
+        
         .alert-danger li {
-            margin-bottom: 5px;
+            margin-bottom: 0.5rem;
+        }
+        
+        @media (max-width: 768px) {
+            .form-card-body {
+                padding: 1.5rem;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 {% endblock %}
 
 {% block content %}
-<div class="content container-fluid">
-    <div class="row">
-        <div class="col-xl-12 col-sm-12 col-12">
-            <div class="breadcrumb-path mb-4">
-                <ul class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="{{ path('app_dashboard') }}">Accueil</a></li>
-                    <li class="breadcrumb-item"><a href="{{ path('reclamations_by_user', {'id': id_user}) }}">Mes Réclamations</a></li>
-                    <li class="breadcrumb-item active">Nouvelle Réclamation</li>
-                </ul>
-                <h3>Créer une Nouvelle Réclamation</h3>
-            </div>
+<div class="content container-fluid" style="margin-top: -58%;">
+    <div class="reclamation-container">
+        <!-- Breadcrumb -->
+        <div class="breadcrumb-section">
+        
+            <h2>Créer une Nouvelle Réclamation</h2>
         </div>
-    </div>
 
-    <div class="row">
-        <div class="col-xl-12 col-sm-12 col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h2 class="card-titles">Créer une Réclamation <span>Ajoutez les informations nécessaires pour soumettre une réclamation</span></h2>
+        <!-- Form Card -->
+        <div class="form-card">
+            <div class="form-card-header">
+                <h3>Formulaire de Réclamation</h3>
+                <p>Veuillez remplir tous les champs nécessaires pour soumettre votre réclamation</p>
+            </div>
+            
+            <div class="form-card-body">
+                <!-- Error Messages -->
+                <div class="alert-danger" id="errorMessages"></div>
+                
+                <!-- Form -->
+                {{ form_start(form, {'attr': {'id': 'reclamationForm'}}) }}
+                
+                <div class="form-group">
+                    {{ form_label(form.titre, 'Titre de la réclamation') }}
+                    {{ form_widget(form.titre, {'attr': {'class': 'form-control', 'placeholder': 'Entrez un titre clair et concis'}}) }}
                 </div>
-                <div class="card-body">
-                    <div class="container">
-                        <div class="form-header">
-                            <h2>Créer une Réclamation</h2>
-                            <p>Ajoutez les informations nécessaires pour soumettre une réclamation</p>
-                        </div>
-
-                        <div class="alert-danger" id="errorMessages"></div>
-
-                        {{ form_start(form, {'attr': {'id': 'reclamationForm'}}) }}
-
-                        <div class="form-group">
-                            {{ form_label(form.titre) }}
-                            {{ form_widget(form.titre, {'attr': {'class': 'form-control', 'placeholder': 'Titre de la réclamation'}}) }}
-                        </div>
-
-                        <div class="form-group">
-                            {{ form_label(form.description) }}
-                            {{ form_widget(form.description, {'attr': {'class': 'form-control', 'placeholder': 'Description détaillée', 'rows': 4}}) }}
-                        </div>
-
-                        <div class="form-group">
-                            {{ form_label(form.type) }}
-                            {{ form_widget(form.type, {'attr': {'class': 'form-control'}}) }}
-                        </div>
-
-
-
-                        <div class="form-group">
-                            {{ form_label(form.receiver) }}
-                            {{ form_widget(form.receiver, {'attr': {'class': 'form-control'}}) }}
-                        </div>
-
-                        <div class="form-btn">
-                            <button type="submit" class="btn btn-apply w-auto">
-                                <i class="fas fa-save"></i> {{ button_label|default('Créer la Réclamation') }}
-                            </button>
-                            <a href="{{ path('reclamations_by_user', {'id': id_user}) }}" class="btn btn-secondary">
-                                <i class="fas fa-times"></i> Annuler
-                            </a>
-                        </div>
-
-                        {{ form_end(form) }}
-                    </div>
+                
+                <div class="form-group">
+                    {{ form_label(form.description, 'Description détaillée') }}
+                    {{ form_widget(form.description, {'attr': {'class': 'form-control', 'placeholder': 'Décrivez votre réclamation en détail...', 'rows': 5}}) }}
                 </div>
+                
+                <div class="form-group">
+                    {{ form_label(form.type, 'Type de réclamation') }}
+                    {{ form_widget(form.type, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                
+                <div class="form-group">
+                    {{ form_label(form.receiver, 'Destinataire') }}
+                    {{ form_widget(form.receiver, {'attr': {'class': 'form-control'}}) }}
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> {{ button_label|default('Soumettre la Réclamation') }}
+                    </button>
+                    <a href="{{ path('reclamations_by_user', {'id': id_user}) }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Annuler
+                    </a>
+                </div>
+                
+                {{ form_end(form) }}
             </div>
         </div>
     </div>
 </div>
 
-
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('reclamationForm');
+        const errorContainer = document.getElementById('errorMessages');
+        
+        form.addEventListener('submit', function(event) {
+            let hasErrors = false;
+            let errorMessages = [];
+            
+            // Clear previous errors
+            errorContainer.innerHTML = '';
+            errorContainer.style.display = 'none';
+            
+            // Validate title
+            const titleInput = form.querySelector('[name$="[titre]"]');
+            if (!titleInput.value.trim()) {
+                errorMessages.push('Le titre est obligatoire');
+                hasErrors = true;
+            }
+            
+            // Validate description
+            const descriptionInput = form.querySelector('[name$="[description]"]');
+            if (!descriptionInput.value.trim()) {
+                errorMessages.push('La description est obligatoire');
+                hasErrors = true;
+            }
+            
+            // Display errors if any
+            if (hasErrors) {
+                event.preventDefault();
+                
+                const errorList = document.createElement('ul');
+                errorMessages.forEach(function(message) {
+                    const li = document.createElement('li');
+                    li.textContent = message;
+                    errorList.appendChild(li);
+                });
+                
+                errorContainer.appendChild(errorList);
+                errorContainer.style.display = 'block';
+                
+                // Scroll to error messages
+                errorContainer.scrollIntoView({ behavior: 'smooth' });
+            }
+        });
+    });
+</script>
 {% endblock %}

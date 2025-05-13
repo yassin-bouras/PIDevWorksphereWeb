@@ -284,11 +284,19 @@ final class UserController extends AbstractController
         }
     }
 
-    #[Route('/user/{id}/promote', name: 'app_user_promote')]
-    public function promote(User $user, EntityManagerInterface $em): Response
+    #[Route('/user/{id}/promote', name: 'app_user_promote', methods: ['POST'])]
+    public function promote(Request $request, User $user, EntityManagerInterface $em): Response
     {
-        $user->setRole('ROLE_MANAGER'); // example promotion
+        $role = $request->request->get('role');
+        $validRoles = ['Employe', 'Manager', 'Candidat', 'RH'];
+
+        if (!in_array($role, $validRoles)) {
+            throw new \InvalidArgumentException('Rôle invalide.');
+        }
+
+        $user->setRole($role);
         $em->flush();
+
         return $this->redirectToRoute('app_user_index');
     }
 }

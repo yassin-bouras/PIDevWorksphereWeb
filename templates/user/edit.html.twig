@@ -1,69 +1,338 @@
 {% extends 'dashboard/base2.html.twig' %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>Edit User</h1>
-
-    {{ include('user/_form.html.twig', { 'button_label': 'Update' }) }}
-    <a href="{{ path('app_user_index') }}" class="btn btn-secondary mt-3">Back to list</a>
-    {{ include('user/_delete_form.html.twig') }}
-
-    <hr>
-    <h2>Register Face</h2>
-
-    <div class="text-center">
-        <video id="video" width="400" height="300" class="border rounded mb-2" autoplay muted playsinline></video>
-        <canvas id="canvas" width="400" height="300" class="d-none"></canvas>
-        <img id="preview" alt="Captured Image" class="img-thumbnail mt-2 d-none" style="max-width: 100%; height: auto;">
-        
-        <div class="mt-3">
-            <button class="btn btn-primary" id="capture">Capture</button>
-            <button class="btn btn-success d-none" id="save">Save Face</button>
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Main Content Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-light">
+                    <h1 class="h3 mb-0 text-gray-800">Modifier User</h1>
+                </div>
+                <div class="card-body">
+                    {{ include('user/_form.html.twig', { 'button_label': 'modifier' }) }}
+                    
+                    <div class="mt-3 d-flex">
+                        <div class="ms-2">
+                            {{ include('user/_delete_form.html.twig') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Face Registration Card -->
+            <div class="card shadow-sm">
+                <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                    <h2 class="h4 mb-0 text-gray-800">Register Face</h2>
+                </div>
+                <div class="card-body">
+                    <div class="text-center">
+                        <!-- Video container with guides and overlays -->
+                        <div class="position-relative mb-3">
+                            <div id="video-placeholder" class="border rounded d-flex align-items-center justify-content-center bg-light" style="width: 400px; height: 300px; margin: 0 auto;">
+                                <div class="text-center p-4">
+                                    <i class="fas fa-camera fa-3x text-secondary mb-3"></i>
+                                    <p class="mb-0">Click "Start Camera" to begin</p>
+                                </div>
+                            </div>
+                            
+                            <div id="camera-container" class="position-relative d-none" style="width: 400px; height: 300px; margin: 0 auto;">
+                                <!-- Face positioning guide overlay -->
+                                <div id="face-guide" class="position-absolute" style="top: 0; left: 0; width: 100%; height: 100%; pointer-events: none;">
+                                    <div class="position-absolute" style="top: 50%; left: 50%; transform: translate(-50%, -50%); width: 200px; height: 200px; border: 2px dashed rgba(255,255,255,0.7); border-radius: 50%; z-index: 10;"></div>
+                                </div>
+                                
+                                <!-- Countdown overlay -->
+                                <div id="countdown-overlay" class="position-absolute d-none align-items-center justify-content-center" style="top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.3); z-index: 15;">
+                                    <div class="text-white" style="font-size: 5rem; font-weight: bold;" id="countdown-text">3</div>
+                                </div>
+                                
+                                <!-- Face detection status indicator -->
+                                <div id="face-status" class="position-absolute" style="top: 10px; left: 10px; padding: 5px 10px; border-radius: 20px; background-color: rgba(0,0,0,0.5); color: white; z-index: 5;">
+                                    <i class="fas fa-user-slash me-1"></i> No face detected
+                                </div>
+                                
+                                <video id="video" width="400" height="300" class="border rounded mb-2" playsinline></video>
+                            </div>
+                            
+                            <canvas id="canvas" width="400" height="300" class="d-none"></canvas>
+                        </div>
+                        
+                        <!-- Preview image with quality indicator -->
+                        <div class="mb-3 position-relative">
+                            <div id="preview-container" class="position-relative d-none">
+                                <img id="preview" alt="Captured Image" class="img-thumbnail mt-2" style="max-width: 400px; max-height: 300px;">
+                                <div id="image-quality" class="position-absolute top-0 end-0 m-2 badge bg-success d-none">
+                                    Good quality
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Control buttons -->
+                        <div class="d-flex justify-content-center gap-2 mt-3">
+                            <button class="btn btn-primary" id="start-camera">
+                                <i class="fas fa-video me-1"></i> Start Camera
+                            </button>
+                            <button class="btn btn-info d-none" id="capture">
+                                <i class="fas fa-camera me-1"></i> Capture
+                            </button>
+                            <button class="btn btn-success d-none" id="save">
+                                <i class="fas fa-save me-1"></i> Save Face
+                            </button>
+                            <button class="btn btn-secondary d-none" id="retry">
+                                <i class="fas fa-redo me-1"></i> Retry
+                            </button>
+                        </div>
+                        
+                        <!-- Status messages -->
+                        <div id="status" class="mt-3"></div>
+                    </div>
+                </div>
+            </div>
         </div>
-
-        <div id="status" class="mt-3"></div>
     </div>
+</div>
 
-    <script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
         const video = document.getElementById('video');
         const canvas = document.getElementById('canvas');
         const captureButton = document.getElementById('capture');
         const saveButton = document.getElementById('save');
+        const startButton = document.getElementById('start-camera');
+        const retryButton = document.getElementById('retry');
         const preview = document.getElementById('preview');
+        const previewContainer = document.getElementById('preview-container');
         const statusDiv = document.getElementById('status');
+        const videoPlaceholder = document.getElementById('video-placeholder');
+        const cameraContainer = document.getElementById('camera-container');
+        const faceStatusDiv = document.getElementById('face-status');
+        const countdownOverlay = document.getElementById('countdown-overlay');
+        const countdownText = document.getElementById('countdown-text');
+        const imageQuality = document.getElementById('image-quality');
         const email = "{{ user.email|e('js') }}"; // escape for JS safety
-
-        // Start video stream
-        async function startVideo() {
+        
+        let stream = null;
+        let faceDetectionInterval = null;
+        let faceDetected = false;
+        
+        // Start video stream when user clicks the start button
+        startButton.addEventListener('click', async function() {
             try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                statusDiv.innerHTML = '<div class="alert alert-info">Initializing camera...</div>';
+                startButton.disabled = true;
+                
+                stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { 
+                        width: { ideal: 640 },
+                        height: { ideal: 480 },
+                        facingMode: "user"
+                    } 
+                });
+                
                 video.srcObject = stream;
+                await video.play();
+                
+                // Show video and hide placeholder
+                cameraContainer.classList.remove('d-none');
+                videoPlaceholder.classList.add('d-none');
+                
+                // Update buttons
+                startButton.classList.add('d-none');
+                captureButton.classList.remove('d-none');
+                
+                statusDiv.innerHTML = '<div class="alert alert-info">Position your face within the circle guide and click "Capture" when ready.</div>';
+                
+                // Load face-api.js if available
+                if (typeof faceapi !== 'undefined') {
+                    initFaceDetection();
+                } else {
+                    // Fallback if face-api.js is not available
+                    faceStatusDiv.innerHTML = '<i class="fas fa-info-circle me-1"></i> Face detection not available';
+                }
             } catch (err) {
                 console.error('Webcam access error:', err);
-                statusDiv.innerHTML = '<div class="alert alert-danger">Error accessing webcam.</div>';
+                statusDiv.innerHTML = '<div class="alert alert-danger">Error accessing webcam. Please ensure your camera is connected and permissions are granted.</div>';
+                startButton.disabled = false;
+            }
+        });
+        
+        // Initialize face detection if face-api.js is available
+        async function initFaceDetection() {
+            try {
+                // Load face-api.js models (if included in your project)
+                await Promise.all([
+                    faceapi.nets.tinyFaceDetector.loadFromUri('/face-api/models'),
+                    faceapi.nets.faceLandmark68Net.loadFromUri('/face-api/models')
+                ]);
+                
+                // Start face detection loop
+                faceDetectionInterval = setInterval(async () => {
+                    if (video.paused || video.ended) return;
+                    
+                    const detections = await faceapi.detectAllFaces(
+                        video, 
+                        new faceapi.TinyFaceDetectorOptions()
+                    ).withFaceLandmarks();
+                    
+                    if (detections.length > 0) {
+                        const detection = detections[0];
+                        const box = detection.detection.box;
+                        
+                        // Check if face is centered and properly sized
+                        const videoCenter = { x: video.width / 2, y: video.height / 2 };
+                        const faceCenter = { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+                        
+                        const distanceFromCenter = Math.sqrt(
+                            Math.pow(faceCenter.x - videoCenter.x, 2) + 
+                            Math.pow(faceCenter.y - videoCenter.y, 2)
+                        );
+                        
+                        // Calculate ideal size for face (40-60% of frame height)
+                        const idealMinSize = video.height * 0.4;
+                        const idealMaxSize = video.height * 0.6;
+                        
+                        if (distanceFromCenter < 50 && box.height >= idealMinSize && box.height <= idealMaxSize) {
+                            faceStatusDiv.innerHTML = '<i class="fas fa-check-circle me-1 text-success"></i> Good position';
+                            faceStatusDiv.style.backgroundColor = 'rgba(40, 167, 69, 0.7)';
+                            faceDetected = true;
+                            captureButton.disabled = false;
+                        } else if (box.height < idealMinSize) {
+                            faceStatusDiv.innerHTML = '<i class="fas fa-arrows-alt me-1"></i> Move closer';
+                            faceStatusDiv.style.backgroundColor = 'rgba(255, 193, 7, 0.7)';
+                            faceDetected = false;
+                            captureButton.disabled = true;
+                        } else if (box.height > idealMaxSize) {
+                            faceStatusDiv.innerHTML = '<i class="fas fa-arrows-alt me-1"></i> Move further away';
+                            faceStatusDiv.style.backgroundColor = 'rgba(255, 193, 7, 0.7)';
+                            faceDetected = false;
+                            captureButton.disabled = true;
+                        } else {
+                            faceStatusDiv.innerHTML = '<i class="fas fa-arrows-alt me-1"></i> Center your face';
+                            faceStatusDiv.style.backgroundColor = 'rgba(255, 193, 7, 0.7)';
+                            faceDetected = false;
+                            captureButton.disabled = true;
+                        }
+                    } else {
+                        faceStatusDiv.innerHTML = '<i class="fas fa-user-slash me-1"></i> No face detected';
+                        faceStatusDiv.style.backgroundColor = 'rgba(220, 53, 69, 0.7)';
+                        faceDetected = false;
+                        captureButton.disabled = true;
+                    }
+                }, 100);
+            } catch (err) {
+                console.error('Face detection initialization error:', err);
+                faceStatusDiv.innerHTML = '<i class="fas fa-exclamation-triangle me-1"></i> Face detection failed';
+                // Enable capture button as fallback
+                captureButton.disabled = false;
             }
         }
-
-        // Capture image
-        function captureImage() {
+        
+        // Capture image with countdown
+        captureButton.addEventListener('click', function() {
+            // Start countdown
+            countdownOverlay.classList.remove('d-none');
+            countdownOverlay.classList.add('d-flex');
+            
+            // Disable button during countdown
             captureButton.disabled = true;
+            
+            let count = 3;
+            countdownText.textContent = count;
+            
+            const countdownInterval = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    countdownText.textContent = count;
+                } else {
+                    clearInterval(countdownInterval);
+                    countdownOverlay.classList.add('d-none');
+                    countdownOverlay.classList.remove('d-flex');
+                    
+                    // Take the picture
+                    takePicture();
+                }
+            }, 1000);
+        });
+        
+        // Take picture function
+        function takePicture() {
             const context = canvas.getContext('2d');
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
             const imageData = canvas.toDataURL('image/png');
-
+            
+            // Display preview
             preview.src = imageData;
-            preview.classList.remove('d-none');
+            previewContainer.classList.remove('d-none');
+            
+            // Show quality indicator if face was detected
+            if (faceDetected) {
+                imageQuality.textContent = "Good quality";
+                imageQuality.classList.remove('d-none');
+                imageQuality.classList.remove('bg-warning');
+                imageQuality.classList.add('bg-success');
+            } else {
+                imageQuality.textContent = "Face not ideal";
+                imageQuality.classList.remove('d-none');
+                imageQuality.classList.remove('bg-success');
+                imageQuality.classList.add('bg-warning');
+            }
+            
+            // Update buttons
             saveButton.classList.remove('d-none');
-            captureButton.disabled = false;
-            statusDiv.innerHTML = '';
+            retryButton.classList.remove('d-none');
+            captureButton.classList.add('d-none');
+            
+            // Pause video
+            video.pause();
+            
+            // Stop face detection if running
+            if (faceDetectionInterval) {
+                clearInterval(faceDetectionInterval);
+            }
+            
+            statusDiv.innerHTML = '<div class="alert alert-info">Image captured. Click "Save Face" to register or "Retry" to capture again.</div>';
         }
-
+        
+        // Retry capture
+        retryButton.addEventListener('click', function() {
+            // Hide preview and show video again
+            previewContainer.classList.add('d-none');
+            
+            // Resume video if paused
+            if (video.paused && stream) {
+                video.play();
+            }
+            
+            // Update buttons
+            saveButton.classList.add('d-none');
+            retryButton.classList.add('d-none');
+            captureButton.classList.remove('d-none');
+            captureButton.disabled = !faceDetected;
+            
+            // Restart face detection if it was running before
+            if (typeof faceapi !== 'undefined') {
+                initFaceDetection();
+            }
+            
+            statusDiv.innerHTML = '';
+        });
+        
         // Save captured image
-        async function saveImage() {
+        saveButton.addEventListener('click', async function() {
             const imageData = canvas.toDataURL('image/png');
             saveButton.disabled = true;
-            statusDiv.innerHTML = '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Saving...</span></div>';
-
+            retryButton.disabled = true;
+            
+            statusDiv.innerHTML = `
+                <div class="alert alert-info">
+                    <div class="d-flex align-items-center">
+                        <div class="spinner-border spinner-border-sm text-primary me-2" role="status"></div>
+                        <span>Processing and saving face data...</span>
+                    </div>
+                </div>
+            `;
+            
             try {
                 const response = await fetch('{{ path('app_upload_face') }}', {
                     method: 'POST',
@@ -75,25 +344,63 @@
                         'image': imageData
                     })
                 });
-
+                
                 const text = await response.text();
-                statusDiv.innerHTML = response.ok
-                    ? `<div class="alert alert-success">${text}</div>`
-                    : `<div class="alert alert-danger">${text}</div>`;
+                
+                if (response.ok) {
+                    statusDiv.innerHTML = `
+                        <div class="alert alert-success">
+                            <i class="fas fa-check-circle me-2"></i> ${text}
+                        </div>
+                    `;
+                    
+                    // Stop video stream
+                    if (stream) {
+                        stream.getTracks().forEach(track => track.stop());
+                    }
+                    
+                    // Clear face detection interval
+                    if (faceDetectionInterval) {
+                        clearInterval(faceDetectionInterval);
+                    }
+                    
+                    // Update UI to allow starting over
+                    saveButton.classList.add('d-none');
+                    retryButton.classList.add('d-none');
+                    startButton.classList.remove('d-none');
+                    startButton.disabled = false;
+                    cameraContainer.classList.add('d-none');
+                    videoPlaceholder.classList.remove('d-none');
+                } else {
+                    statusDiv.innerHTML = `
+                        <div class="alert alert-danger">
+                            <i class="fas fa-exclamation-circle me-2"></i> ${text}
+                        </div>
+                    `;
+                    saveButton.disabled = false;
+                    retryButton.disabled = false;
+                }
             } catch (error) {
                 console.error('Upload error:', error);
-                statusDiv.innerHTML = '<div class="alert alert-danger">Failed to upload face.</div>';
-            } finally {
+                statusDiv.innerHTML = `
+                    <div class="alert alert-danger">
+                        <i class="fas fa-exclamation-triangle me-2"></i> Failed to upload face. Please try again.
+                    </div>
+                `;
                 saveButton.disabled = false;
+                retryButton.disabled = false;
             }
-        }
-
-        // Event listeners
-        captureButton.addEventListener('click', captureImage);
-        saveButton.addEventListener('click', saveImage);
-
-        // Start video on page load
-        startVideo();
-    </script>
-</div>
+        });
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (stream) {
+                stream.getTracks().forEach(track => track.stop());
+            }
+            if (faceDetectionInterval) {
+                clearInterval(faceDetectionInterval);
+            }
+        });
+    });
+</script>
 {% endblock %}

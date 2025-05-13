@@ -26,10 +26,7 @@
                 <div class="card-body">
                     <table class="table table-bordered">
                         <tbody>
-                            <tr>
-                                <th>ID Réclamation</th>
-                                <td>{{ reclamation.idReclamation }}</td>
-                            </tr>
+
                             <tr>
                                 <th>Titre</th>
                                 <td>{{ reclamation.titre }}</td>
@@ -60,12 +57,15 @@
                     </table>
                 </div>
                 <div class="card-footer text-center">
-                    <a href="" class="btn btn-secondary">
+<a href="javascript:history.back()" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Retour à la liste
                     </a>
+                        {% if role == 'Candidat' %}
+
                     <a href="{{ path('app_reclamation_edit', {'id_reclamation': reclamation.idReclamation}) }}" class="btn btn-warning">
                         <i class="far fa-edit"></i> Modifier
                     </a>
+                    {% endif %}
                     <form method="post" action="{{ path('app_reclamation_delete', {'id_reclamation': reclamation.idReclamation}) }}" style="display: inline;" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cette réclamation ?');">
                         <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ reclamation.idReclamation) }}">
                         <button class="btn btn-danger">
@@ -85,4 +85,7 @@
         color: white; /* Ensure the text remains visible */
     }
 </style>
+<script>
+
+</script>
 {% endblock %}
